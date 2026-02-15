@@ -13,18 +13,32 @@
 
 Ktheme is a powerful, flexible theming engine inspired by the advanced theming system from [CleverFerret](https://github.com/Kaleaon/CleverFerret). It provides a comprehensive solution for creating, managing, and applying themes to your applications with support for:
 
-- ✨ **Metallic Effects** - Beautiful metallic gradients and shimmer effects
-- 🎭 **Advanced Visual Effects** - Shadows, gradients, blur, and more
+- ✨ **Metallic Effects** - Beautiful metallic gradients and shimmer effects (10 variants)
+- 🎭 **Advanced Visual Effects** - Shadows, gradients, blur, animations, and transitions
 - 🌈 **Rich Color Schemes** - Full Material Design 3 color system support
 - 📦 **Theme Import/Export** - Easy JSON-based theme sharing
 - 🔍 **Theme Discovery** - Search and filter themes by tags and names
 - 🎨 **Theme Creator** - Web-based tool for creating custom themes
+- 🔧 **Kotlin Plugin** - Native Kotlin/JVM support for Android and backend applications
+- 📱 **13 Preset Themes** - All themes from CleverFerret included
 
 ## 🚀 Installation
+
+### TypeScript/JavaScript
 
 ```bash
 npm install @ktheme/engine
 ```
+
+### Kotlin/Android
+
+```kotlin
+dependencies {
+    implementation("com.ktheme:ktheme-kotlin:1.0.0")
+}
+```
+
+See [kotlin-plugin/README.md](kotlin-plugin/README.md) for detailed Kotlin usage.
 
 ## 📚 Quick Start
 
@@ -149,22 +163,24 @@ const myTheme: Theme = {
 
 ## 🌟 Preset Themes
 
-Ktheme comes with several beautiful preset themes:
+Ktheme includes all 13 themes from CleverFerret:
 
-### Navy Gold
-Elegant navy background with luxurious gold metallic accents.
-- **ID**: `navy-gold`
-- **Tags**: metallic, elegant, dark
+1. **Navy Gold** - Elegant navy with gold metallic accents (`navy-gold`)
+2. **Emerald Silver** - Rich emerald with silver accents (`emerald-silver`)
+3. **Rose Gold** - Warm rose gold with burgundy tones (`rose-gold`)
+4. **Royal Bronze** - Regal purple with bronze accents (`royal-bronze`)
+5. **Midnight Amber** - Sophisticated midnight blue with amber (`midnight-amber`)
+6. **Obsidian Crimson** - Bold black with crimson accents (`obsidian-crimson`)
+7. **Slate Cyan** - Cool modern slate with cyan (`slate-cyan`)
+8. **Royal Silver** - Royal purple with silver accents (`royal-silver`)
+9. **Forest Copper** - Deep forest green with copper (`forest-copper`)
+10. **Burgundy Rose Gold** - Rich burgundy with rose gold (`burgundy-rose-gold`)
+11. **Charcoal Champagne** - Sophisticated charcoal with champagne (`charcoal-champagne`)
+12. **Slate Gunmetal** - Industrial slate with gunmetal (`slate-gunmetal`)
+13. **Deep Purple Platinum** - Deep purple with platinum (`deep-purple-platinum`)
+14. **Paper & Ink** - Minimalist light theme for readers (`paper-ink`)
 
-### Emerald Silver
-Rich emerald green with elegant silver metallic accents.
-- **ID**: `emerald-silver`
-- **Tags**: metallic, nature, dark
-
-### Rose Gold
-Warm and elegant rose gold with burgundy undertones.
-- **ID**: `rose-gold`
-- **Tags**: metallic, warm, elegant, dark
+All theme JSON files are available in `themes/examples/`.
 
 ## 🛠️ Theme Creator App
 

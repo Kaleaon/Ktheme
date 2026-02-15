@@ -10,6 +10,11 @@ build/
 *.d.ts
 !jest.config.js
 
+# Kotlin/Gradle
+.gradle/
+kotlin-plugin/build/
+kotlin-plugin/.gradle/
+
 # Testing
 coverage/
 .nyc_output/
@@ -20,6 +25,7 @@ coverage/
 *.swp
 *.swo
 *~
+*.iml
 
 # OS
 .DS_Store
