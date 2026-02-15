@@ -217,7 +217,7 @@ fun ThemedApp() {
 
 ## Available Themes
 
-All 13 themes from CleverFerret are available:
+All 14 themes from CleverFerret are available:
 
 1. **Navy Gold** - Elegant navy with gold metallic accents
 2. **Emerald Silver** - Rich emerald with silver accents

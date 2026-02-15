@@ -163,7 +163,7 @@ const myTheme: Theme = {
 
 ## 🌟 Preset Themes
 
-Ktheme includes all 13 themes from CleverFerret:
+Ktheme includes all 14 themes from CleverFerret:
 
 1. **Navy Gold** - Elegant navy with gold metallic accents (`navy-gold`)
 2. **Emerald Silver** - Rich emerald with silver accents (`emerald-silver`)

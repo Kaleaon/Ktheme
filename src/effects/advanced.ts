@@ -69,21 +69,21 @@ export function generateSlideInKeyframes(
   name: string = 'slideIn',
   from: 'top' | 'right' | 'bottom' | 'left' = 'bottom'
 ): string {
-  const transforms: Record<string, string> = {
-    top: 'translateY(-100%)',
-    right: 'translateX(100%)',
-    bottom: 'translateY(100%)',
-    left: 'translateX(-100%)'
+  const transforms: Record<string, { from: string; to: string }> = {
+    top: { from: 'translateY(-100%)', to: 'translateY(0)' },
+    right: { from: 'translateX(100%)', to: 'translateX(0)' },
+    bottom: { from: 'translateY(100%)', to: 'translateY(0)' },
+    left: { from: 'translateX(-100%)', to: 'translateX(0)' }
   };
   
   return `
     @keyframes ${name} {
-      from { transform: ${transforms[from]}; }
-      to { transform: translateX(0); }
+      from { transform: ${transforms[from].from}; }
+      to { transform: ${transforms[from].to}; }
     }
     @-webkit-keyframes ${name} {
-      from { transform: ${transforms[from]}; }
-      to { transform: translateX(0); }
+      from { transform: ${transforms[from].from}; }
+      to { transform: ${transforms[from].to}; }
     }
   `;
 }
