@@ -21,6 +21,9 @@ export * from './utils/colors';
 // Theme exports
 export * from './themes/presets';
 
+// Media design tokens exports
+export * from './media/quickAccess';
+
 // Re-export for convenience
 import { ThemeEngine } from './core/ThemeEngine';
 import { PresetThemes } from './themes/presets';
