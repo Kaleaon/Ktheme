@@ -33,12 +33,12 @@ kotlin {
 }
 
 application {
-    mainClass.set("com.ktheme.ui.ThemeLibraryWindowKt")
+    mainClass.set("com.ktheme.examples.AdvancedThemeStudioKt")
 }
 
 tasks.jar {
     manifest {
-        attributes["Main-Class"] = "com.ktheme.ui.ThemeLibraryWindowKt"
+        attributes["Main-Class"] = "com.ktheme.examples.AdvancedThemeStudioKt"
     }
     
     // Create fat JAR with all dependencies

@@ -154,6 +154,30 @@ data class TransitionEffects(
 )
 
 /**
+ * Particle effects configuration
+ */
+@Serializable
+data class ParticleEffects(
+    val enabled: Boolean,
+    val count: Int,
+    val speed: Float,
+    val size: Int,
+    val color: String
+)
+
+/**
+ * Glow effects configuration
+ */
+@Serializable
+data class GlowEffects(
+    val enabled: Boolean,
+    val radius: Int,
+    val intensity: Float,
+    val color: String,
+    val pulse: Boolean = false
+)
+
+/**
  * Visual effects configuration
  */
 @Serializable
@@ -163,7 +187,9 @@ data class VisualEffects(
     val shimmer: ShimmerEffects? = null,
     val blur: BlurEffects? = null,
     val animations: AnimationEffects? = null,
-    val transitions: TransitionEffects? = null
+    val transitions: TransitionEffects? = null,
+    val particles: ParticleEffects? = null,
+    val glow: GlowEffects? = null
 )
 
 /**

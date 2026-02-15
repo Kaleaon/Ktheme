@@ -4,8 +4,9 @@ Kotlin plugin for Ktheme - Advanced theming and design API for Android and JVM a
 
 ## Features
 
-- 🎨 **Visual Theme Library** - Browse and preview all 14 themes with scroll wheel UI
-- 🔄 **Cross-App Theme Sharing** - Share themes between applications system-wide
+- 🎨 **Advanced Theme Studio** - Build themes in a polished multi-panel creator UI
+- ✨ **Cinematic Visual Effects** - Configure transitions, particles, glow, metallic gradients, and animations
+- 🔄 **Cross-App Theme Sharing API** - Share themes between applications system-wide with `KthemeAPI`
 - 📱 **Swing UI Components** - Ready-to-use theme selector and preview panels
 - 🎯 **Simple Integration API** - Easy integration for any Kotlin/Java app
 - 💾 **Import/Export** - Share themes via JSON files
@@ -39,9 +40,9 @@ dependencies {
 </dependency>
 ```
 
-## Running the Theme Library App
+## Running the Advanced Theme Studio App
 
-The Ktheme Library provides a standalone visual application for browsing and managing themes:
+Ktheme now ships with a standalone creator app for designing rich animated themes:
 
 ```bash
 cd kotlin-plugin
@@ -55,13 +56,13 @@ Or build and run the JAR:
 java -jar build/libs/ktheme-kotlin-1.0.0.jar
 ```
 
-### Theme Library Features
+### Theme Studio Features
 
-- **Scroll Wheel Selector** - Browse all themes with visual preview cards
-- **Live Preview** - See theme colors and preview UI elements in real-time
-- **Share Themes** - Share themes to system-wide shared directory
-- **Import/Export** - Import themes from JSON or export for sharing
-- **Search & Filter** - Find themes by name, tags, or mode (dark/light)
+- **Attractive multi-tab UI** - Edit identity, colors, and effects from one workspace
+- **Real-time animated preview** - View transitions, glow pulse, and moving particles instantly
+- **Theme API sharing** - Publish your generated themes to the system shared directory through `KthemeAPI`
+- **Export JSON themes** - Save generated themes for versioning and distribution
+- **Compatibility** - Shared themes can be consumed by any app using the Ktheme Kotlin API
 
 ## Quick Start
 
@@ -414,3 +415,14 @@ Apache License 2.0 - see the [LICENSE](../LICENSE) file for details.
 
 - [Main Ktheme Repository](https://github.com/Kaleaon/Ktheme)
 - [CleverFerret](https://github.com/Kaleaon/CleverFerret)
+
+
+### Launching specific apps
+
+```bash
+# Advanced creator (default run target)
+./gradlew run
+
+# Theme browser/library
+./gradlew run --args="com.ktheme.ui.ThemeLibraryWindowKt"
+```
