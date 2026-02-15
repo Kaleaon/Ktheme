@@ -1,6 +1,15 @@
 # Ktheme Kotlin Plugin
 
-Kotlin plugin for Ktheme - Advanced theming and design API for Android and JVM applications.
+Kotlin plugin for Ktheme - Advanced theming and design API for Android and JVM applications with a visual theme library and cross-app theme sharing.
+
+## Features
+
+- 🎨 **Visual Theme Library** - Browse and preview all 14 themes with scroll wheel UI
+- 🔄 **Cross-App Theme Sharing** - Share themes between applications system-wide
+- 📱 **Swing UI Components** - Ready-to-use theme selector and preview panels
+- 🎯 **Simple Integration API** - Easy integration for any Kotlin/Java app
+- 💾 **Import/Export** - Share themes via JSON files
+- 🌙 **Dark & Light Themes** - Full support for both modes
 
 ## Installation
 
@@ -29,6 +38,30 @@ dependencies {
     <version>1.0.0</version>
 </dependency>
 ```
+
+## Running the Theme Library App
+
+The Ktheme Library provides a standalone visual application for browsing and managing themes:
+
+```bash
+cd kotlin-plugin
+./gradlew run
+```
+
+Or build and run the JAR:
+
+```bash
+./gradlew jar
+java -jar build/libs/ktheme-kotlin-1.0.0.jar
+```
+
+### Theme Library Features
+
+- **Scroll Wheel Selector** - Browse all themes with visual preview cards
+- **Live Preview** - See theme colors and preview UI elements in real-time
+- **Share Themes** - Share themes to system-wide shared directory
+- **Import/Export** - Import themes from JSON or export for sharing
+- **Search & Filter** - Find themes by name, tags, or mode (dark/light)
 
 ## Quick Start
 
@@ -233,6 +266,114 @@ All 14 themes from CleverFerret are available:
 12. **Slate Gunmetal** - Industrial slate with gunmetal
 13. **Deep Purple Platinum** - Deep purple with platinum
 14. **Paper & Ink** - Minimalist light theme for readers
+
+## Cross-App Theme Sharing
+
+Ktheme provides a powerful system for sharing themes across applications:
+
+### Using the KthemeAPI
+
+```kotlin
+import com.ktheme.library.KthemeAPI
+import com.ktheme.library.ThemeChangeListener
+
+// Get all shared themes available system-wide
+val themes = KthemeAPI.getAvailableThemes()
+
+// Get a specific theme
+val theme = KthemeAPI.getTheme("navy-gold")
+
+// Share a theme with other applications
+KthemeAPI.shareTheme(myTheme)
+
+// Subscribe to theme changes
+KthemeAPI.onThemeChanged(object : ThemeChangeListener {
+    override fun onThemeAdded(theme: Theme) {
+        println("New theme: ${theme.metadata.name}")
+    }
+    
+    override fun onThemeRemoved(themeId: String) {
+        println("Theme removed: $themeId")
+    }
+    
+    override fun onThemeUpdated(theme: Theme) {
+        println("Theme updated: ${theme.metadata.name}")
+    }
+})
+```
+
+### Theme Directories
+
+Themes are shared via directories in the user's home:
+
+- **Shared Themes** (cross-app): `~/.ktheme/shared/`
+- **User Themes**: `~/.ktheme/user/`
+
+Any application can read from the shared directory to access themes made available by the Theme Library app.
+
+### Integration Example
+
+See `com.ktheme.examples.ExampleApp` for a complete example of:
+- Browsing shared themes
+- Applying themes to your app
+- Subscribing to theme updates
+
+Run the example:
+```bash
+./gradlew run --args="example"
+```
+
+## UI Components
+
+### ThemeScrollWheel
+
+Visual scroll wheel for theme selection:
+
+```kotlin
+import com.ktheme.ui.ThemeScrollWheel
+
+val scrollWheel = ThemeScrollWheel(themes).apply {
+    addSelectionListener { theme ->
+        println("Selected: ${theme.metadata.name}")
+        applyTheme(theme)
+    }
+}
+```
+
+### ThemePreviewPanel
+
+Detailed theme preview panel:
+
+```kotlin
+import com.ktheme.ui.ThemePreviewPanel
+
+val preview = ThemePreviewPanel()
+preview.showTheme(selectedTheme)
+```
+
+### ThemeLibrary
+
+Centralized theme management:
+
+```kotlin
+import com.ktheme.library.ThemeLibrary
+
+val library = ThemeLibrary()
+library.loadAllThemes(bundledThemesDir)
+
+// Get all themes
+val themes = library.getAllThemes()
+
+// Search themes
+val results = library.searchThemes("metallic")
+
+// Share theme
+library.shareTheme("navy-gold")
+
+// Import/Export
+library.importTheme(File("theme.json"))
+library.exportTheme("navy-gold", File("export.json"))
+```
 
 ## API Reference
 

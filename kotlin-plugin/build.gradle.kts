@@ -2,6 +2,7 @@ plugins {
     kotlin("jvm") version "1.9.22"
     kotlin("plugin.serialization") version "1.9.22"
     `maven-publish`
+    application
 }
 
 group = "com.ktheme"
@@ -29,6 +30,20 @@ tasks.test {
 
 kotlin {
     jvmToolchain(11)
+}
+
+application {
+    mainClass.set("com.ktheme.ui.ThemeLibraryWindowKt")
+}
+
+tasks.jar {
+    manifest {
+        attributes["Main-Class"] = "com.ktheme.ui.ThemeLibraryWindowKt"
+    }
+    
+    // Create fat JAR with all dependencies
+    from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 publishing {
