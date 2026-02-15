@@ -144,3 +144,54 @@ export function toCssColor(color: Color): string {
   }
   return `rgb(${color.r}, ${color.g}, ${color.b})`;
 }
+
+/**
+ * Composite a foreground color over a background color
+ */
+export function compositeOver(foreground: Color, background: Color): RGBAColor {
+  const fg = normalizeColor(foreground);
+  const bg = normalizeColor(background);
+
+  const outAlpha = fg.a + bg.a * (1 - fg.a);
+
+  if (outAlpha === 0) {
+    return { r: 0, g: 0, b: 0, a: 0 };
+  }
+
+  return {
+    r: (fg.r * fg.a + bg.r * bg.a * (1 - fg.a)) / outAlpha,
+    g: (fg.g * fg.a + bg.g * bg.a * (1 - fg.a)) / outAlpha,
+    b: (fg.b * fg.a + bg.b * bg.a * (1 - fg.a)) / outAlpha,
+    a: outAlpha
+  };
+}
+
+/**
+ * Calculate WCAG relative luminance for a color
+ */
+export function relativeLuminance(color: Color): number {
+  const rgba = normalizeColor(color);
+  const toLinear = (channel: number): number => {
+    const normalized = channel / 255;
+    return normalized <= 0.03928
+      ? normalized / 12.92
+      : Math.pow((normalized + 0.055) / 1.055, 2.4);
+  };
+
+  const r = toLinear(rgba.r);
+  const g = toLinear(rgba.g);
+  const b = toLinear(rgba.b);
+
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+/**
+ * Calculate WCAG contrast ratio between two colors
+ */
+export function contrastRatio(colorA: Color, colorB: Color): number {
+  const luminanceA = relativeLuminance(colorA);
+  const luminanceB = relativeLuminance(colorB);
+  const lighter = Math.max(luminanceA, luminanceB);
+  const darker = Math.min(luminanceA, luminanceB);
+  return (lighter + 0.05) / (darker + 0.05);
+}
