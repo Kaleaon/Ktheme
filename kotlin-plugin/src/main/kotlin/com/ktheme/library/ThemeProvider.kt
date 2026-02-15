@@ -1,6 +1,8 @@
 package com.ktheme.library
 
 import com.ktheme.models.Theme
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.io.File
 
 /**
@@ -54,6 +56,7 @@ class FileBasedThemeProvider : ThemeProvider {
     private val library = ThemeLibrary()
     private val listeners = mutableListOf<ThemeChangeListener>()
     private val sharedDir = File(System.getProperty("user.home"), ".ktheme/shared")
+    private val json = Json { prettyPrint = true }
     
     init {
         sharedDir.mkdirs()
@@ -82,8 +85,8 @@ class FileBasedThemeProvider : ThemeProvider {
     override fun publishTheme(theme: Theme): Boolean {
         return try {
             val file = File(sharedDir, "${theme.metadata.id}.json")
-            // Save theme to shared directory
-            library.exportTheme(theme.metadata.id, file)
+            // Write directly so apps can publish themes without pre-registering in ThemeLibrary
+            file.writeText(json.encodeToString(theme))
             notifyThemeAdded(theme)
             true
         } catch (e: Exception) {
