@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ktheme Creator - Create Beautiful Themes</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎨 Ktheme Creator</h1>
+            <p>Create beautiful themes with metallic effects and advanced styling</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Left Panel: Theme Configuration -->
+            <aside class="config-panel">
+                <section class="config-section">
+                    <h2>Theme Metadata</h2>
+                    <div class="form-group">
+                        <label for="themeName">Theme Name</label>
+                        <input type="text" id="themeName" placeholder="My Awesome Theme">
+                    </div>
+                    <div class="form-group">
+                        <label for="themeDescription">Description</label>
+                        <textarea id="themeDescription" rows="3" placeholder="A beautiful theme with..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="themeAuthor">Author</label>
+                        <input type="text" id="themeAuthor" placeholder="Your Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="themeTags">Tags (comma-separated)</label>
+                        <input type="text" id="themeTags" placeholder="dark, metallic, elegant">
+                    </div>
+                </section>
+
+                <section class="config-section">
+                    <h2>Color Scheme</h2>
+                    <div class="color-grid">
+                        <div class="color-input">
+                            <label for="primaryColor">Primary</label>
+                            <input type="color" id="primaryColor" value="#D4AF37">
+                        </div>
+                        <div class="color-input">
+                            <label for="onPrimaryColor">On Primary</label>
+                            <input type="color" id="onPrimaryColor" value="#0A1630">
+                        </div>
+                        <div class="color-input">
+                            <label for="secondaryColor">Secondary</label>
+                            <input type="color" id="secondaryColor" value="#4A90E2">
+                        </div>
+                        <div class="color-input">
+                            <label for="onSecondaryColor">On Secondary</label>
+                            <input type="color" id="onSecondaryColor" value="#FFFFFF">
+                        </div>
+                        <div class="color-input">
+                            <label for="backgroundColor">Background</label>
+                            <input type="color" id="backgroundColor" value="#0A1630">
+                        </div>
+                        <div class="color-input">
+                            <label for="onBackgroundColor">On Background</label>
+                            <input type="color" id="onBackgroundColor" value="#E8E3D8">
+                        </div>
+                        <div class="color-input">
+                            <label for="surfaceColor">Surface</label>
+                            <input type="color" id="surfaceColor" value="#1A2645">
+                        </div>
+                        <div class="color-input">
+                            <label for="onSurfaceColor">On Surface</label>
+                            <input type="color" id="onSurfaceColor" value="#E8E3D8">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="config-section">
+                    <h2>Metallic Effects</h2>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="metallicEnabled" checked>
+                            Enable Metallic Effects
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label for="metallicVariant">Metallic Variant</label>
+                        <select id="metallicVariant">
+                            <option value="GOLD">Gold</option>
+                            <option value="SILVER">Silver</option>
+                            <option value="BRONZE">Bronze</option>
+                            <option value="COPPER">Copper</option>
+                            <option value="PLATINUM">Platinum</option>
+                            <option value="ROSE_GOLD">Rose Gold</option>
+                            <option value="TITANIUM">Titanium</option>
+                            <option value="CHROME">Chrome</option>
+                            <option value="COBALT">Cobalt</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="metallicIntensity">Intensity</label>
+                        <input type="range" id="metallicIntensity" min="0" max="1" step="0.1" value="0.8">
+                        <span id="intensityValue">0.8</span>
+                    </div>
+                </section>
+
+                <section class="config-section">
+                    <h2>Actions</h2>
+                    <button id="previewBtn" class="btn btn-primary">Preview Theme</button>
+                    <button id="exportBtn" class="btn btn-secondary">Export JSON</button>
+                    <button id="importBtn" class="btn btn-secondary">Import JSON</button>
+                    <input type="file" id="importFile" accept=".json" style="display: none;">
+                </section>
+            </aside>
+
+            <!-- Right Panel: Preview -->
+            <main class="preview-panel" id="previewPanel">
+                <h2>Theme Preview</h2>
+                <div class="preview-content">
+                    <div class="preview-card card-primary">
+                        <h3>Primary Card</h3>
+                        <p>This card uses the primary color scheme</p>
+                        <button class="preview-btn">Action Button</button>
+                    </div>
+                    <div class="preview-card card-secondary">
+                        <h3>Secondary Card</h3>
+                        <p>This card uses the secondary color scheme</p>
+                        <button class="preview-btn">Action Button</button>
+                    </div>
+                    <div class="preview-card card-surface">
+                        <h3>Surface Card</h3>
+                        <p>This card demonstrates the surface colors with some sample text to show readability.</p>
+                        <div class="metallic-element" id="metallicPreview">
+                            Metallic Effect Sample
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
