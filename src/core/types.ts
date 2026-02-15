@@ -136,6 +136,20 @@ export interface VisualEffects {
     enabled: boolean;
     radius: number;
   };
+  
+  // Animation effects
+  animations?: {
+    enabled: boolean;
+    duration: number; // milliseconds
+    easing: 'linear' | 'ease' | 'ease-in' | 'ease-out' | 'ease-in-out';
+  };
+  
+  // Transition effects
+  transitions?: {
+    enabled: boolean;
+    duration: number; // milliseconds
+    properties: string[]; // CSS properties to transition
+  };
 }
 
 /**

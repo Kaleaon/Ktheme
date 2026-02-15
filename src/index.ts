@@ -13,6 +13,7 @@ export * from './core/types';
 
 // Effects exports
 export * from './effects/metallic';
+export * from './effects/advanced';
 
 // Utility exports
 export * from './utils/colors';
