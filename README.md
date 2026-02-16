@@ -250,7 +250,7 @@ The theme creator provides:
 
 ## ⚙️ Accessibility and Motion Policies
 
-Ktheme supports reduced-motion handling and dynamic contrast checks in theme validation.
+Ktheme supports reduced-motion handling, dynamic contrast checks, and auto-generated accessibility CSS that is included for all themes by default.
 
 ```typescript
 const validation = engine.validateTheme(theme);
@@ -259,9 +259,20 @@ console.log(validation.warnings); // includes low-contrast warnings when applica
 const resolvedEffects = engine.resolveEffectsForRuntime(theme, {
   prefersReducedMotion: true
 });
+
+const resolvedAccessibility = engine.resolveAccessibilityForRuntime(theme, {
+  prefersReducedMotion: true,
+  prefersHighContrast: true,
+  userFontScale: 1.2
+});
+
+const css = generateThemeAdaptationCSS(theme);
+// css now includes accessibility variables/rules by default under [data-ktheme]
 ```
 
-When reduced motion is preferred, shimmer is disabled and transitions/animations are reduced according to each effect policy.
+When reduced motion is preferred, shimmer is disabled and transitions/animations are reduced according to each effect policy. Accessibility utilities also enforce minimum target size, visible focus rings, link underlines, and reduced-motion fallbacks automatically.
+
+If you need to disable auto-inclusion for a specific theme, set `theme.accessibility.autoIncludeInGeneratedCSS = false`.
 
 ## 🔬 Essential Additions and Effects Research
 

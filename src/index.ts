@@ -15,6 +15,7 @@ export * from './core/types';
 export * from './effects/metallic';
 export * from './effects/advanced';
 export * from './adaptation/apply';
+export * from './accessibility/defaults';
 
 // Utility exports
 export * from './utils/colors';
