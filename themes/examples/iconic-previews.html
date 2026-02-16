@@ -41,6 +41,13 @@
       color: #c7d4ef;
     }
     .ref a { color: #7fd9ff; }
+    .rules {
+      max-width: 1100px;
+      margin: 0 auto 16px;
+      font-size: 0.84rem;
+      color: #cfd9ef;
+      line-height: 1.45;
+    }
     .lcars-font {
       font-family: "Federation", "StarNext", "TNGcast", "Antonio", "Segoe UI", sans-serif;
     }
@@ -92,6 +99,24 @@
       text-transform: uppercase;
       letter-spacing: 0.07em;
       font-size: 0.82rem;
+    }
+    .lcars.picard {
+      background: #071325;
+      color: #dff2ff;
+    }
+    .lcars.picard h2 {
+      background: #53c8ff;
+      color: #031321;
+    }
+    .lcars.picard .sweep { background: #53c8ff; }
+    .lcars.picard .bar {
+      background: #1e6ea8;
+      color: #dff2ff;
+    }
+    .lcars.picard .content {
+      background: #0d233a;
+      border-left-color: #2a9be0;
+      box-shadow: inset 0 0 0 1px #53c8ff99;
     }
     .metro {
       background: #001a33;
@@ -146,15 +171,31 @@
     with optional Trek typography from
     <a href="https://github.com/leonawicz/trekfont" target="_blank" rel="noreferrer noopener">trekfont</a>.
   </p>
+  <p class="rules">
+    LCARS UI rules in this preview: keep the <strong>same LCARS rail/sweep geometry</strong> and centered rail labels across eras, then vary only palette intent:
+    <strong>TNG Warm</strong> (orange/magenta) vs <strong>Picard Blue</strong> (hologram/electric blue).
+  </p>
   <div class="grid">
     <section class="panel lcars">
-      <h2 class="lcars-font">LCARS</h2>
+      <h2 class="lcars-font">LCARS · TNG Warm</h2>
       <div class="body rail">
         <div class="bar lcars-font">Ops Rail</div>
         <div class="content">
           <div class="sweep"></div>
           <strong>Console panel</strong>
           <p class="lcars-font">Compact layout, pill geometry, and warm command accents.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel lcars picard">
+      <h2 class="lcars-font">LCARS · Picard Blue</h2>
+      <div class="body rail">
+        <div class="bar lcars-font">Ops Rail</div>
+        <div class="content">
+          <div class="sweep"></div>
+          <strong>Console panel</strong>
+          <p class="lcars-font">Same LCARS format with shaded hologram/electric-blue presentation.</p>
         </div>
       </div>
     </section>
