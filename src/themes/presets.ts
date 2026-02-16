@@ -5,6 +5,7 @@
 
 import { Theme, MetallicVariant } from '../core/types';
 import { getMetallicGradient } from '../effects/metallic';
+import { LCARSAdaptation, WindowsPhoneMetroAdaptation } from './adaptationPresets';
 
 /**
  * Navy Gold Theme - Elegant navy background with gold accents
@@ -974,6 +975,88 @@ export const PaperInkTheme: Theme = {
 };
 
 /**
+ * Windows Phone Metro Theme - Flat, high-contrast tile-oriented theme
+ */
+export const WindowsPhoneMetroTheme: Theme = {
+  ...SlateCyanTheme,
+  metadata: {
+    ...SlateCyanTheme.metadata,
+    id: 'windows-phone-metro',
+    name: 'Windows Phone Metro',
+    description: 'Flat, tile-first Metro-inspired interface theme',
+    tags: [...new Set([...(SlateCyanTheme.metadata.tags ?? []), 'metro', 'windows-phone', 'flat'])],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  },
+  colorScheme: {
+    ...SlateCyanTheme.colorScheme,
+    primary: '#00AEEF',
+    onPrimary: '#00151F',
+    primaryContainer: '#0078D7',
+    onPrimaryContainer: '#E8F7FF',
+    secondary: '#005A9E',
+    onSecondary: '#EAF4FF',
+    tertiary: '#2D89EF',
+    onTertiary: '#001021',
+    background: '#001A33',
+    onBackground: '#F0F8FF',
+    surface: '#002448',
+    onSurface: '#F0F8FF'
+  },
+  effects: {
+    ...SlateCyanTheme.effects,
+    metallic: {
+      enabled: false,
+      variant: MetallicVariant.TITANIUM,
+      gradient: getMetallicGradient(MetallicVariant.TITANIUM),
+      intensity: 0
+    }
+  },
+  adaptation: WindowsPhoneMetroAdaptation
+};
+
+/**
+ * LCARS Theme - Starship-console inspired color and panel language
+ */
+export const LCARSTheme: Theme = {
+  ...RoyalBronzeTheme,
+  metadata: {
+    ...RoyalBronzeTheme.metadata,
+    id: 'lcars',
+    name: 'LCARS',
+    description: 'LCARS-inspired interface with warm rails and compact controls',
+    tags: [...new Set([...(RoyalBronzeTheme.metadata.tags ?? []), 'lcars', 'sci-fi', 'console'])],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  },
+  colorScheme: {
+    ...RoyalBronzeTheme.colorScheme,
+    primary: '#F2A65A',
+    onPrimary: '#1B0E24',
+    primaryContainer: '#CC7A2B',
+    onPrimaryContainer: '#FFE6CC',
+    secondary: '#C5678D',
+    onSecondary: '#2B1224',
+    tertiary: '#A485F7',
+    onTertiary: '#170F2E',
+    background: '#120C1C',
+    onBackground: '#F3E9FF',
+    surface: '#1C132A',
+    onSurface: '#F3E9FF'
+  },
+  effects: {
+    ...RoyalBronzeTheme.effects,
+    metallic: {
+      enabled: false,
+      variant: MetallicVariant.BRONZE,
+      gradient: getMetallicGradient(MetallicVariant.BRONZE),
+      intensity: 0
+    }
+  },
+  adaptation: LCARSAdaptation
+};
+
+/**
  * All preset themes
  */
 export const PresetThemes = {
@@ -990,5 +1073,7 @@ export const PresetThemes = {
   CharcoalChampagne: CharcoalChampagneTheme,
   SlateGunmetal: SlateGunmetalTheme,
   DeepPurplePlatinum: DeepPurplePlatinumTheme,
-  PaperInk: PaperInkTheme
+  PaperInk: PaperInkTheme,
+  WindowsPhoneMetro: WindowsPhoneMetroTheme,
+  LCARS: LCARSTheme
 };

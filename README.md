@@ -167,7 +167,7 @@ const myTheme: Theme = {
 
 ## 🌟 Preset Themes
 
-Ktheme includes all 14 themes from CleverFerret:
+Ktheme includes 14 themes from CleverFerret plus additional iconic interface presets:
 
 1. **Navy Gold** - Elegant navy with gold metallic accents (`navy-gold`)
 2. **Emerald Silver** - Rich emerald with silver accents (`emerald-silver`)
@@ -183,6 +183,8 @@ Ktheme includes all 14 themes from CleverFerret:
 12. **Slate Gunmetal** - Industrial slate with gunmetal (`slate-gunmetal`)
 13. **Deep Purple Platinum** - Deep purple with platinum (`deep-purple-platinum`)
 14. **Paper & Ink** - Minimalist light theme for readers (`paper-ink`)
+15. **Windows Phone Metro** - Flat tile-first Metro language (`windows-phone-metro`)
+16. **LCARS** - LCARS-inspired rails and console styling (`lcars`)
 
 All theme JSON files are available in `themes/examples/`.
 
@@ -200,7 +202,7 @@ console.log(starter.name);
 starter.themes.forEach(theme => engine.registerTheme(theme));
 ```
 
-Available sets include `starter`, `metallicShowcase`, `executiveDark`, `creativeStudio`, and `readability`.
+Available sets include `starter`, `metallicShowcase`, `executiveDark`, `creativeStudio`, `readability`, and `iconicInterfaces`.
 
 
 ## 🧱 App Layout + Icon Adaptation
