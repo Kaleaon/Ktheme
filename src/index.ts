@@ -23,6 +23,7 @@ export * from './utils/colors';
 export * from './themes/presets';
 export * from './themes/sets';
 export * from './themes/adaptationPresets';
+export * from './themes/strategy';
 
 // Media design tokens exports
 export * from './media/quickAccess';
@@ -32,6 +33,7 @@ import { ThemeEngine } from './core/ThemeEngine';
 import { PresetThemes } from './themes/presets';
 import { ThemeSets } from './themes/sets';
 import { AdaptationPresets } from './themes/adaptationPresets';
+import { BestPracticeStandards, ExpansionPackPlans, RecognizableUIDesigns, ThemeFamilyPlans } from './themes/strategy';
 
 /**
  * Create a new theme engine instance with preset themes
@@ -56,5 +58,9 @@ export default {
   createThemeEngine,
   PresetThemes,
   ThemeSets,
-  AdaptationPresets
+  AdaptationPresets,
+  ThemeFamilyPlans,
+  ExpansionPackPlans,
+  BestPracticeStandards,
+  RecognizableUIDesigns
 };
