@@ -307,6 +307,73 @@ export interface DesignTokens {
 }
 
 /**
+ * Accessibility controls that products can expose to end users.
+ */
+export interface AccessibilityControls {
+  allowContrastToggle?: boolean;
+  allowMotionToggle?: boolean;
+  allowFontScaleControl?: boolean;
+  allowFocusRingToggle?: boolean;
+}
+
+/**
+ * Accessibility defaults and guardrails that should be applied by host apps.
+ */
+export interface AccessibilitySettings {
+  enabled?: boolean;
+  minimumContrastRatio?: number;
+  autoIncludeInGeneratedCSS?: boolean;
+  controls?: AccessibilityControls;
+  typography?: {
+    fontScale?: number;
+    lineHeight?: number;
+    letterSpacing?: number;
+  };
+  motion?: {
+    reduceMotionByDefault?: boolean;
+    disableParallax?: boolean;
+    disableShimmer?: boolean;
+  };
+  interaction?: {
+    minimumTargetSize?: number;
+    focusRingWidth?: number;
+    focusRingOffset?: number;
+    underlineLinks?: boolean;
+  };
+}
+
+/**
+ * Runtime accessibility preferences resolved from OS/user choices.
+ */
+export interface AccessibilityRuntimePreferences {
+  prefersReducedMotion?: boolean;
+  prefersHighContrast?: boolean;
+  prefersForcedColors?: boolean;
+  userFontScale?: number;
+}
+
+/**
+ * Fully resolved accessibility policy used by render layers.
+ */
+export interface ResolvedAccessibilitySettings {
+  enabled: boolean;
+  highContrast: boolean;
+  reducedMotion: boolean;
+  forcedColors: boolean;
+  minimumContrastRatio: number;
+  fontScale: number;
+  lineHeight: number;
+  letterSpacing: number;
+  minimumTargetSize: number;
+  focusRingWidth: number;
+  focusRingOffset: number;
+  underlineLinks: boolean;
+  disableParallax: boolean;
+  disableShimmer: boolean;
+  controls: Required<AccessibilityControls>;
+}
+
+/**
  * Theme metadata
  */
 export interface ThemeMetadata {
@@ -331,6 +398,7 @@ export interface Theme {
   typography?: Typography;
   tokens?: DesignTokens;
   adaptation?: ThemeAdaptation;
+  accessibility?: AccessibilitySettings;
 }
 
 /**

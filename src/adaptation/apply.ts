@@ -4,6 +4,8 @@
 
 import { ColorScheme, ComponentOverride, DesignTokens, Theme, ThemeAdaptation } from '../core/types';
 import { toCssColor } from '../utils/colors';
+import { ComponentOverride, DesignTokens, Theme, ThemeAdaptation } from '../core/types';
+import { resolveAccessibilitySettings, shouldAutoIncludeAccessibilityCSS } from '../accessibility/defaults';
 
 function normalizeNumericValue(key: string, value: string | number): string {
   if (typeof value === 'number' && !['opacity', 'z-index', 'font-weight', 'line-height'].includes(key)) {
@@ -111,6 +113,79 @@ export function generateColorSchemeCSSVariables(scheme: ColorScheme): string {
 }
 
 /**
+ * Generate accessibility CSS variables and built-in utility rules.
+ */
+export function generateAccessibilityCSS(theme: Theme): string {
+  if (!shouldAutoIncludeAccessibilityCSS(theme)) return '';
+
+  const settings = resolveAccessibilitySettings(theme);
+  if (!settings.enabled) return '';
+
+  const focusColor = `${theme.colorScheme.primary}`;
+
+  return `
+    --kt-a11y-min-contrast: ${settings.minimumContrastRatio};
+    --kt-a11y-font-scale: ${settings.fontScale};
+    --kt-a11y-line-height: ${settings.lineHeight};
+    --kt-a11y-letter-spacing: ${settings.letterSpacing}em;
+    --kt-a11y-target-size: ${settings.minimumTargetSize}px;
+    --kt-a11y-focus-width: ${settings.focusRingWidth}px;
+    --kt-a11y-focus-offset: ${settings.focusRingOffset}px;
+    --kt-a11y-focus-color: ${focusColor};
+    --kt-a11y-underline-links: ${settings.underlineLinks ? 'underline' : 'none'};
+  `;
+}
+
+export function generateAccessibilityUtilityCSS(theme: Theme): string {
+  if (!shouldAutoIncludeAccessibilityCSS(theme)) return '';
+
+  const settings = resolveAccessibilitySettings(theme);
+  if (!settings.enabled) return '';
+
+  const reducedMotionBlock = settings.reducedMotion
+    ? `
+* {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}`
+    : '';
+
+  return `
+[data-ktheme] {
+  font-size: calc(1rem * var(--kt-a11y-font-scale));
+  line-height: var(--kt-a11y-line-height);
+  letter-spacing: var(--kt-a11y-letter-spacing);
+}
+
+[data-ktheme] a {
+  text-decoration: var(--kt-a11y-underline-links);
+}
+
+[data-ktheme] :is(button, [role="button"], input, select, textarea, a) {
+  min-width: var(--kt-a11y-target-size);
+  min-height: var(--kt-a11y-target-size);
+}
+
+[data-ktheme] :focus-visible {
+  outline: var(--kt-a11y-focus-width) solid var(--kt-a11y-focus-color);
+  outline-offset: var(--kt-a11y-focus-offset);
+}
+
+@media (prefers-reduced-motion: reduce) {
+${reducedMotionBlock}
+}
+
+@media (forced-colors: active) {
+  [data-ktheme] :focus-visible {
+    outline-color: CanvasText;
+  }
+}
+  `.trim();
+}
+
+/**
  * Convert component overrides into CSS blocks.
  */
 export function generateComponentOverrideCSS(overrides?: ComponentOverride[]): string {
@@ -136,9 +211,12 @@ export function generateThemeAdaptationCSS(theme: Theme): string {
   const layoutVars = generateLayoutCSSVariables(adaptation?.layout);
   const iconVars = generateIconCSSVariables(adaptation?.icons);
   const tokenVars = generateDesignTokenCSSVariables(theme.tokens);
+  const accessibilityVars = generateAccessibilityCSS(theme);
   const overrideCSS = generateComponentOverrideCSS(adaptation?.componentOverrides);
+  const accessibilityUtilityCSS = generateAccessibilityUtilityCSS(theme);
 
   if (!colorVars && !layoutVars && !iconVars && !tokenVars && !overrideCSS) return '';
+  if (!layoutVars && !iconVars && !tokenVars && !accessibilityVars && !overrideCSS && !accessibilityUtilityCSS) return '';
 
   return `
 :root {
@@ -146,8 +224,11 @@ ${colorVars}
 ${layoutVars}
 ${iconVars}
 ${tokenVars}
+${accessibilityVars}
 }
 
 ${overrideCSS}
+
+${accessibilityUtilityCSS}
   `.trim();
 }

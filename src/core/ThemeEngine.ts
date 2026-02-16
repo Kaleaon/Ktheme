@@ -4,8 +4,16 @@
  * Provides functionality to register, validate, export, and import themes
  */
 
-import { Theme, ThemeAdaptation, ThemeValidationResult, VisualEffects } from './types';
+import {
+  AccessibilityRuntimePreferences,
+  ResolvedAccessibilitySettings,
+  Theme,
+  ThemeAdaptation,
+  ThemeValidationResult,
+  VisualEffects
+} from './types';
 import { contrastRatio } from '../utils/colors';
+import { resolveAccessibilitySettings } from '../accessibility/defaults';
 
 export class ThemeEngine {
   private themes: Map<string, Theme> = new Map();
@@ -124,6 +132,16 @@ export class ThemeEngine {
   }
 
   /**
+   * Resolve accessibility settings for runtime conditions and user preferences.
+   */
+  resolveAccessibilityForRuntime(
+    theme: Theme,
+    preferences?: AccessibilityRuntimePreferences
+  ): ResolvedAccessibilitySettings {
+    return resolveAccessibilitySettings(theme, preferences);
+  }
+
+  /**
    * Validate a theme
    */
   validateTheme(theme: Theme): ThemeValidationResult {
@@ -224,6 +242,23 @@ export class ThemeEngine {
       const cornerValues = Object.values(theme.tokens.corners);
       if (cornerValues.some(value => value < 0)) {
         errors.push('Corner token values must be non-negative');
+      }
+    }
+
+    if (theme.accessibility) {
+      if (theme.accessibility.minimumContrastRatio !== undefined && theme.accessibility.minimumContrastRatio < 3) {
+        errors.push('Accessibility minimumContrastRatio must be >= 3');
+      }
+
+      if (theme.accessibility.typography?.fontScale !== undefined && theme.accessibility.typography.fontScale <= 0) {
+        errors.push('Accessibility fontScale must be greater than 0');
+      }
+
+      if (
+        theme.accessibility.interaction?.minimumTargetSize !== undefined &&
+        theme.accessibility.interaction.minimumTargetSize < 24
+      ) {
+        warnings.push('Accessibility minimumTargetSize should be at least 24px (44px recommended)');
       }
     }
 
