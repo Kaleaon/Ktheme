@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ktheme Iconic Theme Preview</title>
+  <title>KTheme Iconic Theme Preview</title>
   <style>
     :root { color-scheme: dark; }
     body {
@@ -15,7 +15,7 @@
     }
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 18px;
       max-width: 1100px;
       margin: 0 auto;
@@ -38,25 +38,39 @@
       background: #120c1c;
       color: #f3e9ff;
     }
-    .lcars h2 { background: #f2a65a; color: #1b0e24; }
+    .lcars h2 {
+      background: #f2a65a;
+      color: #1b0e24;
+      letter-spacing: 0.14em;
+      font-weight: 800;
+    }
     .lcars .rail {
       display: grid;
-      grid-template-columns: 180px 1fr;
+      grid-template-columns: 196px 1fr;
       gap: 10px;
     }
     .lcars .bar {
-      background: #c5678d;
-      border-top-left-radius: 42px;
-      border-bottom-left-radius: 42px;
+      background: #f09f7f;
+      border-top-left-radius: 58px;
+      border-bottom-left-radius: 58px;
+      border-top-right-radius: 14px;
+      border-bottom-right-radius: 14px;
       color: #2b1224;
       font-weight: 700;
       padding: 14px;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
     }
     .lcars .content {
       background: #1c132a;
-      border-radius: 10px;
+      border-radius: 14px;
       padding: 14px;
+      border-left: 12px solid #c5678d;
+    }
+    .lcars .content p {
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      font-size: 0.82rem;
     }
     .metro {
       background: #001a33;
