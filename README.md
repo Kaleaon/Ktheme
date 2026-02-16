@@ -214,11 +214,11 @@ Available sets include `starter`, `metallicShowcase`, `executiveDark`, `creative
 
 ### Themes I’d implement next (shortlist)
 
-- **Solarpunk Civic** — optimistic greens + warm daylight neutrals for climate, mobility, and city tools.
-- **Neo-Noir Neon** — dark cinematic base with constrained neon accents for media/control-room dashboards.
-- **Calm Clinical** — low-stress healthcare/admin palette with stricter contrast defaults and larger target sizes.
-- **Ink Terminal Modern** — retro terminal logic with modern accessibility guardrails (readable mono ramps, reduced bloom).
-- **Aurora Glass Night** — premium glassmorphism for consumer apps with strong blur discipline and contrast-safe text layers.
+- **Solarpunk Civic** — high-trust greens/daylight neutrals for climate and mobility products, with clear rules for optimistic accents, eco-status semantics, and legible outdoor contrast.
+- **Neo-Noir Neon** — focused dark palette for media/control-room dashboards, with strict rules that keep neon as sparse emphasis rather than full-surface glow.
+- **Calm Clinical** — low-stress healthcare/admin visual language, with explicit rules for high-clarity hierarchy, safe status colors, and touch-target accessibility defaults.
+- **Ink Terminal Modern** — retro-terminal personality for developer tools, with modern rules for readable mono typography, restrained bloom, and contrast-safe command surfaces.
+- **Aurora Glass Night** — premium glass UI for consumer experiences, with disciplined rules for blur depth, edge highlights, and always-readable foreground text layers.
 
 
 ## 🧱 App Layout + Icon Adaptation
