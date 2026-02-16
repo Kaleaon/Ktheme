@@ -187,6 +187,7 @@ Ktheme includes 14 themes from CleverFerret plus additional iconic interface pre
 16. **LCARS** - LCARS-inspired rails and console styling (`lcars`)
 
 All theme JSON files are available in `themes/examples/`.
+For a quick visual reference of the new iconic presets, open `themes/examples/iconic-previews.html`.
 
 
 ## 🧪 Theme Sets
