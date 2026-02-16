@@ -97,7 +97,6 @@ export function generateElevationCSS(
 ): string {
   const shadows = [];
   const baseBlur = elevation * 2;
-  const baseSpread = elevation * 0.5;
   const cssColor = toCssColor(color);
   
   // Ambient shadow

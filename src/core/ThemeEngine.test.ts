@@ -1,6 +1,7 @@
 import { ThemeEngine } from './ThemeEngine';
 import { NavyGoldTheme } from '../themes/presets';
 import { AdaptationPresets } from '../themes/adaptationPresets';
+import type { Theme } from './types';
 
 describe('ThemeEngine adaptations', () => {
   it('creates and registers adapted themes', () => {
@@ -83,7 +84,7 @@ describe('ThemeEngine adaptations', () => {
       }
     };
 
-    const validation = engine.validateTheme(invalid as any);
+    const validation = engine.validateTheme(invalid as unknown as Theme);
 
     expect(validation.valid).toBe(false);
     expect(validation.warnings.some(msg => msg.includes('Low contrast for primary/onPrimary'))).toBe(true);
