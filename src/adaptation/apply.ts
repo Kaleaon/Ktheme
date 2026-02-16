@@ -2,6 +2,8 @@
  * Theme adaptation helpers for layout, icons and component-level overrides.
  */
 
+import { ColorScheme, ComponentOverride, DesignTokens, Theme, ThemeAdaptation } from '../core/types';
+import { toCssColor } from '../utils/colors';
 import { ComponentOverride, DesignTokens, Theme, ThemeAdaptation } from '../core/types';
 import { resolveAccessibilitySettings, shouldAutoIncludeAccessibilityCSS } from '../accessibility/defaults';
 
@@ -71,6 +73,43 @@ export function generateDesignTokenCSSVariables(tokens?: DesignTokens): string {
     --kt-corner-large: ${tokens.corners?.large ?? 12}px;
     --kt-corner-xlarge: ${tokens.corners?.xlarge ?? 16}px;
   `;
+}
+
+function toKebabCase(value: string): string {
+  return value.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+}
+
+/**
+ * Generate CSS custom properties from the full color scheme.
+ */
+export function generateColorSchemeCSSVariables(scheme: ColorScheme): string {
+  const lines: string[] = [];
+
+  Object.entries(scheme).forEach(([key, value]) => {
+    if (key === 'stateLayers' || key === 'semanticRoles' || value === undefined) {
+      return;
+    }
+
+    lines.push(`    --kt-${toKebabCase(key)}: ${toCssColor(value)};`);
+  });
+
+  if (scheme.stateLayers) {
+    Object.entries(scheme.stateLayers).forEach(([key, value]) => {
+      if (value !== undefined) {
+        lines.push(`    --kt-state-${toKebabCase(key)}: ${toCssColor(value)};`);
+      }
+    });
+  }
+
+  if (scheme.semanticRoles) {
+    Object.entries(scheme.semanticRoles).forEach(([key, value]) => {
+      if (value !== undefined) {
+        lines.push(`    --kt-${toKebabCase(key)}: ${toCssColor(value)};`);
+      }
+    });
+  }
+
+  return lines.join('\n');
 }
 
 /**
@@ -168,6 +207,7 @@ export function generateComponentOverrideCSS(overrides?: ComponentOverride[]): s
  */
 export function generateThemeAdaptationCSS(theme: Theme): string {
   const adaptation = theme.adaptation;
+  const colorVars = generateColorSchemeCSSVariables(theme.colorScheme);
   const layoutVars = generateLayoutCSSVariables(adaptation?.layout);
   const iconVars = generateIconCSSVariables(adaptation?.icons);
   const tokenVars = generateDesignTokenCSSVariables(theme.tokens);
@@ -175,10 +215,12 @@ export function generateThemeAdaptationCSS(theme: Theme): string {
   const overrideCSS = generateComponentOverrideCSS(adaptation?.componentOverrides);
   const accessibilityUtilityCSS = generateAccessibilityUtilityCSS(theme);
 
+  if (!colorVars && !layoutVars && !iconVars && !tokenVars && !overrideCSS) return '';
   if (!layoutVars && !iconVars && !tokenVars && !accessibilityVars && !overrideCSS && !accessibilityUtilityCSS) return '';
 
   return `
 :root {
+${colorVars}
 ${layoutVars}
 ${iconVars}
 ${tokenVars}

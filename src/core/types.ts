@@ -20,6 +20,22 @@ export interface RGBAColor extends RGBColor {
 }
 
 /**
+ * HSL Color representation
+ */
+export interface HSLColor {
+  h: number; // 0-360
+  s: number; // 0-100
+  l: number; // 0-100
+}
+
+/**
+ * HSLA Color representation with alpha channel
+ */
+export interface HSLAColor extends HSLColor {
+  a: number; // 0-1
+}
+
+/**
  * Hex color string (e.g., "#FF5733" or "#FF5733AA")
  */
 export type HexColor = string;

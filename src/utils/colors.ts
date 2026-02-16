@@ -3,7 +3,16 @@
  * Provides color conversion, manipulation, and validation
  */
 
-import { Color, RGBColor, RGBAColor, HexColor } from '../core/types';
+import { Color, ColorScheme, HSLColor, HexColor, RGBColor, RGBAColor } from '../core/types';
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
+}
+
+function normalizeHue(hue: number): number {
+  const wrapped = hue % 360;
+  return wrapped < 0 ? wrapped + 360 : wrapped;
+}
 
 /**
  * Convert hex color to RGB
@@ -194,4 +203,194 @@ export function contrastRatio(colorA: Color, colorB: Color): number {
   const lighter = Math.max(luminanceA, luminanceB);
   const darker = Math.min(luminanceA, luminanceB);
   return (lighter + 0.05) / (darker + 0.05);
+}
+
+/**
+ * Convert RGB to HSL
+ */
+export function rgbToHsl(rgb: RGBColor): HSLColor {
+  const r = rgb.r / 255;
+  const g = rgb.g / 255;
+  const b = rgb.b / 255;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const delta = max - min;
+
+  let h = 0;
+  const l = (max + min) / 2;
+  let s = 0;
+
+  if (delta !== 0) {
+    s = delta / (1 - Math.abs(2 * l - 1));
+
+    switch (max) {
+      case r:
+        h = 60 * (((g - b) / delta) % 6);
+        break;
+      case g:
+        h = 60 * ((b - r) / delta + 2);
+        break;
+      default:
+        h = 60 * ((r - g) / delta + 4);
+        break;
+    }
+  }
+
+  return {
+    h: normalizeHue(h),
+    s: s * 100,
+    l: l * 100
+  };
+}
+
+/**
+ * Convert HSL to RGB
+ */
+export function hslToRgb(hsl: HSLColor): RGBColor {
+  const h = normalizeHue(hsl.h);
+  const s = clamp(hsl.s, 0, 100) / 100;
+  const l = clamp(hsl.l, 0, 100) / 100;
+
+  const chroma = (1 - Math.abs(2 * l - 1)) * s;
+  const x = chroma * (1 - Math.abs(((h / 60) % 2) - 1));
+  const m = l - chroma / 2;
+
+  let rPrime = 0;
+  let gPrime = 0;
+  let bPrime = 0;
+
+  if (h < 60) {
+    rPrime = chroma;
+    gPrime = x;
+  } else if (h < 120) {
+    rPrime = x;
+    gPrime = chroma;
+  } else if (h < 180) {
+    gPrime = chroma;
+    bPrime = x;
+  } else if (h < 240) {
+    gPrime = x;
+    bPrime = chroma;
+  } else if (h < 300) {
+    rPrime = x;
+    bPrime = chroma;
+  } else {
+    rPrime = chroma;
+    bPrime = x;
+  }
+
+  return {
+    r: Math.round((rPrime + m) * 255),
+    g: Math.round((gPrime + m) * 255),
+    b: Math.round((bPrime + m) * 255)
+  };
+}
+
+/**
+ * Convert hex color to HSL
+ */
+export function hexToHsl(hex: HexColor): HSLColor {
+  return rgbToHsl(hexToRgb(hex));
+}
+
+/**
+ * Convert HSL color to hex
+ */
+export function hslToHex(hsl: HSLColor): HexColor {
+  return rgbToHex(hslToRgb(hsl));
+}
+
+function colorToHsl(color: Color): HSLColor {
+  const rgb = normalizeColor(color);
+  return rgbToHsl(rgb);
+}
+
+/**
+ * Build analogous palette around a seed color.
+ */
+export function analogousPalette(color: Color, count: number = 5, spread: number = 30): HexColor[] {
+  const hsl = colorToHsl(color);
+  const total = Math.max(2, count);
+  const start = hsl.h - spread;
+  const increment = (spread * 2) / (total - 1);
+
+  return Array.from({ length: total }, (_, index) =>
+    hslToHex({ ...hsl, h: normalizeHue(start + increment * index) })
+  );
+}
+
+/**
+ * Get the complementary color for a seed color.
+ */
+export function complementaryColor(color: Color): HexColor {
+  const hsl = colorToHsl(color);
+  return hslToHex({ ...hsl, h: normalizeHue(hsl.h + 180) });
+}
+
+/**
+ * Build a triadic palette.
+ */
+export function triadicPalette(color: Color): HexColor[] {
+  const hsl = colorToHsl(color);
+  return [0, 120, 240].map(shift => hslToHex({ ...hsl, h: normalizeHue(hsl.h + shift) }));
+}
+
+/**
+ * Build a split complementary palette.
+ */
+export function splitComplementaryPalette(color: Color): HexColor[] {
+  const hsl = colorToHsl(color);
+  return [0, 150, 210].map(shift => hslToHex({ ...hsl, h: normalizeHue(hsl.h + shift) }));
+}
+
+/**
+ * Saturation adjustment helper.
+ */
+export function adjustSaturation(color: Color, amount: number): HexColor {
+  const hsl = colorToHsl(color);
+  return hslToHex({ ...hsl, s: clamp(hsl.s + amount, 0, 100) });
+}
+
+/**
+ * Hue adjustment helper.
+ */
+export function adjustHue(color: Color, degrees: number): HexColor {
+  const hsl = colorToHsl(color);
+  return hslToHex({ ...hsl, h: normalizeHue(hsl.h + degrees) });
+}
+
+/**
+ * Generate a coherent partial color scheme from a single brand color.
+ */
+export function generatePaletteFromSeed(seedColor: Color): Partial<ColorScheme> {
+  const baseHsl = colorToHsl(seedColor);
+  const secondary = adjustHue(seedColor, 30);
+  const tertiary = adjustHue(seedColor, -30);
+  const surface = hslToHex({ h: baseHsl.h, s: clamp(baseHsl.s * 0.12, 4, 16), l: 97 });
+  const surfaceVariant = hslToHex({ h: baseHsl.h, s: clamp(baseHsl.s * 0.2, 8, 24), l: 92 });
+  const background = hslToHex({ h: baseHsl.h, s: clamp(baseHsl.s * 0.08, 2, 12), l: 99 });
+  const onSurface = hslToHex({ h: baseHsl.h, s: clamp(baseHsl.s * 0.18, 8, 24), l: 14 });
+
+  return {
+    primary: hslToHex({ ...baseHsl, s: clamp(baseHsl.s, 45, 90), l: 46 }),
+    onPrimary: hslToHex({ ...baseHsl, s: clamp(baseHsl.s * 0.4, 20, 40), l: 98 }),
+    primaryContainer: hslToHex({ ...baseHsl, s: clamp(baseHsl.s * 0.6, 25, 60), l: 88 }),
+    onPrimaryContainer: hslToHex({ ...baseHsl, s: clamp(baseHsl.s * 0.7, 35, 75), l: 20 }),
+    secondary,
+    onSecondary: getContrastColor(secondary),
+    secondaryContainer: lighten(secondary, 40),
+    onSecondaryContainer: darken(secondary, 55),
+    tertiary,
+    onTertiary: getContrastColor(tertiary),
+    tertiaryContainer: lighten(tertiary, 38),
+    onTertiaryContainer: darken(tertiary, 52),
+    background,
+    onBackground: onSurface,
+    surface,
+    onSurface,
+    surfaceVariant,
+    onSurfaceVariant: hslToHex({ h: baseHsl.h, s: clamp(baseHsl.s * 0.2, 8, 22), l: 30 }),
+    outline: hslToHex({ h: baseHsl.h, s: clamp(baseHsl.s * 0.12, 4, 16), l: 58 }),
+    outlineVariant: hslToHex({ h: baseHsl.h, s: clamp(baseHsl.s * 0.12, 4, 16), l: 72 })
+  };
 }

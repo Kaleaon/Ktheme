@@ -1,4 +1,5 @@
 import {
+  generateColorSchemeCSSVariables,
   generateAccessibilityCSS,
   generateAccessibilityUtilityCSS,
   generateComponentOverrideCSS,
@@ -49,6 +50,56 @@ describe('adaptation CSS generators', () => {
 
     expect(tokenVars).toContain('--kt-density-scale: 1.1;');
     expect(tokenVars).toContain('--kt-corner-xlarge: 20px;');
+  });
+
+  it('generates color scheme css variables including state layers and semantics', () => {
+    const colorVars = generateColorSchemeCSSVariables({
+      primary: '#111111',
+      onPrimary: '#FFFFFF',
+      primaryContainer: '#222222',
+      onPrimaryContainer: '#FFFFFF',
+      secondary: '#333333',
+      onSecondary: '#FFFFFF',
+      secondaryContainer: '#444444',
+      onSecondaryContainer: '#FFFFFF',
+      tertiary: '#555555',
+      onTertiary: '#FFFFFF',
+      tertiaryContainer: '#666666',
+      onTertiaryContainer: '#FFFFFF',
+      error: '#B3261E',
+      onError: '#FFFFFF',
+      errorContainer: '#F9DEDC',
+      onErrorContainer: '#410E0B',
+      background: '#F7F7F7',
+      onBackground: '#1C1C1C',
+      surface: '#FFFFFF',
+      onSurface: '#111111',
+      surfaceVariant: '#EAEAEA',
+      onSurfaceVariant: '#484848',
+      outline: '#666666',
+      outlineVariant: '#999999',
+      scrim: '#000000',
+      inverseSurface: '#2D2D2D',
+      inverseOnSurface: '#F2F2F2',
+      inversePrimary: '#A6C8FF',
+      stateLayers: {
+        hover: '#00000014',
+        pressed: '#0000001f',
+        focused: '#0000001f'
+      },
+      semanticRoles: {
+        success: '#2E7D32',
+        onSuccess: '#FFFFFF',
+        warning: '#ED6C02',
+        onWarning: '#FFFFFF',
+        info: '#0288D1',
+        onInfo: '#FFFFFF'
+      }
+    });
+
+    expect(colorVars).toContain('--kt-primary: #111111;');
+    expect(colorVars).toContain('--kt-state-hover: #00000014;');
+    expect(colorVars).toContain('--kt-success: #2E7D32;');
   });
 
   it('renders component overrides and complete adaptation CSS', () => {
@@ -145,6 +196,7 @@ describe('adaptation CSS generators', () => {
 
     expect(css).toContain(':root {');
     expect(css).toContain('--kt-layout-density: comfortable;');
+    expect(css).toContain('--kt-primary: #000;');
     expect(css).toContain('--kt-icon-family: material;');
     expect(css).toContain('--kt-density-base-spacing: 8px;');
     expect(css).toContain('--kt-a11y-target-size: 44px;');
