@@ -41,6 +41,9 @@
       color: #c7d4ef;
     }
     .ref a { color: #7fd9ff; }
+    .lcars-font {
+      font-family: "Federation", "StarNext", "TNGcast", "Antonio", "Segoe UI", sans-serif;
+    }
     .lcars {
       background: #120c1c;
       color: #f3e9ff;
@@ -74,6 +77,10 @@
       padding: 14px;
       letter-spacing: 0.16em;
       text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
     }
     .lcars .content {
       background: #1c132a;
@@ -135,17 +142,19 @@
     Visual cues inspired by
     <a href="https://github.com/leonawicz/lcars" target="_blank" rel="noreferrer noopener">leonawicz/lcars</a>
     and
-    <a href="https://github.com/N-a-r-w-i-n/MetroSet-UI" target="_blank" rel="noreferrer noopener">MetroSet-UI</a>.
+    <a href="https://github.com/N-a-r-w-i-n/MetroSet-UI" target="_blank" rel="noreferrer noopener">MetroSet-UI</a>,
+    with optional Trek typography from
+    <a href="https://github.com/leonawicz/trekfont" target="_blank" rel="noreferrer noopener">trekfont</a>.
   </p>
   <div class="grid">
     <section class="panel lcars">
-      <h2>LCARS</h2>
+      <h2 class="lcars-font">LCARS</h2>
       <div class="body rail">
-        <div class="bar">Ops Rail</div>
+        <div class="bar lcars-font">Ops Rail</div>
         <div class="content">
           <div class="sweep"></div>
           <strong>Console panel</strong>
-          <p>Compact layout, pill geometry, and warm command accents.</p>
+          <p class="lcars-font">Compact layout, pill geometry, and warm command accents.</p>
         </div>
       </div>
     </section>
