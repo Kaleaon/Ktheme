@@ -1,4 +1,6 @@
 import {
+  generateAccessibilityCSS,
+  generateAccessibilityUtilityCSS,
   generateComponentOverrideCSS,
   generateDesignTokenCSSVariables,
   generateIconCSSVariables,
@@ -145,6 +147,7 @@ describe('adaptation CSS generators', () => {
     expect(css).toContain('--kt-layout-density: comfortable;');
     expect(css).toContain('--kt-icon-family: material;');
     expect(css).toContain('--kt-density-base-spacing: 8px;');
+    expect(css).toContain('--kt-a11y-target-size: 44px;');
     expect(css).toContain('.tile {');
   });
 
@@ -206,5 +209,58 @@ describe('adaptation CSS generators', () => {
 
     const css = generateThemeAdaptationCSS(theme);
     expect(css).toContain('--kt-density-scale: 1;');
+    expect(css).toContain('--kt-a11y-target-size: 44px;');
+  });
+
+  it('can disable accessibility auto-include in generated css', () => {
+    const theme = {
+      metadata: {
+        id: 'a11y-off',
+        name: 'a11y-off',
+        description: 'a11y-off',
+        author: 'x',
+        version: '1.0.0',
+        tags: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      },
+      darkMode: true,
+      colorScheme: {
+        primary: '#000',
+        onPrimary: '#fff',
+        primaryContainer: '#000',
+        onPrimaryContainer: '#fff',
+        secondary: '#000',
+        onSecondary: '#fff',
+        secondaryContainer: '#000',
+        onSecondaryContainer: '#fff',
+        tertiary: '#000',
+        onTertiary: '#fff',
+        tertiaryContainer: '#000',
+        onTertiaryContainer: '#fff',
+        error: '#000',
+        onError: '#fff',
+        errorContainer: '#000',
+        onErrorContainer: '#fff',
+        background: '#000',
+        onBackground: '#fff',
+        surface: '#000',
+        onSurface: '#fff',
+        surfaceVariant: '#000',
+        onSurfaceVariant: '#fff',
+        outline: '#fff',
+        outlineVariant: '#888',
+        scrim: '#000',
+        inverseSurface: '#fff',
+        inverseOnSurface: '#000',
+        inversePrimary: '#fff'
+      },
+      accessibility: {
+        autoIncludeInGeneratedCSS: false
+      }
+    } as Theme;
+
+    expect(generateAccessibilityCSS(theme)).toBe('');
+    expect(generateAccessibilityUtilityCSS(theme)).toBe('');
   });
 });

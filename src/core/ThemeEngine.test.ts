@@ -126,4 +126,67 @@ describe('ThemeEngine adaptations', () => {
     expect(resolved?.animations?.enabled).toBe(false);
     expect((resolved?.transitions?.duration ?? 0) < 300).toBe(true);
   });
+
+  it('resolves accessibility defaults and runtime overrides', () => {
+    const engine = new ThemeEngine();
+    const resolved = engine.resolveAccessibilityForRuntime(
+      {
+        ...NavyGoldTheme,
+        accessibility: {
+          minimumContrastRatio: 7,
+          typography: {
+            fontScale: 1.1,
+            lineHeight: 1.7,
+            letterSpacing: 0.02
+          },
+          interaction: {
+            minimumTargetSize: 48,
+            focusRingWidth: 3,
+            focusRingOffset: 4,
+            underlineLinks: true
+          }
+        }
+      },
+      {
+        prefersReducedMotion: true,
+        prefersHighContrast: true,
+        userFontScale: 1.3
+      }
+    );
+
+    expect(resolved.highContrast).toBe(true);
+    expect(resolved.reducedMotion).toBe(true);
+    expect(resolved.minimumContrastRatio).toBe(7);
+    expect(resolved.fontScale).toBe(1.3);
+    expect(resolved.minimumTargetSize).toBe(48);
+  });
+
+  it('validates accessibility configuration guardrails', () => {
+    const engine = new ThemeEngine();
+    const invalid = {
+      ...NavyGoldTheme,
+      metadata: {
+        ...NavyGoldTheme.metadata,
+        id: 'invalid-a11y'
+      },
+      accessibility: {
+        minimumContrastRatio: 2.5,
+        typography: {
+          fontScale: 0
+        },
+        interaction: {
+          minimumTargetSize: 20
+        }
+      }
+    };
+
+    const validation = engine.validateTheme(invalid as unknown as Theme);
+
+    expect(validation.valid).toBe(false);
+    expect(validation.errors).toContain('Accessibility minimumContrastRatio must be >= 3');
+    expect(validation.errors).toContain('Accessibility fontScale must be greater than 0');
+    expect(
+      validation.warnings.includes('Accessibility minimumTargetSize should be at least 24px (44px recommended)')
+    ).toBe(true);
+  });
 });
