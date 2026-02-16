@@ -5,7 +5,7 @@
 
 import { Theme, MetallicVariant } from '../core/types';
 import { getMetallicGradient } from '../effects/metallic';
-import { LCARSAdaptation, WindowsPhoneMetroAdaptation } from './adaptationPresets';
+import { FrutigerAeroAdaptation, LCARSAdaptation, WindowsPhoneMetroAdaptation } from './adaptationPresets';
 
 /**
  * Navy Gold Theme - Elegant navy background with gold accents
@@ -975,6 +975,84 @@ export const PaperInkTheme: Theme = {
 };
 
 /**
+ * Frutiger Aero Theme - Late 90s / early 2000s glossy glass aesthetic
+ */
+export const FrutigerAeroTheme: Theme = {
+  ...PaperInkTheme,
+  metadata: {
+    ...PaperInkTheme.metadata,
+    id: 'frutiger-aero',
+    name: 'Frutiger Aero',
+    description: 'Glossy glassy sky-and-nature palette inspired by late 90s/early 2000s UI',
+    tags: [...new Set([...(PaperInkTheme.metadata.tags ?? []), 'frutiger-aero', 'glassy', 'nostalgia'])],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  },
+  darkMode: false,
+  colorScheme: {
+    ...PaperInkTheme.colorScheme,
+    primary: '#39B6F0',
+    onPrimary: '#022A40',
+    primaryContainer: '#A9E6FF',
+    onPrimaryContainer: '#00314D',
+    secondary: '#79D87E',
+    onSecondary: '#07350D',
+    secondaryContainer: '#C6F4CC',
+    onSecondaryContainer: '#113D17',
+    tertiary: '#B9DBFF',
+    onTertiary: '#0D2C4F',
+    tertiaryContainer: '#DAEEFF',
+    onTertiaryContainer: '#123659',
+    background: '#EAF7FF',
+    onBackground: '#14344A',
+    surface: '#F7FCFF',
+    onSurface: '#173A52',
+    surfaceVariant: '#DDF1FF',
+    onSurfaceVariant: '#34566E',
+    outline: '#6E93AB',
+    outlineVariant: '#A9C7DA',
+    inverseSurface: '#173A52',
+    inverseOnSurface: '#EAF7FF',
+    inversePrimary: '#0A6FA0'
+  },
+  effects: {
+    ...PaperInkTheme.effects,
+    metallic: {
+      enabled: false,
+      variant: MetallicVariant.SILVER,
+      gradient: getMetallicGradient(MetallicVariant.SILVER),
+      intensity: 0
+    },
+    blur: {
+      enabled: true,
+      radius: 12
+    },
+    overlays: {
+      enabled: true,
+      color: '#A9DFFF',
+      opacity: 0.22,
+      blendMode: 'screen'
+    },
+    gradients: {
+      enabled: true,
+      angle: 135,
+      stops: [
+        { offset: 0, color: '#EAF7FF' },
+        { offset: 0.58, color: '#DAF0FF' },
+        { offset: 1, color: '#BEEBFF' }
+      ]
+    },
+    shimmer: {
+      enabled: true,
+      speed: 4,
+      intensity: 0.32,
+      angle: 120
+    }
+  },
+  adaptation: FrutigerAeroAdaptation
+};
+
+/**
  * Windows Phone Metro Theme - Flat, high-contrast tile-oriented theme
  */
 export const WindowsPhoneMetroTheme: Theme = {
@@ -1074,6 +1152,7 @@ export const PresetThemes = {
   SlateGunmetal: SlateGunmetalTheme,
   DeepPurplePlatinum: DeepPurplePlatinumTheme,
   PaperInk: PaperInkTheme,
+  FrutigerAero: FrutigerAeroTheme,
   WindowsPhoneMetro: WindowsPhoneMetroTheme,
   LCARS: LCARSTheme
 };

@@ -9,6 +9,7 @@ import {
   DeepPurplePlatinumTheme,
   EmeraldSilverTheme,
   ForestCopperTheme,
+  FrutigerAeroTheme,
   MidnightAmberTheme,
   NavyGoldTheme,
   ObsidianCrimsonTheme,
@@ -70,7 +71,8 @@ export const ThemeSets: Record<string, ThemeSet> = {
       BurgundyRoseGoldTheme,
       RoyalSilverTheme,
       ForestCopperTheme,
-      RoseGoldTheme
+      RoseGoldTheme,
+      FrutigerAeroTheme
     ]
   },
   readability: {

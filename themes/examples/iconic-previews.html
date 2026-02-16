@@ -160,6 +160,36 @@
     .metro .tile:nth-child(4) { background: #008299; }
     .metro .tile:nth-child(5) { background: #2672ec; }
     .metro .tile:nth-child(6) { background: #00a300; }
+    .aero {
+      background: #eaf7ff;
+      color: #14344a;
+    }
+    .aero h2 {
+      background: linear-gradient(135deg, #7ad6ff 0%, #6ae0b8 100%);
+      color: #08324f;
+    }
+    .aero .glass {
+      border-radius: 16px;
+      padding: 14px;
+      background: linear-gradient(160deg, #f7fcff 0%, #dff1ff 100%);
+      border: 1px solid #a9c7da;
+      box-shadow: 0 8px 24px #68b7e433, inset 0 0 0 1px #ffffffaa;
+    }
+    .aero .pill-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .aero .pill {
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      background: #b9dbff;
+      color: #0d2c4f;
+      border: 1px solid #94c2e8;
+    }
   </style>
 </head>
 <body>
@@ -174,6 +204,7 @@
   <p class="rules">
     LCARS UI rules in this preview: keep the <strong>same LCARS rail/sweep geometry</strong> and centered rail labels across eras, then vary only palette intent:
     <strong>TNG Warm</strong> (orange/magenta) vs <strong>Picard Blue</strong> (hologram/electric blue).
+    Frutiger Aero keeps soft rounded glass panels with sky/nature colors and readable glossy layering.
   </p>
   <div class="grid">
     <section class="panel lcars">
@@ -214,6 +245,21 @@
           <div class="tile">Maps</div>
           <div class="tile">Store</div>
           <div class="tile">Photos</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel aero">
+      <h2>Frutiger Aero</h2>
+      <div class="body">
+        <div class="glass">
+          <strong>Glass shell</strong>
+          <p>Airy gradients, soft corners, and subtle depth tuned for late-90s/2000s nostalgia while retaining modern readability.</p>
+          <div class="pill-row">
+            <span class="pill">Sky blue</span>
+            <span class="pill">Nature accent</span>
+            <span class="pill">Rounded glass</span>
+          </div>
         </div>
       </div>
     </section>

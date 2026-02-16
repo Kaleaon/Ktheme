@@ -23,7 +23,7 @@ Ktheme is a powerful, flexible theming engine inspired by the advanced theming s
 - 🎨 **Theme Creator** - Web-based tool for creating custom themes
 - 🏗️ **Layout + Icon Adaptation** - Apply theme-specific layout/icon/component overrides
 - 🔧 **Kotlin Plugin** - Native Kotlin/JVM support for Android and backend applications
-- 📱 **13 Preset Themes** - All themes from CleverFerret included
+- 📱 **17 Preset Themes** - Includes CleverFerret set plus iconic/interface-focused additions
 - 🧩 **Curated Theme Sets** - Ready-to-use bundles for onboarding and product contexts
 
 ## 🚀 Installation
@@ -185,6 +185,7 @@ Ktheme includes 14 themes from CleverFerret plus additional iconic interface pre
 14. **Paper & Ink** - Minimalist light theme for readers (`paper-ink`)
 15. **Windows Phone Metro** - Flat tile-first Metro language (`windows-phone-metro`)
 16. **LCARS** - LCARS-inspired rails and console styling (`lcars`)
+17. **Frutiger Aero** - Glossy sky-and-glass nostalgia aesthetic (`frutiger-aero`)
 
 All theme JSON files are available in `themes/examples/`.
 For a quick visual reference of the new iconic presets, open `themes/examples/iconic-previews.html`.
@@ -204,6 +205,12 @@ starter.themes.forEach(theme => engine.registerTheme(theme));
 ```
 
 Available sets include `starter`, `metallicShowcase`, `executiveDark`, `creativeStudio`, `readability`, and `iconicInterfaces`.
+
+### Aesthetic rulesets (quick guidance)
+
+- **LCARS format rule:** keep rail/sweep geometry and centered rail labels; vary palette by era (e.g. TNG warm vs Picard blue).
+- **Frutiger Aero rule:** use airy sky/nature palettes, glass panels, soft rounded corners, and subtle shimmer/blur to preserve readability.
+- **Metro rule:** keep flat sharp tiles and high-contrast accent blocks with minimal ornamental effects.
 
 
 ## 🧱 App Layout + Icon Adaptation
