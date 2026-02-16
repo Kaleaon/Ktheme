@@ -23,7 +23,7 @@ Ktheme is a powerful, flexible theming engine inspired by the advanced theming s
 - 🎨 **Theme Creator** - Web-based tool for creating custom themes
 - 🏗️ **Layout + Icon Adaptation** - Apply theme-specific layout/icon/component overrides
 - 🔧 **Kotlin Plugin** - Native Kotlin/JVM support for Android and backend applications
-- 📱 **13 Preset Themes** - All themes from CleverFerret included
+- 📱 **22 Preset Themes** - Includes CleverFerret set plus iconic/interface-focused additions
 - 🧩 **Curated Theme Sets** - Ready-to-use bundles for onboarding and product contexts
 
 ## 🚀 Installation
@@ -167,7 +167,7 @@ const myTheme: Theme = {
 
 ## 🌟 Preset Themes
 
-Ktheme includes all 14 themes from CleverFerret:
+Ktheme includes 14 themes from CleverFerret plus additional iconic interface presets:
 
 1. **Navy Gold** - Elegant navy with gold metallic accents (`navy-gold`)
 2. **Emerald Silver** - Rich emerald with silver accents (`emerald-silver`)
@@ -183,8 +183,17 @@ Ktheme includes all 14 themes from CleverFerret:
 12. **Slate Gunmetal** - Industrial slate with gunmetal (`slate-gunmetal`)
 13. **Deep Purple Platinum** - Deep purple with platinum (`deep-purple-platinum`)
 14. **Paper & Ink** - Minimalist light theme for readers (`paper-ink`)
+15. **Windows Phone Metro** - Flat tile-first Metro language (`windows-phone-metro`)
+16. **LCARS** - LCARS-inspired rails and console styling (`lcars`)
+17. **Frutiger Aero** - Glossy sky-and-glass nostalgia aesthetic (`frutiger-aero`)
+18. **Solarpunk Civic** - Daylight civic/nature palette with optimistic utility (`solarpunk-civic`)
+19. **Neo-Noir Neon** - Cinematic dark UI with disciplined neon accents (`neo-noir-neon`)
+20. **Calm Clinical** - Healthcare/admin clarity with low-stress hierarchy (`calm-clinical`)
+21. **Ink Terminal Modern** - Retro-terminal character with modern readability (`ink-terminal-modern`)
+22. **Aurora Glass Night** - Night glassmorphism with aurora-tinted accents (`aurora-glass-night`)
 
 All theme JSON files are available in `themes/examples/`.
+For a quick visual reference of the new iconic presets, open `themes/examples/iconic-previews.html`.
 
 
 ## 🧪 Theme Sets
@@ -200,7 +209,21 @@ console.log(starter.name);
 starter.themes.forEach(theme => engine.registerTheme(theme));
 ```
 
-Available sets include `starter`, `metallicShowcase`, `executiveDark`, `creativeStudio`, and `readability`.
+Available sets include `starter`, `metallicShowcase`, `executiveDark`, `creativeStudio`, `readability`, `iconicInterfaces`, and `nextWave`.
+
+### Aesthetic rulesets (quick guidance)
+
+- **LCARS format rule:** keep rail/sweep geometry and centered rail labels; vary palette by era (e.g. TNG warm vs Picard blue).
+- **Frutiger Aero rule:** use airy sky/nature palettes, glass panels, soft rounded corners, and subtle shimmer/blur to preserve readability.
+- **Metro rule:** keep flat sharp tiles and high-contrast accent blocks with minimal ornamental effects.
+
+### Themes I’d implement next (shortlist)
+
+- **Solarpunk Civic** — high-trust greens/daylight neutrals for climate and mobility products, with clear rules for optimistic accents, eco-status semantics, and legible outdoor contrast.
+- **Neo-Noir Neon** — focused dark palette for media/control-room dashboards, with strict rules that keep neon as sparse emphasis rather than full-surface glow.
+- **Calm Clinical** — low-stress healthcare/admin visual language, with explicit rules for high-clarity hierarchy, safe status colors, and touch-target accessibility defaults.
+- **Ink Terminal Modern** — retro-terminal personality for developer tools, with modern rules for readable mono typography, restrained bloom, and contrast-safe command surfaces.
+- **Aurora Glass Night** — premium glass UI for consumer experiences, with disciplined rules for blur depth, edge highlights, and always-readable foreground text layers.
 
 
 ## 🧱 App Layout + Icon Adaptation

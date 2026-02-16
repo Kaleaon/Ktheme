@@ -4,20 +4,28 @@
 
 import { Theme } from '../core/types';
 import {
+  AuroraGlassNightTheme,
   BurgundyRoseGoldTheme,
+  CalmClinicalTheme,
   CharcoalChampagneTheme,
   DeepPurplePlatinumTheme,
   EmeraldSilverTheme,
   ForestCopperTheme,
+  FrutigerAeroTheme,
+  InkTerminalModernTheme,
   MidnightAmberTheme,
   NavyGoldTheme,
+  NeoNoirNeonTheme,
   ObsidianCrimsonTheme,
   PaperInkTheme,
+  LCARSTheme,
   RoseGoldTheme,
   RoyalBronzeTheme,
   RoyalSilverTheme,
+  SolarpunkCivicTheme,
   SlateCyanTheme,
-  SlateGunmetalTheme
+  SlateGunmetalTheme,
+  WindowsPhoneMetroTheme
 } from './presets';
 
 /**
@@ -68,7 +76,8 @@ export const ThemeSets: Record<string, ThemeSet> = {
       BurgundyRoseGoldTheme,
       RoyalSilverTheme,
       ForestCopperTheme,
-      RoseGoldTheme
+      RoseGoldTheme,
+      FrutigerAeroTheme
     ]
   },
   readability: {
@@ -76,6 +85,24 @@ export const ThemeSets: Record<string, ThemeSet> = {
     name: 'Readability First',
     description: 'Themes optimized for long-form reading and low-fatigue interfaces.',
     themes: [PaperInkTheme, CharcoalChampagneTheme, SlateCyanTheme]
+  },
+  iconicInterfaces: {
+    id: 'iconic-interfaces',
+    name: 'Iconic Interfaces',
+    description: 'Distinctive UI languages for sci-fi dashboards and tile-first products.',
+    themes: [LCARSTheme, WindowsPhoneMetroTheme, RoyalSilverTheme]
+  },
+  nextWave: {
+    id: 'next-wave',
+    name: 'Next Wave Concepts',
+    description: 'Forward-looking presets focused on product intent and clear visual governance rules.',
+    themes: [
+      SolarpunkCivicTheme,
+      NeoNoirNeonTheme,
+      CalmClinicalTheme,
+      InkTerminalModernTheme,
+      AuroraGlassNightTheme
+    ]
   }
 };
 
@@ -92,4 +119,3 @@ export function getThemeSets(): ThemeSet[] {
 export function getThemeSet(id: string): ThemeSet | undefined {
   return Object.values(ThemeSets).find(set => set.id === id) ?? ThemeSets[id];
 }
-
