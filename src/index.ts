@@ -24,6 +24,7 @@ export * from './themes/presets';
 export * from './themes/sets';
 export * from './themes/adaptationPresets';
 export * from './themes/strategy';
+export * from './themes/expansion';
 
 // Media design tokens exports
 export * from './media/quickAccess';
@@ -33,6 +34,7 @@ import { ThemeEngine } from './core/ThemeEngine';
 import { PresetThemes } from './themes/presets';
 import { ThemeSets } from './themes/sets';
 import { AdaptationPresets } from './themes/adaptationPresets';
+import { ExpansionPackImplementations } from './themes/expansion';
 import { BestPracticeStandards, ExpansionPackPlans, RecognizableUIDesigns, ThemeFamilyPlans } from './themes/strategy';
 
 /**
@@ -61,6 +63,7 @@ export default {
   AdaptationPresets,
   ThemeFamilyPlans,
   ExpansionPackPlans,
+  ExpansionPackImplementations,
   BestPracticeStandards,
   RecognizableUIDesigns
 };
