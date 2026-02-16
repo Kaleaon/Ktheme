@@ -199,6 +199,57 @@ export function generateRippleKeyframes(name: string = 'ripple'): string {
   `;
 }
 
+
+/**
+ * Generate CSS for tinted surface overlays
+ */
+export function generateOverlayCSS(
+  color: Color,
+  opacity: number = 0.08,
+  blendMode:
+    | 'normal'
+    | 'multiply'
+    | 'screen'
+    | 'overlay'
+    | 'soft-light'
+    | 'hard-light' = 'normal'
+): string {
+  const cssColor = toCssColor(color);
+  return `
+    background-color: ${cssColor};
+    opacity: ${opacity};
+    mix-blend-mode: ${blendMode};
+  `;
+}
+
+/**
+ * Generate accessible focus ring CSS
+ */
+export function generateFocusRingCSS(
+  color: Color,
+  width: number = 2,
+  offset: number = 2
+): string {
+  const cssColor = toCssColor(color);
+  return `
+    outline: ${width}px solid ${cssColor};
+    outline-offset: ${offset}px;
+  `;
+}
+
+/**
+ * Generate subtle texture/noise overlay CSS
+ */
+export function generateNoiseTextureCSS(
+  opacity: number = 0.06,
+  scale: number = 100
+): string {
+  return `
+    background-image: radial-gradient(rgba(255,255,255,${opacity}) 1px, transparent 1px);
+    background-size: ${scale}px ${scale}px;
+  `;
+}
+
 /**
  * Advanced effect presets
  */
@@ -208,5 +259,8 @@ export const AdvancedEffectPresets = {
   slideIn: generateSlideInKeyframes() + generateAnimationCSS('slideIn', 400),
   glassmorphism: (bg: Color) => generateGlassmorphismCSS(bg, 10, 0.8),
   elevation: (level: number) => generateElevationCSS(level),
-  glow: (color: Color) => generateGlowCSS(color, 1)
+  glow: (color: Color) => generateGlowCSS(color, 1),
+  overlay: (color: Color) => generateOverlayCSS(color, 0.08, 'soft-light'),
+  focusRing: (color: Color) => generateFocusRingCSS(color, 2, 2),
+  noiseTexture: generateNoiseTextureCSS(0.05, 120)
 };

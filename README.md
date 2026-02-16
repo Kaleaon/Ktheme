@@ -15,12 +15,16 @@ Ktheme is a powerful, flexible theming engine inspired by the advanced theming s
 
 - ✨ **Metallic Effects** - Beautiful metallic gradients and shimmer effects (10 variants)
 - 🎭 **Advanced Visual Effects** - Shadows, gradients, blur, animations, and transitions
+- ♿ **Dynamic Contrast Guardrails** - Validation warnings for low-contrast color pairs
 - 🌈 **Rich Color Schemes** - Full Material Design 3 color system support
+- 🧠 **Semantic Role Colors** - Success/warning/info aliases beyond MD3 role names
 - 📦 **Theme Import/Export** - Easy JSON-based theme sharing
 - 🔍 **Theme Discovery** - Search and filter themes by tags and names
 - 🎨 **Theme Creator** - Web-based tool for creating custom themes
+- 🏗️ **Layout + Icon Adaptation** - Apply theme-specific layout/icon/component overrides
 - 🔧 **Kotlin Plugin** - Native Kotlin/JVM support for Android and backend applications
 - 📱 **13 Preset Themes** - All themes from CleverFerret included
+- 🧩 **Curated Theme Sets** - Ready-to-use bundles for onboarding and product contexts
 
 ## 🚀 Installation
 
@@ -182,6 +186,51 @@ Ktheme includes all 14 themes from CleverFerret:
 
 All theme JSON files are available in `themes/examples/`.
 
+
+## 🧪 Theme Sets
+
+Use curated sets to quickly bootstrap the right style direction:
+
+```typescript
+import { ThemeSets } from '@ktheme/engine';
+
+const starter = ThemeSets.starter;
+console.log(starter.name);
+
+starter.themes.forEach(theme => engine.registerTheme(theme));
+```
+
+Available sets include `starter`, `metallicShowcase`, `executiveDark`, `creativeStudio`, and `readability`.
+
+
+## 🧱 App Layout + Icon Adaptation
+
+Ktheme now supports app-level adaptation profiles so themes can reshape not just colors, but **layout structure**, **icon style**, and **component composition**.
+
+```typescript
+import {
+  createThemeEngine,
+  AdaptationPresets,
+  generateThemeAdaptationCSS
+} from '@ktheme/engine';
+
+const engine = createThemeEngine();
+
+// Frutiger Aero style: glassy panels + softer icon language
+const adapted = engine.createAdaptedTheme('slate-cyan', AdaptationPresets.frutigerAero);
+
+// Generate CSS variables + component override CSS
+const css = generateThemeAdaptationCSS(adapted);
+```
+
+### Included adaptation presets
+
+- `frutigerAero` → glass surfaces, rounded layout language, duotone icon style
+- `windowsPhoneMetro` → sharp tile layout, pivot navigation rhythm, fluent/line icon style
+- `lcars` → rail layout and pill geometry suitable for LCARS-style interfaces
+
+This makes it practical to build themes that require structural restyling (e.g. Frutiger Aero, Windows Phone, LCARS).
+
 ## 🛠️ Theme Creator App
 
 Ktheme includes a web-based theme creator app for visually designing themes:
@@ -197,6 +246,26 @@ The theme creator provides:
 - 👁️ Live preview of your theme
 - 💾 Export themes to JSON
 - 📥 Import existing themes for editing
+
+
+## ⚙️ Accessibility and Motion Policies
+
+Ktheme supports reduced-motion handling and dynamic contrast checks in theme validation.
+
+```typescript
+const validation = engine.validateTheme(theme);
+console.log(validation.warnings); // includes low-contrast warnings when applicable
+
+const resolvedEffects = engine.resolveEffectsForRuntime(theme, {
+  prefersReducedMotion: true
+});
+```
+
+When reduced motion is preferred, shimmer is disabled and transitions/animations are reduced according to each effect policy.
+
+## 🔬 Essential Additions and Effects Research
+
+See [ESSENTIAL_ADDITIONS_AND_EFFECTS.md](ESSENTIAL_ADDITIONS_AND_EFFECTS.md) for implementation notes and prioritized recommendations for expanding the engine.
 
 ## 📖 API Documentation
 
