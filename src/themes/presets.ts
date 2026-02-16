@@ -1053,6 +1053,258 @@ export const FrutigerAeroTheme: Theme = {
 };
 
 /**
+ * Solarpunk Civic Theme - Optimistic civic/nature interface language
+ */
+export const SolarpunkCivicTheme: Theme = {
+  ...FrutigerAeroTheme,
+  metadata: {
+    ...FrutigerAeroTheme.metadata,
+    id: 'solarpunk-civic',
+    name: 'Solarpunk Civic',
+    description: 'Optimistic civic palette with daylight greens and trust-building clarity',
+    tags: [...new Set([...(FrutigerAeroTheme.metadata.tags ?? []), 'solarpunk', 'civic', 'daylight'])],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  },
+  colorScheme: {
+    ...FrutigerAeroTheme.colorScheme,
+    primary: '#38B56A',
+    onPrimary: '#04250F',
+    primaryContainer: '#BFEFD0',
+    onPrimaryContainer: '#0E3F20',
+    secondary: '#4FAEEA',
+    onSecondary: '#05253A',
+    secondaryContainer: '#C8E9FF',
+    onSecondaryContainer: '#103A57',
+    tertiary: '#F2C46C',
+    onTertiary: '#3A2A08',
+    tertiaryContainer: '#FFE8BA',
+    onTertiaryContainer: '#5A420F',
+    background: '#F2FBF4',
+    onBackground: '#1E3A27',
+    surface: '#FBFFFC',
+    onSurface: '#224231',
+    surfaceVariant: '#E2F2E8',
+    onSurfaceVariant: '#456355',
+    outline: '#6E9380',
+    outlineVariant: '#B3D0BF',
+    inverseSurface: '#1C3A28',
+    inverseOnSurface: '#EAF8EF',
+    inversePrimary: '#1D7A44'
+  }
+};
+
+/**
+ * Neo-Noir Neon Theme - Cinematic dark base with disciplined neon accents
+ */
+export const NeoNoirNeonTheme: Theme = {
+  ...ObsidianCrimsonTheme,
+  metadata: {
+    ...ObsidianCrimsonTheme.metadata,
+    id: 'neo-noir-neon',
+    name: 'Neo-Noir Neon',
+    description: 'Dark cinematic palette with constrained neon accents for control surfaces',
+    tags: [...new Set([...(ObsidianCrimsonTheme.metadata.tags ?? []), 'neo-noir', 'neon', 'cinematic'])],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  },
+  colorScheme: {
+    ...ObsidianCrimsonTheme.colorScheme,
+    primary: '#A73CFF',
+    onPrimary: '#140022',
+    primaryContainer: '#4B1D73',
+    onPrimaryContainer: '#E7CBFF',
+    secondary: '#00D1FF',
+    onSecondary: '#00222B',
+    secondaryContainer: '#005E73',
+    onSecondaryContainer: '#C5F4FF',
+    tertiary: '#FF3D9E',
+    onTertiary: '#2C0018',
+    tertiaryContainer: '#7A2454',
+    onTertiaryContainer: '#FFD1EA',
+    background: '#090A10',
+    onBackground: '#E7EAF7',
+    surface: '#111420',
+    onSurface: '#E7EAF7',
+    surfaceVariant: '#1C2130',
+    onSurfaceVariant: '#B9C0D8',
+    outline: '#6F7992',
+    outlineVariant: '#363D52',
+    inverseSurface: '#E7EAF7',
+    inverseOnSurface: '#090A10',
+    inversePrimary: '#6D2DA3'
+  },
+  effects: {
+    ...ObsidianCrimsonTheme.effects,
+    shimmer: {
+      enabled: true,
+      speed: 5,
+      intensity: 0.22,
+      angle: 125
+    }
+  }
+};
+
+/**
+ * Calm Clinical Theme - Low-stress clinical palette with accessibility-first clarity
+ */
+export const CalmClinicalTheme: Theme = {
+  ...PaperInkTheme,
+  metadata: {
+    ...PaperInkTheme.metadata,
+    id: 'calm-clinical',
+    name: 'Calm Clinical',
+    description: 'Low-stress healthcare/admin palette with clear status readability',
+    tags: [...new Set([...(PaperInkTheme.metadata.tags ?? []), 'clinical', 'accessibility', 'calm'])],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  },
+  colorScheme: {
+    ...PaperInkTheme.colorScheme,
+    primary: '#3A7CA5',
+    onPrimary: '#F3FAFF',
+    primaryContainer: '#C4DFF2',
+    onPrimaryContainer: '#17374D',
+    secondary: '#4DAA7C',
+    onSecondary: '#062A1C',
+    secondaryContainer: '#CBEFDF',
+    onSecondaryContainer: '#184933',
+    tertiary: '#7D9AB2',
+    onTertiary: '#0E2333',
+    tertiaryContainer: '#D8E6F0',
+    onTertiaryContainer: '#264256',
+    background: '#F5FAFD',
+    onBackground: '#1F394B',
+    surface: '#FFFFFF',
+    onSurface: '#1F394B',
+    surfaceVariant: '#E5EEF4',
+    onSurfaceVariant: '#445F72',
+    outline: '#6D8799',
+    outlineVariant: '#B5C8D5',
+    inverseSurface: '#1F394B',
+    inverseOnSurface: '#F5FAFD',
+    inversePrimary: '#295A7A'
+  }
+};
+
+/**
+ * Ink Terminal Modern Theme - Terminal-inspired palette with readability guardrails
+ */
+export const InkTerminalModernTheme: Theme = {
+  ...SlateGunmetalTheme,
+  metadata: {
+    ...SlateGunmetalTheme.metadata,
+    id: 'ink-terminal-modern',
+    name: 'Ink Terminal Modern',
+    description: 'Retro-terminal inspired interface with modern accessibility contrast',
+    tags: [...new Set([...(SlateGunmetalTheme.metadata.tags ?? []), 'terminal', 'developer', 'mono'])],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  },
+  colorScheme: {
+    ...SlateGunmetalTheme.colorScheme,
+    primary: '#6CFF9A',
+    onPrimary: '#03240F',
+    primaryContainer: '#1F6640',
+    onPrimaryContainer: '#D7FFE4',
+    secondary: '#3E4E5E',
+    onSecondary: '#EAF3FF',
+    secondaryContainer: '#2A3644',
+    onSecondaryContainer: '#D8E6F4',
+    tertiary: '#8AD0B0',
+    onTertiary: '#0E3021',
+    tertiaryContainer: '#4A7A63',
+    onTertiaryContainer: '#D9F2E6',
+    background: '#0A1112',
+    onBackground: '#D7F5E6',
+    surface: '#101A1C',
+    onSurface: '#D7F5E6',
+    surfaceVariant: '#1B2A2D',
+    onSurfaceVariant: '#A7C8BC',
+    outline: '#6E8D82',
+    outlineVariant: '#365047',
+    inverseSurface: '#D7F5E6',
+    inverseOnSurface: '#0A1112',
+    inversePrimary: '#2BAA5F'
+  },
+  typography: {
+    ...PaperInkTheme.typography!,
+    fontFamily: '"JetBrains Mono", "IBM Plex Mono", "SFMono-Regular", monospace',
+    lineHeight: 1.55
+  },
+  effects: {
+    ...SlateGunmetalTheme.effects,
+    metallic: {
+      enabled: false,
+      variant: MetallicVariant.TITANIUM,
+      gradient: getMetallicGradient(MetallicVariant.TITANIUM),
+      intensity: 0
+    }
+  }
+};
+
+/**
+ * Aurora Glass Night Theme - Premium glassmorphism over aurora-tinted dark surfaces
+ */
+export const AuroraGlassNightTheme: Theme = {
+  ...SlateCyanTheme,
+  metadata: {
+    ...SlateCyanTheme.metadata,
+    id: 'aurora-glass-night',
+    name: 'Aurora Glass Night',
+    description: 'Night-first glass aesthetic with aurora accents and disciplined blur',
+    tags: [...new Set([...(SlateCyanTheme.metadata.tags ?? []), 'aurora', 'glass', 'consumer'])],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  },
+  colorScheme: {
+    ...SlateCyanTheme.colorScheme,
+    primary: '#6DE8FF',
+    onPrimary: '#03212A',
+    primaryContainer: '#2A6F85',
+    onPrimaryContainer: '#D6F7FF',
+    secondary: '#8C7CFF',
+    onSecondary: '#1A133C',
+    secondaryContainer: '#4B4299',
+    onSecondaryContainer: '#E3DDFF',
+    tertiary: '#7CFFD8',
+    onTertiary: '#053425',
+    tertiaryContainer: '#2A7B63',
+    onTertiaryContainer: '#D5FFEF',
+    background: '#0A1224',
+    onBackground: '#E7F0FF',
+    surface: '#101C33',
+    onSurface: '#E7F0FF',
+    surfaceVariant: '#1D2B4A',
+    onSurfaceVariant: '#B5C7E9',
+    outline: '#6A7EAA',
+    outlineVariant: '#334364',
+    inverseSurface: '#E7F0FF',
+    inverseOnSurface: '#0A1224',
+    inversePrimary: '#2D8CA8'
+  },
+  effects: {
+    ...SlateCyanTheme.effects,
+    metallic: {
+      enabled: false,
+      variant: MetallicVariant.TITANIUM,
+      gradient: getMetallicGradient(MetallicVariant.TITANIUM),
+      intensity: 0
+    },
+    blur: {
+      enabled: true,
+      radius: 14
+    },
+    overlays: {
+      enabled: true,
+      color: '#8CCBFF',
+      opacity: 0.18,
+      blendMode: 'screen'
+    }
+  }
+};
+
+/**
  * Windows Phone Metro Theme - Flat, high-contrast tile-oriented theme
  */
 export const WindowsPhoneMetroTheme: Theme = {
@@ -1153,6 +1405,11 @@ export const PresetThemes = {
   DeepPurplePlatinum: DeepPurplePlatinumTheme,
   PaperInk: PaperInkTheme,
   FrutigerAero: FrutigerAeroTheme,
+  SolarpunkCivic: SolarpunkCivicTheme,
+  NeoNoirNeon: NeoNoirNeonTheme,
+  CalmClinical: CalmClinicalTheme,
+  InkTerminalModern: InkTerminalModernTheme,
+  AuroraGlassNight: AuroraGlassNightTheme,
   WindowsPhoneMetro: WindowsPhoneMetroTheme,
   LCARS: LCARSTheme
 };
