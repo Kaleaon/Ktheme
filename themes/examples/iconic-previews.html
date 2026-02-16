@@ -34,6 +34,13 @@
       text-transform: uppercase;
     }
     .panel .body { padding: 16px; }
+    .ref {
+      max-width: 1100px;
+      margin: 0 auto 14px;
+      font-size: 0.82rem;
+      color: #c7d4ef;
+    }
+    .ref a { color: #7fd9ff; }
     .lcars {
       background: #120c1c;
       color: #f3e9ff;
@@ -48,6 +55,13 @@
       display: grid;
       grid-template-columns: 196px 1fr;
       gap: 10px;
+    }
+    .lcars .sweep {
+      height: 18px;
+      background: #f2a65a;
+      border-top-right-radius: 22px;
+      border-bottom-right-radius: 22px;
+      margin-bottom: 10px;
     }
     .lcars .bar {
       background: #f09f7f;
@@ -82,6 +96,22 @@
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 10px;
     }
+    .metro .appbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-size: 0.78rem;
+    }
+    .metro .appbar .accent {
+      background: #00aeef;
+      color: #00151f;
+      padding: 5px 10px;
+      border-radius: 0;
+      font-weight: 800;
+    }
     .metro .tile {
       border-radius: 0;
       text-transform: uppercase;
@@ -101,12 +131,19 @@
   </style>
 </head>
 <body>
+  <p class="ref">
+    Visual cues inspired by
+    <a href="https://github.com/leonawicz/lcars" target="_blank" rel="noreferrer noopener">leonawicz/lcars</a>
+    and
+    <a href="https://github.com/N-a-r-w-i-n/MetroSet-UI" target="_blank" rel="noreferrer noopener">MetroSet-UI</a>.
+  </p>
   <div class="grid">
     <section class="panel lcars">
       <h2>LCARS</h2>
       <div class="body rail">
         <div class="bar">Ops Rail</div>
         <div class="content">
+          <div class="sweep"></div>
           <strong>Console panel</strong>
           <p>Compact layout, pill geometry, and warm command accents.</p>
         </div>
@@ -116,6 +153,10 @@
     <section class="panel metro">
       <h2>Windows Phone Metro</h2>
       <div class="body">
+        <div class="appbar">
+          <span>Start</span>
+          <span class="accent">Accent</span>
+        </div>
         <div class="tiles">
           <div class="tile">People</div>
           <div class="tile">Music</div>
