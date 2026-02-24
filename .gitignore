@@ -9,6 +9,8 @@ build/
 *.js
 *.d.ts
 !jest.config.js
+!theme-creator/eslint.config.js
+!theme-creator/src/vite-env.d.ts
 
 # Kotlin/Gradle
 .gradle/
