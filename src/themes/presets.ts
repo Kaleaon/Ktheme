@@ -6,6 +6,7 @@
 import { Theme, MetallicVariant } from '../core/types';
 import { getMetallicGradient } from '../effects/metallic';
 import { FrutigerAeroAdaptation, LCARSAdaptation, WindowsPhoneMetroAdaptation } from './adaptationPresets';
+import { SHARED_PRESET_IDS } from './shared-preset-ids';
 
 /**
  * Navy Gold Theme - Elegant navy background with gold accents
@@ -1413,3 +1414,10 @@ export const PresetThemes = {
   WindowsPhoneMetro: WindowsPhoneMetroTheme,
   LCARS: LCARSTheme
 };
+
+export const ENGINE_PRESET_IDS = Object.values(PresetThemes).map((theme) => theme.metadata.id);
+
+if (ENGINE_PRESET_IDS.length !== SHARED_PRESET_IDS.length ||
+  ENGINE_PRESET_IDS.some((id, index) => id !== SHARED_PRESET_IDS[index])) {
+  throw new Error('Engine preset IDs are out of sync with shared preset IDs.');
+}
