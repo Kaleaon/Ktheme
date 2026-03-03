@@ -716,6 +716,21 @@ input[type="range"]::-webkit-slider-thumb {
   font-size: 15px;
 }
 
+.ai-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ai-provider-select {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  color: var(--text);
+  font-size: 12px;
+}
+
 .ai-messages {
   flex: 1;
   overflow-y: auto;
@@ -816,6 +831,24 @@ input[type="range"]::-webkit-slider-thumb {
 
 .ai-load-btn {
   margin-top: 8px;
+}
+
+.ai-redesign-plan {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  font-size: 12px;
+}
+
+.ai-redesign-plan p {
+  margin: 0 0 4px;
+}
+
+.ai-redesign-plan ul {
+  margin: 0;
+  padding-left: 18px;
 }
 
 .ai-error {

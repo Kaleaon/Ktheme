@@ -3,11 +3,13 @@ import { Send, Key, Loader, Download, X } from 'lucide-react';
 import { useTheme } from '../../state/ThemeContext.tsx';
 import {
   sendAIMessage,
+  sendGeminiMultimodalMessage,
   extractThemeFromResponse,
   getStoredApiKey,
   setStoredApiKey,
   clearStoredApiKey,
   type AIMessage,
+  type AIRedesignPlan,
 } from '../../services/ai.ts';
 
 export function AIDesigner() {
@@ -18,6 +20,7 @@ export function AIDesigner() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [provider, setProvider] = useState<'claude' | 'gemini'>('claude');
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -52,7 +55,9 @@ export function AIDesigner() {
       const stored = getStoredApiKey();
       if (!stored) throw new Error('API key not configured');
 
-      const response = await sendAIMessage(newMessages, stored);
+      const response = provider === 'claude'
+        ? await sendAIMessage(newMessages, stored)
+        : await sendGeminiMultimodalMessage(newMessages[newMessages.length - 1].content, stored);
       const assistantMsg: AIMessage = { role: 'assistant', content: response };
       setMessages([...newMessages, assistantMsg]);
     } catch (err) {
@@ -63,9 +68,9 @@ export function AIDesigner() {
   }
 
   function loadThemeFromMessage(content: string) {
-    const theme = extractThemeFromResponse(content);
-    if (theme) {
-      dispatch({ type: 'SET_THEME', payload: theme });
+    const parsed = extractThemeFromResponse(content);
+    if (parsed?.theme) {
+      dispatch({ type: 'SET_THEME', payload: parsed.theme });
     }
   }
 
@@ -74,10 +79,10 @@ export function AIDesigner() {
       <div className="panel ai-panel">
         <div className="ai-key-setup">
           <Key size={48} className="ai-key-icon" />
-          <h3>Claude API Key Required</h3>
+          <h3>API Key Required</h3>
           <p>
-            Enter your Anthropic API key to use the AI theme designer.
-            Your key is stored locally in your browser and never sent to any server other than the Anthropic API.
+            Enter your model API key to use the AI theme designer (Claude or Gemini).
+            Your key is stored locally in your browser and never sent to any server other than the selected model API.
           </p>
           <div className="ai-key-input-row">
             <input
@@ -92,9 +97,13 @@ export function AIDesigner() {
             </button>
           </div>
           <p className="ai-key-hint">
-            Get your API key at{' '}
+            Get API keys from{' '}
             <a href="https://console.anthropic.com/" target="_blank" rel="noopener noreferrer">
-              console.anthropic.com
+              Anthropic
+            </a>
+            {' '}or{' '}
+            <a href="https://ai.google.dev/" target="_blank" rel="noopener noreferrer">
+              Google AI Studio
             </a>
           </p>
         </div>
@@ -106,10 +115,21 @@ export function AIDesigner() {
     <div className="panel ai-panel">
       <div className="ai-header">
         <h3>AI Theme Designer</h3>
-        <button className="btn-icon" onClick={removeKey} title="Remove API key">
-          <Key size={16} />
-          <X size={12} className="btn-icon-overlay" />
-        </button>
+        <div className="ai-header-actions">
+          <select
+            className="ai-provider-select"
+            value={provider}
+            onChange={(e) => setProvider(e.target.value as 'claude' | 'gemini')}
+            title="Choose model provider"
+          >
+            <option value="claude">Claude</option>
+            <option value="gemini">Gemini 2.5 Pro</option>
+          </select>
+          <button className="btn-icon" onClick={removeKey} title="Remove API key">
+            <Key size={16} />
+            <X size={12} className="btn-icon-overlay" />
+          </button>
+        </div>
       </div>
 
       <div className="ai-messages" ref={scrollRef}>
@@ -122,6 +142,8 @@ export function AIDesigner() {
                 'Design a calm forest theme with earthy greens and wood tones',
                 'Make a retro synthwave theme with purple gradients and pink accents',
                 'Create an elegant dark theme inspired by Art Deco gold and black',
+                'Art Nouveau app redesign with nature-inspired curves and refined typography',
+                'Art Deco app redesign with symmetry, geometric ornament, and premium contrast',
               ].map((s) => (
                 <button
                   key={s}
@@ -144,15 +166,7 @@ export function AIDesigner() {
               {msg.role === 'assistant' ? (
                 <>
                   <MessageContent text={msg.content} />
-                  {extractThemeFromResponse(msg.content) && (
-                    <button
-                      className="btn btn-primary ai-load-btn"
-                      onClick={() => loadThemeFromMessage(msg.content)}
-                    >
-                      <Download size={16} />
-                      Load This Theme
-                    </button>
-                  )}
+                  <ThemeActions content={msg.content} onLoad={loadThemeFromMessage} />
                 </>
               ) : (
                 <p>{msg.content}</p>
@@ -187,6 +201,45 @@ export function AIDesigner() {
           <Send size={16} />
         </button>
       </div>
+    </div>
+  );
+}
+
+function ThemeActions({
+  content,
+  onLoad,
+}: {
+  content: string;
+  onLoad: (content: string) => void;
+}) {
+  const parsed = extractThemeFromResponse(content);
+  if (!parsed) return null;
+
+  return (
+    <>
+      {parsed.redesignPlan && <RedesignPlanView redesignPlan={parsed.redesignPlan} />}
+      <button className="btn btn-primary ai-load-btn" onClick={() => onLoad(content)}>
+        <Download size={16} />
+        Load This Theme
+      </button>
+    </>
+  );
+}
+
+function RedesignPlanView({ redesignPlan }: { redesignPlan: AIRedesignPlan }) {
+  return (
+    <div className="ai-redesign-plan">
+      <p><strong>Redesign Plan</strong></p>
+      <p>Layout density: {redesignPlan.layoutDensity}</p>
+      <p>Corner strategy: {redesignPlan.cornerStrategy}</p>
+      <p>Navigation model: {redesignPlan.navModel}</p>
+      <p>Icon style: {redesignPlan.iconStyle}</p>
+      <p>Component overrides:</p>
+      <ul>
+        {redesignPlan.componentOverrides.map((override) => (
+          <li key={override}>{override}</li>
+        ))}
+      </ul>
     </div>
   );
 }

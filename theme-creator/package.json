@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:with-screenshots": "npm run build && node ./scripts/capture-pages.mjs",
+    "screenshots": "node ./scripts/capture-pages.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },
