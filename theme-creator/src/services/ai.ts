@@ -19,9 +19,40 @@ export interface AIMessage {
   content: string;
 }
 
+export interface AIRedesignPlan {
+  layoutDensity: string;
+  cornerStrategy: string;
+  navModel: string;
+  iconStyle: string;
+  componentOverrides: string[];
+}
+
+export interface AIThemeResponse {
+  theme: KTheme;
+  redesignPlan?: AIRedesignPlan;
+}
+
+export interface AIScreenshotInput {
+  mimeType: string;
+  dataBase64: string;
+}
+
 const SYSTEM_PROMPT = `You are Ktheme AI, an expert theme designer for the Ktheme theming engine. You help users create beautiful, accessible application themes.
 
-When a user asks you to create or modify a theme, respond with a JSON theme object inside a \`\`\`json code block. The theme MUST follow this exact structure:
+When a user asks you to create or modify a theme, respond with a single JSON object inside a \`\`\`json code block.
+
+Response contract:
+- Top-level object MUST include:
+  - "theme": a full Ktheme theme object (same structure as before)
+  - "redesignPlan": an optional object with UX/system redesign decisions.
+- If redesignPlan is included, it MUST contain:
+  - "layoutDensity": string
+  - "cornerStrategy": string
+  - "navModel": string
+  - "iconStyle": string
+  - "componentOverrides": string[] (short concrete overrides)
+
+The "theme" object MUST follow this exact structure:
 
 {
   "metadata": {
@@ -94,6 +125,12 @@ When a user asks you to create or modify a theme, respond with a JSON theme obje
   }
 }
 
+Style recipes for app-wide redesign guidance:
+- Windows Metro: prioritize flat tile hierarchy, sharp corners (0-2px), bold type scale, and strict accent color usage on interactive/high-priority elements only.
+- LCARS: use rail-based geometry, segmented panels, asymmetrical-but-ordered information bands, and high-contrast labeled regions.
+- Art Nouveau: use organic motifs, flowing separators/dividers, botanical curve language, and gentle decorative rhythm without harming readability.
+- Art Deco: use symmetry, stepped/geometric ornament, framed sections, and premium contrast pairings (dark base + metallic/light highlights).
+
 Guidelines:
 - All colors must be valid 6-digit hex codes (e.g. #FF5733)
 - Ensure sufficient contrast between foreground/background pairs (4.5:1 minimum for WCAG AA)
@@ -103,7 +140,7 @@ Guidelines:
 - Metallic variants: GOLD, SILVER, BRONZE, COPPER, PLATINUM, ROSE_GOLD, TITANIUM, CHROME, COBALT, GOLD_ROYAL_BLUE
 - If a user describes an aesthetic, mood, or cultural reference, translate it into appropriate colors and effects
 
-When explaining your design choices, be concise. Always include the full JSON theme object so users can load it directly.`;
+When explaining your design choices, be concise. Always include the full JSON response object so users can load the theme directly.`;
 
 export async function sendAIMessage(
   messages: AIMessage[],
@@ -144,15 +181,98 @@ export async function sendAIMessage(
   throw new Error('Unexpected API response format');
 }
 
-export function extractThemeFromResponse(text: string): KTheme | null {
+export async function sendGeminiMultimodalMessage(
+  prompt: string,
+  apiKey: string,
+  screenshots: AIScreenshotInput[] = []
+): Promise<string> {
+  const response = await fetch(
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-goog-api-key': apiKey,
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            role: 'user',
+            parts: [
+              {
+                text: `${SYSTEM_PROMPT}\n\nUse screenshots when provided to infer layout and generate precise redesignPlan decisions.\n\nUser request:\n${prompt}`,
+              },
+              ...screenshots.map((image) => ({
+                inline_data: {
+                  mime_type: image.mimeType,
+                  data: image.dataBase64,
+                },
+              })),
+            ],
+          },
+        ],
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`Gemini API request failed: ${response.status}`);
+  }
+
+  const data = await response.json();
+  const text = data?.candidates?.[0]?.content?.parts
+    ?.map((part: { text?: string }) => part.text)
+    .filter(Boolean)
+    .join('\n');
+
+  if (!text) {
+    throw new Error('Unexpected Gemini API response format');
+  }
+
+  return text;
+}
+
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((item) => typeof item === 'string');
+}
+
+function parseRedesignPlan(value: unknown): AIRedesignPlan | undefined {
+  if (!value || typeof value !== 'object') return undefined;
+
+  const candidate = value as Record<string, unknown>;
+  if (
+    typeof candidate.layoutDensity !== 'string' ||
+    typeof candidate.cornerStrategy !== 'string' ||
+    typeof candidate.navModel !== 'string' ||
+    typeof candidate.iconStyle !== 'string' ||
+    !isStringArray(candidate.componentOverrides)
+  ) {
+    return undefined;
+  }
+
+  return {
+    layoutDensity: candidate.layoutDensity,
+    cornerStrategy: candidate.cornerStrategy,
+    navModel: candidate.navModel,
+    iconStyle: candidate.iconStyle,
+    componentOverrides: candidate.componentOverrides,
+  };
+}
+
+export function extractThemeFromResponse(text: string): AIThemeResponse | null {
   const jsonMatch = text.match(/```json\s*([\s\S]*?)```/);
   if (!jsonMatch) return null;
 
   try {
     const parsed = JSON.parse(jsonMatch[1]);
-    // Validate it has the minimum required fields
-    if (parsed.metadata?.id && parsed.colorScheme?.primary) {
-      return parsed as KTheme;
+
+    const themeCandidate = parsed?.theme ?? parsed;
+
+    if (themeCandidate?.metadata?.id && themeCandidate?.colorScheme?.primary) {
+      return {
+        theme: themeCandidate as KTheme,
+        redesignPlan: parseRedesignPlan(parsed?.redesignPlan),
+      };
     }
   } catch {
     // Not valid JSON
