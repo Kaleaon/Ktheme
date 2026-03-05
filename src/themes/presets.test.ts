@@ -43,11 +43,16 @@ describe('preset themes coverage', () => {
 
   it('exposes iconic and next-wave themes in curated sets for use-case coverage', () => {
     const iconic = ThemeSets.iconicInterfaces;
+    const iconicActivation = ThemeSets.iconicActivation;
     const creative = ThemeSets.creativeStudio;
     const nextWave = ThemeSets.nextWave;
 
     expect(iconic.themes.map(theme => theme.metadata.id)).toEqual(
       expect.arrayContaining(['lcars', 'windows-phone-metro'])
+    );
+
+    expect(iconicActivation.themes.map(theme => theme.metadata.id)).toEqual(
+      expect.arrayContaining(['windows-phone-metro', 'lcars', 'frutiger-aero', 'neo-noir-neon'])
     );
     expect(creative.themes.map(theme => theme.metadata.id)).toContain('frutiger-aero');
     expect(nextWave.themes.map(theme => theme.metadata.id)).toEqual(
