@@ -30,7 +30,14 @@ function AppContent() {
     <div className="app">
       <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
       <div className="main-area">
-        <div className="left-panel">{renderPanel()}</div>
+        <div
+          className="left-panel"
+          id={`main-panel-${activeTab}`}
+          role="tabpanel"
+          aria-labelledby={`main-tab-${activeTab}`}
+        >
+          {renderPanel()}
+        </div>
         <div className="right-panel">
           <ThemePreview />
         </div>
