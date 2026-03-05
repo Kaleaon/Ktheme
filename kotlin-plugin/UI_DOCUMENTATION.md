@@ -207,3 +207,46 @@ The `ExampleApp.kt` demonstrates a complete integration showing:
 - Efficient list rendering
 - Minimal memory footprint
 - Fast theme switching
+
+## Accessibility and Keyboard Navigation Defaults
+
+Ktheme's Swing-based Kotlin plugin uses accessibility defaults designed for TalkBack/screen-reader parity and predictable keyboard usage.
+
+### Control metadata defaults
+
+All key interactive controls include:
+- **Explicit content descriptions** (`accessibleName`, `accessibleDescription`).
+- **Role/type hints** embedded in labels/descriptions (for example: button, list, status).
+- **Action hints** where relevant (for example: arrow keys for list movement).
+
+These defaults are centralized in:
+- `src/main/kotlin/com/ktheme/utils/AccessibilityUtils.kt`
+
+### State announcements
+
+The UI emits explicit state announcements on:
+- Theme selection changes in the theme list.
+- Theme preview updates.
+- Apply/share/import/export/search/filter actions.
+
+Announcements are routed through the status label and `ACCESSIBLE_VISIBLE_DATA_PROPERTY` updates.
+
+### Focus order policy
+
+Focus traversal is deterministic and matches visual order:
+1. Search field
+2. Search button
+3. Theme list
+4. Apply Theme
+5. Share Theme
+6. Export Theme
+7. Import Theme
+
+This is enforced with a custom ordered `FocusTraversalPolicy` from `AccessibilityUtils.applyDeterministicFocusOrder(...)`.
+
+### Verification flow
+
+For a manual validation run with screen readers/TalkBack-style navigation, run:
+- `com.ktheme.examples.AccessibilityVerificationFlow`
+
+The flow prints a checklist and launches `ThemeLibraryWindow` for step-by-step validation.

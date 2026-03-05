@@ -5,8 +5,14 @@
 
 import { Theme, MetallicVariant } from '../core/types';
 import { getMetallicGradient } from '../effects/metallic';
-import { FrutigerAeroAdaptation, LCARSAdaptation, WindowsPhoneMetroAdaptation } from './adaptationPresets';
-import { SHARED_PRESET_THEME_IDS } from './shared-preset-themes';
+import {
+  ArtDecoAdaptation,
+  ArtNouveauAdaptation,
+  FrutigerAeroAdaptation,
+  LCARSAdaptation,
+  WindowsPhoneMetroAdaptation
+} from './adaptationPresets';
+import { SHARED_PRESET_IDS } from './shared-preset-ids';
 
 /**
  * Navy Gold Theme - Elegant navy background with gold accents
@@ -1387,8 +1393,172 @@ export const LCARSTheme: Theme = {
   adaptation: LCARSAdaptation
 };
 
+/**
+ * Art Nouveau Theme - Organic curves, botanical accents, and decorative linework.
+ */
+export const ArtNouveauTheme: Theme = {
+  metadata: {
+    id: 'art-nouveau',
+    name: 'Art Nouveau',
+    description: 'Organic curves, botanical accents, and decorative linework with a warm natural palette',
+    author: 'Ktheme',
+    version: '1.0.0',
+    tags: ['iconic', 'organic', 'botanical', 'warm'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  },
+  darkMode: false,
+  colorScheme: {
+    primary: '#7B5737',
+    onPrimary: '#FFF7EE',
+    primaryContainer: '#D9C2A9',
+    onPrimaryContainer: '#352214',
+    secondary: '#6B8F57',
+    onSecondary: '#F6FFF1',
+    secondaryContainer: '#CFE4BF',
+    onSecondaryContainer: '#24371A',
+    tertiary: '#C57C52',
+    onTertiary: '#FFF8F3',
+    tertiaryContainer: '#F1C9AF',
+    onTertiaryContainer: '#43210D',
+    error: '#BA1A1A',
+    onError: '#FFFFFF',
+    errorContainer: '#FFDAD6',
+    onErrorContainer: '#410002',
+    background: '#F6F0E6',
+    onBackground: '#2C2218',
+    surface: '#FFF8EE',
+    onSurface: '#2C2218',
+    surfaceVariant: '#E7D8C7',
+    onSurfaceVariant: '#584638',
+    outline: '#8A7461',
+    outlineVariant: '#CBB8A5',
+    scrim: '#000000',
+    inverseSurface: '#372C22',
+    inverseOnSurface: '#FDEDDD',
+    inversePrimary: '#E7C8A8'
+  },
+  effects: {
+    shadows: {
+      enabled: true,
+      elevation: 2,
+      blur: 6,
+      color: '#3A281A26'
+    },
+    shimmer: {
+      enabled: true,
+      speed: 6,
+      intensity: 0.18,
+      angle: 115
+    }
+  },
+  typography: {
+    fontFamily: '"Cormorant Garamond", "Times New Roman", serif',
+    fontSize: {
+      small: 13,
+      medium: 16,
+      large: 21,
+      xlarge: 30
+    },
+    fontWeight: {
+      light: 300,
+      regular: 400,
+      medium: 500,
+      bold: 700
+    },
+    lineHeight: 1.55,
+    letterSpacing: 0.1
+  },
+  adaptation: ArtNouveauAdaptation
+};
 
-export const SharedPresetThemeIds = [...SHARED_PRESET_THEME_IDS];
+/**
+ * Art Deco Theme - Geometric symmetry with premium high-contrast finishes.
+ */
+export const ArtDecoTheme: Theme = {
+  metadata: {
+    id: 'art-deco',
+    name: 'Art Deco',
+    description: 'Geometric symmetry, stepped motifs, and premium gold-black-ivory contrast',
+    author: 'Ktheme',
+    version: '1.0.0',
+    tags: ['iconic', 'geometric', 'luxury', 'high-contrast'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  },
+  darkMode: true,
+  colorScheme: {
+    primary: '#D4AF37',
+    onPrimary: '#1A1405',
+    primaryContainer: '#8F7121',
+    onPrimaryContainer: '#FFF2C6',
+    secondary: '#F4E7CF',
+    onSecondary: '#221A0A',
+    secondaryContainer: '#B8A17A',
+    onSecondaryContainer: '#161005',
+    tertiary: '#0F0F11',
+    onTertiary: '#F6EAD1',
+    tertiaryContainer: '#2A2A2E',
+    onTertiaryContainer: '#F2E2B2',
+    error: '#FFB4AB',
+    onError: '#690005',
+    errorContainer: '#93000A',
+    onErrorContainer: '#FFDAD6',
+    background: '#0B0A0A',
+    onBackground: '#F3E8D0',
+    surface: '#141314',
+    onSurface: '#F3E8D0',
+    surfaceVariant: '#232124',
+    onSurfaceVariant: '#C9BDA2',
+    outline: '#9E8A63',
+    outlineVariant: '#4B4332',
+    scrim: '#000000',
+    inverseSurface: '#F3E8D0',
+    inverseOnSurface: '#171311',
+    inversePrimary: '#7A5F1D'
+  },
+  effects: {
+    metallic: {
+      enabled: true,
+      variant: MetallicVariant.GOLD,
+      gradient: getMetallicGradient(MetallicVariant.GOLD),
+      intensity: 0.86
+    },
+    shadows: {
+      enabled: true,
+      elevation: 6,
+      blur: 14,
+      color: '#00000088'
+    },
+    shimmer: {
+      enabled: true,
+      speed: 3,
+      intensity: 0.4,
+      angle: 90
+    }
+  },
+  typography: {
+    fontFamily: '"Futura", "Avenir Next", "Arial", sans-serif',
+    fontSize: {
+      small: 12,
+      medium: 16,
+      large: 22,
+      xlarge: 34
+    },
+    fontWeight: {
+      light: 300,
+      regular: 400,
+      medium: 600,
+      bold: 800
+    },
+    lineHeight: 1.4,
+    letterSpacing: 0.35
+  },
+  adaptation: ArtDecoAdaptation
+};
+
+
+export const SharedPresetThemeIds = [...SHARED_PRESET_IDS];
 /**
  * All preset themes
  */
@@ -1414,7 +1584,9 @@ export const PresetThemes = {
   InkTerminalModern: InkTerminalModernTheme,
   AuroraGlassNight: AuroraGlassNightTheme,
   WindowsPhoneMetro: WindowsPhoneMetroTheme,
-  LCARS: LCARSTheme
+  LCARS: LCARSTheme,
+  ArtNouveau: ArtNouveauTheme,
+  ArtDeco: ArtDecoTheme
 };
 
 export const ENGINE_PRESET_IDS = Object.values(PresetThemes).map((theme) => theme.metadata.id);

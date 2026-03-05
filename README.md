@@ -168,7 +168,7 @@ const myTheme: Theme = {
 
 ## 🌟 Preset Themes
 
-Ktheme includes 14 themes from CleverFerret plus additional iconic interface presets:
+Ktheme includes 14 themes from CleverFerret plus additional official iconic interface presets:
 
 1. **Navy Gold** - Elegant navy with gold metallic accents (`navy-gold`)
 2. **Emerald Silver** - Rich emerald with silver accents (`emerald-silver`)
@@ -192,8 +192,10 @@ Ktheme includes 14 themes from CleverFerret plus additional iconic interface pre
 20. **Calm Clinical** - Healthcare/admin clarity with low-stress hierarchy (`calm-clinical`)
 21. **Ink Terminal Modern** - Retro-terminal character with modern readability (`ink-terminal-modern`)
 22. **Aurora Glass Night** - Night glassmorphism with aurora-tinted accents (`aurora-glass-night`)
+23. **Art Nouveau** - Organic curves with botanical decorative warmth (`art-nouveau`)
+24. **Art Deco** - Geometric luxury with gold/black/ivory contrast (`art-deco`)
 
-All theme JSON files are available in `themes/examples/`.
+All theme JSON files are available in `themes/examples/`, including `art-nouveau.json` and `art-deco.json`.
 For a quick visual reference of the new iconic presets, open `themes/examples/iconic-previews.html`.
 
 
@@ -252,8 +254,10 @@ const css = generateThemeAdaptationCSS(adapted);
 - `frutigerAero` → glass surfaces, rounded layout language, duotone icon style
 - `windowsPhoneMetro` → sharp tile layout, pivot navigation rhythm, fluent/line icon style
 - `lcars` → rail layout and pill geometry suitable for LCARS-style interfaces
+- `artNouveau` → rounded/pill geometry, decorative overrides, and softer spacing cadence
+- `artDeco` → sharp geometry, stepped rhythm, and high-contrast panel framing
 
-This makes it practical to build themes that require structural restyling (e.g. Frutiger Aero, Windows Phone, LCARS).
+This makes it practical to build themes that require structural restyling (e.g. Frutiger Aero, Windows Phone, LCARS, Art Nouveau, Art Deco).
 
 ### Iconic Activation Packs
 

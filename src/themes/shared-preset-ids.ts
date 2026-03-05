@@ -24,7 +24,9 @@ export const SHARED_PRESET_IDS = [
   'ink-terminal-modern',
   'aurora-glass-night',
   'windows-phone-metro',
-  'lcars'
+  'lcars',
+  'art-nouveau',
+  'art-deco'
 ] as const;
 
 export type SharedPresetId = (typeof SHARED_PRESET_IDS)[number];

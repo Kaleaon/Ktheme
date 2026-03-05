@@ -1,6 +1,7 @@
 package com.ktheme.ui
 
 import com.ktheme.models.Theme
+import com.ktheme.utils.AccessibilityUtils
 import com.ktheme.utils.ColorUtils
 import java.awt.*
 import java.awt.event.MouseAdapter
@@ -29,10 +30,21 @@ class ThemeScrollWheel(private val themes: List<Theme>) : JPanel() {
             visibleRowCount = 5
             fixedCellHeight = 80
             background = Color(250, 250, 250)
+            AccessibilityUtils.configureControl(
+                this,
+                "Theme list",
+                "list",
+                "Browse available themes. Use up and down arrows to move, then press Enter to apply actions.",
+                "Arrow keys move selection"
+            )
             
             // Add selection listener
             addListSelectionListener { event ->
                 if (!event.valueIsAdjusting && selectedValue != null) {
+                    AccessibilityUtils.announceState(
+                        this,
+                        "Selected theme ${selectedValue.metadata.name}, ${if (selectedValue.darkMode) "dark" else "light"} mode"
+                    )
                     notifyThemeSelected(selectedValue)
                 }
             }
@@ -52,6 +64,13 @@ class ThemeScrollWheel(private val themes: List<Theme>) : JPanel() {
         val scrollPane = JScrollPane(themeList).apply {
             verticalScrollBarPolicy = JScrollPane.VERTICAL_SCROLLBAR_ALWAYS
             border = BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1)
+            AccessibilityUtils.configureControl(
+                this,
+                "Theme list scroll area",
+                "scroll pane",
+                "Scrollable area for theme options",
+                "Mouse wheel or Page Up/Page Down"
+            )
         }
         
         add(scrollPane, BorderLayout.CENTER)
@@ -61,6 +80,8 @@ class ThemeScrollWheel(private val themes: List<Theme>) : JPanel() {
      * Get currently selected theme
      */
     fun getSelectedTheme(): Theme? = themeList.selectedValue
+
+    fun getThemeListComponent(): JList<Theme> = themeList
     
     /**
      * Set selected theme by ID

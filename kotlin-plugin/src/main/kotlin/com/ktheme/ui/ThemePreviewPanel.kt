@@ -1,6 +1,7 @@
 package com.ktheme.ui
 
 import com.ktheme.models.Theme
+import com.ktheme.utils.AccessibilityUtils
 import com.ktheme.utils.ColorUtils
 import java.awt.*
 import javax.swing.*
@@ -79,6 +80,13 @@ class ThemePreviewPanel : JPanel() {
             preferredSize = Dimension(0, 200)
         }
         add(previewPanel, BorderLayout.SOUTH)
+
+        AccessibilityUtils.configureControl(
+            this,
+            "Theme preview",
+            "panel",
+            "Displays details and sample controls for the currently selected theme."
+        )
     }
     
     /**
@@ -95,6 +103,10 @@ class ThemePreviewPanel : JPanel() {
         descriptionLabel.text = "<html>${theme.metadata.description}</html>"
         authorLabel.text = "by ${theme.metadata.author}"
         tagsLabel.text = "Tags: ${theme.metadata.tags.joinToString(", ")}"
+        AccessibilityUtils.announceState(
+            this,
+            "Preview updated to ${theme.metadata.name} theme by ${theme.metadata.author}"
+        )
         
         // Update color palette
         updateColorPalette(theme)
@@ -153,6 +165,12 @@ class ThemePreviewPanel : JPanel() {
                     }
                 }
             }
+            AccessibilityUtils.configureControl(
+                colorBox,
+                "$name swatch",
+                "color swatch",
+                "$name color value $colorHex"
+            )
             add(colorBox, BorderLayout.CENTER)
             
             // Label
@@ -186,6 +204,12 @@ class ThemePreviewPanel : JPanel() {
                             foreground = Color(ColorUtils.hexToColorInt(theme.colorScheme.onPrimary))
                             isFocusPainted = false
                             alignmentX = Component.LEFT_ALIGNMENT
+                            AccessibilityUtils.configureControl(
+                                this,
+                                "Sample themed button",
+                                "button",
+                                "Demonstrates primary and on-primary colors for ${theme.metadata.name}."
+                            )
                         })
                         
                         add(Box.createVerticalStrut(10))
