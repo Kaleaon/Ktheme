@@ -9,6 +9,7 @@ import {
   ResolvedAccessibilitySettings,
   Theme,
   ThemeAdaptation,
+  ThemeValidationIssue,
   ThemeValidationResult,
   VisualEffects
 } from './types';
@@ -145,21 +146,33 @@ export class ThemeEngine {
    * Validate a theme
    */
   validateTheme(theme: Theme): ThemeValidationResult {
-    const errors: string[] = [];
-    const warnings: string[] = [];
+    const issues: ThemeValidationIssue[] = [];
+    const addIssue = (issue: ThemeValidationIssue): void => {
+      issues.push(issue);
+    };
+    const addError = (
+      message: string,
+      code: ThemeValidationIssue['code'],
+      path?: string
+    ): void => addIssue({ severity: 'error', message, code, path });
+    const addWarning = (
+      message: string,
+      code: ThemeValidationIssue['code'],
+      path?: string
+    ): void => addIssue({ severity: 'warning', message, code, path });
 
     // Validate metadata
     if (!theme.metadata) {
-      errors.push('Theme metadata is required');
+      addError('Theme metadata is required', 'missing-metadata', 'metadata');
     } else {
-      if (!theme.metadata.id) errors.push('Theme ID is required');
-      if (!theme.metadata.name) errors.push('Theme name is required');
-      if (!theme.metadata.version) errors.push('Theme version is required');
+      if (!theme.metadata.id) addError('Theme ID is required', 'missing-metadata', 'metadata.id');
+      if (!theme.metadata.name) addError('Theme name is required', 'missing-metadata', 'metadata.name');
+      if (!theme.metadata.version) addError('Theme version is required', 'missing-metadata', 'metadata.version');
     }
 
     // Validate color scheme
     if (!theme.colorScheme) {
-      errors.push('Color scheme is required');
+      addError('Color scheme is required', 'missing-color', 'colorScheme');
     } else {
       const requiredColors = [
         'primary', 'onPrimary', 'background', 'onBackground',
@@ -168,36 +181,131 @@ export class ThemeEngine {
       
       for (const color of requiredColors) {
         if (!(color in theme.colorScheme)) {
-          errors.push(`Missing required color: ${color}`);
+          addError(`Missing required color: ${color}`, 'missing-color', `colorScheme.${color}`);
         }
       }
     }
 
     // Check for effects warnings
     if (theme.effects?.metallic?.enabled && theme.effects.metallic.intensity > 1) {
-      warnings.push('Metallic intensity should be between 0 and 1');
+      addWarning('Metallic intensity should be between 0 and 1', 'invalid-effects', 'effects.metallic.intensity');
     }
 
     if (theme.adaptation?.layout?.spacingScale !== undefined && theme.adaptation.layout.spacingScale <= 0) {
-      errors.push('Layout spacingScale must be greater than 0');
+      addError('Layout spacingScale must be greater than 0', 'invalid-adaptation', 'adaptation.layout.spacingScale');
     }
 
     if (theme.adaptation?.icons?.sizeScale !== undefined && theme.adaptation.icons.sizeScale <= 0) {
-      errors.push('Icon sizeScale must be greater than 0');
+      addError('Icon sizeScale must be greater than 0', 'invalid-adaptation', 'adaptation.icons.sizeScale');
+    }
+
+    if (
+      theme.adaptation?.layout?.density === 'spacious' &&
+      theme.adaptation.layout.spacingScale !== undefined &&
+      theme.adaptation.layout.spacingScale < 0.85
+    ) {
+      addWarning(
+        'Tiny spacingScale is likely incompatible with spacious density',
+        'invalid-adaptation',
+        'adaptation.layout.spacingScale'
+      );
+    }
+
+    if (theme.adaptation?.icons) {
+      const { style, sizeScale, strokeWidth } = theme.adaptation.icons;
+
+      if ((style === 'outlined' || style === 'line') && sizeScale < 0.75) {
+        addError(
+          `Icon style ${style} requires sizeScale >= 0.75 for legibility`,
+          'invalid-adaptation',
+          'adaptation.icons.sizeScale'
+        );
+      }
+
+      if ((style === 'outlined' || style === 'line') && strokeWidth !== undefined && (strokeWidth < 1 || strokeWidth > 3)) {
+        addError(
+          `Icon style ${style} requires strokeWidth between 1 and 3`,
+          'invalid-adaptation',
+          'adaptation.icons.strokeWidth'
+        );
+      }
+
+      if (style === 'filled' && strokeWidth !== undefined && strokeWidth > 0.5) {
+        addWarning(
+          'Filled icon style typically does not use visible strokeWidth values',
+          'invalid-adaptation',
+          'adaptation.icons.strokeWidth'
+        );
+      }
     }
 
     if (theme.adaptation?.componentOverrides) {
       theme.adaptation.componentOverrides.forEach((override, index) => {
         if (!override.selector) {
-          errors.push(`Component override at index ${index} is missing selector`);
+          addError(
+            `Component override at index ${index} is missing selector`,
+            'invalid-component-override',
+            `adaptation.componentOverrides[${index}].selector`
+          );
+          return;
+        }
+
+        if (/[{};@]/.test(override.selector)) {
+          addError(
+            `Component override selector at index ${index} contains unsupported CSS syntax`,
+            'unsafe-component-override',
+            `adaptation.componentOverrides[${index}].selector`
+          );
+        }
+
+        if (/^\s*(\*|:root|html|body)\b/.test(override.selector)) {
+          addWarning(
+            `Component override selector at index ${index} is dangerously broad (${override.selector})`,
+            'unsafe-component-override',
+            `adaptation.componentOverrides[${index}].selector`
+          );
+        }
+
+        if (/\:has\(/.test(override.selector)) {
+          addWarning(
+            `Component override selector at index ${index} uses :has(), which may be unsupported in some generated CSS targets`,
+            'invalid-component-override',
+            `adaptation.componentOverrides[${index}].selector`
+          );
+        }
+
+        Object.entries(override.styles).forEach(([property, value]) => {
+          const asString = String(value);
+          if (/[{};]/.test(asString) || /javascript\s*:/i.test(asString)) {
+            addError(
+              `Component override style ${property} at index ${index} contains unsafe CSS value content`,
+              'unsafe-component-override',
+              `adaptation.componentOverrides[${index}].styles.${property}`
+            );
+          }
+        });
+
+        if (Object.keys(override.styles).length === 0) {
+          addWarning(
+            `Component override at index ${index} has no style declarations`,
+            'invalid-component-override',
+            `adaptation.componentOverrides[${index}].styles`
+          );
         }
       });
     }
 
-    const contrastPairs: Array<['primary' | 'background' | 'surface' | 'error', 'onPrimary' | 'onBackground' | 'onSurface' | 'onError', string]> = [
+    const contrastPairs: Array<[
+      'primary' | 'secondary' | 'tertiary' | 'background' | 'surface' | 'surfaceVariant' | 'error',
+      'onPrimary' | 'onSecondary' | 'onTertiary' | 'onBackground' | 'onSurface' | 'onSurfaceVariant' | 'onError',
+      string
+    ]> = [
       ['primary', 'onPrimary', 'primary/onPrimary'],
+      ['secondary', 'onSecondary', 'secondary/onSecondary'],
+      ['tertiary', 'onTertiary', 'tertiary/onTertiary'],
       ['background', 'onBackground', 'background/onBackground'],
       ['surface', 'onSurface', 'surface/onSurface'],
+      ['surfaceVariant', 'onSurfaceVariant', 'surfaceVariant/onSurfaceVariant'],
       ['error', 'onError', 'error/onError']
     ];
 
@@ -205,7 +313,11 @@ export class ThemeEngine {
       contrastPairs.forEach(([base, on, label]) => {
         const ratio = contrastRatio(theme.colorScheme[base], theme.colorScheme[on]);
         if (ratio < 4.5) {
-          warnings.push(`Low contrast for ${label}: ${ratio.toFixed(2)} (recommended >= 4.5)`);
+          addWarning(
+            `Low contrast for ${label}: ${ratio.toFixed(2)} (recommended >= 4.5)`,
+            'low-contrast',
+            `colorScheme.${label}`
+          );
         }
       });
     }
@@ -220,52 +332,83 @@ export class ThemeEngine {
 
       requiredSemanticPairs.forEach(([base, on]) => {
         if (!(base in roles) || !(on in roles)) {
-          errors.push(`Semantic role pair ${base}/${on} is incomplete`);
+          addError(`Semantic role pair ${base}/${on} is incomplete`, 'incomplete-semantic-role', `colorScheme.semanticRoles`);
+        } else {
+          const ratio = contrastRatio(roles[base as keyof typeof roles]!, roles[on as keyof typeof roles]!);
+          if (ratio < 4.5) {
+            addWarning(
+              `Low contrast for semantic role ${base}/${on}: ${ratio.toFixed(2)} (recommended >= 4.5)`,
+              'low-contrast',
+              `colorScheme.semanticRoles.${base}`
+            );
+          }
         }
       });
+
+      const criticalProvided = Boolean(roles.critical) || Boolean(roles.onCritical);
+      if (criticalProvided && (!roles.critical || !roles.onCritical)) {
+        addError('Semantic role pair critical/onCritical is incomplete', 'incomplete-semantic-role', 'colorScheme.semanticRoles');
+      } else if (roles.critical && roles.onCritical) {
+        const ratio = contrastRatio(roles.critical, roles.onCritical);
+        if (ratio < 4.5) {
+          addWarning(
+            `Low contrast for semantic role critical/onCritical: ${ratio.toFixed(2)} (recommended >= 4.5)`,
+            'low-contrast',
+            'colorScheme.semanticRoles.critical'
+          );
+        }
+      }
     }
 
     const layers = theme.colorScheme?.stateLayers;
     if (layers) {
       Object.entries(layers).forEach(([key, value]) => {
         if (typeof value !== 'string') {
-          warnings.push(`State layer ${key} should be a CSS color string for portability`);
+          addWarning(`State layer ${key} should be a CSS color string for portability`, 'invalid-token', `colorScheme.stateLayers.${key}`);
         }
       });
     }
 
     if (theme.tokens?.density && theme.tokens.density.scale <= 0) {
-      errors.push('Density token scale must be greater than 0');
+      addError('Density token scale must be greater than 0', 'invalid-token', 'tokens.density.scale');
     }
 
     if (theme.tokens?.corners) {
       const cornerValues = Object.values(theme.tokens.corners);
       if (cornerValues.some(value => value < 0)) {
-        errors.push('Corner token values must be non-negative');
+        addError('Corner token values must be non-negative', 'invalid-token', 'tokens.corners');
       }
     }
 
     if (theme.accessibility) {
       if (theme.accessibility.minimumContrastRatio !== undefined && theme.accessibility.minimumContrastRatio < 3) {
-        errors.push('Accessibility minimumContrastRatio must be >= 3');
+        addError('Accessibility minimumContrastRatio must be >= 3', 'invalid-accessibility', 'accessibility.minimumContrastRatio');
       }
 
       if (theme.accessibility.typography?.fontScale !== undefined && theme.accessibility.typography.fontScale <= 0) {
-        errors.push('Accessibility fontScale must be greater than 0');
+        addError('Accessibility fontScale must be greater than 0', 'invalid-accessibility', 'accessibility.typography.fontScale');
       }
 
       if (
         theme.accessibility.interaction?.minimumTargetSize !== undefined &&
         theme.accessibility.interaction.minimumTargetSize < 24
       ) {
-        warnings.push('Accessibility minimumTargetSize should be at least 24px (44px recommended)');
+        addWarning(
+          'Accessibility minimumTargetSize should be at least 24px (44px recommended)',
+          'invalid-accessibility',
+          'accessibility.interaction.minimumTargetSize'
+        );
       }
     }
+
+    const errors = issues.filter(issue => issue.severity === 'error').map(issue => issue.message);
+    const warnings = issues.filter(issue => issue.severity === 'warning').map(issue => issue.message);
 
     return {
       valid: errors.length === 0,
       errors,
-      warnings
+      warnings,
+      issues
     };
   }
 

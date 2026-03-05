@@ -94,6 +94,134 @@ describe('ThemeEngine adaptations', () => {
     expect(validation.errors).toContain('Corner token values must be non-negative');
   });
 
+
+  it('validates expanded contrast pairs including semantic roles', () => {
+    const engine = new ThemeEngine();
+    const invalid = {
+      ...NavyGoldTheme,
+      metadata: {
+        ...NavyGoldTheme.metadata,
+        id: 'invalid-contrast-extended'
+      },
+      colorScheme: {
+        ...NavyGoldTheme.colorScheme,
+        secondary: '#808080',
+        onSecondary: '#858585',
+        tertiary: '#707070',
+        onTertiary: '#747474',
+        surfaceVariant: '#666666',
+        onSurfaceVariant: '#696969',
+        semanticRoles: {
+          success: '#556b2f',
+          onSuccess: '#5f7b30',
+          warning: '#a07100',
+          onWarning: '#aa7900',
+          info: '#0f5f8f',
+          onInfo: '#116896',
+          critical: '#8f1f1f'
+        }
+      }
+    };
+
+    const validation = engine.validateTheme(invalid as unknown as Theme);
+
+    expect(validation.warnings.some(msg => msg.includes('secondary/onSecondary'))).toBe(true);
+    expect(validation.warnings.some(msg => msg.includes('tertiary/onTertiary'))).toBe(true);
+    expect(validation.warnings.some(msg => msg.includes('surfaceVariant/onSurfaceVariant'))).toBe(true);
+    expect(validation.warnings.some(msg => msg.includes('semantic role success/onSuccess'))).toBe(true);
+    expect(validation.errors).toContain('Semantic role pair critical/onCritical is incomplete');
+  });
+
+  it('flags problematic adaptation combinations and unsafe component overrides', () => {
+    const engine = new ThemeEngine();
+    const invalid = {
+      ...NavyGoldTheme,
+      metadata: {
+        ...NavyGoldTheme.metadata,
+        id: 'invalid-overrides'
+      },
+      adaptation: {
+        layout: {
+          density: 'spacious' as const,
+          cornerStyle: 'rounded' as const,
+          spacingScale: 0.7
+        },
+        icons: {
+          family: 'material' as const,
+          style: 'outlined' as const,
+          sizeScale: 0.6,
+          strokeWidth: 4
+        },
+        componentOverrides: [
+          {
+            selector: 'body',
+            styles: {
+              color: 'red'
+            }
+          },
+          {
+            selector: '.card{color:red}',
+            styles: {
+              padding: 12
+            }
+          },
+          {
+            selector: '.danger',
+            styles: {
+              background: 'url(javascript:alert(1))'
+            }
+          },
+          {
+            selector: '.empty',
+            styles: {}
+          }
+        ]
+      }
+    };
+
+    const validation = engine.validateTheme(invalid as unknown as Theme);
+
+    expect(validation.errors).toContain('Icon style outlined requires sizeScale >= 0.75 for legibility');
+    expect(validation.errors).toContain('Icon style outlined requires strokeWidth between 1 and 3');
+    expect(validation.warnings).toContain('Tiny spacingScale is likely incompatible with spacious density');
+    expect(validation.warnings.some(msg => msg.includes('dangerously broad'))).toBe(true);
+    expect(validation.errors.some(msg => msg.includes('contains unsupported CSS syntax'))).toBe(true);
+    expect(validation.errors.some(msg => msg.includes('contains unsafe CSS value content'))).toBe(true);
+    expect(validation.warnings.some(msg => msg.includes('has no style declarations'))).toBe(true);
+  });
+
+  it('includes structured validation issues with severity and codes', () => {
+    const engine = new ThemeEngine();
+    const invalid = {
+      ...NavyGoldTheme,
+      metadata: {
+        ...NavyGoldTheme.metadata,
+        id: 'invalid-issues-structured'
+      },
+      adaptation: {
+        layout: {
+          density: 'spacious' as const,
+          cornerStyle: 'rounded' as const,
+          spacingScale: 0.7
+        },
+        icons: {
+          family: 'material' as const,
+          style: 'outlined' as const,
+          sizeScale: 0.6,
+          strokeWidth: 4
+        }
+      }
+    };
+
+    const validation = engine.validateTheme(invalid as unknown as Theme);
+
+    expect(validation.issues.length).toBeGreaterThan(0);
+    expect(validation.issues.some(issue => issue.severity === 'error' && issue.code === 'invalid-adaptation')).toBe(true);
+    expect(validation.issues.some(issue => issue.severity === 'warning' && issue.path === 'adaptation.layout.spacingScale')).toBe(true);
+    expect(validation.errors.length).toBe(validation.issues.filter(issue => issue.severity === 'error').length);
+    expect(validation.warnings.length).toBe(validation.issues.filter(issue => issue.severity === 'warning').length);
+  });
+
   it('resolves effects for reduced motion users', () => {
     const engine = new ThemeEngine();
     const theme = {

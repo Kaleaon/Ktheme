@@ -1416,3 +1416,10 @@ export const PresetThemes = {
   WindowsPhoneMetro: WindowsPhoneMetroTheme,
   LCARS: LCARSTheme
 };
+
+export const ENGINE_PRESET_IDS = Object.values(PresetThemes).map((theme) => theme.metadata.id);
+
+if (ENGINE_PRESET_IDS.length !== SHARED_PRESET_IDS.length ||
+  ENGINE_PRESET_IDS.some((id, index) => id !== SHARED_PRESET_IDS[index])) {
+  throw new Error('Engine preset IDs are out of sync with shared preset IDs.');
+}

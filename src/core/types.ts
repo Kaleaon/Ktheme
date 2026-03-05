@@ -408,4 +408,24 @@ export interface ThemeValidationResult {
   valid: boolean;
   errors: string[];
   warnings: string[];
+  issues: ThemeValidationIssue[];
+}
+
+export type ThemeValidationSeverity = 'error' | 'warning';
+
+export interface ThemeValidationIssue {
+  severity: ThemeValidationSeverity;
+  message: string;
+  code:
+    | 'missing-metadata'
+    | 'missing-color'
+    | 'invalid-effects'
+    | 'invalid-adaptation'
+    | 'invalid-component-override'
+    | 'unsafe-component-override'
+    | 'low-contrast'
+    | 'incomplete-semantic-role'
+    | 'invalid-token'
+    | 'invalid-accessibility';
+  path?: string;
 }
