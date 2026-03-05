@@ -1,6 +1,7 @@
 import {
   AccessibilityRuntimePreferences,
   AccessibilitySettings,
+  LayoutAccessibilityProfile,
   ResolvedAccessibilitySettings,
   Theme
 } from '../core/types';
@@ -28,6 +29,32 @@ const DEFAULT_ACCESSIBILITY: ResolvedAccessibilitySettings = {
   disableParallax: true,
   disableShimmer: true,
   controls: DEFAULT_ACCESSIBILITY_CONTROLS
+};
+
+export const DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE: LayoutAccessibilityProfile = {
+  landmarks: {
+    main: 'main',
+    nav: 'navigation',
+    header: 'banner',
+    footer: 'contentinfo'
+  },
+  naming: {
+    strategy: 'aria-label',
+    main: 'Main content',
+    nav: 'Primary navigation',
+    header: 'Page header',
+    footer: 'Page footer'
+  },
+  keyboard: {
+    order: 'document',
+    focusPolicy: 'native',
+    trapFocusWithinModals: true
+  },
+  liveRegion: {
+    mode: 'polite',
+    atomic: false,
+    relevant: 'additions'
+  }
 };
 
 export function resolveAccessibilitySettings(

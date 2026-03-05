@@ -255,6 +255,36 @@ export interface LayoutAdaptation {
   spacingScale: number;
   panelStyle?: 'flat' | 'elevated' | 'glass';
   navigationStyle?: 'tabs' | 'rail' | 'drawer' | 'pivot';
+  accessibility: LayoutAccessibilityProfile;
+}
+
+/**
+ * Accessibility contract for app layout semantics and focus behavior.
+ */
+export interface LayoutAccessibilityProfile {
+  landmarks: {
+    main: string;
+    nav: string;
+    header: string;
+    footer: string;
+  };
+  naming: {
+    strategy: 'aria-label' | 'aria-labelledby' | 'native';
+    main: string;
+    nav: string;
+    header: string;
+    footer: string;
+  };
+  keyboard: {
+    order: 'document' | 'landmarks-first' | 'custom';
+    focusPolicy: 'native' | 'managed' | 'roving-tabindex';
+    trapFocusWithinModals: boolean;
+  };
+  liveRegion: {
+    mode: 'off' | 'polite' | 'assertive';
+    atomic: boolean;
+    relevant: 'additions' | 'text' | 'all';
+  };
 }
 
 /**

@@ -1419,7 +1419,7 @@ export const PresetThemes = {
 
 export const ENGINE_PRESET_IDS = Object.values(PresetThemes).map((theme) => theme.metadata.id);
 
-if (ENGINE_PRESET_IDS.length !== SHARED_PRESET_IDS.length ||
-  ENGINE_PRESET_IDS.some((id, index) => id !== SHARED_PRESET_IDS[index])) {
+if (ENGINE_PRESET_IDS.length !== SHARED_PRESET_THEME_IDS.length ||
+  ENGINE_PRESET_IDS.some((id, index) => id !== SHARED_PRESET_THEME_IDS[index])) {
   throw new Error('Engine preset IDs are out of sync with shared preset IDs.');
 }
