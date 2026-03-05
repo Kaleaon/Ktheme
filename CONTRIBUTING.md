@@ -50,16 +50,16 @@ Your theme should:
 - Be appropriate and respectful (no offensive content)
 
 
-## Preset Publishing Workflow
+## Preset Theme Publishing Workflow
 
-To keep built-in presets in sync between the engine and the Theme Creator, always update presets in this order:
+To keep preset themes synchronized between the engine and the Theme Creator, always update presets through the shared artifact at `src/themes/shared-preset-themes.ts`.
 
-1. Update the engine preset definitions in `src/themes/presets.ts`.
-2. Update the shared preset artifact in `src/themes/shared-preset-ids.ts` if IDs were added, removed, or reordered.
-3. Do **not** manually edit `theme-creator/src/utils/preset-themes.ts` with copied theme objects; it imports the engine presets and shared IDs directly.
-4. Run the parity test (`npm test`) and confirm `src/themes/preset-parity.test.ts` passes before opening a PR.
+1. Update `SHARED_PRESET_THEMES` in `src/themes/shared-preset-themes.ts` (add/remove/edit presets there first).
+2. Confirm engine parity by ensuring each shared preset ID is represented in `src/themes/presets.ts` and exposed through `PresetThemes`.
+3. Do **not** hand-edit `theme-creator/src/utils/preset-themes.ts`; it imports from the shared artifact.
+4. Run parity tests to verify creator preset IDs are all present in engine presets.
 
-This workflow prevents creator/engine preset drift and ensures a single source of truth for preset IDs.
+This workflow prevents preset drift between the engine and creator applications.
 
 ## Code Style
 

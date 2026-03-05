@@ -6,7 +6,7 @@
 import { Theme, MetallicVariant } from '../core/types';
 import { getMetallicGradient } from '../effects/metallic';
 import { FrutigerAeroAdaptation, LCARSAdaptation, WindowsPhoneMetroAdaptation } from './adaptationPresets';
-import { SHARED_PRESET_IDS } from './shared-preset-ids';
+import { SHARED_PRESET_THEME_IDS } from './shared-preset-themes';
 
 /**
  * Navy Gold Theme - Elegant navy background with gold accents
@@ -1387,6 +1387,8 @@ export const LCARSTheme: Theme = {
   adaptation: LCARSAdaptation
 };
 
+
+export const SharedPresetThemeIds = [...SHARED_PRESET_THEME_IDS];
 /**
  * All preset themes
  */

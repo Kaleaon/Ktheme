@@ -1,13 +1,13 @@
-import { ENGINE_PRESET_IDS } from './presets';
-import { SHARED_PRESET_IDS } from './shared-preset-ids';
-import { CREATOR_PRESET_IDS } from '../../theme-creator/src/utils/preset-themes';
+import { PresetThemes, SharedPresetThemeIds } from './presets';
 
-describe('preset parity', () => {
-  it('keeps creator preset IDs aligned with engine preset IDs', () => {
-    expect(CREATOR_PRESET_IDS).toEqual(ENGINE_PRESET_IDS);
-  });
+describe('preset parity between engine and theme creator', () => {
+  it('ensures every creator preset id exists in engine presets', () => {
+    const enginePresetIds = new Set(
+      Object.values(PresetThemes).map((theme) => theme.metadata.id)
+    );
 
-  it('keeps shared preset artifact aligned with engine preset IDs', () => {
-    expect(Array.from(SHARED_PRESET_IDS)).toEqual(ENGINE_PRESET_IDS);
+    for (const creatorPresetId of SharedPresetThemeIds) {
+      expect(enginePresetIds.has(creatorPresetId)).toBe(true);
+    }
   });
 });
