@@ -426,3 +426,25 @@ Apache License 2.0 - see the [LICENSE](../LICENSE) file for details.
 # Theme browser/library
 ./gradlew run --args="com.ktheme.ui.ThemeLibraryWindowKt"
 ```
+
+## Accessibility Defaults (Android/TalkBack-Friendly)
+
+The Kotlin UI layer now applies consistent accessibility defaults to interactive controls:
+
+- Explicit accessible names and descriptions for search, list navigation, and action buttons.
+- Role/type hints included in each control description (button, list, status, panel, swatch).
+- State announcements for theme selection, preview updates, and apply/share/import/export actions.
+- Deterministic keyboard focus traversal aligned with the visual layout:
+  1. Search field
+  2. Search button
+  3. Theme list
+  4. Apply Theme
+  5. Share Theme
+  6. Export Theme
+  7. Import Theme
+
+Implementation details:
+- Shared helper: `com.ktheme.utils.AccessibilityUtils`
+- Main window accessibility wiring: `ThemeLibraryWindow`
+- Preview and list announcements: `ThemePreviewPanel`, `ThemeScrollWheel`
+- Manual verification sample: `examples/AccessibilityVerificationFlow.kt`
