@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { Send, Key, Loader, Download, X } from 'lucide-react';
 import { useTheme } from '../../state/ThemeContext.tsx';
 import {
@@ -22,6 +22,9 @@ export function AIDesigner() {
   const [error, setError] = useState<string | null>(null);
   const [provider, setProvider] = useState<'claude' | 'gemini'>('claude');
   const scrollRef = useRef<HTMLDivElement>(null);
+  const providerSelectId = useId();
+  const promptInputId = useId();
+  const apiKeyInputId = useId();
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -77,22 +80,24 @@ export function AIDesigner() {
   if (!keyConfigured) {
     return (
       <div className="panel ai-panel">
-        <div className="ai-key-setup">
-          <Key size={48} className="ai-key-icon" />
-          <h3>API Key Required</h3>
+        <section className="ai-key-setup" aria-labelledby="ai-key-heading">
+          <Key size={48} className="ai-key-icon" aria-hidden="true" focusable="false" />
+          <h2 id="ai-key-heading">API Key Required</h2>
           <p>
             Enter your model API key to use the AI theme designer (Claude or Gemini).
             Your key is stored locally in your browser and never sent to any server other than the selected model API.
           </p>
           <div className="ai-key-input-row">
+            <label htmlFor={apiKeyInputId} className="sr-only">API key</label>
             <input
+              id={apiKeyInputId}
               type="password"
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
               placeholder="sk-ant-..."
               onKeyDown={(e) => e.key === 'Enter' && saveKey()}
             />
-            <button className="btn btn-primary" onClick={saveKey}>
+            <button className="btn btn-primary" type="button" onClick={saveKey}>
               Save Key
             </button>
           </div>
@@ -106,7 +111,7 @@ export function AIDesigner() {
               Google AI Studio
             </a>
           </p>
-        </div>
+        </section>
       </div>
     );
   }
@@ -114,9 +119,11 @@ export function AIDesigner() {
   return (
     <div className="panel ai-panel">
       <div className="ai-header">
-        <h3>AI Theme Designer</h3>
+        <h2>AI Theme Designer</h2>
         <div className="ai-header-actions">
+          <label htmlFor={providerSelectId} className="sr-only">Model provider</label>
           <select
+            id={providerSelectId}
             className="ai-provider-select"
             value={provider}
             onChange={(e) => setProvider(e.target.value as 'claude' | 'gemini')}
@@ -125,14 +132,20 @@ export function AIDesigner() {
             <option value="claude">Claude</option>
             <option value="gemini">Gemini 2.5 Pro</option>
           </select>
-          <button className="btn-icon" onClick={removeKey} title="Remove API key">
-            <Key size={16} />
-            <X size={12} className="btn-icon-overlay" />
+          <button
+            className="btn-icon"
+            type="button"
+            onClick={removeKey}
+            title="Remove API key"
+            aria-label="Remove API key"
+          >
+            <Key size={16} aria-hidden="true" focusable="false" />
+            <X size={12} className="btn-icon-overlay" aria-hidden="true" focusable="false" />
           </button>
         </div>
       </div>
 
-      <div className="ai-messages" ref={scrollRef}>
+      <div className="ai-messages" ref={scrollRef} role="log" aria-live="polite" aria-relevant="additions text">
         {messages.length === 0 && (
           <div className="ai-welcome">
             <p>Describe the theme you want and I'll design it for you.</p>
@@ -148,6 +161,7 @@ export function AIDesigner() {
                 <button
                   key={s}
                   className="ai-suggestion-chip"
+                  type="button"
                   onClick={() => setInput(s)}
                 >
                   {s}
@@ -179,17 +193,19 @@ export function AIDesigner() {
           <div className="ai-message assistant">
             <div className="ai-message-header">Ktheme AI</div>
             <div className="ai-message-content ai-loading">
-              <Loader size={16} className="spin" />
+              <Loader size={16} className="spin" aria-hidden="true" focusable="false" />
               Designing your theme...
             </div>
           </div>
         )}
       </div>
 
-      {error && <div className="ai-error">{error}</div>}
+      {error && <div className="ai-error" role="alert">{error}</div>}
 
       <div className="ai-input-row">
+        <label htmlFor={promptInputId} className="sr-only">Theme request</label>
         <input
+          id={promptInputId}
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -197,8 +213,14 @@ export function AIDesigner() {
           onKeyDown={(e) => e.key === 'Enter' && handleSend()}
           disabled={isLoading}
         />
-        <button className="btn btn-primary" onClick={handleSend} disabled={isLoading}>
-          <Send size={16} />
+        <button
+          className="btn btn-primary"
+          type="button"
+          onClick={handleSend}
+          disabled={isLoading}
+          aria-label="Send prompt"
+        >
+          <Send size={16} aria-hidden="true" focusable="false" />
         </button>
       </div>
     </div>
@@ -218,8 +240,8 @@ function ThemeActions({
   return (
     <>
       {parsed.redesignPlan && <RedesignPlanView redesignPlan={parsed.redesignPlan} />}
-      <button className="btn btn-primary ai-load-btn" onClick={() => onLoad(content)}>
-        <Download size={16} />
+      <button className="btn btn-primary ai-load-btn" type="button" onClick={() => onLoad(content)}>
+        <Download size={16} aria-hidden="true" focusable="false" />
         Load This Theme
       </button>
     </>
@@ -245,7 +267,6 @@ function RedesignPlanView({ redesignPlan }: { redesignPlan: AIRedesignPlan }) {
 }
 
 function MessageContent({ text }: { text: string }) {
-  // Split on ```json...``` blocks and render them as styled code
   const parts = text.split(/(```json[\s\S]*?```)/g);
   return (
     <>

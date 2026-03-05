@@ -9,7 +9,8 @@
     "build:with-screenshots": "npm run build && node ./scripts/capture-pages.mjs",
     "screenshots": "node ./scripts/capture-pages.mjs",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "check:a11y": "node ./scripts/check-a11y-semantics.mjs"
   },
   "dependencies": {
     "@atproto/api": "^0.19.0",

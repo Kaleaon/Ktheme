@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { type KeyboardEvent, useId, useState } from 'react';
 import { Download, Trash2 } from 'lucide-react';
 import { useTheme } from '../../state/ThemeContext.tsx';
 import { PRESET_THEMES } from '../../utils/preset-themes.ts';
@@ -9,33 +9,65 @@ type SubTab = 'built-in' | 'saved';
 export function PresetsPanel() {
   const { state, dispatch } = useTheme();
   const [subTab, setSubTab] = useState<SubTab>('built-in');
+  const [statusMessage, setStatusMessage] = useState('');
+  const builtInPanelId = useId();
+  const savedPanelId = useId();
 
   function loadTheme(theme: KTheme) {
     dispatch({ type: 'SET_THEME', payload: JSON.parse(JSON.stringify(theme)) });
+    setStatusMessage(`${theme.metadata.name} loaded.`);
   }
 
   function deleteTheme(id: string) {
     dispatch({ type: 'DELETE_SAVED', payload: id });
+    setStatusMessage('Saved theme deleted.');
+  }
+
+  function handleTabKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
+    if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+    event.preventDefault();
+    const next = subTab === 'built-in' ? 'saved' : 'built-in';
+    setSubTab(next);
   }
 
   return (
     <div className="panel presets-panel">
-      <div className="presets-tabs">
+      <h2 className="section-title">Presets</h2>
+      <div className="presets-tabs" role="tablist" aria-label="Preset source">
         <button
+          id="presets-tab-built-in"
+          type="button"
+          role="tab"
+          aria-controls={builtInPanelId}
+          aria-selected={subTab === 'built-in'}
+          tabIndex={subTab === 'built-in' ? 0 : -1}
           className={`bsky-tab ${subTab === 'built-in' ? 'active' : ''}`}
           onClick={() => setSubTab('built-in')}
+          onKeyDown={handleTabKeyDown}
         >
           Built-in ({PRESET_THEMES.length})
         </button>
         <button
+          id="presets-tab-saved"
+          type="button"
+          role="tab"
+          aria-controls={savedPanelId}
+          aria-selected={subTab === 'saved'}
+          tabIndex={subTab === 'saved' ? 0 : -1}
           className={`bsky-tab ${subTab === 'saved' ? 'active' : ''}`}
           onClick={() => setSubTab('saved')}
+          onKeyDown={handleTabKeyDown}
         >
           Saved ({state.savedThemes.length})
         </button>
       </div>
 
-      <div className="presets-grid">
+      <div
+        className="presets-grid"
+        id={subTab === 'built-in' ? builtInPanelId : savedPanelId}
+        role="tabpanel"
+        aria-labelledby={subTab === 'built-in' ? 'presets-tab-built-in' : 'presets-tab-saved'}
+      >
         {subTab === 'built-in' &&
           PRESET_THEMES.map((theme) => (
             <PresetCard key={theme.metadata.id} theme={theme} onLoad={loadTheme} />
@@ -55,6 +87,8 @@ export function PresetsPanel() {
             />
           ))}
       </div>
+
+      <p className="sr-only" role="status" aria-live="polite">{statusMessage}</p>
     </div>
   );
 }
@@ -72,9 +106,10 @@ function PresetCard({
   const metallic = theme.effects?.metallic;
 
   return (
-    <div className="preset-card">
+    <article className="preset-card" aria-label={`${theme.metadata.name} preset`}>
       <div
         className="preset-preview"
+        aria-hidden="true"
         style={{
           background: c.background,
           color: c.onBackground,
@@ -124,18 +159,20 @@ function PresetCard({
         </div>
       </div>
       <div className="preset-actions">
-        <button className="btn btn-primary btn-sm" onClick={() => onLoad(theme)}>
-          <Download size={14} /> Load
+        <button className="btn btn-primary btn-sm" type="button" onClick={() => onLoad(theme)}>
+          <Download size={14} aria-hidden="true" focusable="false" /> Load
         </button>
         {onDelete && (
           <button
             className="btn btn-danger btn-sm"
+            type="button"
             onClick={() => onDelete(theme.metadata.id)}
+            aria-label={`Delete saved theme ${theme.metadata.name}`}
           >
-            <Trash2 size={14} />
+            <Trash2 size={14} aria-hidden="true" focusable="false" />
           </button>
         )}
       </div>
-    </div>
+    </article>
   );
 }
