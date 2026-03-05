@@ -26,6 +26,7 @@ export * from './themes/sets';
 export * from './themes/adaptationPresets';
 export * from './themes/strategy';
 export * from './themes/expansion';
+export * from './themes/iconicPacks';
 export * from './redesign/autoRedesign';
 
 // Media design tokens exports

@@ -103,6 +103,12 @@ export const ThemeSets: Record<string, ThemeSet> = {
       InkTerminalModernTheme,
       AuroraGlassNightTheme
     ]
+  },
+  iconicActivation: {
+    id: 'iconic-activation',
+    name: 'Iconic Activation',
+    description: 'Activation-ready iconic presets spanning Metro, LCARS, Art Nouveau, and Art Deco directions.',
+    themes: [WindowsPhoneMetroTheme, LCARSTheme, FrutigerAeroTheme, NeoNoirNeonTheme]
   }
 };
 

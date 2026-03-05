@@ -25,6 +25,7 @@ Ktheme is a powerful, flexible theming engine inspired by the advanced theming s
 - 🔧 **Kotlin Plugin** - Native Kotlin/JVM support for Android and backend applications
 - 📱 **22 Preset Themes** - Includes CleverFerret set plus iconic/interface-focused additions
 - 🧩 **Curated Theme Sets** - Ready-to-use bundles for onboarding and product contexts
+- 🚀 **Iconic Activation Packs** - One-call pack + variant + archetype activation workflow
 
 ## 🚀 Installation
 
@@ -253,6 +254,27 @@ const css = generateThemeAdaptationCSS(adapted);
 - `lcars` → rail layout and pill geometry suitable for LCARS-style interfaces
 
 This makes it practical to build themes that require structural restyling (e.g. Frutiger Aero, Windows Phone, LCARS).
+
+### Iconic Activation Packs
+
+Use `applyIconicPack(packId, { variant, appArchetype, expansionPacks })` to activate curated iconic recipes:
+
+- `windows-activation-pack`
+- `lcars-activation-pack`
+- `art-nouveau-pack`
+- `art-deco-pack`
+
+```typescript
+import { applyIconicPack } from '@ktheme/engine';
+
+const dashboardTheme = applyIconicPack('windows-activation-pack', {
+  variant: 'high-contrast',
+  appArchetype: 'dashboard',
+  expansionPacks: ['platform-pack', 'accessibility-pack']
+});
+```
+
+See full examples in [docs/iconic-activation.md](docs/iconic-activation.md).
 
 ## 🛠️ Theme Creator App
 
