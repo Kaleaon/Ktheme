@@ -1,6 +1,7 @@
 import { Theme } from '../core/types';
 import { darken, lighten, mix, opacity } from '../utils/colors';
 import { ExpansionPackPlans } from './strategy';
+import { DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE } from '../accessibility/defaults';
 
 export interface ExpansionPackImplementation {
   id: string;
@@ -74,7 +75,8 @@ export const ExpansionPackImplementations: ExpansionPackImplementation[] = [
           cornerStyle: 'rounded',
           spacingScale: 0.95,
           panelStyle: 'elevated',
-          navigationStyle: 'rail'
+          navigationStyle: 'rail',
+          accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
         }
       };
       return next;
@@ -263,7 +265,8 @@ export const ExpansionPackImplementations: ExpansionPackImplementation[] = [
           cornerStyle: 'rounded',
           spacingScale: 0.9,
           panelStyle: 'flat',
-          navigationStyle: 'tabs'
+          navigationStyle: 'tabs',
+          accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
         }
       };
       return next;

@@ -4,7 +4,6 @@
 
 import { ColorScheme, ComponentOverride, DesignTokens, Theme, ThemeAdaptation } from '../core/types';
 import { toCssColor } from '../utils/colors';
-import { ComponentOverride, DesignTokens, Theme, ThemeAdaptation } from '../core/types';
 import { resolveAccessibilitySettings, shouldAutoIncludeAccessibilityCSS } from '../accessibility/defaults';
 
 function normalizeNumericValue(key: string, value: string | number): string {
@@ -41,6 +40,85 @@ export function generateLayoutCSSVariables(adaptation?: ThemeAdaptation['layout'
     --kt-layout-panel-style: ${adaptation.panelStyle ?? 'flat'};
     --kt-layout-navigation-style: ${adaptation.navigationStyle ?? 'tabs'};
   `;
+}
+
+
+
+/**
+ * Generate CSS variables and helper hooks from the layout accessibility contract.
+ */
+export function generateLayoutAccessibilityCSS(layout?: ThemeAdaptation['layout']): string {
+  if (!layout?.accessibility) return '';
+
+  const profile = layout.accessibility;
+
+  return `
+    --kt-layout-landmark-main: ${profile.landmarks.main};
+    --kt-layout-landmark-nav: ${profile.landmarks.nav};
+    --kt-layout-landmark-header: ${profile.landmarks.header};
+    --kt-layout-landmark-footer: ${profile.landmarks.footer};
+    --kt-layout-label-main: ${JSON.stringify(profile.naming.main)};
+    --kt-layout-label-nav: ${JSON.stringify(profile.naming.nav)};
+    --kt-layout-label-header: ${JSON.stringify(profile.naming.header)};
+    --kt-layout-label-footer: ${JSON.stringify(profile.naming.footer)};
+    --kt-layout-label-strategy: ${profile.naming.strategy};
+    --kt-layout-keyboard-order: ${profile.keyboard.order};
+    --kt-layout-focus-policy: ${profile.keyboard.focusPolicy};
+    --kt-layout-live-region-mode: ${profile.liveRegion.mode};
+    --kt-layout-live-region-atomic: ${profile.liveRegion.atomic ? 'true' : 'false'};
+    --kt-layout-live-region-relevant: ${profile.liveRegion.relevant};
+  `;
+}
+
+export function generateLayoutAccessibilityHookCSS(layout?: ThemeAdaptation['layout']): string {
+  if (!layout?.accessibility) return '';
+
+  return `
+/*
+  Layout accessibility contract attribute mappings:
+  - landmarks.main -> [data-kt-landmark="main"] / .kt-landmark-main
+  - landmarks.nav -> [data-kt-landmark="nav"] / .kt-landmark-nav
+  - landmarks.header -> [data-kt-landmark="header"] / .kt-landmark-header
+  - landmarks.footer -> [data-kt-landmark="footer"] / .kt-landmark-footer
+  - naming.* -> [data-kt-label]
+  - keyboard.* -> [data-kt-kb-order] + [data-kt-focus-policy]
+  - liveRegion.* -> [data-kt-live-region]
+*/
+[data-kt-landmark="main"], .kt-landmark-main {
+  --kt-landmark-role: var(--kt-layout-landmark-main);
+}
+
+[data-kt-landmark="nav"], .kt-landmark-nav {
+  --kt-landmark-role: var(--kt-layout-landmark-nav);
+}
+
+[data-kt-landmark="header"], .kt-landmark-header {
+  --kt-landmark-role: var(--kt-layout-landmark-header);
+}
+
+[data-kt-landmark="footer"], .kt-landmark-footer {
+  --kt-landmark-role: var(--kt-layout-landmark-footer);
+}
+
+[data-kt-label][data-kt-label="main"] {
+  --kt-layout-label: var(--kt-layout-label-main);
+}
+
+[data-kt-label][data-kt-label="nav"] {
+  --kt-layout-label: var(--kt-layout-label-nav);
+}
+
+[data-kt-focus-policy="managed"] :focus-visible,
+.kt-focus-policy-managed :focus-visible {
+  scroll-margin: calc(var(--kt-a11y-target-size, 44px) * 0.5);
+}
+
+[data-kt-live-region] {
+  --kt-live-region-mode: var(--kt-layout-live-region-mode);
+  --kt-live-region-atomic: var(--kt-layout-live-region-atomic);
+  --kt-live-region-relevant: var(--kt-layout-live-region-relevant);
+}
+  `.trim();
 }
 
 /**
@@ -209,25 +287,30 @@ export function generateThemeAdaptationCSS(theme: Theme): string {
   const adaptation = theme.adaptation;
   const colorVars = generateColorSchemeCSSVariables(theme.colorScheme);
   const layoutVars = generateLayoutCSSVariables(adaptation?.layout);
+  const layoutAccessibilityVars = generateLayoutAccessibilityCSS(adaptation?.layout);
+  const layoutAccessibilityHooks = generateLayoutAccessibilityHookCSS(adaptation?.layout);
   const iconVars = generateIconCSSVariables(adaptation?.icons);
   const tokenVars = generateDesignTokenCSSVariables(theme.tokens);
   const accessibilityVars = generateAccessibilityCSS(theme);
   const overrideCSS = generateComponentOverrideCSS(adaptation?.componentOverrides);
   const accessibilityUtilityCSS = generateAccessibilityUtilityCSS(theme);
 
-  if (!colorVars && !layoutVars && !iconVars && !tokenVars && !overrideCSS) return '';
-  if (!layoutVars && !iconVars && !tokenVars && !accessibilityVars && !overrideCSS && !accessibilityUtilityCSS) return '';
+  if (!colorVars && !layoutVars && !layoutAccessibilityVars && !iconVars && !tokenVars && !overrideCSS) return '';
+  if (!layoutVars && !layoutAccessibilityVars && !iconVars && !tokenVars && !accessibilityVars && !overrideCSS && !layoutAccessibilityHooks && !accessibilityUtilityCSS) return '';
 
   return `
 :root {
 ${colorVars}
 ${layoutVars}
+${layoutAccessibilityVars}
 ${iconVars}
 ${tokenVars}
 ${accessibilityVars}
 }
 
 ${overrideCSS}
+
+${layoutAccessibilityHooks}
 
 ${accessibilityUtilityCSS}
   `.trim();

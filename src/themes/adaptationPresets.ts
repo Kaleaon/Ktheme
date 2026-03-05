@@ -2,6 +2,7 @@
  * App-wide adaptation presets for layout and icon transformation.
  */
 
+import { DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE } from '../accessibility/defaults';
 import { ThemeAdaptation } from '../core/types';
 
 export const FrutigerAeroAdaptation: ThemeAdaptation = {
@@ -10,7 +11,8 @@ export const FrutigerAeroAdaptation: ThemeAdaptation = {
     cornerStyle: 'rounded',
     spacingScale: 1.1,
     panelStyle: 'glass',
-    navigationStyle: 'tabs'
+    navigationStyle: 'tabs',
+    accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
   },
   icons: {
     family: 'custom',
@@ -44,7 +46,8 @@ export const WindowsPhoneMetroAdaptation: ThemeAdaptation = {
     cornerStyle: 'sharp',
     spacingScale: 1.25,
     panelStyle: 'flat',
-    navigationStyle: 'pivot'
+    navigationStyle: 'pivot',
+    accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
   },
   icons: {
     family: 'fluent',
@@ -77,7 +80,8 @@ export const LCARSAdaptation: ThemeAdaptation = {
     cornerStyle: 'pill',
     spacingScale: 0.92,
     panelStyle: 'flat',
-    navigationStyle: 'rail'
+    navigationStyle: 'rail',
+    accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
   },
   icons: {
     family: 'custom',

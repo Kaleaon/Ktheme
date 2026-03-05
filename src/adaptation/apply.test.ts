@@ -9,6 +9,7 @@ import {
   generateThemeAdaptationCSS
 } from './apply';
 import { Theme } from '../core/types';
+import { DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE } from '../accessibility/defaults';
 
 describe('adaptation CSS generators', () => {
   it('generates layout and icon CSS custom properties', () => {
@@ -17,7 +18,8 @@ describe('adaptation CSS generators', () => {
       cornerStyle: 'sharp',
       spacingScale: 1.25,
       panelStyle: 'flat',
-      navigationStyle: 'pivot'
+      navigationStyle: 'pivot',
+      accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
     });
 
     const iconVars = generateIconCSSVariables({
@@ -30,6 +32,7 @@ describe('adaptation CSS generators', () => {
 
     expect(layoutVars).toContain('--kt-layout-density: spacious;');
     expect(layoutVars).toContain('--kt-layout-corner-style: sharp;');
+    expect(layoutVars).toContain('--kt-layout-navigation-style: pivot;');
     expect(iconVars).toContain('--kt-icon-family: fluent;');
     expect(iconVars).toContain('--kt-icon-style: line;');
   });
@@ -174,7 +177,8 @@ describe('adaptation CSS generators', () => {
         layout: {
           density: 'comfortable',
           cornerStyle: 'rounded',
-          spacingScale: 1
+          spacingScale: 1,
+          accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
         },
         icons: {
           family: 'material',
@@ -196,6 +200,8 @@ describe('adaptation CSS generators', () => {
 
     expect(css).toContain(':root {');
     expect(css).toContain('--kt-layout-density: comfortable;');
+    expect(css).toContain('--kt-layout-live-region-mode: polite;');
+    expect(css).toContain('Layout accessibility contract attribute mappings');
     expect(css).toContain('--kt-primary: #000;');
     expect(css).toContain('--kt-icon-family: material;');
     expect(css).toContain('--kt-density-base-spacing: 8px;');

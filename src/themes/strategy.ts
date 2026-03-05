@@ -1,5 +1,6 @@
 import { MetallicVariant, Theme } from '../core/types';
 import { ThemeEngine } from '../core/ThemeEngine';
+import { DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE } from '../accessibility/defaults';
 import { getMetallicGradient } from '../effects/metallic';
 import { adjustHue, adjustSaturation, generatePaletteFromSeed, getContrastColor, opacity } from '../utils/colors';
 import { PaperInkTheme } from './presets';
@@ -299,7 +300,7 @@ export function createThemeFromFamily(familyId: string): Theme {
         fontFamily: 'Inter, "Helvetica Neue", sans-serif',
         lineHeight: 1.65
       },
-      adaptation: { layout: { density: 'spacious', cornerStyle: 'rounded', spacingScale: 1.2 } },
+      adaptation: { layout: { density: 'spacious', cornerStyle: 'rounded', spacingScale: 1.2, accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE } },
       tokens: { corners: { small: 12, medium: 18, large: 24, xlarge: 28 }, density: { scale: 1.15, baseSpacing: 10 } }
     },
     'brutalist-ui': {
@@ -320,7 +321,7 @@ export function createThemeFromFamily(familyId: string): Theme {
       },
       typography: { ...base.typography, fontFamily: '"IBM Plex Mono", "Courier New", monospace', lineHeight: 1.4 },
       adaptation: {
-        layout: { density: 'compact', cornerStyle: 'sharp', spacingScale: 0.9 },
+        layout: { density: 'compact', cornerStyle: 'sharp', spacingScale: 0.9, accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE },
         componentOverrides: [{ selector: '.kt-surface', styles: { border: '3px solid currentColor', 'box-shadow': 'none' } }]
       }
     },
@@ -339,7 +340,7 @@ export function createThemeFromFamily(familyId: string): Theme {
         overlays: { enabled: true, color: '#BBDDF5', opacity: 0.2, blendMode: 'screen' },
         shimmer: { enabled: true, speed: 5, intensity: 0.25, angle: 120 }
       },
-      adaptation: { layout: { density: 'comfortable', cornerStyle: 'rounded', spacingScale: 1.05, panelStyle: 'glass' } }
+      adaptation: { layout: { density: 'comfortable', cornerStyle: 'rounded', spacingScale: 1.05, panelStyle: 'glass', accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE } }
     },
     'retro-terminal': {
       darkMode: true,
@@ -354,14 +355,14 @@ export function createThemeFromFamily(familyId: string): Theme {
       },
       effects: { noise: { enabled: true, opacity: 0.12, scale: 1.4 }, metallic: { enabled: false, variant: MetallicVariant.SILVER, gradient: getMetallicGradient(MetallicVariant.SILVER), intensity: 0 } },
       typography: { ...base.typography, fontFamily: '"JetBrains Mono", "Courier New", monospace' },
-      adaptation: { layout: { density: 'compact', cornerStyle: 'sharp', spacingScale: 0.95 } }
+      adaptation: { layout: { density: 'compact', cornerStyle: 'sharp', spacingScale: 0.95, accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE } }
     },
     'editorial-magazine': {
       darkMode: false,
       colorScheme: { ...derivedPalette('#8B5E3C'), background: '#F7F2EA', surface: '#FFFDF9', onBackground: '#2E2018', onSurface: '#2E2018' },
       effects: { overlays: { enabled: true, color: '#D7C7B7', opacity: 0.08, blendMode: 'soft-light' }, metallic: { enabled: false, variant: MetallicVariant.SILVER, gradient: getMetallicGradient(MetallicVariant.SILVER), intensity: 0 } },
       typography: { ...base.typography, fontFamily: '"Playfair Display", Georgia, serif', lineHeight: 1.75, letterSpacing: 0.02 },
-      adaptation: { layout: { density: 'spacious', cornerStyle: 'rounded', spacingScale: 1.25 } }
+      adaptation: { layout: { density: 'spacious', cornerStyle: 'rounded', spacingScale: 1.25, accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE } }
     },
     'material-plus': {
       darkMode: false,
@@ -371,14 +372,14 @@ export function createThemeFromFamily(familyId: string): Theme {
         transitions: { enabled: true, duration: 200, properties: ['background-color', 'color', 'box-shadow', 'transform'] },
         animations: { enabled: true, duration: 200, easing: 'ease-in-out' }
       },
-      adaptation: { layout: { density: 'comfortable', cornerStyle: 'rounded', spacingScale: 1, panelStyle: 'elevated' } },
+      adaptation: { layout: { density: 'comfortable', cornerStyle: 'rounded', spacingScale: 1, panelStyle: 'elevated', accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE } },
       tokens: { corners: { small: 4, medium: 8, large: 12, xlarge: 16 }, density: { scale: 1, baseSpacing: 8 } }
     },
     'enterprise-calm': {
       darkMode: false,
       colorScheme: { ...derivedPalette('#5E748C'), primary: '#4F6982', secondary: adjustSaturation('#5E748C', -18), tertiary: '#6D7D8D' },
       effects: { shimmer: { enabled: false, speed: 0, intensity: 0, angle: 0 }, metallic: { enabled: false, variant: MetallicVariant.SILVER, gradient: getMetallicGradient(MetallicVariant.SILVER), intensity: 0 } },
-      adaptation: { layout: { density: 'compact', cornerStyle: 'rounded', spacingScale: 0.95, panelStyle: 'flat', navigationStyle: 'rail' }, icons: { family: 'material', style: 'outlined', sizeScale: 0.95, strokeWidth: 1.8 } }
+      adaptation: { layout: { density: 'compact', cornerStyle: 'rounded', spacingScale: 0.95, panelStyle: 'flat', navigationStyle: 'rail', accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE }, icons: { family: 'material', style: 'outlined', sizeScale: 0.95, strokeWidth: 1.8 } }
     },
     'playful-consumer': {
       darkMode: false,
@@ -388,7 +389,7 @@ export function createThemeFromFamily(familyId: string): Theme {
         shimmer: { enabled: true, speed: 3, intensity: 0.45, angle: 135 },
         animations: { enabled: true, duration: 260, easing: 'ease-out' }
       },
-      adaptation: { layout: { density: 'comfortable', cornerStyle: 'pill', spacingScale: 1.1 }, icons: { family: 'material', style: 'filled', sizeScale: 1.05 } }
+      adaptation: { layout: { density: 'comfortable', cornerStyle: 'pill', spacingScale: 1.1, accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE }, icons: { family: 'material', style: 'filled', sizeScale: 1.05 } }
     },
     'luxury-dark': {
       darkMode: true,
@@ -398,7 +399,7 @@ export function createThemeFromFamily(familyId: string): Theme {
         shadows: { enabled: true, elevation: 6, blur: 18, color: '#7A5A1A55' }
       },
       typography: { ...base.typography, fontFamily: '"Cormorant Garamond", Georgia, serif' },
-      adaptation: { layout: { density: 'comfortable', cornerStyle: 'rounded', spacingScale: 1, panelStyle: 'elevated' } }
+      adaptation: { layout: { density: 'comfortable', cornerStyle: 'rounded', spacingScale: 1, panelStyle: 'elevated', accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE } }
     },
     'nature-organic': {
       darkMode: false,
@@ -408,7 +409,7 @@ export function createThemeFromFamily(familyId: string): Theme {
         noise: { enabled: true, opacity: 0.08, scale: 1.2 }
       },
       typography: { ...base.typography, fontFamily: '"Lora", "Inter", serif', lineHeight: 1.6 },
-      adaptation: { layout: { density: 'comfortable', cornerStyle: 'rounded', spacingScale: 1.08 } }
+      adaptation: { layout: { density: 'comfortable', cornerStyle: 'rounded', spacingScale: 1.08, accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE } }
     }
   };
 

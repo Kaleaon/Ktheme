@@ -195,6 +195,51 @@ export class ThemeEngine {
       addError('Layout spacingScale must be greater than 0', 'invalid-adaptation', 'adaptation.layout.spacingScale');
     }
 
+    if (theme.adaptation?.layout) {
+      const { accessibility } = theme.adaptation.layout;
+      if (!accessibility) {
+        addError('Layout accessibility profile is required when adaptation.layout is provided', 'invalid-adaptation', 'adaptation.layout.accessibility');
+      } else {
+        const requiredLandmarks: Array<keyof typeof accessibility.landmarks> = ['main', 'nav', 'header', 'footer'];
+        requiredLandmarks.forEach(key => {
+          if (!accessibility.landmarks[key]) {
+            addError(`Layout accessibility landmark ${key} is required`, 'invalid-adaptation', `adaptation.layout.accessibility.landmarks.${key}`);
+          }
+          if (!accessibility.naming[key]) {
+            addError(`Layout accessibility naming label ${key} is required`, 'invalid-adaptation', `adaptation.layout.accessibility.naming.${key}`);
+          }
+        });
+
+        if (!accessibility.naming.strategy) {
+          addError('Layout accessibility naming strategy is required', 'invalid-adaptation', 'adaptation.layout.accessibility.naming.strategy');
+        }
+
+        if (!accessibility.keyboard.order) {
+          addError('Layout accessibility keyboard order is required', 'invalid-adaptation', 'adaptation.layout.accessibility.keyboard.order');
+        }
+
+        if (!accessibility.keyboard.focusPolicy) {
+          addError('Layout accessibility focus policy is required', 'invalid-adaptation', 'adaptation.layout.accessibility.keyboard.focusPolicy');
+        }
+
+        if (accessibility.keyboard.trapFocusWithinModals === undefined) {
+          addError('Layout accessibility trapFocusWithinModals is required', 'invalid-adaptation', 'adaptation.layout.accessibility.keyboard.trapFocusWithinModals');
+        }
+
+        if (!accessibility.liveRegion.mode) {
+          addError('Layout accessibility live-region mode is required', 'invalid-adaptation', 'adaptation.layout.accessibility.liveRegion.mode');
+        }
+
+        if (accessibility.liveRegion.atomic === undefined) {
+          addError('Layout accessibility live-region atomic is required', 'invalid-adaptation', 'adaptation.layout.accessibility.liveRegion.atomic');
+        }
+
+        if (!accessibility.liveRegion.relevant) {
+          addError('Layout accessibility live-region relevant policy is required', 'invalid-adaptation', 'adaptation.layout.accessibility.liveRegion.relevant');
+        }
+      }
+    }
+
     if (theme.adaptation?.icons?.sizeScale !== undefined && theme.adaptation.icons.sizeScale <= 0) {
       addError('Icon sizeScale must be greater than 0', 'invalid-adaptation', 'adaptation.icons.sizeScale');
     }

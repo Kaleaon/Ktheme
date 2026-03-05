@@ -2,6 +2,7 @@ import { ThemeEngine } from './ThemeEngine';
 import { NavyGoldTheme } from '../themes/presets';
 import { AdaptationPresets } from '../themes/adaptationPresets';
 import type { Theme } from './types';
+import { DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE } from '../accessibility/defaults';
 
 describe('ThemeEngine adaptations', () => {
   it('creates and registers adapted themes', () => {
@@ -27,7 +28,8 @@ describe('ThemeEngine adaptations', () => {
         layout: {
           density: 'comfortable' as const,
           cornerStyle: 'rounded' as const,
-          spacingScale: 0
+          spacingScale: 0,
+          accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
         },
         icons: {
           family: 'material' as const,
@@ -51,6 +53,28 @@ describe('ThemeEngine adaptations', () => {
     expect(validation.errors).toContain('Layout spacingScale must be greater than 0');
     expect(validation.errors).toContain('Icon sizeScale must be greater than 0');
     expect(validation.errors).toContain('Component override at index 0 is missing selector');
+  });
+
+
+  it('errors when layout accessibility contract is missing', () => {
+    const engine = new ThemeEngine();
+    const invalid = {
+      ...NavyGoldTheme,
+      metadata: {
+        ...NavyGoldTheme.metadata,
+        id: 'missing-layout-a11y-contract'
+      },
+      adaptation: {
+        layout: {
+          density: 'comfortable' as const,
+          cornerStyle: 'rounded' as const,
+          spacingScale: 1
+        }
+      }
+    };
+
+    const validation = engine.validateTheme(invalid as unknown as Theme);
+    expect(validation.errors).toContain('Layout accessibility profile is required when adaptation.layout is provided');
   });
 
   it('warns on low contrast and validates semantic/tokens additions', () => {
@@ -144,7 +168,8 @@ describe('ThemeEngine adaptations', () => {
         layout: {
           density: 'spacious' as const,
           cornerStyle: 'rounded' as const,
-          spacingScale: 0.7
+          spacingScale: 0.7,
+          accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
         },
         icons: {
           family: 'material' as const,
@@ -202,7 +227,8 @@ describe('ThemeEngine adaptations', () => {
         layout: {
           density: 'spacious' as const,
           cornerStyle: 'rounded' as const,
-          spacingScale: 0.7
+          spacingScale: 0.7,
+          accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
         },
         icons: {
           family: 'material' as const,

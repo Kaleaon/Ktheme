@@ -1,5 +1,6 @@
 import { Theme, ThemeAdaptation } from '../core/types';
 import { applyExpansionPack } from './expansion';
+import { DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE } from '../accessibility/defaults';
 import {
   AuroraGlassNightTheme,
   CalmClinicalTheme,
@@ -68,7 +69,8 @@ export const IconicPackRecipes: Record<IconicPackId, IconicPackRecipe> = {
           cornerStyle: 'sharp',
           spacingScale: 1.15,
           panelStyle: 'flat',
-          navigationStyle: 'pivot'
+          navigationStyle: 'pivot',
+          accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
         }
       },
       content: {
@@ -77,7 +79,8 @@ export const IconicPackRecipes: Record<IconicPackId, IconicPackRecipe> = {
           cornerStyle: 'sharp',
           spacingScale: 1.2,
           panelStyle: 'flat',
-          navigationStyle: 'tabs'
+          navigationStyle: 'tabs',
+          accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
         }
       }
     }
@@ -101,7 +104,8 @@ export const IconicPackRecipes: Record<IconicPackId, IconicPackRecipe> = {
           cornerStyle: 'pill',
           spacingScale: 0.9,
           panelStyle: 'flat',
-          navigationStyle: 'rail'
+          navigationStyle: 'rail',
+          accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
         }
       },
       content: {
@@ -110,7 +114,8 @@ export const IconicPackRecipes: Record<IconicPackId, IconicPackRecipe> = {
           cornerStyle: 'pill',
           spacingScale: 1,
           panelStyle: 'flat',
-          navigationStyle: 'drawer'
+          navigationStyle: 'drawer',
+          accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
         }
       }
     }
@@ -134,7 +139,8 @@ export const IconicPackRecipes: Record<IconicPackId, IconicPackRecipe> = {
           cornerStyle: 'rounded',
           spacingScale: 1.12,
           panelStyle: 'glass',
-          navigationStyle: 'tabs'
+          navigationStyle: 'tabs',
+          accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
         }
       },
       dashboard: {
@@ -143,7 +149,8 @@ export const IconicPackRecipes: Record<IconicPackId, IconicPackRecipe> = {
           cornerStyle: 'rounded',
           spacingScale: 1.02,
           panelStyle: 'elevated',
-          navigationStyle: 'rail'
+          navigationStyle: 'rail',
+          accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
         }
       }
     }
@@ -166,7 +173,8 @@ export const IconicPackRecipes: Record<IconicPackId, IconicPackRecipe> = {
           cornerStyle: 'rounded',
           spacingScale: 0.96,
           panelStyle: 'elevated',
-          navigationStyle: 'tabs'
+          navigationStyle: 'tabs',
+          accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
         }
       },
       consumer: {
@@ -175,7 +183,8 @@ export const IconicPackRecipes: Record<IconicPackId, IconicPackRecipe> = {
           cornerStyle: 'rounded',
           spacingScale: 1.08,
           panelStyle: 'elevated',
-          navigationStyle: 'drawer'
+          navigationStyle: 'drawer',
+          accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
         }
       },
       content: {
@@ -184,7 +193,8 @@ export const IconicPackRecipes: Record<IconicPackId, IconicPackRecipe> = {
           cornerStyle: 'rounded',
           spacingScale: 1.06,
           panelStyle: 'flat',
-          navigationStyle: 'tabs'
+          navigationStyle: 'tabs',
+          accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
         }
       }
     }
