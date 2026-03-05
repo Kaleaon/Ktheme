@@ -13,6 +13,9 @@ export interface AutoRedesignInput {
     mode?: 'dark' | 'light';
     minimumContrast?: number;
     reducedMotion?: boolean;
+    screenReaderCompatible?: boolean;
+    keyboardOnlyOperable?: boolean;
+    minimumTargetSize?: number;
   };
   expansionPackIds?: string[];
   adaptationPresetId?: keyof typeof AdaptationPresets;
@@ -31,11 +34,24 @@ export interface AutoRedesignReport {
     errors: string[];
     warnings: string[];
   };
+  assistiveCompliance: {
+    passed: boolean;
+    missingFields: string[];
+    autoFixesApplied: string[];
+  };
+}
+
+export interface AutoRedesignError {
+  code: 'assistive-compliance-failed';
+  message: string;
+  missingFields: string[];
+  attemptedFixes: string[];
 }
 
 export interface AutoRedesignResult {
-  theme: Theme;
+  theme?: Theme;
   report: AutoRedesignReport;
+  error?: AutoRedesignError;
 }
 
 const aestheticPresetMap: Record<string, Theme> = {
@@ -178,7 +194,131 @@ function applyConstraints(theme: Theme, constraints: AutoRedesignInput['constrai
     };
   }
 
+  if (constraints.minimumTargetSize !== undefined) {
+    constrained.accessibility = {
+      ...constrained.accessibility,
+      interaction: {
+        ...constrained.accessibility?.interaction,
+        minimumTargetSize: constraints.minimumTargetSize
+      }
+    };
+  }
+
   return constrained;
+}
+
+function resolveAssistiveConstraints(constraints?: AutoRedesignInput['constraints']): Required<
+  Pick<NonNullable<AutoRedesignInput['constraints']>, 'screenReaderCompatible' | 'keyboardOnlyOperable' | 'minimumTargetSize'>
+> {
+  return {
+    screenReaderCompatible: constraints?.screenReaderCompatible ?? true,
+    keyboardOnlyOperable: constraints?.keyboardOnlyOperable ?? true,
+    minimumTargetSize: constraints?.minimumTargetSize ?? 44
+  };
+}
+
+function enforceAssistiveCompliance(
+  theme: Theme,
+  constraints: Required<Pick<NonNullable<AutoRedesignInput['constraints']>, 'screenReaderCompatible' | 'keyboardOnlyOperable' | 'minimumTargetSize'>>
+): { theme: Theme; passed: boolean; missingFields: string[]; autoFixesApplied: string[] } {
+  const compliantTheme = cloneTheme(theme);
+  const autoFixesApplied: string[] = [];
+  const missingFields: string[] = [];
+
+  if (constraints.minimumTargetSize < 24) {
+    missingFields.push('constraints.minimumTargetSize (must be >= 24)');
+  }
+
+  if (!compliantTheme.accessibility) {
+    compliantTheme.accessibility = { enabled: true, autoIncludeInGeneratedCSS: true };
+    autoFixesApplied.push('Added default accessibility profile.');
+  }
+
+  if (compliantTheme.accessibility.enabled !== true) {
+    compliantTheme.accessibility.enabled = true;
+    autoFixesApplied.push('Enabled accessibility defaults.');
+  }
+
+  if (compliantTheme.accessibility.minimumContrastRatio === undefined) {
+    compliantTheme.accessibility.minimumContrastRatio = 4.5;
+    autoFixesApplied.push('Set accessibility minimumContrastRatio to 4.5.');
+  }
+
+  compliantTheme.accessibility.controls = {
+    allowContrastToggle: true,
+    allowMotionToggle: true,
+    allowFontScaleControl: true,
+    allowFocusRingToggle: true,
+    ...compliantTheme.accessibility.controls
+  };
+
+  const interactionMinimumTargetSize = Math.max(
+    constraints.minimumTargetSize,
+    compliantTheme.accessibility.interaction?.minimumTargetSize ?? constraints.minimumTargetSize
+  );
+
+  compliantTheme.accessibility.interaction = {
+    focusRingWidth: 2,
+    focusRingOffset: 2,
+    underlineLinks: true,
+    ...compliantTheme.accessibility.interaction,
+    minimumTargetSize: interactionMinimumTargetSize
+  };
+
+  compliantTheme.effects = compliantTheme.effects ?? {};
+  compliantTheme.effects.focusRing = {
+    enabled: true,
+    color: compliantTheme.colorScheme.primary,
+    width: 2,
+    offset: 2,
+    ...compliantTheme.effects.focusRing
+  };
+
+  if (!compliantTheme.adaptation?.layout) {
+    compliantTheme.adaptation = {
+      ...compliantTheme.adaptation,
+      layout: {
+        density: 'comfortable',
+        cornerStyle: 'rounded',
+        spacingScale: 1,
+        navigationStyle: 'rail'
+      }
+    };
+    autoFixesApplied.push('Added default layout semantics for assistive compatibility.');
+  }
+
+  if (!compliantTheme.adaptation?.icons) {
+    compliantTheme.adaptation = {
+      ...compliantTheme.adaptation,
+      icons: {
+        family: 'material',
+        style: 'outlined',
+        sizeScale: 1,
+        strokeWidth: 1.5,
+        cornerStyle: 'rounded'
+      }
+    };
+    autoFixesApplied.push('Added default icon semantics for screen reader/keyboard parity.');
+  }
+
+  if (constraints.keyboardOnlyOperable && !compliantTheme.effects.focusRing?.enabled) {
+    missingFields.push('effects.focusRing.enabled');
+  }
+
+  if (constraints.screenReaderCompatible && !compliantTheme.adaptation?.layout?.navigationStyle) {
+    missingFields.push('adaptation.layout.navigationStyle');
+  }
+
+  if ((compliantTheme.accessibility.interaction?.minimumTargetSize ?? 0) < constraints.minimumTargetSize) {
+    missingFields.push('accessibility.interaction.minimumTargetSize');
+  }
+
+  return {
+    theme: compliantTheme,
+    passed: missingFields.length === 0,
+    missingFields,
+    autoFixesApplied
+  };
 }
 
 export function autoRedesign(input: AutoRedesignInput): AutoRedesignResult {
@@ -206,8 +346,12 @@ export function autoRedesign(input: AutoRedesignInput): AutoRedesignResult {
     base.fallbackDecisions.push(`Unknown adaptation preset \"${adaptationPresetId}\". Kept base adaptation.`);
   }
 
+  const assistiveConstraints = resolveAssistiveConstraints(input.constraints);
+
   workingTheme.adaptation = mergeAdaptation(workingTheme.adaptation, adaptationPreset);
   workingTheme = applyConstraints(workingTheme, input.constraints);
+  const assistiveCompliance = enforceAssistiveCompliance(workingTheme, assistiveConstraints);
+  workingTheme = assistiveCompliance.theme;
 
   const engine = new ThemeEngine();
   const validation = engine.validateTheme(workingTheme);
@@ -237,17 +381,36 @@ export function autoRedesign(input: AutoRedesignInput): AutoRedesignResult {
     });
   }
 
+  const report: AutoRedesignReport = {
+    selectedFamily: base.selectedFamily,
+    baseThemeId: workingTheme.metadata.id,
+    baseSelection: base.baseSelection,
+    packsApplied: appliedPacks,
+    contrastWarnings,
+    overriddenTokens: changedPaths(originalBase, workingTheme),
+    fallbackDecisions: base.fallbackDecisions,
+    validation: finalValidation,
+    assistiveCompliance: {
+      passed: assistiveCompliance.passed,
+      missingFields: assistiveCompliance.missingFields,
+      autoFixesApplied: assistiveCompliance.autoFixesApplied
+    }
+  };
+
+  if (!assistiveCompliance.passed) {
+    return {
+      report,
+      error: {
+        code: 'assistive-compliance-failed',
+        message: 'Unable to produce assistive-compliant redesign output.',
+        missingFields: assistiveCompliance.missingFields,
+        attemptedFixes: assistiveCompliance.autoFixesApplied
+      }
+    };
+  }
+
   return {
     theme: workingTheme,
-    report: {
-      selectedFamily: base.selectedFamily,
-      baseThemeId: workingTheme.metadata.id,
-      baseSelection: base.baseSelection,
-      packsApplied: appliedPacks,
-      contrastWarnings,
-      overriddenTokens: changedPaths(originalBase, workingTheme),
-      fallbackDecisions: base.fallbackDecisions,
-      validation: finalValidation
-    }
+    report
   };
 }
