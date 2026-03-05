@@ -107,8 +107,97 @@ export const LCARSAdaptation: ThemeAdaptation = {
   ]
 };
 
+export const ArtNouveauAdaptation: ThemeAdaptation = {
+  layout: {
+    density: 'comfortable',
+    cornerStyle: 'pill',
+    spacingScale: 1.08,
+    panelStyle: 'glass',
+    navigationStyle: 'tabs'
+  },
+  icons: {
+    family: 'custom',
+    style: 'duotone',
+    sizeScale: 1.05,
+    strokeWidth: 1.3,
+    cornerStyle: 'rounded'
+  },
+  componentOverrides: [
+    {
+      selector: '.card, .panel',
+      styles: {
+        'border-radius': 24,
+        border: '1px solid rgba(123, 87, 55, 0.26)',
+        'box-shadow': '0 8px 22px rgba(63, 45, 30, 0.16)'
+      }
+    },
+    {
+      selector: '.button, .chip',
+      styles: {
+        'border-radius': 999,
+        'letter-spacing': 0.2,
+        'padding-inline': 18
+      }
+    },
+    {
+      selector: '.section-header',
+      styles: {
+        'text-transform': 'none',
+        'border-bottom': '1px solid rgba(123, 87, 55, 0.35)',
+        'padding-bottom': 8
+      }
+    }
+  ]
+};
+
+export const ArtDecoAdaptation: ThemeAdaptation = {
+  layout: {
+    density: 'compact',
+    cornerStyle: 'sharp',
+    spacingScale: 0.94,
+    panelStyle: 'elevated',
+    navigationStyle: 'rail'
+  },
+  icons: {
+    family: 'material',
+    style: 'line',
+    sizeScale: 0.98,
+    strokeWidth: 1.9,
+    cornerStyle: 'sharp'
+  },
+  componentOverrides: [
+    {
+      selector: '.panel, .dialog',
+      styles: {
+        'border-radius': 0,
+        border: '1px solid rgba(212, 175, 55, 0.45)',
+        'box-shadow': '0 0 0 1px rgba(255, 246, 224, 0.16) inset, 0 10px 26px rgba(0, 0, 0, 0.55)'
+      }
+    },
+    {
+      selector: '.data-grid, .timeline',
+      styles: {
+        'row-gap': 4,
+        'column-gap': 16,
+        'border-left': '3px solid rgba(212, 175, 55, 0.55)'
+      }
+    },
+    {
+      selector: '.top-nav, .toolbar',
+      styles: {
+        'border-radius': 0,
+        'min-height': 64,
+        'text-transform': 'uppercase',
+        'letter-spacing': 1.4
+      }
+    }
+  ]
+};
+
 export const AdaptationPresets = {
   frutigerAero: FrutigerAeroAdaptation,
   windowsPhoneMetro: WindowsPhoneMetroAdaptation,
-  lcars: LCARSAdaptation
+  lcars: LCARSAdaptation,
+  artNouveau: ArtNouveauAdaptation,
+  artDeco: ArtDecoAdaptation
 };

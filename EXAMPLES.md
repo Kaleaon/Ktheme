@@ -285,6 +285,13 @@ const theme: Theme = engine.getActiveTheme()!;
 const colors: ColorScheme = theme.colorScheme;
 ```
 
+## Official Preset JSONs
+
+Use these ready-made preset files as templates:
+
+- `themes/examples/art-nouveau.json`
+- `themes/examples/art-deco.json`
+
 ## More Examples
 
 Check out the `themes/examples/` directory for complete theme JSON files you can use as templates.
