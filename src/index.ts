@@ -31,6 +31,7 @@ export * from './redesign/autoRedesign';
 
 // Media design tokens exports
 export * from './media/quickAccess';
+export * from './exporters';
 
 // Re-export for convenience
 import { ThemeEngine } from './core/ThemeEngine';
