@@ -6,11 +6,222 @@ import { ColorScheme, ComponentOverride, DesignTokens, Theme, ThemeAdaptation } 
 import { toCssColor } from '../utils/colors';
 import { resolveAccessibilitySettings, shouldAutoIncludeAccessibilityCSS } from '../accessibility/defaults';
 
+const ALLOWED_COMPONENT_OVERRIDE_PROPERTIES = new Set([
+  // Layout and box model
+  'display', 'visibility', 'overflow', 'overflow-x', 'overflow-y',
+  'box-sizing', 'position', 'top', 'right', 'bottom', 'left', 'inset',
+  'z-index', 'float', 'clear',
+  'width', 'min-width', 'max-width', 'height', 'min-height', 'max-height',
+  'aspect-ratio',
+  'margin', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'margin-inline', 'margin-block',
+  'padding', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'padding-inline', 'padding-block',
+  'gap', 'row-gap', 'column-gap',
+  // Flex and grid
+  'flex', 'flex-grow', 'flex-shrink', 'flex-basis', 'flex-direction', 'flex-wrap', 'order',
+  'justify-content', 'justify-items', 'justify-self', 'align-content', 'align-items', 'align-self',
+  'grid-template-columns', 'grid-template-rows', 'grid-auto-columns', 'grid-auto-rows', 'grid-auto-flow',
+  'grid-column', 'grid-row', 'place-content', 'place-items', 'place-self',
+  // Typography
+  'font-family', 'font-size', 'font-weight', 'font-style', 'font-variant',
+  'line-height', 'letter-spacing', 'text-transform', 'text-align', 'text-decoration',
+  'text-overflow', 'white-space', 'word-break', 'word-spacing',
+  // Color and paint
+  'color', 'background', 'background-color', 'background-image', 'background-size', 'background-position', 'background-repeat',
+  'opacity', 'filter', 'backdrop-filter',
+  // Border and outline
+  'border', 'border-top', 'border-right', 'border-bottom', 'border-left',
+  'border-color', 'border-width', 'border-style',
+  'border-radius', 'border-top-left-radius', 'border-top-right-radius', 'border-bottom-left-radius', 'border-bottom-right-radius',
+  'outline', 'outline-color', 'outline-width', 'outline-style', 'outline-offset',
+  // Effects
+  'box-shadow', 'transition', 'transition-property', 'transition-duration', 'transition-delay', 'transition-timing-function',
+  'transform', 'transform-origin'
+]);
+
+const UNSUPPORTED_PSEUDO_SELECTORS = [
+  ':has(',
+  '::part(',
+  '::slotted(',
+  ':host',
+  ':host-context'
+];
+
+const SAFE_KEYWORD_PATTERN = /^(?:inherit|initial|unset|revert|none|auto|normal|bold|bolder|lighter|uppercase|lowercase|capitalize|transparent|currentcolor|solid|dashed|dotted|double|hidden|visible|relative|absolute|static|sticky|fixed|block|inline|inline-block|inline-flex|flex|grid|contents|center|left|right|start|end|stretch|space-between|space-around|space-evenly|nowrap|wrap|column|row|baseline|middle|top|bottom)$/i;
+const SAFE_NUMBER_PATTERN = /^-?\d+(\.\d+)?$/;
+const SAFE_LENGTH_PATTERN = /^-?\d+(\.\d+)?(px|em|rem|%|vh|vw|vmin|vmax|ch|ex|pt|pc|cm|mm|in)$/i;
+const SAFE_HEX_PATTERN = /^#([0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
+const SAFE_FUNCTION_PATTERN = /^(rgba?|hsla?|calc|min|max|clamp|var|blur|saturate|contrast|brightness|grayscale|sepia|hue-rotate|drop-shadow|linear-gradient|radial-gradient|conic-gradient)\(/i;
+
 function normalizeNumericValue(key: string, value: string | number): string {
   if (typeof value === 'number' && !['opacity', 'z-index', 'font-weight', 'line-height'].includes(key)) {
     return `${value}px`;
   }
   return `${value}`;
+}
+
+function tokenizeCssValue(raw: string): string[] {
+  const tokens: string[] = [];
+  let current = '';
+  let depth = 0;
+
+  for (const char of raw) {
+    if (char === '(') depth += 1;
+    if (char === ')') depth = Math.max(0, depth - 1);
+
+    if (/\s/.test(char) && depth === 0) {
+      if (current) {
+        tokens.push(current);
+        current = '';
+      }
+      continue;
+    }
+    current += char;
+  }
+
+  if (current) tokens.push(current);
+  return tokens;
+}
+
+function isSafeCssValueToken(token: string): boolean {
+  if (!token) return false;
+  if (SAFE_KEYWORD_PATTERN.test(token)) return true;
+  if (SAFE_NUMBER_PATTERN.test(token)) return true;
+  if (SAFE_LENGTH_PATTERN.test(token)) return true;
+  if (SAFE_HEX_PATTERN.test(token)) return true;
+  if (SAFE_FUNCTION_PATTERN.test(token)) return true;
+  if (/^var\(--[a-z0-9-_]+\)$/i.test(token)) return true;
+  return false;
+}
+
+function validateCssValueStrict(value: string | number): boolean {
+  if (typeof value === 'number') return Number.isFinite(value);
+
+  const normalized = value.trim();
+  if (!normalized) return false;
+  if (/[{};]/.test(normalized)) return false;
+  if (/javascript\s*:|expression\s*\(|behavior\s*:|@import/i.test(normalized)) return false;
+  if (/url\s*\(/i.test(normalized)) return false;
+
+  const tokens = tokenizeCssValue(normalized);
+  if (!tokens.length) return false;
+  return tokens.every(isSafeCssValueToken);
+}
+
+export interface ComponentOverrideValidationIssue {
+  severity: 'error' | 'warning';
+  message: string;
+  code: 'invalid-component-override' | 'unsafe-component-override';
+  path: string;
+}
+
+export function validateComponentOverridePolicy(overrides?: ComponentOverride[]): ComponentOverrideValidationIssue[] {
+  const issues: ComponentOverrideValidationIssue[] = [];
+  if (!overrides?.length) return issues;
+
+  overrides.forEach((override, index) => {
+    const selectorPath = `adaptation.componentOverrides[${index}].selector`;
+    const stylesPath = `adaptation.componentOverrides[${index}].styles`;
+
+    if (!override.selector?.trim()) {
+      issues.push({
+        severity: 'error',
+        code: 'invalid-component-override',
+        message: `Component override at index ${index} is missing selector`,
+        path: selectorPath
+      });
+      return;
+    }
+
+    const selector = override.selector.trim();
+    if (selector.length > 160) {
+      issues.push({
+        severity: 'error',
+        code: 'invalid-component-override',
+        message: `Component override selector at index ${index} is too long (max 160 characters)`,
+        path: selectorPath
+      });
+    }
+
+    if (/[{};@]/.test(selector)) {
+      issues.push({
+        severity: 'error',
+        code: 'unsafe-component-override',
+        message: `Component override selector at index ${index} contains unsupported CSS syntax`,
+        path: selectorPath
+      });
+    }
+
+    if ((selector.match(/[>+~]/g)?.length ?? 0) > 3) {
+      issues.push({
+        severity: 'error',
+        code: 'invalid-component-override',
+        message: `Component override selector at index ${index} is too complex (too many combinators)`,
+        path: selectorPath
+      });
+    }
+
+    if (selector.split(',').length > 4) {
+      issues.push({
+        severity: 'error',
+        code: 'invalid-component-override',
+        message: `Component override selector at index ${index} targets too many selector groups`,
+        path: selectorPath
+      });
+    }
+
+    const unsupportedPseudo = UNSUPPORTED_PSEUDO_SELECTORS.find(pseudo => selector.includes(pseudo));
+    if (unsupportedPseudo) {
+      issues.push({
+        severity: 'error',
+        code: 'invalid-component-override',
+        message: `Component override selector at index ${index} uses unsupported pseudo selector ${unsupportedPseudo}`,
+        path: selectorPath
+      });
+    }
+
+    if (/^\s*(\*|:root|html|body)\b/.test(selector)) {
+      issues.push({
+        severity: 'warning',
+        code: 'unsafe-component-override',
+        message: `Component override selector at index ${index} is dangerously broad (${selector})`,
+        path: selectorPath
+      });
+    }
+
+    const styleEntries = Object.entries(override.styles);
+    if (styleEntries.length === 0) {
+      issues.push({
+        severity: 'warning',
+        code: 'invalid-component-override',
+        message: `Component override at index ${index} has no style declarations`,
+        path: stylesPath
+      });
+      return;
+    }
+
+    styleEntries.forEach(([property, value]) => {
+      const propertyPath = `${stylesPath}.${property}`;
+      if (!ALLOWED_COMPONENT_OVERRIDE_PROPERTIES.has(property)) {
+        issues.push({
+          severity: 'error',
+          code: 'invalid-component-override',
+          message: `Component override style ${property} at index ${index} is not an allowed property`,
+          path: propertyPath
+        });
+      }
+
+      if (!validateCssValueStrict(value)) {
+        issues.push({
+          severity: 'error',
+          code: 'unsafe-component-override',
+          message: `Component override style ${property} at index ${index} contains an unsafe or unsupported CSS value`,
+          path: propertyPath
+        });
+      }
+    });
+  });
+
+  return issues;
 }
 
 /**
@@ -269,14 +480,26 @@ ${reducedMotionBlock}
 export function generateComponentOverrideCSS(overrides?: ComponentOverride[]): string {
   if (!overrides?.length) return '';
 
+  const rejectedPaths = new Set(
+    validateComponentOverridePolicy(overrides)
+      .filter(issue => issue.severity === 'error')
+      .map(issue => issue.path)
+  );
+
   return overrides
-    .map(override => {
+    .map((override, index) => {
+      const selectorPath = `adaptation.componentOverrides[${index}].selector`;
+      if (rejectedPaths.has(selectorPath)) return '';
+
       const body = Object.entries(override.styles)
+        .filter(([property]) => !rejectedPaths.has(`adaptation.componentOverrides[${index}].styles.${property}`))
         .map(([key, value]) => `  ${key}: ${normalizeNumericValue(key, value)};`)
         .join('\n');
 
+      if (!body.trim()) return '';
       return `${override.selector} {\n${body}\n}`;
     })
+    .filter(Boolean)
     .join('\n\n');
 }
 

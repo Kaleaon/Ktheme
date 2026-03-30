@@ -15,6 +15,7 @@ import {
 } from './types';
 import { contrastRatio } from '../utils/colors';
 import { resolveAccessibilitySettings } from '../accessibility/defaults';
+import { validateComponentOverridePolicy } from '../adaptation/apply';
 
 export class ThemeEngine {
   private themes: Map<string, Theme> = new Map();
@@ -285,57 +286,12 @@ export class ThemeEngine {
     }
 
     if (theme.adaptation?.componentOverrides) {
-      theme.adaptation.componentOverrides.forEach((override, index) => {
-        if (!override.selector) {
-          addError(
-            `Component override at index ${index} is missing selector`,
-            'invalid-component-override',
-            `adaptation.componentOverrides[${index}].selector`
-          );
-          return;
-        }
-
-        if (/[{};@]/.test(override.selector)) {
-          addError(
-            `Component override selector at index ${index} contains unsupported CSS syntax`,
-            'unsafe-component-override',
-            `adaptation.componentOverrides[${index}].selector`
-          );
-        }
-
-        if (/^\s*(\*|:root|html|body)\b/.test(override.selector)) {
-          addWarning(
-            `Component override selector at index ${index} is dangerously broad (${override.selector})`,
-            'unsafe-component-override',
-            `adaptation.componentOverrides[${index}].selector`
-          );
-        }
-
-        if (/\:has\(/.test(override.selector)) {
-          addWarning(
-            `Component override selector at index ${index} uses :has(), which may be unsupported in some generated CSS targets`,
-            'invalid-component-override',
-            `adaptation.componentOverrides[${index}].selector`
-          );
-        }
-
-        Object.entries(override.styles).forEach(([property, value]) => {
-          const asString = String(value);
-          if (/[{};]/.test(asString) || /javascript\s*:/i.test(asString)) {
-            addError(
-              `Component override style ${property} at index ${index} contains unsafe CSS value content`,
-              'unsafe-component-override',
-              `adaptation.componentOverrides[${index}].styles.${property}`
-            );
-          }
-        });
-
-        if (Object.keys(override.styles).length === 0) {
-          addWarning(
-            `Component override at index ${index} has no style declarations`,
-            'invalid-component-override',
-            `adaptation.componentOverrides[${index}].styles`
-          );
+      const overrideIssues = validateComponentOverridePolicy(theme.adaptation.componentOverrides);
+      overrideIssues.forEach(issue => {
+        if (issue.severity === 'error') {
+          addError(issue.message, issue.code, issue.path);
+        } else {
+          addWarning(issue.message, issue.code, issue.path);
         }
       });
     }
