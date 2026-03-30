@@ -2,25 +2,26 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { Send, Key, Loader, Download, X } from 'lucide-react';
 import { useTheme } from '../../state/ThemeContext.tsx';
 import {
+  createAISession,
+  revokeAISession,
   sendAIMessage,
   sendGeminiMultimodalMessage,
   extractThemeFromResponse,
-  getStoredApiKey,
-  setStoredApiKey,
-  clearStoredApiKey,
   type AIMessage,
   type AIRedesignPlan,
+  type AIProvider,
+  type AISession,
 } from '../../services/ai.ts';
 
 export function AIDesigner() {
   const { dispatch } = useTheme();
-  const [apiKey, setApiKey] = useState(getStoredApiKey() || '');
-  const [keyConfigured, setKeyConfigured] = useState(!!getStoredApiKey());
+  const [apiKey, setApiKey] = useState('');
+  const [session, setSession] = useState<AISession | null>(null);
   const [messages, setMessages] = useState<AIMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [provider, setProvider] = useState<'claude' | 'gemini'>('claude');
+  const [provider, setProvider] = useState<AIProvider>('claude');
   const scrollRef = useRef<HTMLDivElement>(null);
   const providerSelectId = useId();
   const promptInputId = useId();
@@ -30,18 +31,29 @@ export function AIDesigner() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages]);
 
-  function saveKey() {
-    if (apiKey.trim()) {
-      setStoredApiKey(apiKey.trim());
-      setKeyConfigured(true);
-      setError(null);
+  async function startSecureSession() {
+    if (!apiKey.trim() || isLoading) return;
+
+    setIsLoading(true);
+    setError(null);
+    try {
+      const nextSession = await createAISession(provider, apiKey.trim());
+      setSession(nextSession);
+      setProvider(nextSession.provider);
+      setApiKey('');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to start session');
+    } finally {
+      setIsLoading(false);
     }
   }
 
-  function removeKey() {
-    clearStoredApiKey();
+  async function clearSession() {
+    if (session?.sessionToken) {
+      await revokeAISession(session.sessionToken).catch(() => undefined);
+    }
+    setSession(null);
     setApiKey('');
-    setKeyConfigured(false);
   }
 
   async function handleSend() {
@@ -55,12 +67,11 @@ export function AIDesigner() {
     setError(null);
 
     try {
-      const stored = getStoredApiKey();
-      if (!stored) throw new Error('API key not configured');
+      if (!session?.sessionToken) throw new Error('Secure AI session has expired. Reconnect your key.');
 
       const response = provider === 'claude'
-        ? await sendAIMessage(newMessages, stored)
-        : await sendGeminiMultimodalMessage(newMessages[newMessages.length - 1].content, stored);
+        ? await sendAIMessage(newMessages, session.sessionToken)
+        : await sendGeminiMultimodalMessage(newMessages[newMessages.length - 1].content, session.sessionToken);
       const assistantMsg: AIMessage = { role: 'assistant', content: response };
       setMessages([...newMessages, assistantMsg]);
     } catch (err) {
@@ -77,15 +88,15 @@ export function AIDesigner() {
     }
   }
 
-  if (!keyConfigured) {
+  if (!session) {
     return (
       <div className="panel ai-panel">
         <section className="ai-key-setup" aria-labelledby="ai-key-heading">
           <Key size={48} className="ai-key-icon" aria-hidden="true" focusable="false" />
-          <h2 id="ai-key-heading">API Key Required</h2>
+          <h2 id="ai-key-heading">Secure AI Session Required</h2>
           <p>
-            Enter your model API key to use the AI theme designer (Claude or Gemini).
-            Your key is stored locally in your browser and never sent to any server other than the selected model API.
+            Enter your provider key to open a short-lived server session. Your raw key is never stored in browser storage,
+            and the client only keeps an expiring session token in memory.
           </p>
           <div className="ai-key-input-row">
             <label htmlFor={apiKeyInputId} className="sr-only">API key</label>
@@ -95,21 +106,27 @@ export function AIDesigner() {
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
               placeholder="sk-ant-..."
-              onKeyDown={(e) => e.key === 'Enter' && saveKey()}
+              onKeyDown={(e) => e.key === 'Enter' && startSecureSession()}
             />
-            <button className="btn btn-primary" type="button" onClick={saveKey}>
-              Save Key
+            <button className="btn btn-primary" type="button" onClick={startSecureSession} disabled={isLoading}>
+              {isLoading ? 'Connecting…' : 'Start Secure Session'}
             </button>
           </div>
+          <div className="ai-key-input-row">
+            <label htmlFor={providerSelectId} className="sr-only">Model provider</label>
+            <select
+              id={providerSelectId}
+              className="ai-provider-select"
+              value={provider}
+              onChange={(e) => setProvider(e.target.value as AIProvider)}
+              title="Choose model provider"
+            >
+              <option value="claude">Claude</option>
+              <option value="gemini">Gemini 2.5 Pro</option>
+            </select>
+          </div>
           <p className="ai-key-hint">
-            Get API keys from{' '}
-            <a href="https://console.anthropic.com/" target="_blank" rel="noopener noreferrer">
-              Anthropic
-            </a>
-            {' '}or{' '}
-            <a href="https://ai.google.dev/" target="_blank" rel="noopener noreferrer">
-              Google AI Studio
-            </a>
+            Session tokens expire automatically and are rate-limited server-side for safer usage.
           </p>
         </section>
       </div>
@@ -126,18 +143,20 @@ export function AIDesigner() {
             id={providerSelectId}
             className="ai-provider-select"
             value={provider}
-            onChange={(e) => setProvider(e.target.value as 'claude' | 'gemini')}
+            onChange={(e) => setProvider(e.target.value as AIProvider)}
             title="Choose model provider"
+            disabled
           >
             <option value="claude">Claude</option>
             <option value="gemini">Gemini 2.5 Pro</option>
           </select>
+          <span className="ai-key-hint">End session to switch provider</span>
           <button
             className="btn-icon"
             type="button"
-            onClick={removeKey}
-            title="Remove API key"
-            aria-label="Remove API key"
+            onClick={clearSession}
+            title="End secure session"
+            aria-label="End secure session"
           >
             <Key size={16} aria-hidden="true" focusable="false" />
             <X size={12} className="btn-icon-overlay" aria-hidden="true" focusable="false" />
@@ -148,7 +167,7 @@ export function AIDesigner() {
       <div className="ai-messages" ref={scrollRef} role="log" aria-live="polite" aria-relevant="additions text">
         {messages.length === 0 && (
           <div className="ai-welcome">
-            <p>Describe the theme you want and I'll design it for you.</p>
+            <p>Describe the theme you want and I'll design it for you. Provider keys stay on the backend proxy.</p>
             <div className="ai-suggestions">
               {[
                 'Create a cyberpunk neon theme with electric blue and magenta',
