@@ -229,6 +229,19 @@ Available sets include `starter`, `metallicShowcase`, `executiveDark`, `creative
 - **Aurora Glass Night** — premium glass UI for consumer experiences, with disciplined rules for blur depth, edge highlights, and always-readable foreground text layers.
 
 
+## 🔄 Cross-platform Exporters
+
+Convert a `Theme` into platform token bundles with:
+
+- `toCssVars(theme)`
+- `toTailwindConfig(theme)`
+- `toAndroidCompose(theme)`
+- `toSwiftUI(theme)`
+- `toFlutterTheme(theme)`
+- `toDesignTokensJson(theme)`
+
+See [docs/exporters.md](docs/exporters.md) for minimal app-consumption examples for each target.
+
 ## 🧱 App Layout + Icon Adaptation
 
 Ktheme now supports app-level adaptation profiles so themes can reshape not just colors, but **layout structure**, **icon style**, and **component composition**.
