@@ -6,6 +6,7 @@
 
 import {
   AccessibilityRuntimePreferences,
+  Color,
   ResolvedAccessibilitySettings,
   Theme,
   ThemeAdaptation,
@@ -335,7 +336,7 @@ export class ThemeEngine {
       });
     }
 
-    if (theme.effects?.shimmer) {
+    if (theme.effects?.shimmer?.enabled) {
       validateRange(theme.effects.shimmer.speed, 'effects.shimmer.speed', {
         minExclusive: 0,
         message: 'Shimmer speed must be greater than 0'
@@ -465,10 +466,18 @@ export class ThemeEngine {
       ['error', 'onError', 'error/onError']
     ];
 
+    const tryContrastRatio = (foreground: Color, background: Color): number | undefined => {
+      try {
+        return contrastRatio(foreground, background);
+      } catch {
+        return undefined;
+      }
+    };
+
     if (theme.colorScheme) {
       contrastPairs.forEach(([base, on, label]) => {
-        const ratio = contrastRatio(theme.colorScheme[base], theme.colorScheme[on]);
-        if (ratio < 4.5) {
+        const ratio = tryContrastRatio(theme.colorScheme[base], theme.colorScheme[on]);
+        if (ratio !== undefined && ratio < 4.5) {
           addWarning(
             `Low contrast for ${label}: ${ratio.toFixed(2)} (recommended >= 4.5)`,
             'low-contrast',
@@ -489,8 +498,8 @@ export class ThemeEngine {
         if (!(base in roles) || !(on in roles)) {
           addError(`Semantic role pair ${base}/${on} is incomplete`, 'incomplete-semantic-role', `colorScheme.semanticRoles`);
         } else {
-          const ratio = contrastRatio(roles[base as keyof typeof roles]!, roles[on as keyof typeof roles]!);
-          if (ratio < 4.5) {
+          const ratio = tryContrastRatio(roles[base as keyof typeof roles]!, roles[on as keyof typeof roles]!);
+          if (ratio !== undefined && ratio < 4.5) {
             addWarning(
               `Low contrast for semantic role ${base}/${on}: ${ratio.toFixed(2)} (recommended >= 4.5)`,
               'low-contrast',
@@ -504,8 +513,8 @@ export class ThemeEngine {
       if (criticalProvided && (!roles.critical || !roles.onCritical)) {
         addError('Semantic role pair critical/onCritical is incomplete', 'incomplete-semantic-role', 'colorScheme.semanticRoles');
       } else if (roles.critical && roles.onCritical) {
-        const ratio = contrastRatio(roles.critical, roles.onCritical);
-        if (ratio < 4.5) {
+        const ratio = tryContrastRatio(roles.critical, roles.onCritical);
+        if (ratio !== undefined && ratio < 4.5) {
           addWarning(
             `Low contrast for semantic role critical/onCritical: ${ratio.toFixed(2)} (recommended >= 4.5)`,
             'low-contrast',
