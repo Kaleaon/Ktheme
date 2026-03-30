@@ -14,18 +14,118 @@ function normalizeHue(hue: number): number {
   return wrapped < 0 ? wrapped + 360 : wrapped;
 }
 
+const HEX_3_PATTERN = /^#?([a-f\d]{3})$/i;
+const HEX_4_PATTERN = /^#?([a-f\d]{4})$/i;
+const HEX_6_PATTERN = /^#?([a-f\d]{6})$/i;
+const HEX_8_PATTERN = /^#?([a-f\d]{8})$/i;
+const RGB_PATTERN =
+  /^rgb\(\s*(\d{1,3})\s*(?:,\s*|\s+)(\d{1,3})\s*(?:,\s*|\s+)(\d{1,3})\s*\)$/i;
+const RGBA_PATTERN =
+  /^rgba\(\s*(\d{1,3})\s*(?:,\s*|\s+)(\d{1,3})\s*(?:,\s*|\s+)(\d{1,3})\s*(?:,\s*|\s+)\s*(\d*\.?\d+)\s*\)$/i;
+
+function isByteValue(value: number): boolean {
+  return Number.isFinite(value) && value >= 0 && value <= 255;
+}
+
+function isAlphaValue(value: number): boolean {
+  return Number.isFinite(value) && value >= 0 && value <= 1;
+}
+
+function expandShorthandHex(hex: string): string {
+  return hex
+    .split('')
+    .map(char => `${char}${char}`)
+    .join('');
+}
+
+function parseHexColor(hex: string): RGBAColor | null {
+  const normalizedHex = hex.trim();
+  const hexBody = normalizedHex.startsWith('#') ? normalizedHex.slice(1) : normalizedHex;
+
+  if (HEX_3_PATTERN.test(hexBody)) {
+    const expanded = expandShorthandHex(hexBody);
+    return {
+      r: parseInt(expanded.slice(0, 2), 16),
+      g: parseInt(expanded.slice(2, 4), 16),
+      b: parseInt(expanded.slice(4, 6), 16),
+      a: 1
+    };
+  }
+
+  if (HEX_4_PATTERN.test(hexBody)) {
+    const expanded = expandShorthandHex(hexBody);
+    return {
+      r: parseInt(expanded.slice(0, 2), 16),
+      g: parseInt(expanded.slice(2, 4), 16),
+      b: parseInt(expanded.slice(4, 6), 16),
+      a: parseInt(expanded.slice(6, 8), 16) / 255
+    };
+  }
+
+  if (HEX_6_PATTERN.test(hexBody)) {
+    return {
+      r: parseInt(hexBody.slice(0, 2), 16),
+      g: parseInt(hexBody.slice(2, 4), 16),
+      b: parseInt(hexBody.slice(4, 6), 16),
+      a: 1
+    };
+  }
+
+  if (HEX_8_PATTERN.test(hexBody)) {
+    return {
+      r: parseInt(hexBody.slice(0, 2), 16),
+      g: parseInt(hexBody.slice(2, 4), 16),
+      b: parseInt(hexBody.slice(4, 6), 16),
+      a: parseInt(hexBody.slice(6, 8), 16) / 255
+    };
+  }
+
+  return null;
+}
+
+function parseCssRgbColor(input: string): RGBAColor | null {
+  const normalized = input.trim();
+  const rgbaMatch = normalized.match(RGBA_PATTERN);
+  if (rgbaMatch) {
+    const r = Number.parseInt(rgbaMatch[1], 10);
+    const g = Number.parseInt(rgbaMatch[2], 10);
+    const b = Number.parseInt(rgbaMatch[3], 10);
+    const a = Number.parseFloat(rgbaMatch[4]);
+    if (isByteValue(r) && isByteValue(g) && isByteValue(b) && isAlphaValue(a)) {
+      return { r, g, b, a };
+    }
+    return null;
+  }
+
+  const rgbMatch = normalized.match(RGB_PATTERN);
+  if (rgbMatch) {
+    const r = Number.parseInt(rgbMatch[1], 10);
+    const g = Number.parseInt(rgbMatch[2], 10);
+    const b = Number.parseInt(rgbMatch[3], 10);
+    if (isByteValue(r) && isByteValue(g) && isByteValue(b)) {
+      return { r, g, b, a: 1 };
+    }
+  }
+
+  return null;
+}
+
+export function isValidColorString(color: string): boolean {
+  return parseHexColor(color) !== null || parseCssRgbColor(color) !== null;
+}
+
 /**
  * Convert hex color to RGB
  */
 export function hexToRgb(hex: HexColor): RGBColor {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  if (!result) {
+  const parsed = parseHexColor(hex);
+  if (!parsed) {
     throw new Error(`Invalid hex color: ${hex}`);
   }
   return {
-    r: parseInt(result[1], 16),
-    g: parseInt(result[2], 16),
-    b: parseInt(result[3], 16)
+    r: parsed.r,
+    g: parsed.g,
+    b: parsed.b
   };
 }
 
@@ -65,12 +165,33 @@ export function rgbaToHex(rgba: RGBAColor): HexColor {
  */
 export function normalizeColor(color: Color): RGBAColor {
   if (typeof color === 'string') {
-    return hexToRgba(color);
+    const hexParsed = parseHexColor(color);
+    if (hexParsed) {
+      return hexParsed;
+    }
+
+    const rgbParsed = parseCssRgbColor(color);
+    if (rgbParsed) {
+      return rgbParsed;
+    }
+
+    throw new Error(
+      `Invalid color string format: ${color}. Accepted formats: #RGB, #RGBA, #RRGGBB, #RRGGBBAA, rgb(r,g,b), rgba(r,g,b,a)`
+    );
   }
+
+  const { r, g, b } = color;
+  if (!isByteValue(r) || !isByteValue(g) || !isByteValue(b)) {
+    throw new Error(`Invalid RGB channels: r=${r}, g=${g}, b=${b}`);
+  }
+
   if ('a' in color) {
+    if (!isAlphaValue(color.a)) {
+      throw new Error(`Invalid alpha channel: a=${color.a}`);
+    }
     return color;
   }
-  return { ...color, a: 1 };
+  return { r, g, b, a: 1 };
 }
 
 /**
@@ -138,7 +259,8 @@ export function getContrastColor(backgroundColor: Color): HexColor {
  * Validate if a string is a valid hex color
  */
 export function isValidHex(hex: string): boolean {
-  return /^#?([a-f\d]{3}|[a-f\d]{6}|[a-f\d]{8})$/i.test(hex);
+  const value = hex.trim();
+  return HEX_3_PATTERN.test(value) || HEX_4_PATTERN.test(value) || HEX_6_PATTERN.test(value) || HEX_8_PATTERN.test(value);
 }
 
 /**
