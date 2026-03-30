@@ -4,9 +4,12 @@ import {
   analogousPalette,
   complementaryColor,
   generatePaletteFromSeed,
+  hexToRgb,
   hexToHsl,
   hslToHex,
   hslToRgb,
+  isValidHex,
+  normalizeColor,
   rgbToHsl,
   splitComplementaryPalette,
   triadicPalette
@@ -57,5 +60,22 @@ describe('HSL color utilities', () => {
     expect(palette.surface).toBeDefined();
     expect(palette.background).toBeDefined();
     expect(palette.outline).toBeDefined();
+  });
+
+  it('validates and normalizes mixed supported color formats', () => {
+    expect(isValidHex('#abcd')).toBe(true);
+    expect(isValidHex('#11223344')).toBe(true);
+    expect(isValidHex('#12')).toBe(false);
+
+    expect(hexToRgb('#abc')).toEqual({ r: 170, g: 187, b: 204 });
+    expect(normalizeColor('rgb(12, 34, 56)')).toEqual({ r: 12, g: 34, b: 56, a: 1 });
+    expect(normalizeColor('rgba(12,34,56,0.5)')).toEqual({ r: 12, g: 34, b: 56, a: 0.5 });
+  });
+
+  it('throws on invalid color string formats and channel ranges', () => {
+    expect(() => normalizeColor('hsl(10, 20%, 30%)')).toThrow('Invalid color string format');
+    expect(() => normalizeColor('rgba(1, 2, 3, 1.2)')).toThrow('Invalid color string format');
+    expect(() => normalizeColor({ r: -1, g: 0, b: 0 })).toThrow('Invalid RGB channels');
+    expect(() => normalizeColor({ r: 0, g: 0, b: 0, a: -0.1 })).toThrow('Invalid alpha channel');
   });
 });
