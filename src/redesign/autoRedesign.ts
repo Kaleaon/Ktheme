@@ -5,6 +5,7 @@ import { AdaptationPresets } from '../themes/adaptationPresets';
 import { applyExpansionPack } from '../themes/expansion';
 import { PresetThemes } from '../themes/presets';
 import { createThemeFromFamily } from '../themes/strategy';
+import { DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE } from '../accessibility/defaults';
 
 export interface AutoRedesignInput {
   appArchetype?: string;
@@ -281,7 +282,8 @@ function enforceAssistiveCompliance(
         density: 'comfortable',
         cornerStyle: 'rounded',
         spacingScale: 1,
-        navigationStyle: 'rail'
+        navigationStyle: 'rail',
+        accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
       }
     };
     autoFixesApplied.push('Added default layout semantics for assistive compatibility.');

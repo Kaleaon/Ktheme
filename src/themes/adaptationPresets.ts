@@ -117,7 +117,8 @@ export const ArtNouveauAdaptation: ThemeAdaptation = {
     cornerStyle: 'pill',
     spacingScale: 1.08,
     panelStyle: 'glass',
-    navigationStyle: 'tabs'
+    navigationStyle: 'tabs',
+    accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
   },
   icons: {
     family: 'custom',
@@ -160,7 +161,8 @@ export const ArtDecoAdaptation: ThemeAdaptation = {
     cornerStyle: 'sharp',
     spacingScale: 0.94,
     panelStyle: 'elevated',
-    navigationStyle: 'rail'
+    navigationStyle: 'rail',
+    accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
   },
   icons: {
     family: 'material',

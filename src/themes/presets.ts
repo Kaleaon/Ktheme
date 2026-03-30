@@ -14,6 +14,9 @@ import {
 } from './adaptationPresets';
 import { SHARED_PRESET_IDS } from './shared-preset-ids';
 
+const PRESET_CREATED_AT = '2026-03-30T00:00:00.000Z';
+const PRESET_UPDATED_AT = '2026-03-30T00:00:00.000Z';
+
 /**
  * Navy Gold Theme - Elegant navy background with gold accents
  */
@@ -25,8 +28,8 @@ export const NavyGoldTheme: Theme = {
     author: 'Ktheme',
     version: '1.0.0',
     tags: ['metallic', 'elegant', 'dark'],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: PRESET_CREATED_AT,
+    updatedAt: PRESET_UPDATED_AT
   },
   darkMode: true,
   colorScheme: {
@@ -115,8 +118,8 @@ export const EmeraldSilverTheme: Theme = {
     author: 'Ktheme',
     version: '1.0.0',
     tags: ['metallic', 'nature', 'dark'],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: PRESET_CREATED_AT,
+    updatedAt: PRESET_UPDATED_AT
   },
   darkMode: true,
   colorScheme: {
@@ -182,8 +185,8 @@ export const RoseGoldTheme: Theme = {
     author: 'Ktheme',
     version: '1.0.0',
     tags: ['metallic', 'warm', 'elegant', 'dark'],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: PRESET_CREATED_AT,
+    updatedAt: PRESET_UPDATED_AT
   },
   darkMode: true,
   colorScheme: {
@@ -255,8 +258,8 @@ export const RoyalBronzeTheme: Theme = {
     author: 'Ktheme',
     version: '1.0.0',
     tags: ['metallic', 'regal', 'dark'],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: PRESET_CREATED_AT,
+    updatedAt: PRESET_UPDATED_AT
   },
   darkMode: true,
   colorScheme: {
@@ -322,8 +325,8 @@ export const MidnightAmberTheme: Theme = {
     author: 'Ktheme',
     version: '1.0.0',
     tags: ['metallic', 'sophisticated', 'dark'],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: PRESET_CREATED_AT,
+    updatedAt: PRESET_UPDATED_AT
   },
   darkMode: true,
   colorScheme: {
@@ -389,8 +392,8 @@ export const ObsidianCrimsonTheme: Theme = {
     author: 'Ktheme',
     version: '1.0.0',
     tags: ['metallic', 'dramatic', 'dark'],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: PRESET_CREATED_AT,
+    updatedAt: PRESET_UPDATED_AT
   },
   darkMode: true,
   colorScheme: {
@@ -456,8 +459,8 @@ export const SlateCyanTheme: Theme = {
     author: 'Ktheme',
     version: '1.0.0',
     tags: ['metallic', 'modern', 'dark'],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: PRESET_CREATED_AT,
+    updatedAt: PRESET_UPDATED_AT
   },
   darkMode: true,
   colorScheme: {
@@ -523,8 +526,8 @@ export const RoyalSilverTheme: Theme = {
     author: 'Ktheme',
     version: '1.0.0',
     tags: ['metallic', 'royal', 'dark'],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: PRESET_CREATED_AT,
+    updatedAt: PRESET_UPDATED_AT
   },
   darkMode: true,
   colorScheme: {
@@ -590,8 +593,8 @@ export const ForestCopperTheme: Theme = {
     author: 'Ktheme',
     version: '1.0.0',
     tags: ['metallic', 'nature', 'dark'],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: PRESET_CREATED_AT,
+    updatedAt: PRESET_UPDATED_AT
   },
   darkMode: true,
   colorScheme: {
@@ -657,8 +660,8 @@ export const BurgundyRoseGoldTheme: Theme = {
     author: 'Ktheme',
     version: '1.0.0',
     tags: ['metallic', 'elegant', 'dark'],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: PRESET_CREATED_AT,
+    updatedAt: PRESET_UPDATED_AT
   },
   darkMode: true,
   colorScheme: {
@@ -730,8 +733,8 @@ export const CharcoalChampagneTheme: Theme = {
     author: 'Ktheme',
     version: '1.0.0',
     tags: ['metallic', 'sophisticated', 'dark'],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: PRESET_CREATED_AT,
+    updatedAt: PRESET_UPDATED_AT
   },
   darkMode: true,
   colorScheme: {
@@ -797,8 +800,8 @@ export const SlateGunmetalTheme: Theme = {
     author: 'Ktheme',
     version: '1.0.0',
     tags: ['metallic', 'industrial', 'dark'],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: PRESET_CREATED_AT,
+    updatedAt: PRESET_UPDATED_AT
   },
   darkMode: true,
   colorScheme: {
@@ -864,8 +867,8 @@ export const DeepPurplePlatinumTheme: Theme = {
     author: 'Ktheme',
     version: '1.0.0',
     tags: ['metallic', 'luxurious', 'dark'],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: PRESET_CREATED_AT,
+    updatedAt: PRESET_UPDATED_AT
   },
   darkMode: true,
   colorScheme: {
@@ -931,8 +934,8 @@ export const PaperInkTheme: Theme = {
     author: 'Ktheme',
     version: '1.0.0',
     tags: ['minimalist', 'light', 'reader'],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: PRESET_CREATED_AT,
+    updatedAt: PRESET_UPDATED_AT
   },
   darkMode: false,
   colorScheme: {
@@ -992,8 +995,8 @@ export const FrutigerAeroTheme: Theme = {
     name: 'Frutiger Aero',
     description: 'Glossy glassy sky-and-nature palette inspired by late 90s/early 2000s UI',
     tags: [...new Set([...(PaperInkTheme.metadata.tags ?? []), 'frutiger-aero', 'glassy', 'nostalgia'])],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: PRESET_CREATED_AT,
+    updatedAt: PRESET_UPDATED_AT
   },
   darkMode: false,
   colorScheme: {
@@ -1070,8 +1073,8 @@ export const SolarpunkCivicTheme: Theme = {
     name: 'Solarpunk Civic',
     description: 'Optimistic civic palette with daylight greens and trust-building clarity',
     tags: [...new Set([...(FrutigerAeroTheme.metadata.tags ?? []), 'solarpunk', 'civic', 'daylight'])],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: PRESET_CREATED_AT,
+    updatedAt: PRESET_UPDATED_AT
   },
   colorScheme: {
     ...FrutigerAeroTheme.colorScheme,
@@ -1112,8 +1115,8 @@ export const NeoNoirNeonTheme: Theme = {
     name: 'Neo-Noir Neon',
     description: 'Dark cinematic palette with constrained neon accents for control surfaces',
     tags: [...new Set([...(ObsidianCrimsonTheme.metadata.tags ?? []), 'neo-noir', 'neon', 'cinematic'])],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: PRESET_CREATED_AT,
+    updatedAt: PRESET_UPDATED_AT
   },
   colorScheme: {
     ...ObsidianCrimsonTheme.colorScheme,
@@ -1163,8 +1166,8 @@ export const CalmClinicalTheme: Theme = {
     name: 'Calm Clinical',
     description: 'Low-stress healthcare/admin palette with clear status readability',
     tags: [...new Set([...(PaperInkTheme.metadata.tags ?? []), 'clinical', 'accessibility', 'calm'])],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: PRESET_CREATED_AT,
+    updatedAt: PRESET_UPDATED_AT
   },
   colorScheme: {
     ...PaperInkTheme.colorScheme,
@@ -1205,8 +1208,8 @@ export const InkTerminalModernTheme: Theme = {
     name: 'Ink Terminal Modern',
     description: 'Retro-terminal inspired interface with modern accessibility contrast',
     tags: [...new Set([...(SlateGunmetalTheme.metadata.tags ?? []), 'terminal', 'developer', 'mono'])],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: PRESET_CREATED_AT,
+    updatedAt: PRESET_UPDATED_AT
   },
   colorScheme: {
     ...SlateGunmetalTheme.colorScheme,
@@ -1261,8 +1264,8 @@ export const AuroraGlassNightTheme: Theme = {
     name: 'Aurora Glass Night',
     description: 'Night-first glass aesthetic with aurora accents and disciplined blur',
     tags: [...new Set([...(SlateCyanTheme.metadata.tags ?? []), 'aurora', 'glass', 'consumer'])],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: PRESET_CREATED_AT,
+    updatedAt: PRESET_UPDATED_AT
   },
   colorScheme: {
     ...SlateCyanTheme.colorScheme,
@@ -1322,8 +1325,8 @@ export const WindowsPhoneMetroTheme: Theme = {
     name: 'Windows Phone Metro',
     description: 'Flat, tile-first Metro-inspired interface theme',
     tags: [...new Set([...(SlateCyanTheme.metadata.tags ?? []), 'metro', 'windows-phone', 'flat'])],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: PRESET_CREATED_AT,
+    updatedAt: PRESET_UPDATED_AT
   },
   colorScheme: {
     ...SlateCyanTheme.colorScheme,
@@ -1363,8 +1366,8 @@ export const LCARSTheme: Theme = {
     name: 'LCARS',
     description: 'LCARS-inspired interface with warm rails and compact controls',
     tags: [...new Set([...(RoyalBronzeTheme.metadata.tags ?? []), 'lcars', 'sci-fi', 'console'])],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: PRESET_CREATED_AT,
+    updatedAt: PRESET_UPDATED_AT
   },
   colorScheme: {
     ...RoyalBronzeTheme.colorScheme,
@@ -1404,8 +1407,8 @@ export const ArtNouveauTheme: Theme = {
     author: 'Ktheme',
     version: '1.0.0',
     tags: ['iconic', 'organic', 'botanical', 'warm'],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: PRESET_CREATED_AT,
+    updatedAt: PRESET_UPDATED_AT
   },
   darkMode: false,
   colorScheme: {
@@ -1483,8 +1486,8 @@ export const ArtDecoTheme: Theme = {
     author: 'Ktheme',
     version: '1.0.0',
     tags: ['iconic', 'geometric', 'luxury', 'high-contrast'],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: PRESET_CREATED_AT,
+    updatedAt: PRESET_UPDATED_AT
   },
   darkMode: true,
   colorScheme: {
@@ -1559,6 +1562,7 @@ export const ArtDecoTheme: Theme = {
 
 
 export const SharedPresetThemeIds = [...SHARED_PRESET_IDS];
+const SHARED_PRESET_THEME_IDS = SharedPresetThemeIds;
 /**
  * All preset themes
  */
@@ -1591,7 +1595,7 @@ export const PresetThemes = {
 
 export const ENGINE_PRESET_IDS = Object.values(PresetThemes).map((theme) => theme.metadata.id);
 
-if (ENGINE_PRESET_IDS.length !== SHARED_PRESET_THEME_IDS.length ||
-  ENGINE_PRESET_IDS.some((id, index) => id !== SHARED_PRESET_THEME_IDS[index])) {
+if (ENGINE_PRESET_IDS.length !== SHARED_PRESET_IDS.length ||
+  ENGINE_PRESET_IDS.some((id, index) => id !== SHARED_PRESET_IDS[index])) {
   throw new Error('Engine preset IDs are out of sync with shared preset IDs.');
 }
