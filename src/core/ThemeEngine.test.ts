@@ -407,12 +407,15 @@ describe('ThemeEngine adaptations', () => {
       metadata: {
         ...NavyGoldTheme.metadata,
         id: 'legacy-theme',
+        name: 'Legacy Theme',
         description: undefined as unknown as string
       }
     });
 
     expect(() => engine.searchByName('legacy')).not.toThrow();
     expect(engine.searchByName('legacy')).toHaveLength(1);
+  });
+
   it('imports legacy fixture without schemaVersion and migrates to current schema', () => {
     const engine = new ThemeEngine();
     const imported = engine.importTheme(loadFixture('legacy-theme-no-schema.json'));
@@ -435,6 +438,8 @@ describe('ThemeEngine adaptations', () => {
     expect(v0Version).toBe(SCHEMA_VERSION);
     expect(noSchemaRest).toEqual(v0Rest);
     expect(noSchemaMeta.id).not.toEqual(v0Meta.id);
+  });
+
   it('rejects invalid colors across scheme semantic roles state layers and effects', () => {
     const engine = new ThemeEngine();
     const invalid = {

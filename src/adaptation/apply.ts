@@ -48,7 +48,7 @@ const UNSUPPORTED_PSEUDO_SELECTORS = [
 
 const SAFE_KEYWORD_PATTERN = /^(?:inherit|initial|unset|revert|none|auto|normal|bold|bolder|lighter|uppercase|lowercase|capitalize|transparent|currentcolor|solid|dashed|dotted|double|hidden|visible|relative|absolute|static|sticky|fixed|block|inline|inline-block|inline-flex|flex|grid|contents|center|left|right|start|end|stretch|space-between|space-around|space-evenly|nowrap|wrap|column|row|baseline|middle|top|bottom)$/i;
 const SAFE_NUMBER_PATTERN = /^-?\d+(\.\d+)?$/;
-const SAFE_LENGTH_PATTERN = /^-?\d+(\.\d+)?(px|em|rem|%|vh|vw|vmin|vmax|ch|ex|pt|pc|cm|mm|in)$/i;
+const SAFE_LENGTH_PATTERN = /^-?\d+(\.\d+)?(px|em|rem|%|vh|vw|vmin|vmax|ch|ex|pt|pc|cm|mm|in|fr)$/i;
 const SAFE_HEX_PATTERN = /^#([0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
 const SAFE_FUNCTION_PATTERN = /^(rgba?|hsla?|calc|min|max|clamp|var|blur|saturate|contrast|brightness|grayscale|sepia|hue-rotate|drop-shadow|linear-gradient|radial-gradient|conic-gradient)\(/i;
 

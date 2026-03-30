@@ -77,126 +77,126 @@ describe('preset themes coverage', () => {
 
     expect(metadata).toMatchInlineSnapshot(`
 [
-      Object {
-        "createdAt": "2026-03-30T00:00:00.000Z",
-        "id": "art-deco",
-        "updatedAt": "2026-03-30T00:00:00.000Z",
-      },
-      Object {
-        "createdAt": "2026-03-30T00:00:00.000Z",
-        "id": "art-nouveau",
-        "updatedAt": "2026-03-30T00:00:00.000Z",
-      },
-      Object {
-        "createdAt": "2026-03-30T00:00:00.000Z",
-        "id": "aurora-glass-night",
-        "updatedAt": "2026-03-30T00:00:00.000Z",
-      },
-      Object {
-        "createdAt": "2026-03-30T00:00:00.000Z",
-        "id": "burgundy-rose-gold",
-        "updatedAt": "2026-03-30T00:00:00.000Z",
-      },
-      Object {
-        "createdAt": "2026-03-30T00:00:00.000Z",
-        "id": "calm-clinical",
-        "updatedAt": "2026-03-30T00:00:00.000Z",
-      },
-      Object {
-        "createdAt": "2026-03-30T00:00:00.000Z",
-        "id": "charcoal-champagne",
-        "updatedAt": "2026-03-30T00:00:00.000Z",
-      },
-      Object {
-        "createdAt": "2026-03-30T00:00:00.000Z",
-        "id": "deep-purple-platinum",
-        "updatedAt": "2026-03-30T00:00:00.000Z",
-      },
-      Object {
-        "createdAt": "2026-03-30T00:00:00.000Z",
-        "id": "emerald-silver",
-        "updatedAt": "2026-03-30T00:00:00.000Z",
-      },
-      Object {
-        "createdAt": "2026-03-30T00:00:00.000Z",
-        "id": "forest-copper",
-        "updatedAt": "2026-03-30T00:00:00.000Z",
-      },
-      Object {
-        "createdAt": "2026-03-30T00:00:00.000Z",
-        "id": "frutiger-aero",
-        "updatedAt": "2026-03-30T00:00:00.000Z",
-      },
-      Object {
-        "createdAt": "2026-03-30T00:00:00.000Z",
-        "id": "ink-terminal-modern",
-        "updatedAt": "2026-03-30T00:00:00.000Z",
-      },
-      Object {
-        "createdAt": "2026-03-30T00:00:00.000Z",
-        "id": "lcars",
-        "updatedAt": "2026-03-30T00:00:00.000Z",
-      },
-      Object {
-        "createdAt": "2026-03-30T00:00:00.000Z",
-        "id": "midnight-amber",
-        "updatedAt": "2026-03-30T00:00:00.000Z",
-      },
-      Object {
-        "createdAt": "2026-03-30T00:00:00.000Z",
-        "id": "navy-gold",
-        "updatedAt": "2026-03-30T00:00:00.000Z",
-      },
-      Object {
-        "createdAt": "2026-03-30T00:00:00.000Z",
-        "id": "neo-noir-neon",
-        "updatedAt": "2026-03-30T00:00:00.000Z",
-      },
-      Object {
-        "createdAt": "2026-03-30T00:00:00.000Z",
-        "id": "obsidian-crimson",
-        "updatedAt": "2026-03-30T00:00:00.000Z",
-      },
-      Object {
-        "createdAt": "2026-03-30T00:00:00.000Z",
-        "id": "paper-ink",
-        "updatedAt": "2026-03-30T00:00:00.000Z",
-      },
-      Object {
-        "createdAt": "2026-03-30T00:00:00.000Z",
-        "id": "rose-gold",
-        "updatedAt": "2026-03-30T00:00:00.000Z",
-      },
-      Object {
-        "createdAt": "2026-03-30T00:00:00.000Z",
-        "id": "royal-bronze",
-        "updatedAt": "2026-03-30T00:00:00.000Z",
-      },
-      Object {
-        "createdAt": "2026-03-30T00:00:00.000Z",
-        "id": "royal-silver",
-        "updatedAt": "2026-03-30T00:00:00.000Z",
-      },
-      Object {
-        "createdAt": "2026-03-30T00:00:00.000Z",
-        "id": "slate-cyan",
-        "updatedAt": "2026-03-30T00:00:00.000Z",
-      },
-      Object {
-        "createdAt": "2026-03-30T00:00:00.000Z",
-        "id": "slate-gunmetal",
-        "updatedAt": "2026-03-30T00:00:00.000Z",
-      },
-      Object {
-        "createdAt": "2026-03-30T00:00:00.000Z",
-        "id": "solarpunk-civic",
-        "updatedAt": "2026-03-30T00:00:00.000Z",
-      },
-      Object {
-        "createdAt": "2026-03-30T00:00:00.000Z",
-        "id": "windows-phone-metro",
-        "updatedAt": "2026-03-30T00:00:00.000Z",
-      },
+  {
+    "createdAt": "2026-03-30T00:00:00.000Z",
+    "id": "art-deco",
+    "updatedAt": "2026-03-30T00:00:00.000Z",
+  },
+  {
+    "createdAt": "2026-03-30T00:00:00.000Z",
+    "id": "art-nouveau",
+    "updatedAt": "2026-03-30T00:00:00.000Z",
+  },
+  {
+    "createdAt": "2026-03-30T00:00:00.000Z",
+    "id": "aurora-glass-night",
+    "updatedAt": "2026-03-30T00:00:00.000Z",
+  },
+  {
+    "createdAt": "2026-03-30T00:00:00.000Z",
+    "id": "burgundy-rose-gold",
+    "updatedAt": "2026-03-30T00:00:00.000Z",
+  },
+  {
+    "createdAt": "2026-03-30T00:00:00.000Z",
+    "id": "calm-clinical",
+    "updatedAt": "2026-03-30T00:00:00.000Z",
+  },
+  {
+    "createdAt": "2026-03-30T00:00:00.000Z",
+    "id": "charcoal-champagne",
+    "updatedAt": "2026-03-30T00:00:00.000Z",
+  },
+  {
+    "createdAt": "2026-03-30T00:00:00.000Z",
+    "id": "deep-purple-platinum",
+    "updatedAt": "2026-03-30T00:00:00.000Z",
+  },
+  {
+    "createdAt": "2026-03-30T00:00:00.000Z",
+    "id": "emerald-silver",
+    "updatedAt": "2026-03-30T00:00:00.000Z",
+  },
+  {
+    "createdAt": "2026-03-30T00:00:00.000Z",
+    "id": "forest-copper",
+    "updatedAt": "2026-03-30T00:00:00.000Z",
+  },
+  {
+    "createdAt": "2026-03-30T00:00:00.000Z",
+    "id": "frutiger-aero",
+    "updatedAt": "2026-03-30T00:00:00.000Z",
+  },
+  {
+    "createdAt": "2026-03-30T00:00:00.000Z",
+    "id": "ink-terminal-modern",
+    "updatedAt": "2026-03-30T00:00:00.000Z",
+  },
+  {
+    "createdAt": "2026-03-30T00:00:00.000Z",
+    "id": "lcars",
+    "updatedAt": "2026-03-30T00:00:00.000Z",
+  },
+  {
+    "createdAt": "2026-03-30T00:00:00.000Z",
+    "id": "midnight-amber",
+    "updatedAt": "2026-03-30T00:00:00.000Z",
+  },
+  {
+    "createdAt": "2026-03-30T00:00:00.000Z",
+    "id": "navy-gold",
+    "updatedAt": "2026-03-30T00:00:00.000Z",
+  },
+  {
+    "createdAt": "2026-03-30T00:00:00.000Z",
+    "id": "neo-noir-neon",
+    "updatedAt": "2026-03-30T00:00:00.000Z",
+  },
+  {
+    "createdAt": "2026-03-30T00:00:00.000Z",
+    "id": "obsidian-crimson",
+    "updatedAt": "2026-03-30T00:00:00.000Z",
+  },
+  {
+    "createdAt": "2026-03-30T00:00:00.000Z",
+    "id": "paper-ink",
+    "updatedAt": "2026-03-30T00:00:00.000Z",
+  },
+  {
+    "createdAt": "2026-03-30T00:00:00.000Z",
+    "id": "rose-gold",
+    "updatedAt": "2026-03-30T00:00:00.000Z",
+  },
+  {
+    "createdAt": "2026-03-30T00:00:00.000Z",
+    "id": "royal-bronze",
+    "updatedAt": "2026-03-30T00:00:00.000Z",
+  },
+  {
+    "createdAt": "2026-03-30T00:00:00.000Z",
+    "id": "royal-silver",
+    "updatedAt": "2026-03-30T00:00:00.000Z",
+  },
+  {
+    "createdAt": "2026-03-30T00:00:00.000Z",
+    "id": "slate-cyan",
+    "updatedAt": "2026-03-30T00:00:00.000Z",
+  },
+  {
+    "createdAt": "2026-03-30T00:00:00.000Z",
+    "id": "slate-gunmetal",
+    "updatedAt": "2026-03-30T00:00:00.000Z",
+  },
+  {
+    "createdAt": "2026-03-30T00:00:00.000Z",
+    "id": "solarpunk-civic",
+    "updatedAt": "2026-03-30T00:00:00.000Z",
+  },
+  {
+    "createdAt": "2026-03-30T00:00:00.000Z",
+    "id": "windows-phone-metro",
+    "updatedAt": "2026-03-30T00:00:00.000Z",
+  },
 ]
 `);
   });
