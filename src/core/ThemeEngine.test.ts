@@ -203,6 +203,24 @@ describe('ThemeEngine adaptations', () => {
             }
           },
           {
+            selector: '.x > .y > .z > .a > .b',
+            styles: {
+              color: '#fff'
+            }
+          },
+          {
+            selector: '.card:has(.cta)',
+            styles: {
+              color: '#fff'
+            }
+          },
+          {
+            selector: '.legacy',
+            styles: {
+              behavior: 'url(#default#VML)'
+            }
+          },
+          {
             selector: '.empty',
             styles: {}
           }
@@ -217,7 +235,10 @@ describe('ThemeEngine adaptations', () => {
     expect(validation.warnings).toContain('Tiny spacingScale is likely incompatible with spacious density');
     expect(validation.warnings.some(msg => msg.includes('dangerously broad'))).toBe(true);
     expect(validation.errors.some(msg => msg.includes('contains unsupported CSS syntax'))).toBe(true);
-    expect(validation.errors.some(msg => msg.includes('contains unsafe CSS value content'))).toBe(true);
+    expect(validation.errors.some(msg => msg.includes('unsafe or unsupported CSS value'))).toBe(true);
+    expect(validation.errors.some(msg => msg.includes('unsupported pseudo selector'))).toBe(true);
+    expect(validation.errors.some(msg => msg.includes('too complex'))).toBe(true);
+    expect(validation.errors.some(msg => msg.includes('is not an allowed property'))).toBe(true);
     expect(validation.warnings.some(msg => msg.includes('has no style declarations'))).toBe(true);
   });
 

@@ -119,6 +119,35 @@ describe('adaptation CSS generators', () => {
     expect(overrideCSS).toContain('.tile {');
     expect(overrideCSS).toContain('border-radius: 0px;');
     expect(overrideCSS).toContain('text-transform: uppercase;');
+  });
+
+  it('drops unsafe component override selectors and declarations from generated css', () => {
+    const overrideCSS = generateComponentOverrideCSS([
+      {
+        selector: '.safe',
+        styles: {
+          color: '#ffffff',
+          margin: 8
+        }
+      },
+      {
+        selector: '.unsafe:has(.child)',
+        styles: {
+          color: '#fff'
+        }
+      },
+      {
+        selector: '.bad-value',
+        styles: {
+          background: 'url(javascript:alert(1))'
+        }
+      }
+    ]);
+
+    expect(overrideCSS).toContain('.safe {');
+    expect(overrideCSS).toContain('margin: 8px;');
+    expect(overrideCSS).not.toContain('.unsafe:has(.child)');
+    expect(overrideCSS).not.toContain('.bad-value');
 
     const theme: Theme = {
       metadata: {
