@@ -15,6 +15,7 @@ import {
 } from './types';
 import { contrastRatio, normalizeColor } from '../utils/colors';
 import { resolveAccessibilitySettings } from '../accessibility/defaults';
+import { migrateTheme, SCHEMA_VERSION } from './migrations';
 
 export class ThemeEngine {
   private themes: Map<string, Theme> = new Map();
@@ -24,12 +25,15 @@ export class ThemeEngine {
    * Register a new theme
    */
   registerTheme(theme: Theme): void {
-    const validation = this.validateTheme(theme);
+    const normalizedTheme = theme.schemaVersion
+      ? theme
+      : migrateTheme(theme, 0, SCHEMA_VERSION);
+    const validation = this.validateTheme(normalizedTheme);
     if (!validation.valid) {
       throw new Error(`Invalid theme: ${validation.errors.join(', ')}`);
     }
     
-    this.themes.set(theme.metadata.id, theme);
+    this.themes.set(normalizedTheme.metadata.id, normalizedTheme);
   }
 
   /**
@@ -599,7 +603,11 @@ export class ThemeEngine {
     if (!theme) {
       throw new Error(`Theme not found: ${id}`);
     }
-    return JSON.stringify(theme, null, 2);
+    const exportPayload = {
+      ...theme,
+      schemaVersion: SCHEMA_VERSION
+    };
+    return JSON.stringify(exportPayload, null, 2);
   }
 
   /**
@@ -607,7 +615,12 @@ export class ThemeEngine {
    */
   importTheme(json: string): Theme {
     try {
-      const theme = JSON.parse(json) as Theme;
+      const importedTheme = JSON.parse(json) as Theme;
+      const fromVersion = importedTheme.schemaVersion ?? 0;
+      const theme =
+        fromVersion === SCHEMA_VERSION
+          ? importedTheme
+          : migrateTheme(importedTheme, fromVersion, SCHEMA_VERSION);
       this.registerTheme(theme);
       return theme;
     } catch (error) {
@@ -619,7 +632,10 @@ export class ThemeEngine {
    * Export all themes to JSON
    */
   exportAllThemes(): string {
-    const themes = this.getAllThemes();
+    const themes = this.getAllThemes().map(theme => ({
+      ...theme,
+      schemaVersion: SCHEMA_VERSION
+    }));
     return JSON.stringify(themes, null, 2);
   }
 

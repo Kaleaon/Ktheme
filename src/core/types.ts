@@ -421,6 +421,7 @@ export interface ThemeMetadata {
  * Complete theme definition
  */
 export interface Theme {
+  schemaVersion?: number;
   metadata: ThemeMetadata;
   darkMode: boolean;
   colorScheme: ColorScheme;
