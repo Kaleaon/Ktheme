@@ -3,8 +3,14 @@ import { NavyGoldTheme } from '../themes/presets';
 import { AdaptationPresets } from '../themes/adaptationPresets';
 import type { Theme } from './types';
 import { DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE } from '../accessibility/defaults';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { SCHEMA_VERSION } from './migrations';
 
 describe('ThemeEngine adaptations', () => {
+  const loadFixture = (fileName: string): string =>
+    readFileSync(join(__dirname, '__fixtures__', fileName), 'utf-8');
+
   it('creates and registers adapted themes', () => {
     const engine = new ThemeEngine();
     engine.registerTheme(NavyGoldTheme);
@@ -342,5 +348,29 @@ describe('ThemeEngine adaptations', () => {
     expect(
       validation.warnings.includes('Accessibility minimumTargetSize should be at least 24px (44px recommended)')
     ).toBe(true);
+  });
+
+  it('imports legacy fixture without schemaVersion and migrates to current schema', () => {
+    const engine = new ThemeEngine();
+    const imported = engine.importTheme(loadFixture('legacy-theme-no-schema.json'));
+
+    expect(imported.schemaVersion).toBe(SCHEMA_VERSION);
+
+    const exported = JSON.parse(engine.exportTheme(imported.metadata.id)) as Theme;
+    expect(exported.schemaVersion).toBe(SCHEMA_VERSION);
+  });
+
+  it('imports legacy v0 fixture and yields schema-equivalent migrated output', () => {
+    const engine = new ThemeEngine();
+    const fromNoSchema = engine.importTheme(loadFixture('legacy-theme-no-schema.json'));
+    const fromV0 = engine.importTheme(loadFixture('legacy-theme-v0.json'));
+
+    const { schemaVersion: noSchemaVersion, metadata: noSchemaMeta, ...noSchemaRest } = fromNoSchema;
+    const { schemaVersion: v0Version, metadata: v0Meta, ...v0Rest } = fromV0;
+
+    expect(noSchemaVersion).toBe(SCHEMA_VERSION);
+    expect(v0Version).toBe(SCHEMA_VERSION);
+    expect(noSchemaRest).toEqual(v0Rest);
+    expect(noSchemaMeta.id).not.toEqual(v0Meta.id);
   });
 });
