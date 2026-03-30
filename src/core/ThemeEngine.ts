@@ -206,7 +206,14 @@ export class ThemeEngine {
     } else {
       if (!theme.metadata.id) addError('Theme ID is required', 'missing-metadata', 'metadata.id');
       if (!theme.metadata.name) addError('Theme name is required', 'missing-metadata', 'metadata.name');
+      if (!theme.metadata.description) addError('Theme description is required', 'missing-metadata', 'metadata.description');
+      if (!theme.metadata.author) addError('Theme author is required', 'missing-metadata', 'metadata.author');
       if (!theme.metadata.version) addError('Theme version is required', 'missing-metadata', 'metadata.version');
+      if (!Array.isArray(theme.metadata.tags)) {
+        addError('Theme tags must be an array of strings', 'missing-metadata', 'metadata.tags');
+      } else if (theme.metadata.tags.some(tag => typeof tag !== 'string')) {
+        addError('Theme tags must be an array of strings', 'missing-metadata', 'metadata.tags');
+      }
     }
 
     // Validate color scheme
@@ -611,7 +618,7 @@ export class ThemeEngine {
     const lowerQuery = query.toLowerCase();
     return this.getAllThemes().filter(theme =>
       theme.metadata.name.toLowerCase().includes(lowerQuery) ||
-      theme.metadata.description.toLowerCase().includes(lowerQuery)
+      (theme.metadata.description ?? '').toLowerCase().includes(lowerQuery)
     );
   }
 }
