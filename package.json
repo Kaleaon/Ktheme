@@ -10,6 +10,7 @@
     "test": "jest",
     "lint": "eslint src --ext .ts",
     "creator": "cd theme-creator && npm start",
+    "release:bump-preset-updated-at": "node scripts/release/bump-preset-updated-at.mjs"
     "generate:theme-catalog": "node scripts/generate-theme-catalog.mjs",
     "check:theme-catalog": "node scripts/generate-theme-catalog.mjs --check"
   },
