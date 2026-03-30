@@ -13,7 +13,7 @@ import {
   ThemeValidationResult,
   VisualEffects
 } from './types';
-import { contrastRatio } from '../utils/colors';
+import { contrastRatio, normalizeColor } from '../utils/colors';
 import { resolveAccessibilitySettings } from '../accessibility/defaults';
 
 export class ThemeEngine {
@@ -160,6 +160,40 @@ export class ThemeEngine {
       code: ThemeValidationIssue['code'],
       path?: string
     ): void => addIssue({ severity: 'warning', message, code, path });
+    const validateColorField = (color: unknown, path: string): void => {
+      try {
+        normalizeColor(color as Theme['colorScheme']['primary']);
+      } catch (error) {
+        addError(
+          `Invalid color at ${path}: ${(error as Error).message}`,
+          'invalid-token',
+          path
+        );
+      }
+    };
+    const validateRange = (
+      value: number | undefined,
+      path: string,
+      options: { min?: number; max?: number; minExclusive?: number; maxExclusive?: number; message: string }
+    ): void => {
+      if (value === undefined) return;
+      if (!Number.isFinite(value)) {
+        addError(`${options.message} (must be a finite number)`, 'invalid-effects', path);
+        return;
+      }
+      if (options.min !== undefined && value < options.min) {
+        addError(options.message, 'invalid-effects', path);
+      }
+      if (options.max !== undefined && value > options.max) {
+        addError(options.message, 'invalid-effects', path);
+      }
+      if (options.minExclusive !== undefined && value <= options.minExclusive) {
+        addError(options.message, 'invalid-effects', path);
+      }
+      if (options.maxExclusive !== undefined && value >= options.maxExclusive) {
+        addError(options.message, 'invalid-effects', path);
+      }
+    };
 
     // Validate metadata
     if (!theme.metadata) {
@@ -182,13 +216,123 @@ export class ThemeEngine {
       for (const color of requiredColors) {
         if (!(color in theme.colorScheme)) {
           addError(`Missing required color: ${color}`, 'missing-color', `colorScheme.${color}`);
+        } else {
+          validateColorField(theme.colorScheme[color as keyof typeof theme.colorScheme], `colorScheme.${color}`);
         }
       }
+
+      Object.entries(theme.colorScheme).forEach(([key, value]) => {
+        if (key === 'semanticRoles' || key === 'stateLayers') return;
+        validateColorField(value, `colorScheme.${key}`);
+      });
     }
 
-    // Check for effects warnings
-    if (theme.effects?.metallic?.enabled && theme.effects.metallic.intensity > 1) {
-      addWarning('Metallic intensity should be between 0 and 1', 'invalid-effects', 'effects.metallic.intensity');
+    const roles = theme.colorScheme?.semanticRoles;
+    if (roles) {
+      Object.entries(roles).forEach(([key, value]) => {
+        if (value !== undefined) {
+          validateColorField(value, `colorScheme.semanticRoles.${key}`);
+        }
+      });
+    }
+
+    const layers = theme.colorScheme?.stateLayers;
+    if (layers) {
+      Object.entries(layers).forEach(([key, value]) => {
+        if (value !== undefined) {
+          validateColorField(value, `colorScheme.stateLayers.${key}`);
+        }
+      });
+    }
+
+    if (theme.effects?.metallic) {
+      validateRange(theme.effects.metallic.intensity, 'effects.metallic.intensity', {
+        min: 0,
+        max: 1,
+        message: 'Metallic intensity must be between 0 and 1'
+      });
+
+      validateColorField(theme.effects.metallic.gradient.base, 'effects.metallic.gradient.base');
+      validateColorField(theme.effects.metallic.gradient.highlight, 'effects.metallic.gradient.highlight');
+      validateColorField(theme.effects.metallic.gradient.shadow, 'effects.metallic.gradient.shadow');
+      validateColorField(theme.effects.metallic.gradient.shimmer, 'effects.metallic.gradient.shimmer');
+    }
+
+    if (theme.effects?.shadows) {
+      validateRange(theme.effects.shadows.elevation, 'effects.shadows.elevation', {
+        min: 0,
+        message: 'Shadow elevation must be greater than or equal to 0'
+      });
+      validateRange(theme.effects.shadows.blur, 'effects.shadows.blur', {
+        min: 0,
+        message: 'Shadow blur must be greater than or equal to 0'
+      });
+      validateColorField(theme.effects.shadows.color, 'effects.shadows.color');
+    }
+
+    if (theme.effects?.gradients) {
+      theme.effects.gradients.stops.forEach((stop, index) => {
+        validateRange(stop.offset, `effects.gradients.stops[${index}].offset`, {
+          min: 0,
+          max: 1,
+          message: 'Gradient stop offset must be between 0 and 1'
+        });
+        validateColorField(stop.color, `effects.gradients.stops[${index}].color`);
+      });
+    }
+
+    if (theme.effects?.overlays) {
+      validateColorField(theme.effects.overlays.color, 'effects.overlays.color');
+      validateRange(theme.effects.overlays.opacity, 'effects.overlays.opacity', {
+        min: 0,
+        max: 1,
+        message: 'Overlay opacity must be between 0 and 1'
+      });
+    }
+
+    if (theme.effects?.focusRing) {
+      validateColorField(theme.effects.focusRing.color, 'effects.focusRing.color');
+    }
+
+    if (theme.effects?.noise) {
+      validateRange(theme.effects.noise.opacity, 'effects.noise.opacity', {
+        min: 0,
+        max: 1,
+        message: 'Noise opacity must be between 0 and 1'
+      });
+    }
+
+    if (theme.effects?.blur) {
+      validateRange(theme.effects.blur.radius, 'effects.blur.radius', {
+        min: 0,
+        message: 'Blur radius must be greater than or equal to 0'
+      });
+    }
+
+    if (theme.effects?.animations) {
+      validateRange(theme.effects.animations.duration, 'effects.animations.duration', {
+        minExclusive: 0,
+        message: 'Animation duration must be greater than 0'
+      });
+    }
+
+    if (theme.effects?.transitions) {
+      validateRange(theme.effects.transitions.duration, 'effects.transitions.duration', {
+        minExclusive: 0,
+        message: 'Transition duration must be greater than 0'
+      });
+    }
+
+    if (theme.effects?.shimmer) {
+      validateRange(theme.effects.shimmer.speed, 'effects.shimmer.speed', {
+        minExclusive: 0,
+        message: 'Shimmer speed must be greater than 0'
+      });
+      validateRange(theme.effects.shimmer.intensity, 'effects.shimmer.intensity', {
+        min: 0,
+        max: 1,
+        message: 'Shimmer intensity must be between 0 and 1'
+      });
     }
 
     if (theme.adaptation?.layout?.spacingScale !== undefined && theme.adaptation.layout.spacingScale <= 0) {
@@ -367,7 +511,6 @@ export class ThemeEngine {
       });
     }
 
-    const roles = theme.colorScheme?.semanticRoles;
     if (roles) {
       const requiredSemanticPairs: Array<[string, string]> = [
         ['success', 'onSuccess'],
@@ -403,15 +546,6 @@ export class ThemeEngine {
           );
         }
       }
-    }
-
-    const layers = theme.colorScheme?.stateLayers;
-    if (layers) {
-      Object.entries(layers).forEach(([key, value]) => {
-        if (typeof value !== 'string') {
-          addWarning(`State layer ${key} should be a CSS color string for portability`, 'invalid-token', `colorScheme.stateLayers.${key}`);
-        }
-      });
     }
 
     if (theme.tokens?.density && theme.tokens.density.scale <= 0) {

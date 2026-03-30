@@ -343,4 +343,150 @@ describe('ThemeEngine adaptations', () => {
       validation.warnings.includes('Accessibility minimumTargetSize should be at least 24px (44px recommended)')
     ).toBe(true);
   });
+
+  it('rejects invalid colors across scheme semantic roles state layers and effects', () => {
+    const engine = new ThemeEngine();
+    const invalid = {
+      ...NavyGoldTheme,
+      metadata: {
+        ...NavyGoldTheme.metadata,
+        id: 'invalid-colors-everywhere'
+      },
+      colorScheme: {
+        ...NavyGoldTheme.colorScheme,
+        primary: 'rgb(300, 0, 0)',
+        onPrimary: 'rgba(255,255,255,1)',
+        semanticRoles: {
+          success: '#22AA22',
+          onSuccess: '#001100',
+          warning: 'rgba(120, 30, 20, 1.2)',
+          onWarning: '#FFFFFF',
+          info: '#2080AA',
+          onInfo: '#001122'
+        },
+        stateLayers: {
+          hover: 'hsl(10, 50%, 50%)'
+        }
+      },
+      effects: {
+        metallic: {
+          enabled: true,
+          variant: NavyGoldTheme.effects?.metallic?.variant ?? 'GOLD',
+          intensity: 1.2,
+          gradient: {
+            base: '#123456',
+            highlight: '#abcdef',
+            shadow: '#000000',
+            shimmer: 'rgb(999, 1, 1)'
+          }
+        },
+        shadows: {
+          enabled: true,
+          elevation: -1,
+          blur: -4,
+          color: 'rgba(0, 0, 0, 2)'
+        },
+        overlays: {
+          enabled: true,
+          color: '#000000',
+          opacity: -0.1
+        },
+        noise: {
+          enabled: true,
+          opacity: 1.1,
+          scale: 1
+        }
+      }
+    } as unknown as Theme;
+
+    const validation = engine.validateTheme(invalid);
+
+    expect(validation.valid).toBe(false);
+    expect(validation.errors.some(msg => msg.includes('colorScheme.primary'))).toBe(true);
+    expect(validation.errors.some(msg => msg.includes('colorScheme.semanticRoles.warning'))).toBe(true);
+    expect(validation.errors.some(msg => msg.includes('colorScheme.stateLayers.hover'))).toBe(true);
+    expect(validation.errors).toContain('Metallic intensity must be between 0 and 1');
+    expect(validation.errors).toContain('Shadow elevation must be greater than or equal to 0');
+    expect(validation.errors).toContain('Overlay opacity must be between 0 and 1');
+  });
+
+  it('accepts mixed valid color formats and numeric boundaries', () => {
+    const engine = new ThemeEngine();
+    const valid = {
+      ...NavyGoldTheme,
+      metadata: {
+        ...NavyGoldTheme.metadata,
+        id: 'valid-mixed-formats-boundary'
+      },
+      colorScheme: {
+        ...NavyGoldTheme.colorScheme,
+        primary: '#11223344',
+        onPrimary: 'rgb(255, 255, 255)',
+        semanticRoles: {
+          success: '#228B22',
+          onSuccess: '#FFFFFF',
+          warning: 'rgba(120, 80, 0, 1)',
+          onWarning: '#FFFFFF',
+          info: '#0077CC',
+          onInfo: '#FFFFFF'
+        },
+        stateLayers: {
+          hover: 'rgba(255, 255, 255, 0.08)',
+          pressed: '#0000001a'
+        }
+      },
+      effects: {
+        metallic: {
+          enabled: true,
+          variant: NavyGoldTheme.effects?.metallic?.variant ?? 'GOLD',
+          intensity: 0,
+          gradient: {
+            base: '#111111',
+            highlight: '#fefefe',
+            shadow: '#000000',
+            shimmer: '#ffffffff'
+          }
+        },
+        shadows: {
+          enabled: true,
+          elevation: 0,
+          blur: 0,
+          color: 'rgba(0, 0, 0, 0.4)'
+        },
+        overlays: {
+          enabled: true,
+          color: '#000',
+          opacity: 1
+        },
+        blur: {
+          enabled: true,
+          radius: 0
+        },
+        shimmer: {
+          enabled: true,
+          speed: 0.01,
+          intensity: 1,
+          angle: 45
+        },
+        animations: {
+          enabled: true,
+          duration: 1,
+          easing: 'ease'
+        },
+        transitions: {
+          enabled: true,
+          duration: 1,
+          properties: ['opacity']
+        },
+        noise: {
+          enabled: true,
+          opacity: 0,
+          scale: 2
+        }
+      }
+    } as unknown as Theme;
+
+    const validation = engine.validateTheme(valid);
+    expect(validation.errors).toEqual([]);
+  });
 });
