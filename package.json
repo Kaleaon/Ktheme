@@ -9,7 +9,9 @@
     "dev": "tsc --watch",
     "test": "jest",
     "lint": "eslint src --ext .ts",
-    "creator": "cd theme-creator && npm start"
+    "creator": "cd theme-creator && npm start",
+    "generate:theme-catalog": "node scripts/generate-theme-catalog.mjs",
+    "check:theme-catalog": "node scripts/generate-theme-catalog.mjs --check"
   },
   "keywords": [
     "theme",

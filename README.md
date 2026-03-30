@@ -23,7 +23,9 @@ Ktheme is a powerful, flexible theming engine inspired by the advanced theming s
 - 🎨 **Theme Creator** - Web-based tool for creating custom themes
 - 🏗️ **Layout + Icon Adaptation** - Apply theme-specific layout/icon/component overrides
 - 🔧 **Kotlin Plugin** - Native Kotlin/JVM support for Android and backend applications
-- 📱 **22 Preset Themes** - Includes CleverFerret set plus iconic/interface-focused additions
+<!-- GENERATED_PRESET_SUMMARY_START -->
+- 📱 **24 Preset Themes** - Generated from the shared preset registry (24 stable).
+<!-- GENERATED_PRESET_SUMMARY_END -->
 - 🧩 **Curated Theme Sets** - Ready-to-use bundles for onboarding and product contexts
 - 🚀 **Iconic Activation Packs** - One-call pack + variant + archetype activation workflow
 
@@ -168,32 +170,36 @@ const myTheme: Theme = {
 
 ## 🌟 Preset Themes
 
-Ktheme includes 14 themes from CleverFerret plus additional official iconic interface presets:
+The catalog below is generated from the shared preset registry:
 
-1. **Navy Gold** - Elegant navy with gold metallic accents (`navy-gold`)
-2. **Emerald Silver** - Rich emerald with silver accents (`emerald-silver`)
-3. **Rose Gold** - Warm rose gold with burgundy tones (`rose-gold`)
-4. **Royal Bronze** - Regal purple with bronze accents (`royal-bronze`)
-5. **Midnight Amber** - Sophisticated midnight blue with amber (`midnight-amber`)
-6. **Obsidian Crimson** - Bold black with crimson accents (`obsidian-crimson`)
-7. **Slate Cyan** - Cool modern slate with cyan (`slate-cyan`)
-8. **Royal Silver** - Royal purple with silver accents (`royal-silver`)
-9. **Forest Copper** - Deep forest green with copper (`forest-copper`)
-10. **Burgundy Rose Gold** - Rich burgundy with rose gold (`burgundy-rose-gold`)
-11. **Charcoal Champagne** - Sophisticated charcoal with champagne (`charcoal-champagne`)
-12. **Slate Gunmetal** - Industrial slate with gunmetal (`slate-gunmetal`)
-13. **Deep Purple Platinum** - Deep purple with platinum (`deep-purple-platinum`)
-14. **Paper & Ink** - Minimalist light theme for readers (`paper-ink`)
-15. **Windows Phone Metro** - Flat tile-first Metro language (`windows-phone-metro`)
-16. **LCARS** - LCARS-inspired rails and console styling (`lcars`)
-17. **Frutiger Aero** - Glossy sky-and-glass nostalgia aesthetic (`frutiger-aero`)
-18. **Solarpunk Civic** - Daylight civic/nature palette with optimistic utility (`solarpunk-civic`)
-19. **Neo-Noir Neon** - Cinematic dark UI with disciplined neon accents (`neo-noir-neon`)
-20. **Calm Clinical** - Healthcare/admin clarity with low-stress hierarchy (`calm-clinical`)
-21. **Ink Terminal Modern** - Retro-terminal character with modern readability (`ink-terminal-modern`)
-22. **Aurora Glass Night** - Night glassmorphism with aurora-tinted accents (`aurora-glass-night`)
-23. **Art Nouveau** - Organic curves with botanical decorative warmth (`art-nouveau`)
-24. **Art Deco** - Geometric luxury with gold/black/ivory contrast (`art-deco`)
+<!-- GENERATED_PRESET_LIST_START -->
+Ktheme includes **24 preset themes** defined in the shared catalog:
+
+1. **Navy Gold** (navy-gold) — Category: cleverferret core; Status: stable
+2. **Emerald Silver** (emerald-silver) — Category: cleverferret core; Status: stable
+3. **Rose Gold** (rose-gold) — Category: cleverferret core; Status: stable
+4. **Royal Bronze** (royal-bronze) — Category: cleverferret core; Status: stable
+5. **Midnight Amber** (midnight-amber) — Category: cleverferret core; Status: stable
+6. **Obsidian Crimson** (obsidian-crimson) — Category: cleverferret core; Status: stable
+7. **Slate Cyan** (slate-cyan) — Category: cleverferret core; Status: stable
+8. **Royal Silver** (royal-silver) — Category: cleverferret core; Status: stable
+9. **Forest Copper** (forest-copper) — Category: cleverferret core; Status: stable
+10. **Burgundy Rose Gold** (burgundy-rose-gold) — Category: cleverferret core; Status: stable
+11. **Charcoal Champagne** (charcoal-champagne) — Category: cleverferret core; Status: stable
+12. **Slate Gunmetal** (slate-gunmetal) — Category: cleverferret core; Status: stable
+13. **Deep Purple Platinum** (deep-purple-platinum) — Category: cleverferret core; Status: stable
+14. **Paper & Ink** (paper-ink) — Category: cleverferret core; Status: stable
+15. **Frutiger Aero** (frutiger-aero) — Category: official iconic; Status: stable
+16. **Solarpunk Civic** (solarpunk-civic) — Category: official iconic; Status: stable
+17. **Neo-Noir Neon** (neo-noir-neon) — Category: official iconic; Status: stable
+18. **Calm Clinical** (calm-clinical) — Category: official iconic; Status: stable
+19. **Ink Terminal Modern** (ink-terminal-modern) — Category: official iconic; Status: stable
+20. **Aurora Glass Night** (aurora-glass-night) — Category: official iconic; Status: stable
+21. **Windows Phone Metro** (windows-phone-metro) — Category: official iconic; Status: stable
+22. **LCARS** (lcars) — Category: official iconic; Status: stable
+23. **Art Nouveau** (art-nouveau) — Category: official iconic; Status: stable
+24. **Art Deco** (art-deco) — Category: official iconic; Status: stable
+<!-- GENERATED_PRESET_LIST_END -->
 
 All theme JSON files are available in `themes/examples/`, including `art-nouveau.json` and `art-deco.json`.
 For a quick visual reference of the new iconic presets, open `themes/examples/iconic-previews.html`.
