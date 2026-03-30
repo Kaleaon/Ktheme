@@ -343,4 +343,48 @@ describe('ThemeEngine adaptations', () => {
       validation.warnings.includes('Accessibility minimumTargetSize should be at least 24px (44px recommended)')
     ).toBe(true);
   });
+
+  it('rejects malformed imported themes with incomplete metadata shape', () => {
+    const engine = new ThemeEngine();
+
+    const missingDescriptionAndAuthor = {
+      ...NavyGoldTheme,
+      metadata: {
+        ...NavyGoldTheme.metadata,
+        id: 'import-missing-metadata',
+        description: '',
+        author: ''
+      }
+    };
+
+    expect(() => engine.importTheme(JSON.stringify(missingDescriptionAndAuthor))).toThrow('Theme description is required');
+    expect(() => engine.importTheme(JSON.stringify(missingDescriptionAndAuthor))).toThrow('Theme author is required');
+
+    const invalidTags = {
+      ...NavyGoldTheme,
+      metadata: {
+        ...NavyGoldTheme.metadata,
+        id: 'import-invalid-tags',
+        tags: ['valid', 42]
+      }
+    };
+
+    expect(() => engine.importTheme(JSON.stringify(invalidTags))).toThrow('Theme tags must be an array of strings');
+  });
+
+  it('searchByName never throws when metadata description is missing', () => {
+    const engine = new ThemeEngine();
+
+    (engine as unknown as { themes: Map<string, Theme> }).themes.set('legacy-theme', {
+      ...NavyGoldTheme,
+      metadata: {
+        ...NavyGoldTheme.metadata,
+        id: 'legacy-theme',
+        description: undefined as unknown as string
+      }
+    });
+
+    expect(() => engine.searchByName('legacy')).not.toThrow();
+    expect(engine.searchByName('legacy')).toHaveLength(1);
+  });
 });
