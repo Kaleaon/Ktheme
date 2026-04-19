@@ -6,6 +6,10 @@ import com.ktheme.utils.ThemeIdUtils
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.encodeToString
 import java.io.File
 
 /**
@@ -30,6 +34,8 @@ class ThemeEngine {
         collisionPolicy: ThemeIdCollisionPolicy = ThemeIdCollisionPolicy.OVERWRITE
     ): Theme {
         val normalizedTheme = ThemeIdUtils.withNormalizedId(theme)
+    fun registerTheme(theme: Theme) {
+        val normalizedTheme = if (theme.schemaVersion == SCHEMA_VERSION) theme else theme.copy(schemaVersion = SCHEMA_VERSION)
         val validation = validateTheme(normalizedTheme)
         if (!validation.valid) {
             throw IllegalArgumentException("Invalid theme: ${validation.errors.joinToString(", ")}")
@@ -48,6 +54,7 @@ class ThemeEngine {
 
         themes[resolvedTheme.metadata.id] = resolvedTheme
         return resolvedTheme
+        themes[normalizedTheme.metadata.id] = normalizedTheme
     }
 
     /**
@@ -109,6 +116,7 @@ class ThemeEngine {
                 warnings.add("Metallic intensity should be between 0 and 1")
             }
         }
+        ThemeValidator.validate(theme, errors, warnings)
 
         return ValidationResult(
             valid = errors.isEmpty(),
@@ -136,6 +144,24 @@ class ThemeEngine {
         return try {
             val theme = json.decodeFromString<Theme>(jsonString)
             registerTheme(theme, collisionPolicy)
+            val rawTheme = json.parseToJsonElement(jsonString).jsonObject
+            val importMetadata = parseThemeImportMetadata(rawTheme, json)
+            val migratedPayload = if (importMetadata.schemaVersion == SCHEMA_VERSION) {
+                rawTheme
+            } else {
+                migrateTheme(rawTheme, importMetadata.schemaVersion, SCHEMA_VERSION)
+            }
+            val migratedTheme = json.decodeFromJsonElement<Theme>(migratedPayload)
+            val validation = validateTheme(migratedTheme)
+            if (!validation.valid) {
+                val fallbackName = importMetadata.metadataName ?: "unknown"
+                val fallbackId = importMetadata.metadataId ?: "unknown"
+                throw IllegalArgumentException(
+                    "Migrated theme '$fallbackName' ($fallbackId) is invalid: ${validation.errors.joinToString(", ")}"
+                )
+            }
+            registerTheme(migratedTheme)
+            migratedTheme
         } catch (e: Exception) {
             throw IllegalArgumentException("Failed to import theme: ${e.message}", e)
         }
