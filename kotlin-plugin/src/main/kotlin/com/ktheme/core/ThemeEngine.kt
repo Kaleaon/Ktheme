@@ -2,8 +2,9 @@ package com.ktheme.core
 
 import com.ktheme.models.Theme
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.decodeFromString
 import java.io.File
 
 /**
@@ -24,11 +25,12 @@ class ThemeEngine {
      * Register a new theme
      */
     fun registerTheme(theme: Theme) {
-        val validation = validateTheme(theme)
+        val normalizedTheme = if (theme.schemaVersion == SCHEMA_VERSION) theme else theme.copy(schemaVersion = SCHEMA_VERSION)
+        val validation = validateTheme(normalizedTheme)
         if (!validation.valid) {
             throw IllegalArgumentException("Invalid theme: ${validation.errors.joinToString(", ")}")
         }
-        themes[theme.metadata.id] = theme
+        themes[normalizedTheme.metadata.id] = normalizedTheme
     }
     
     /**
@@ -113,9 +115,24 @@ class ThemeEngine {
      */
     fun importTheme(jsonString: String): Theme {
         return try {
-            val theme = json.decodeFromString<Theme>(jsonString)
-            registerTheme(theme)
-            theme
+            val rawTheme = json.parseToJsonElement(jsonString).jsonObject
+            val importMetadata = parseThemeImportMetadata(rawTheme, json)
+            val migratedPayload = if (importMetadata.schemaVersion == SCHEMA_VERSION) {
+                rawTheme
+            } else {
+                migrateTheme(rawTheme, importMetadata.schemaVersion, SCHEMA_VERSION)
+            }
+            val migratedTheme = json.decodeFromJsonElement<Theme>(migratedPayload)
+            val validation = validateTheme(migratedTheme)
+            if (!validation.valid) {
+                val fallbackName = importMetadata.metadataName ?: "unknown"
+                val fallbackId = importMetadata.metadataId ?: "unknown"
+                throw IllegalArgumentException(
+                    "Migrated theme '$fallbackName' ($fallbackId) is invalid: ${validation.errors.joinToString(", ")}"
+                )
+            }
+            registerTheme(migratedTheme)
+            migratedTheme
         } catch (e: Exception) {
             throw IllegalArgumentException("Failed to import theme: ${e.message}", e)
         }

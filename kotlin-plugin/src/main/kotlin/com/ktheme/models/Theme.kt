@@ -240,6 +240,7 @@ data class ThemeMetadata(
  */
 @Serializable
 data class Theme(
+    val schemaVersion: Int = 1,
     val metadata: ThemeMetadata,
     val darkMode: Boolean,
     val colorScheme: ColorScheme,
