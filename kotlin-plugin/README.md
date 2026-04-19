@@ -219,29 +219,23 @@ engine.saveThemeToFile(customTheme.metadata.id, outputFile)
 ```kotlin
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
-import androidx.compose.ui.graphics.Color
+import com.ktheme.android.toMaterial3ColorScheme
 
 @Composable
 fun ThemedApp() {
     val engine = remember { ThemeEngine() }
     val themeState = remember { mutableStateOf<Theme?>(null) }
-    
+
     LaunchedEffect(Unit) {
         // Load theme
         val theme = engine.loadThemeFromFile(File("themes/navy-gold.json"))
         engine.setActiveTheme(theme.metadata.id)
         themeState.value = engine.getActiveTheme()
     }
-    
+
     themeState.value?.let { theme ->
         MaterialTheme(
-            colorScheme = androidx.compose.material3.darkColorScheme(
-                primary = Color(ColorUtils.hexToColorInt(theme.colorScheme.primary)),
-                onPrimary = Color(ColorUtils.hexToColorInt(theme.colorScheme.onPrimary)),
-                background = Color(ColorUtils.hexToColorInt(theme.colorScheme.background)),
-                onBackground = Color(ColorUtils.hexToColorInt(theme.colorScheme.onBackground)),
-                // ... map other colors
-            )
+            colorScheme = theme.toMaterial3ColorScheme()
         ) {
             // Your app content
         }

@@ -19,9 +19,12 @@ dependencies {
     // JSON serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
     
+    // Compose Material 3 adapter support
+    implementation("org.jetbrains.compose.material3:material3:1.6.11")
+    implementation("org.jetbrains.compose.ui:ui-graphics:1.6.11")
+
     // Testing
     testImplementation(kotlin("test"))
-    testImplementation("junit:junit:4.13.2")
 }
 
 tasks.test {
