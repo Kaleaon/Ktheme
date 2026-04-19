@@ -1,9 +1,9 @@
 package com.ktheme.library
 
+import com.ktheme.core.ThemeEngine
+import com.ktheme.core.ThemeFileMetadataSigner
+import com.ktheme.core.ThemeFileSignatureVerifier
 import com.ktheme.models.Theme
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import java.io.File
 import java.nio.file.ClosedWatchServiceException
 import java.nio.file.FileSystems
@@ -37,7 +37,7 @@ interface ThemeProvider {
     /**
      * Publish a theme to shared storage
      */
-    fun publishTheme(theme: Theme): Boolean
+    fun publishTheme(theme: Theme, signer: ThemeFileMetadataSigner? = null): Boolean
     
     /**
      * Subscribe to theme changes
@@ -63,15 +63,13 @@ interface ThemeChangeListener {
  * Default implementation of ThemeProvider using file-based sharing
  */
 class FileBasedThemeProvider(
-    private val sharedDir: File = File(System.getProperty("user.home"), ".ktheme/shared")
+    private val sharedDir: File = File(System.getProperty("user.home"), ".ktheme/shared"),
+    private val signatureVerifier: ThemeFileSignatureVerifier? = null
 ) : ThemeProvider {
     private val library = ThemeLibrary()
+    private val parserEngine = ThemeEngine()
     private val listeners = mutableSetOf<ThemeChangeListener>()
     private val listenersLock = Any()
-    private val json = Json {
-        prettyPrint = true
-        ignoreUnknownKeys = true
-    }
 
     @Volatile
     private var watchService: WatchService? = null
@@ -81,6 +79,7 @@ class FileBasedThemeProvider(
     
     init {
         sharedDir.mkdirs()
+        library.signatureVerifier = signatureVerifier
     }
     
     override fun getSharedThemes(): List<Theme> {
@@ -103,11 +102,11 @@ class FileBasedThemeProvider(
         }
     }
     
-    override fun publishTheme(theme: Theme): Boolean {
+    override fun publishTheme(theme: Theme, signer: ThemeFileMetadataSigner?): Boolean {
         return try {
             val file = File(sharedDir, "${theme.metadata.id}.json")
-            // Write directly so apps can publish themes without pre-registering in ThemeLibrary
-            file.writeText(json.encodeToString(theme))
+            val payload = parserEngine.serializeThemeWithMetadata(theme, signer)
+            file.writeText(payload)
             true
         } catch (e: Exception) {
             false
@@ -193,7 +192,7 @@ class FileBasedThemeProvider(
             if (!file.exists()) {
                 null
             } else {
-                json.decodeFromString<Theme>(file.readText())
+                parserEngine.loadThemeFromFile(file, signatureVerifier)
             }
         } catch (_: Exception) {
             null

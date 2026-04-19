@@ -1,10 +1,11 @@
 package com.ktheme.library
 
 import com.ktheme.core.ThemeEngine
+import com.ktheme.core.ThemeFileMetadataSigner
+import com.ktheme.core.ThemeFileSignatureVerifier
 import com.ktheme.models.Theme
 import java.io.File
 import java.nio.file.Files
-import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 
 /**
@@ -30,6 +31,8 @@ class ThemeLibrary {
             USER_THEMES_DIR.mkdirs()
         }
     }
+
+    var signatureVerifier: ThemeFileSignatureVerifier? = null
     
     /**
      * Load all available themes from various sources
@@ -58,7 +61,7 @@ class ThemeLibrary {
         
         directory.listFiles()?.filter { it.extension == "json" }?.forEach { file ->
             try {
-                val theme = engine.loadThemeFromFile(file)
+                val theme = engine.loadThemeFromFile(file, signatureVerifier)
                 println("✓ Loaded theme: ${theme.metadata.name} from $source")
             } catch (e: Exception) {
                 println("✗ Failed to load ${file.name}: ${e.message}")
@@ -142,11 +145,11 @@ class ThemeLibrary {
     /**
      * Share a theme to the shared directory (for cross-app access)
      */
-    fun shareTheme(themeId: String): Boolean {
+    fun shareTheme(themeId: String, signer: ThemeFileMetadataSigner? = null): Boolean {
         return try {
             val theme = engine.getTheme(themeId) ?: return false
             val sharedFile = File(SHARED_THEMES_DIR, "${theme.metadata.id}.json")
-            engine.saveThemeToFile(themeId, sharedFile)
+            engine.saveThemeToFile(themeId, sharedFile, signer)
             println("Theme shared: ${theme.metadata.name}")
             true
         } catch (e: Exception) {
@@ -158,9 +161,13 @@ class ThemeLibrary {
     /**
      * Export theme to a specific file
      */
-    fun exportTheme(themeId: String, targetFile: File): Boolean {
+    fun exportTheme(
+        themeId: String,
+        targetFile: File,
+        signer: ThemeFileMetadataSigner? = null
+    ): Boolean {
         return try {
-            engine.saveThemeToFile(themeId, targetFile)
+            engine.saveThemeToFile(themeId, targetFile, signer)
             true
         } catch (e: Exception) {
             println("Failed to export theme: ${e.message}")
@@ -173,7 +180,7 @@ class ThemeLibrary {
      */
     fun importTheme(file: File): Theme? {
         return try {
-            val theme = engine.loadThemeFromFile(file)
+            val theme = engine.loadThemeFromFile(file, signatureVerifier)
             // Copy to user themes directory
             val userFile = File(USER_THEMES_DIR, file.name)
             Files.copy(file.toPath(), userFile.toPath(), StandardCopyOption.REPLACE_EXISTING)

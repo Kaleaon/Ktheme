@@ -258,9 +258,49 @@ All 14 themes from CleverFerret are available:
 9. **Forest Copper** - Deep forest green with copper
 10. **Burgundy Rose Gold** - Rich burgundy with rose gold
 11. **Charcoal Champagne** - Sophisticated charcoal with champagne
+
 12. **Slate Gunmetal** - Industrial slate with gunmetal
 13. **Deep Purple Platinum** - Deep purple with platinum
 14. **Paper & Ink** - Minimalist light theme for readers
+
+## Theme File Integrity, Trust Model, and Failure Behavior
+
+Ktheme now writes exported/shared theme files as an envelope:
+
+- `theme`: the serialized theme payload.
+- `fileMetadata.checksum`: SHA-256 hash of the serialized `theme` payload.
+- Optional signer fields (`fileMetadata.signerId`, `fileMetadata.signature`) for trusted publisher workflows.
+
+### What is verified on import/read
+
+- When `ThemeEngine.loadThemeFromFile` (and library/provider APIs that call it) reads an envelope file, Ktheme recomputes SHA-256 over the payload and compares it to `fileMetadata.checksum`.
+- If checksum validation fails, the file is treated as corrupted/tampered.
+- Legacy plain theme JSON files (without `fileMetadata`) remain readable for backward compatibility.
+
+### Quarantine behavior
+
+- Any theme file that fails integrity verification during file-based load/read is moved to:
+  - `~/.ktheme/quarantine`
+- The original source file is removed from its prior location to prevent repeated unsafe loads.
+- Quarantine filenames include the original name plus a timestamp and sanitized failure reason.
+
+### Trusted publisher support (pluggable)
+
+Ktheme exposes optional pluggable interfaces:
+
+- `ThemeFileMetadataSigner` (used during save/share/publish) to attach signatures.
+- `ThemeFileSignatureVerifier` (used during read/load) to enforce trusted signers and signature checks.
+
+Default behavior if no verifier is configured:
+
+- Checksum verification is always enforced for envelope files.
+- Signature fields are ignored unless a verifier is explicitly provided.
+
+With a verifier configured:
+
+- Signer trust is checked via `isTrustedSigner`.
+- Signature correctness is checked via `verify`.
+- Failure in trust or signature validation causes quarantine.
 
 ## Cross-App Theme Sharing
 

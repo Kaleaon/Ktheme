@@ -4,7 +4,12 @@ import com.ktheme.models.Theme
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonObject
+import java.security.MessageDigest
 import java.io.File
+import java.time.Instant
 
 /**
  * Ktheme Engine - Core theme management system for Kotlin
@@ -18,6 +23,10 @@ class ThemeEngine {
     private val json = Json {
         prettyPrint = true
         ignoreUnknownKeys = true
+    }
+
+    private val quarantineDir = File(System.getProperty("user.home"), ".ktheme/quarantine").apply {
+        mkdirs()
     }
     
     /**
@@ -113,7 +122,7 @@ class ThemeEngine {
      */
     fun importTheme(jsonString: String): Theme {
         return try {
-            val theme = json.decodeFromString<Theme>(jsonString)
+            val theme = parseThemeJson(jsonString).theme
             registerTheme(theme)
             theme
         } catch (e: Exception) {
@@ -131,17 +140,40 @@ class ThemeEngine {
     /**
      * Load theme from JSON file
      */
-    fun loadThemeFromFile(file: File): Theme {
+    fun loadThemeFromFile(
+        file: File,
+        signatureVerifier: ThemeFileSignatureVerifier? = null
+    ): Theme {
         val jsonString = file.readText()
-        return importTheme(jsonString)
+        return try {
+            val parsedTheme = parseThemeJson(jsonString, signatureVerifier)
+            registerTheme(parsedTheme.theme)
+            parsedTheme.theme
+        } catch (e: Exception) {
+            quarantineFile(file, e.message ?: "verification-failed")
+            throw IllegalArgumentException("Failed to load theme from file ${file.name}: ${e.message}", e)
+        }
     }
     
     /**
      * Save theme to JSON file
      */
-    fun saveThemeToFile(id: String, file: File) {
+    fun saveThemeToFile(
+        id: String,
+        file: File,
+        signer: ThemeFileMetadataSigner? = null
+    ) {
         val jsonString = exportTheme(id)
-        file.writeText(jsonString)
+        val signedThemeJson = wrapThemeWithMetadata(jsonString, signer)
+        file.writeText(signedThemeJson)
+    }
+
+    fun serializeThemeWithMetadata(
+        theme: Theme,
+        signer: ThemeFileMetadataSigner? = null
+    ): String {
+        val rawThemeJson = json.encodeToString(theme)
+        return wrapThemeWithMetadata(rawThemeJson, signer)
     }
     
     /**
@@ -163,6 +195,85 @@ class ThemeEngine {
             theme.metadata.description.lowercase().contains(lowerQuery)
         }
     }
+
+    private fun parseThemeJson(
+        jsonString: String,
+        signatureVerifier: ThemeFileSignatureVerifier? = null
+    ): ParsedTheme {
+        val root = json.parseToJsonElement(jsonString)
+        val rootObject = root as? JsonObject
+        val hasEnvelopeMetadata = rootObject?.containsKey("fileMetadata") == true && rootObject.containsKey("theme")
+
+        return if (hasEnvelopeMetadata) {
+            val envelope = json.decodeFromString<ThemeFileEnvelope>(jsonString)
+            verifyEnvelope(envelope, signatureVerifier)
+            ParsedTheme(envelope.theme)
+        } else {
+            val legacyTheme = json.decodeFromString<Theme>(jsonString)
+            ParsedTheme(legacyTheme)
+        }
+    }
+
+    private fun verifyEnvelope(
+        envelope: ThemeFileEnvelope,
+        signatureVerifier: ThemeFileSignatureVerifier?
+    ) {
+        val payload = json.encodeToString(envelope.theme)
+        val expectedChecksum = sha256Hex(payload)
+        require(expectedChecksum == envelope.fileMetadata.checksum) {
+            "Checksum verification failed"
+        }
+
+        val signature = envelope.fileMetadata.signature
+        val signerId = envelope.fileMetadata.signerId
+        if (!signature.isNullOrBlank() && !signerId.isNullOrBlank()) {
+            val verifier = signatureVerifier ?: return
+            require(verifier.isTrustedSigner(signerId)) {
+                "Untrusted signer: $signerId"
+            }
+            require(verifier.verify(payload, signature, signerId)) {
+                "Signature verification failed for signer: $signerId"
+            }
+        }
+    }
+
+    private fun wrapThemeWithMetadata(
+        rawThemeJson: String,
+        signer: ThemeFileMetadataSigner?
+    ): String {
+        val checksum = sha256Hex(rawThemeJson)
+        val signature = signer?.sign(rawThemeJson)
+        val envelope = ThemeFileEnvelope(
+            theme = json.decodeFromString(rawThemeJson),
+            fileMetadata = ThemeFileMetadata(
+                checksum = checksum,
+                generatedAt = Instant.now().toString(),
+                signerId = signer?.signerId,
+                signature = signature
+            )
+        )
+        return json.encodeToString(envelope)
+    }
+
+    private fun quarantineFile(file: File, reason: String) {
+        quarantineDir.mkdirs()
+        val safeReason = reason
+            .lowercase()
+            .replace(Regex("[^a-z0-9]+"), "-")
+            .trim('-')
+            .ifEmpty { "invalid" }
+        val quarantinedFile = File(
+            quarantineDir,
+            "${file.nameWithoutExtension}-${Instant.now().toEpochMilli()}-$safeReason.${file.extension.ifBlank { "json" }}"
+        )
+        file.copyTo(quarantinedFile, overwrite = true)
+        file.delete()
+    }
+
+    private fun sha256Hex(value: String): String {
+        val digest = MessageDigest.getInstance("SHA-256").digest(value.toByteArray())
+        return digest.joinToString("") { "%02x".format(it) }
+    }
 }
 
 /**
@@ -173,3 +284,33 @@ data class ValidationResult(
     val errors: List<String>,
     val warnings: List<String>
 )
+
+data class ParsedTheme(
+    val theme: Theme
+)
+
+@Serializable
+data class ThemeFileEnvelope(
+    val theme: Theme,
+    @SerialName("fileMetadata")
+    val fileMetadata: ThemeFileMetadata
+)
+
+@Serializable
+data class ThemeFileMetadata(
+    val checksum: String,
+    val checksumAlgorithm: String = "SHA-256",
+    val generatedAt: String,
+    val signerId: String? = null,
+    val signature: String? = null
+)
+
+interface ThemeFileMetadataSigner {
+    val signerId: String
+    fun sign(payload: String): String
+}
+
+interface ThemeFileSignatureVerifier {
+    fun isTrustedSigner(signerId: String): Boolean
+    fun verify(payload: String, signature: String, signerId: String): Boolean
+}

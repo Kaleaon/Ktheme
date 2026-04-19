@@ -6,6 +6,8 @@ import com.ktheme.models.ThemeMetadata
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.nio.file.Files
@@ -103,6 +105,49 @@ class FileBasedThemeProviderTest {
         assertEquals(listOf("removed-theme"), removedThemes.toList())
 
         provider.unsubscribe(listener)
+    }
+
+    @Test
+    fun `publishTheme writes checksum metadata envelope`() {
+        val tempDir = Files.createTempDirectory("ktheme-provider-publish").toFile()
+        val provider = FileBasedThemeProvider(tempDir)
+        val theme = createTheme("published-theme", "Published Theme", "1.0.0")
+
+        assertTrue(provider.publishTheme(theme))
+
+        val file = java.io.File(tempDir, "published-theme.json")
+        assertTrue(file.exists())
+        val payload = file.readText()
+        assertTrue(payload.contains("\"fileMetadata\""))
+        assertTrue(payload.contains("\"checksum\""))
+    }
+
+    @Test
+    fun `invalid checksum file is quarantined during read`() {
+        val oldHome = System.getProperty("user.home")
+        val fakeHome = Files.createTempDirectory("ktheme-home").toFile()
+        System.setProperty("user.home", fakeHome.absolutePath)
+        try {
+            val sharedDir = Files.createTempDirectory("ktheme-provider-invalid").toFile()
+            val provider = FileBasedThemeProvider(sharedDir)
+            val theme = createTheme("tampered-theme", "Tampered Theme", "1.0.0")
+            assertTrue(provider.publishTheme(theme))
+
+            val themeFile = java.io.File(sharedDir, "tampered-theme.json")
+            val tamperedPayload = themeFile.readText().replace("#111111", "#121212")
+            themeFile.writeText(tamperedPayload)
+
+            val read = provider.getSharedTheme("tampered-theme")
+            assertEquals(null, read)
+            assertFalse(themeFile.exists())
+
+            val quarantineDir = java.io.File(fakeHome, ".ktheme/quarantine")
+            val quarantinedFiles = quarantineDir.listFiles()?.filter { it.name.contains("tampered-theme") }.orEmpty()
+            assertTrue(quarantinedFiles.isNotEmpty())
+            assertNotNull(quarantinedFiles.firstOrNull())
+        } finally {
+            System.setProperty("user.home", oldHome)
+        }
     }
 
     private fun writeTheme(directory: java.io.File, theme: Theme): java.io.File {
