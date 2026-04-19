@@ -9,6 +9,8 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
 import java.security.MessageDigest
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import java.time.Instant
 
 /**
@@ -144,13 +146,19 @@ class ThemeEngine {
         file: File,
         signatureVerifier: ThemeFileSignatureVerifier? = null
     ): Theme {
-        val jsonString = file.readText()
         return try {
+            val jsonString = file.readText()
             val parsedTheme = parseThemeJson(jsonString, signatureVerifier)
             registerTheme(parsedTheme.theme)
             parsedTheme.theme
         } catch (e: Exception) {
-            quarantineFile(file, e.message ?: "verification-failed")
+            if (e is ThemeIntegrityException) {
+                runCatching {
+                    quarantineFile(file, e.message ?: "verification-failed")
+                }.onFailure { quarantineError ->
+                    e.addSuppressed(quarantineError)
+                }
+            }
             throw IllegalArgumentException("Failed to load theme from file ${file.name}: ${e.message}", e)
         }
     }
@@ -218,21 +226,25 @@ class ThemeEngine {
         envelope: ThemeFileEnvelope,
         signatureVerifier: ThemeFileSignatureVerifier?
     ) {
+        if (envelope.fileMetadata.checksumAlgorithm != "SHA-256") {
+            throw ThemeIntegrityException("Unsupported checksum algorithm: ${envelope.fileMetadata.checksumAlgorithm}")
+        }
+
         val payload = json.encodeToString(envelope.theme)
         val expectedChecksum = sha256Hex(payload)
-        require(expectedChecksum == envelope.fileMetadata.checksum) {
-            "Checksum verification failed"
+        if (expectedChecksum != envelope.fileMetadata.checksum) {
+            throw ThemeIntegrityException("Checksum verification failed")
         }
 
         val signature = envelope.fileMetadata.signature
         val signerId = envelope.fileMetadata.signerId
         if (!signature.isNullOrBlank() && !signerId.isNullOrBlank()) {
             val verifier = signatureVerifier ?: return
-            require(verifier.isTrustedSigner(signerId)) {
-                "Untrusted signer: $signerId"
+            if (!verifier.isTrustedSigner(signerId)) {
+                throw ThemeIntegrityException("Untrusted signer: $signerId")
             }
-            require(verifier.verify(payload, signature, signerId)) {
-                "Signature verification failed for signer: $signerId"
+            if (!verifier.verify(payload, signature, signerId)) {
+                throw ThemeIntegrityException("Signature verification failed for signer: $signerId")
             }
         }
     }
@@ -266,15 +278,23 @@ class ThemeEngine {
             quarantineDir,
             "${file.nameWithoutExtension}-${Instant.now().toEpochMilli()}-$safeReason.${file.extension.ifBlank { "json" }}"
         )
-        file.copyTo(quarantinedFile, overwrite = true)
-        file.delete()
+        runCatching {
+            Files.move(file.toPath(), quarantinedFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+        }.getOrElse {
+            file.copyTo(quarantinedFile, overwrite = true)
+            if (!file.delete()) {
+                throw IllegalStateException("Failed to delete source file after quarantine copy: ${file.absolutePath}")
+            }
+        }
     }
 
     private fun sha256Hex(value: String): String {
-        val digest = MessageDigest.getInstance("SHA-256").digest(value.toByteArray())
+        val digest = MessageDigest.getInstance("SHA-256").digest(value.toByteArray(Charsets.UTF_8))
         return digest.joinToString("") { "%02x".format(it) }
     }
 }
+
+private class ThemeIntegrityException(message: String) : IllegalArgumentException(message)
 
 /**
  * Theme validation result
