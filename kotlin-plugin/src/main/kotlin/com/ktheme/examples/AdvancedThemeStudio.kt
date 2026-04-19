@@ -3,6 +3,8 @@ package com.ktheme.examples
 import com.ktheme.library.KthemeAPI
 import com.ktheme.models.*
 import com.ktheme.utils.ColorUtils
+import com.ktheme.utils.ThemeIdCollisionPolicy
+import com.ktheme.utils.ThemeIdUtils
 import java.awt.*
 import java.awt.event.ActionEvent
 import javax.swing.*
@@ -192,9 +194,10 @@ class AdvancedThemeStudio : JFrame("Ktheme Advanced Theme Studio") {
                 selectedFile = java.io.File("${theme.metadata.id}.json")
             }
             if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-                val output = chooser.selectedFile.let {
+                val selectedFile = chooser.selectedFile.let {
                     if (it.name.endsWith(".json")) it else java.io.File(it.parentFile, "${it.name}.json")
                 }
+                val output = resolveFileCollision(selectedFile, ThemeIdCollisionPolicy.SUFFIX)
                 val json = kotlinx.serialization.json.Json { prettyPrint = true }
                 output.writeText(json.encodeToString(Theme.serializer(), theme))
                 JOptionPane.showMessageDialog(this, "Saved theme to ${output.absolutePath}")
@@ -207,7 +210,7 @@ class AdvancedThemeStudio : JFrame("Ktheme Advanced Theme Studio") {
     private fun shareTheme() {
         runCatching {
             val theme = buildTheme()
-            val shared = KthemeAPI.shareTheme(theme)
+            val shared = KthemeAPI.shareTheme(theme, ThemeIdCollisionPolicy.SUFFIX)
             if (shared) {
                 JOptionPane.showMessageDialog(
                     this,
@@ -221,6 +224,31 @@ class AdvancedThemeStudio : JFrame("Ktheme Advanced Theme Studio") {
         }
     }
 
+
+    private fun resolveFileCollision(file: java.io.File, policy: ThemeIdCollisionPolicy): java.io.File {
+        if (!file.exists() || policy == ThemeIdCollisionPolicy.OVERWRITE) {
+            return file
+        }
+        if (policy == ThemeIdCollisionPolicy.REJECT) {
+            throw IllegalArgumentException("File already exists: ${file.absolutePath}")
+        }
+
+        val extension = file.extension.takeIf { it.isNotEmpty() }
+        val baseName = if (extension == null) file.name else file.name.removeSuffix(".$extension")
+        var suffix = 2
+        var candidate = file
+        while (candidate.exists()) {
+            val candidateName = "$baseName-$suffix"
+            candidate = if (extension == null) {
+                java.io.File(file.parentFile, candidateName)
+            } else {
+                java.io.File(file.parentFile, "$candidateName.$extension")
+            }
+            suffix++
+        }
+        return candidate
+    }
+
     private fun buildTheme(): Theme {
         val primary = normalizeHex(primaryField.text)
         val secondary = normalizeHex(secondaryField.text)
@@ -230,7 +258,7 @@ class AdvancedThemeStudio : JFrame("Ktheme Advanced Theme Studio") {
 
         return Theme(
             metadata = ThemeMetadata(
-                id = nameField.text.trim().lowercase().replace(Regex("[^a-z0-9]+"), "-").trim('-'),
+                id = ThemeIdUtils.normalize(nameField.text.trim()),
                 name = nameField.text.trim(),
                 description = descriptionField.text.trim(),
                 author = authorField.text.trim(),
