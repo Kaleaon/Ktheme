@@ -10,6 +10,10 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.security.MessageDigest
+import com.ktheme.utils.ThemeIdCollisionPolicy
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import java.io.File
 
 /**
  * Theme Library - Central repository for managing and sharing themes across applications
@@ -33,6 +37,17 @@ class ThemeLibrary(
     private val indexJson = Json {
         prettyPrint = true
         ignoreUnknownKeys = true
+    private val json = Json { prettyPrint = true }
+    
+    companion object {
+        // Shared theme directory for cross-app theme sharing
+        private val SHARED_THEMES_DIR = File(System.getProperty("user.home"), ".ktheme/shared")
+        private val USER_THEMES_DIR = File(System.getProperty("user.home"), ".ktheme/user")
+        
+        init {
+            SHARED_THEMES_DIR.mkdirs()
+            USER_THEMES_DIR.mkdirs()
+        }
     }
 
     init {
@@ -250,7 +265,10 @@ class ThemeLibrary(
     /**
      * Import theme from file
      */
-    fun importTheme(file: File): Theme? {
+    fun importTheme(
+        file: File,
+        collisionPolicy: ThemeIdCollisionPolicy = ThemeIdCollisionPolicy.SUFFIX
+    ): Theme? {
         return try {
             val theme = engine.loadThemeFromFile(file)
             // Copy to user themes directory
@@ -258,6 +276,11 @@ class ThemeLibrary(
             Files.copy(file.toPath(), userFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
             notifyThemeImported(theme)
             theme
+            val importedTheme = engine.importTheme(file.readText(), collisionPolicy)
+            val userFile = File(USER_THEMES_DIR, "${importedTheme.metadata.id}.json")
+            userFile.writeText(json.encodeToString(importedTheme))
+            notifyThemeImported(importedTheme)
+            importedTheme
         } catch (e: Exception) {
             println("Failed to import theme: ${e.message}")
             null
