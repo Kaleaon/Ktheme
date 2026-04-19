@@ -64,6 +64,28 @@ java -jar build/libs/ktheme-kotlin-1.0.0.jar
 - **Export JSON themes** - Save generated themes for versioning and distribution
 - **Compatibility** - Shared themes can be consumed by any app using the Ktheme Kotlin API
 
+
+### Theme ID Normalization & Collision Policy
+
+Theme IDs are normalized automatically anywhere themes are registered/imported/shared/saved:
+
+- IDs are converted to lowercase kebab-case.
+- Invalid characters are stripped (collapsed to `-`).
+- IDs must remain non-empty after normalization.
+
+When a normalized ID collides with an existing one, choose a `ThemeIdCollisionPolicy`:
+
+- `OVERWRITE` - replace the existing theme.
+- `REJECT` - throw/return failure on collision.
+- `SUFFIX` - generate a unique ID with numeric suffixes (`-2`, `-3`, ...).
+
+Defaults:
+
+- `ThemeEngine.registerTheme(...)`: `OVERWRITE`
+- `ThemeLibrary.importTheme(...)`: `SUFFIX`
+- `KthemeAPI.shareTheme(...)`: `SUFFIX`
+- Advanced Theme Studio save/share flows use suffix behavior to avoid accidental overwrites.
+
 ## Quick Start
 
 ### Basic Usage

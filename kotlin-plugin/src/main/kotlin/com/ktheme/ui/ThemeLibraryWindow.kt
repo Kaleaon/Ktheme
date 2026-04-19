@@ -275,18 +275,43 @@ class ThemeLibraryWindow : JFrame() {
     }
 
     private fun searchThemes(query: String) {
-        val results = library.searchThemes(query)
-        announceStatus("Search for '$query' returned ${results.size} themes")
+        val results = library.searchThemes(
+            query = query,
+            offset = 0,
+            limit = 100
+        )
+        val themes = results.map { it.theme }
+        updateThemeScrollWheel(themes)
+
+        val topResult = results.firstOrNull()
+        val topMatchInfo = topResult?.let {
+            "Top match: ${it.theme.metadata.name} (score ${it.score}, matched ${it.matchedFields.joinToString(", ")})"
+        } ?: "No results"
+
+        announceStatus("Search for '$query' returned ${results.size} themes. $topMatchInfo")
         JOptionPane.showMessageDialog(
             this,
-            "Found ${results.size} themes matching '$query'",
+            buildString {
+                append("Found ${results.size} themes matching '$query'")
+                topResult?.let {
+                    append("\n\nTop match:")
+                    append("\n${it.theme.metadata.name}")
+                    append("\nScore: ${it.score}")
+                    append("\nMatched fields: ${it.matchedFields.joinToString(", ")}")
+                }
+            },
             "Search Results",
             JOptionPane.INFORMATION_MESSAGE
         )
     }
 
     private fun filterThemes(predicate: (Theme) -> Boolean) {
-        val filtered = library.getAllThemes().filter(predicate)
+        val filtered = library.searchThemes(
+            query = "",
+            offset = 0,
+            limit = 500
+        ).map { it.theme }.filter(predicate)
+        updateThemeScrollWheel(filtered)
         announceStatus("Filter applied. ${filtered.size} themes shown")
         JOptionPane.showMessageDialog(
             this,
@@ -294,6 +319,23 @@ class ThemeLibraryWindow : JFrame() {
             "Filter Applied",
             JOptionPane.INFORMATION_MESSAGE
         )
+    }
+
+    private fun updateThemeScrollWheel(themes: List<Theme>) {
+        scrollWheel = ThemeScrollWheel(themes).apply {
+            addSelectionListener { theme ->
+                currentTheme = theme
+                previewPanel.showTheme(theme)
+                announceStatus("Selected ${theme.metadata.name} (${if (theme.darkMode) "dark" else "light"})")
+            }
+        }
+
+        val leftPanel = ((contentPane.components[0] as JPanel).components[0] as JPanel)
+        leftPanel.remove(0)
+        leftPanel.add(scrollWheel, BorderLayout.CENTER)
+        configureWindowAccessibility(contentPane.components[0] as JPanel)
+        revalidate()
+        repaint()
     }
 
     private fun showAllThemes() {

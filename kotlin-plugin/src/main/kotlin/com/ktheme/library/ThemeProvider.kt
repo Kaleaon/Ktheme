@@ -4,6 +4,11 @@ import com.ktheme.core.ThemeEngine
 import com.ktheme.core.ThemeFileMetadataSigner
 import com.ktheme.core.ThemeFileSignatureVerifier
 import com.ktheme.models.Theme
+import com.ktheme.utils.ThemeIdCollisionPolicy
+import com.ktheme.utils.ThemeIdUtils
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.io.File
 import java.nio.file.ClosedWatchServiceException
 import java.nio.file.FileSystems
@@ -93,7 +98,7 @@ class FileBasedThemeProvider(
         val file = File(sharedDir, "$id.json")
         return if (file.exists()) {
             try {
-                library.importTheme(file)
+                library.importTheme(file, ThemeIdCollisionPolicy.OVERWRITE)
             } catch (e: Exception) {
                 null
             }
@@ -102,11 +107,31 @@ class FileBasedThemeProvider(
         }
     }
     
-    override fun publishTheme(theme: Theme, signer: ThemeFileMetadataSigner?): Boolean {
+    override fun publishTheme(
+        theme: Theme,
+        collisionPolicy: ThemeIdCollisionPolicy
+    ): Boolean {
         return try {
-            val file = File(sharedDir, "${theme.metadata.id}.json")
-            val payload = parserEngine.serializeThemeWithMetadata(theme, signer)
-            file.writeText(payload)
+            val normalizedTheme = ThemeIdUtils.withNormalizedId(theme)
+            val existingIds = sharedDir.listFiles()?.asSequence()
+                ?.filter { it.extension == "json" }
+                ?.map { it.nameWithoutExtension }
+                ?.toSet()
+                ?: emptySet()
+
+            val resolvedId = ThemeIdUtils.resolveCollision(
+                normalizedTheme.metadata.id,
+                existingIds,
+                collisionPolicy
+            )
+            val resolvedTheme = if (resolvedId == normalizedTheme.metadata.id) {
+                normalizedTheme
+            } else {
+                normalizedTheme.copy(metadata = normalizedTheme.metadata.copy(id = resolvedId))
+            }
+
+            val file = File(sharedDir, "${resolvedTheme.metadata.id}.json")
+            file.writeText(json.encodeToString(resolvedTheme))
             true
         } catch (e: Exception) {
             false
@@ -232,12 +257,15 @@ object KthemeAPI {
     /**
      * Get a specific theme
      */
-    fun getTheme(id: String): Theme? = provider.getSharedTheme(id)
+    fun getTheme(id: String): Theme? = provider.getSharedTheme(ThemeIdUtils.normalize(id))
     
     /**
      * Share a theme with other applications
      */
-    fun shareTheme(theme: Theme): Boolean = provider.publishTheme(theme)
+    fun shareTheme(
+        theme: Theme,
+        collisionPolicy: ThemeIdCollisionPolicy = ThemeIdCollisionPolicy.SUFFIX
+    ): Boolean = provider.publishTheme(theme, collisionPolicy)
     
     /**
      * Subscribe to theme updates
