@@ -1,6 +1,8 @@
 package com.ktheme.library
 
 import com.ktheme.core.ThemeEngine
+import com.ktheme.core.ThemeFileMetadataSigner
+import com.ktheme.core.ThemeFileSignatureVerifier
 import com.ktheme.models.Theme
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
@@ -51,6 +53,8 @@ class ThemeLibrary(
         }
     }
 
+    var signatureVerifier: ThemeFileSignatureVerifier? = null
+    
     init {
         sharedThemesDirectory.mkdirs()
         userThemesDirectory.mkdirs()
@@ -132,6 +136,18 @@ class ThemeLibrary(
     /**
      * Rebuild catalog index from the filesystem.
      */
+    private fun loadThemesFromDirectory(directory: File, source: String) {
+        if (!directory.exists() || !directory.isDirectory) {
+            println("Theme directory not found: ${directory.absolutePath}")
+            return
+        }
+        
+        directory.listFiles()?.filter { it.extension == "json" }?.forEach { file ->
+            try {
+                val theme = engine.loadThemeFromFile(file, signatureVerifier)
+                println("✓ Loaded theme: ${theme.metadata.name} from $source")
+            } catch (e: Exception) {
+                println("✗ Failed to load ${file.name}: ${e.message}")
     fun rebuildCatalogIndex(bundledThemesDir: File? = null): List<ThemeCatalogEntry> {
         val entries = mutableListOf<ThemeCatalogEntry>()
 
@@ -275,9 +291,11 @@ class ThemeLibrary(
     /**
      * Share a theme to the shared directory (for cross-app access)
      */
-    fun shareTheme(themeId: String): Boolean {
+    fun shareTheme(themeId: String, signer: ThemeFileMetadataSigner? = null): Boolean {
         return try {
             val theme = engine.getTheme(themeId) ?: return false
+            val sharedFile = File(SHARED_THEMES_DIR, "${theme.metadata.id}.json")
+            engine.saveThemeToFile(themeId, sharedFile, signer)
             val sharedFile = File(sharedThemesDirectory, "${theme.metadata.id}.json")
             engine.saveThemeToFile(themeId, sharedFile)
             println("Theme shared: ${theme.metadata.name}")
@@ -291,9 +309,13 @@ class ThemeLibrary(
     /**
      * Export theme to a specific file
      */
-    fun exportTheme(themeId: String, targetFile: File): Boolean {
+    fun exportTheme(
+        themeId: String,
+        targetFile: File,
+        signer: ThemeFileMetadataSigner? = null
+    ): Boolean {
         return try {
-            engine.saveThemeToFile(themeId, targetFile)
+            engine.saveThemeToFile(themeId, targetFile, signer)
             true
         } catch (e: Exception) {
             println("Failed to export theme: ${e.message}")
@@ -309,7 +331,7 @@ class ThemeLibrary(
         collisionPolicy: ThemeIdCollisionPolicy = ThemeIdCollisionPolicy.SUFFIX
     ): Theme? {
         return try {
-            val theme = engine.loadThemeFromFile(file)
+            val theme = engine.loadThemeFromFile(file, signatureVerifier)
             // Copy to user themes directory
             val userFile = File(userThemesDirectory, file.name)
             Files.copy(file.toPath(), userFile.toPath(), StandardCopyOption.REPLACE_EXISTING)

@@ -1,5 +1,8 @@
 package com.ktheme.library
 
+import com.ktheme.core.ThemeEngine
+import com.ktheme.core.ThemeFileMetadataSigner
+import com.ktheme.core.ThemeFileSignatureVerifier
 import com.ktheme.models.Theme
 import com.ktheme.utils.ThemeIdCollisionPolicy
 import com.ktheme.utils.ThemeIdUtils
@@ -39,10 +42,7 @@ interface ThemeProvider {
     /**
      * Publish a theme to shared storage
      */
-    fun publishTheme(
-        theme: Theme,
-        collisionPolicy: ThemeIdCollisionPolicy = ThemeIdCollisionPolicy.OVERWRITE
-    ): Boolean
+    fun publishTheme(theme: Theme, signer: ThemeFileMetadataSigner? = null): Boolean
     
     /**
      * Subscribe to theme changes
@@ -68,15 +68,13 @@ interface ThemeChangeListener {
  * Default implementation of ThemeProvider using file-based sharing
  */
 class FileBasedThemeProvider(
-    private val sharedDir: File = File(System.getProperty("user.home"), ".ktheme/shared")
+    private val sharedDir: File = File(System.getProperty("user.home"), ".ktheme/shared"),
+    private val signatureVerifier: ThemeFileSignatureVerifier? = null
 ) : ThemeProvider {
     private val library = ThemeLibrary()
+    private val parserEngine = ThemeEngine()
     private val listeners = mutableSetOf<ThemeChangeListener>()
     private val listenersLock = Any()
-    private val json = Json {
-        prettyPrint = true
-        ignoreUnknownKeys = true
-    }
 
     @Volatile
     private var watchService: WatchService? = null
@@ -86,6 +84,7 @@ class FileBasedThemeProvider(
     
     init {
         sharedDir.mkdirs()
+        library.signatureVerifier = signatureVerifier
     }
     
     override fun getSharedThemes(): List<Theme> {
@@ -218,7 +217,7 @@ class FileBasedThemeProvider(
             if (!file.exists()) {
                 null
             } else {
-                json.decodeFromString<Theme>(file.readText())
+                parserEngine.loadThemeFromFile(file, signatureVerifier)
             }
         } catch (_: Exception) {
             null
