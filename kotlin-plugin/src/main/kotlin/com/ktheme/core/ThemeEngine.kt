@@ -76,23 +76,9 @@ class ThemeEngine {
     fun validateTheme(theme: Theme): ValidationResult {
         val errors = mutableListOf<String>()
         val warnings = mutableListOf<String>()
-        
-        // Validate metadata
-        with(theme.metadata) {
-            if (id.isEmpty()) errors.add("Theme ID is required")
-            if (name.isEmpty()) errors.add("Theme name is required")
-            if (version.isEmpty()) errors.add("Theme version is required")
-        }
-        
-        // Color scheme validation is implicit via data class
-        
-        // Check for effects warnings
-        theme.effects?.metallic?.let {
-            if (it.enabled && it.intensity > 1) {
-                warnings.add("Metallic intensity should be between 0 and 1")
-            }
-        }
-        
+
+        ThemeValidator.validate(theme, errors, warnings)
+
         return ValidationResult(
             valid = errors.isEmpty(),
             errors = errors,
