@@ -1,9 +1,19 @@
 package com.ktheme.library
 
 import com.ktheme.models.Theme
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
+import java.nio.file.ClosedWatchServiceException
+import java.nio.file.FileSystems
+import java.nio.file.Path
+import java.nio.file.StandardWatchEventKinds.ENTRY_CREATE
+import java.nio.file.StandardWatchEventKinds.ENTRY_DELETE
+import java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY
+import java.nio.file.WatchEvent
+import java.nio.file.WatchService
+import kotlin.concurrent.thread
 
 /**
  * Theme Provider - API for applications to integrate with Ktheme Library
@@ -52,11 +62,22 @@ interface ThemeChangeListener {
 /**
  * Default implementation of ThemeProvider using file-based sharing
  */
-class FileBasedThemeProvider : ThemeProvider {
+class FileBasedThemeProvider(
+    private val sharedDir: File = File(System.getProperty("user.home"), ".ktheme/shared")
+) : ThemeProvider {
     private val library = ThemeLibrary()
-    private val listeners = mutableListOf<ThemeChangeListener>()
-    private val sharedDir = File(System.getProperty("user.home"), ".ktheme/shared")
-    private val json = Json { prettyPrint = true }
+    private val listeners = mutableSetOf<ThemeChangeListener>()
+    private val listenersLock = Any()
+    private val json = Json {
+        prettyPrint = true
+        ignoreUnknownKeys = true
+    }
+
+    @Volatile
+    private var watchService: WatchService? = null
+
+    @Volatile
+    private var watcherThread: Thread? = null
     
     init {
         sharedDir.mkdirs()
@@ -87,7 +108,6 @@ class FileBasedThemeProvider : ThemeProvider {
             val file = File(sharedDir, "${theme.metadata.id}.json")
             // Write directly so apps can publish themes without pre-registering in ThemeLibrary
             file.writeText(json.encodeToString(theme))
-            notifyThemeAdded(theme)
             true
         } catch (e: Exception) {
             false
@@ -95,15 +115,107 @@ class FileBasedThemeProvider : ThemeProvider {
     }
     
     override fun subscribeToChanges(listener: ThemeChangeListener) {
-        listeners.add(listener)
+        synchronized(listenersLock) {
+            listeners.add(listener)
+            if (listeners.size == 1) {
+                startWatcherLocked()
+            }
+        }
     }
     
     override fun unsubscribe(listener: ThemeChangeListener) {
-        listeners.remove(listener)
+        synchronized(listenersLock) {
+            listeners.remove(listener)
+            if (listeners.isEmpty()) {
+                stopWatcherLocked()
+            }
+        }
     }
-    
+
+    private fun startWatcherLocked() {
+        if (watchService != null) {
+            return
+        }
+
+        val service = FileSystems.getDefault().newWatchService()
+        sharedDir.toPath().register(service, ENTRY_CREATE, ENTRY_MODIFY, ENTRY_DELETE)
+        watchService = service
+        watcherThread = thread(start = true, isDaemon = true, name = "ktheme-shared-watcher") {
+            watchLoop(service, sharedDir.toPath())
+        }
+    }
+
+    private fun stopWatcherLocked() {
+        watchService?.close()
+        watchService = null
+        watcherThread?.interrupt()
+        watcherThread = null
+    }
+
+    private fun watchLoop(service: WatchService, sharedPath: Path) {
+        while (!Thread.currentThread().isInterrupted) {
+            val key = try {
+                service.take()
+            } catch (_: InterruptedException) {
+                break
+            } catch (_: ClosedWatchServiceException) {
+                break
+            }
+
+            key.pollEvents().forEach { event ->
+                handleWatchEvent(event, sharedPath)
+            }
+
+            if (!key.reset()) {
+                break
+            }
+        }
+    }
+
+    private fun handleWatchEvent(event: WatchEvent<*>, sharedPath: Path) {
+        @Suppress("UNCHECKED_CAST")
+        val pathEvent = event as? WatchEvent<Path> ?: return
+        val relativePath = pathEvent.context()
+        if (!relativePath.toString().endsWith(".json")) {
+            return
+        }
+
+        val fullPath = sharedPath.resolve(relativePath)
+        when (event.kind()) {
+            ENTRY_CREATE -> parseThemeFromFile(fullPath.toFile())?.let { notifyThemeAdded(it) }
+            ENTRY_MODIFY -> parseThemeFromFile(fullPath.toFile())?.let { notifyThemeUpdated(it) }
+            ENTRY_DELETE -> notifyThemeRemoved(relativePath.fileName.toString().removeSuffix(".json"))
+        }
+    }
+
+    private fun parseThemeFromFile(file: File): Theme? {
+        return try {
+            if (!file.exists()) {
+                null
+            } else {
+                json.decodeFromString<Theme>(file.readText())
+            }
+        } catch (_: Exception) {
+            null
+        }
+    }
+
     private fun notifyThemeAdded(theme: Theme) {
-        listeners.forEach { it.onThemeAdded(theme) }
+        snapshotListeners().forEach { it.onThemeAdded(theme) }
+    }
+
+    private fun notifyThemeUpdated(theme: Theme) {
+        snapshotListeners().forEach { it.onThemeUpdated(theme) }
+    }
+
+    private fun notifyThemeRemoved(themeId: String) {
+        snapshotListeners().forEach { it.onThemeRemoved(themeId) }
+    }
+
+    private fun snapshotListeners(): List<ThemeChangeListener> {
+        return synchronized(listenersLock) {
+            listeners.toList()
+        }
     }
 }
 
