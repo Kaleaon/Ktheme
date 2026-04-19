@@ -80,7 +80,56 @@ class ThemeLibrary {
      * Search themes by various criteria
      */
     fun searchThemes(query: String): List<Theme> {
-        return engine.searchByName(query) + engine.searchByTags(query.split(",").map { it.trim() })
+        val normalizedQueryTerms = query
+            .split(',', ' ', '\n', '\t')
+            .map { it.trim().lowercase() }
+            .filter { it.isNotEmpty() }
+            .distinct()
+
+        if (normalizedQueryTerms.isEmpty()) {
+            return emptyList()
+        }
+
+        val allThemes = engine.getAllThemes()
+
+        val rankedNameMatches = allThemes
+            .mapIndexedNotNull { index, theme ->
+                val name = theme.metadata.name.lowercase()
+                val description = theme.metadata.description.lowercase()
+
+                val score = when {
+                    normalizedQueryTerms.any { term -> name == term } -> 300
+                    normalizedQueryTerms.any { term -> name.contains(term) } -> 200
+                    normalizedQueryTerms.any { term -> description.contains(term) } -> 150
+                    else -> null
+                }
+
+                score?.let { Triple(theme, it, index) }
+            }
+            .sortedWith(compareByDescending<Triple<Theme, Int, Int>> { it.second }.thenBy { it.third })
+            .map { it.first }
+
+        val nameMatchIds = rankedNameMatches.map { it.metadata.id }.toSet()
+
+        val rankedTagOnlyMatches = allThemes
+            .mapIndexedNotNull { index, theme ->
+                if (theme.metadata.id in nameMatchIds) {
+                    return@mapIndexedNotNull null
+                }
+
+                val normalizedThemeTags = theme.metadata.tags.map { it.trim().lowercase() }
+                val matchedTagCount = normalizedQueryTerms.count { term -> term in normalizedThemeTags }
+
+                if (matchedTagCount > 0) {
+                    Triple(theme, matchedTagCount, index)
+                } else {
+                    null
+                }
+            }
+            .sortedWith(compareByDescending<Triple<Theme, Int, Int>> { it.second }.thenBy { it.third })
+            .map { it.first }
+
+        return rankedNameMatches + rankedTagOnlyMatches
     }
     
     /**
