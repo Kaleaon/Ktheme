@@ -1,0 +1,43 @@
+{
+  "metadata": {
+    "id": "legacy-no-schema",
+    "name": "Legacy Theme",
+    "description": "Legacy fixture without schema version",
+    "author": "test",
+    "version": "1.0.0",
+    "tags": ["legacy", "fixture"],
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "darkMode": true,
+  "colorScheme": {
+    "primary": "#1E3A8A",
+    "onPrimary": "#FFFFFF",
+    "primaryContainer": "#1E40AF",
+    "onPrimaryContainer": "#F8FAFC",
+    "secondary": "#B45309",
+    "onSecondary": "#FFFFFF",
+    "secondaryContainer": "#D97706",
+    "onSecondaryContainer": "#FFFBEB",
+    "tertiary": "#0F766E",
+    "onTertiary": "#FFFFFF",
+    "tertiaryContainer": "#0D9488",
+    "onTertiaryContainer": "#F0FDFA",
+    "error": "#B91C1C",
+    "onError": "#FFFFFF",
+    "errorContainer": "#EF4444",
+    "onErrorContainer": "#FEF2F2",
+    "background": "#0B1220",
+    "onBackground": "#E2E8F0",
+    "surface": "#111827",
+    "onSurface": "#E5E7EB",
+    "surfaceVariant": "#1F2937",
+    "onSurfaceVariant": "#D1D5DB",
+    "outline": "#6B7280",
+    "outlineVariant": "#4B5563",
+    "scrim": "#000000",
+    "inverseSurface": "#E5E7EB",
+    "inverseOnSurface": "#111827",
+    "inversePrimary": "#93C5FD"
+  }
+}
