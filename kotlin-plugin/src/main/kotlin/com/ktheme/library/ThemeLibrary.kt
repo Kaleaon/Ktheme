@@ -3,6 +3,7 @@ package com.ktheme.library
 import com.ktheme.core.ThemeEngine
 import com.ktheme.models.Theme
 import java.io.File
+import java.time.Instant
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
@@ -79,57 +80,95 @@ class ThemeLibrary {
     /**
      * Search themes by various criteria
      */
-    fun searchThemes(query: String): List<Theme> {
+    fun searchThemes(
+        query: String,
+        darkMode: Boolean? = null,
+        author: String? = null,
+        tags: Set<String> = emptySet(),
+        updatedAfter: String? = null,
+        offset: Int = 0,
+        limit: Int = 50
+    ): List<ThemeSearchResult> {
         val normalizedQueryTerms = query
             .split(',', ' ', '\n', '\t')
             .map { it.trim().lowercase() }
             .filter { it.isNotEmpty() }
             .distinct()
 
-        if (normalizedQueryTerms.isEmpty()) {
+        val normalizedAuthor = author?.trim()?.lowercase()?.takeIf { it.isNotEmpty() }
+        val normalizedTags = tags
+            .map { it.trim().lowercase() }
+            .filter { it.isNotEmpty() }
+            .toSet()
+
+        val updatedAfterInstant = updatedAfter
+            ?.trim()
+            ?.takeIf { it.isNotEmpty() }
+            ?.let { runCatching { Instant.parse(it) }.getOrNull() }
+
+        if (limit <= 0) {
             return emptyList()
         }
 
-        val allThemes = engine.getAllThemes()
-
-        val rankedNameMatches = allThemes
+        return engine.getAllThemes()
             .mapIndexedNotNull { index, theme ->
-                val name = theme.metadata.name.lowercase()
-                val description = theme.metadata.description.lowercase()
-
-                val score = when {
-                    normalizedQueryTerms.any { term -> name == term } -> 300
-                    normalizedQueryTerms.any { term -> name.contains(term) } -> 200
-                    normalizedQueryTerms.any { term -> description.contains(term) } -> 150
-                    else -> null
+                if (darkMode != null && theme.darkMode != darkMode) {
+                    return@mapIndexedNotNull null
+                }
+                if (normalizedAuthor != null && theme.metadata.author.lowercase() != normalizedAuthor) {
+                    return@mapIndexedNotNull null
+                }
+                val normalizedThemeTags = theme.metadata.tags.map { it.trim().lowercase() }.toSet()
+                if (normalizedTags.isNotEmpty() && !normalizedTags.all { it in normalizedThemeTags }) {
+                    return@mapIndexedNotNull null
+                }
+                if (updatedAfterInstant != null) {
+                    val themeUpdatedAt = runCatching { Instant.parse(theme.metadata.updatedAt) }.getOrNull()
+                        ?: return@mapIndexedNotNull null
+                    if (themeUpdatedAt.isBefore(updatedAfterInstant)) {
+                        return@mapIndexedNotNull null
+                    }
                 }
 
-                score?.let { Triple(theme, it, index) }
-            }
-            .sortedWith(compareByDescending<Triple<Theme, Int, Int>> { it.second }.thenBy { it.third })
-            .map { it.first }
+                val name = theme.metadata.name.lowercase()
+                val matchedFields = linkedSetOf<String>()
+                var score = 0
 
-        val nameMatchIds = rankedNameMatches.map { it.metadata.id }.toSet()
+                normalizedQueryTerms.forEach { term ->
+                    when {
+                        name == term -> {
+                            score += 400
+                            matchedFields.add(ThemeSearchMatchField.NAME_EXACT.fieldName)
+                        }
+                        name.startsWith(term) -> {
+                            score += 260
+                            matchedFields.add(ThemeSearchMatchField.NAME_PREFIX.fieldName)
+                        }
+                        name.contains(term) -> {
+                            score += 160
+                            matchedFields.add(ThemeSearchMatchField.NAME_SUBSTRING.fieldName)
+                        }
+                        term in normalizedThemeTags -> {
+                            score += 80
+                            matchedFields.add(ThemeSearchMatchField.TAGS.fieldName)
+                        }
+                    }
+                }
 
-        val rankedTagOnlyMatches = allThemes
-            .mapIndexedNotNull { index, theme ->
-                if (theme.metadata.id in nameMatchIds) {
+                if (normalizedQueryTerms.isNotEmpty() && score == 0) {
                     return@mapIndexedNotNull null
                 }
 
-                val normalizedThemeTags = theme.metadata.tags.map { it.trim().lowercase() }
-                val matchedTagCount = normalizedQueryTerms.count { term -> term in normalizedThemeTags }
-
-                if (matchedTagCount > 0) {
-                    Triple(theme, matchedTagCount, index)
-                } else {
-                    null
-                }
+                ScoredTheme(theme, score, matchedFields.toList(), index)
             }
-            .sortedWith(compareByDescending<Triple<Theme, Int, Int>> { it.second }.thenBy { it.third })
-            .map { it.first }
-
-        return rankedNameMatches + rankedTagOnlyMatches
+            .sortedWith(
+                compareByDescending<ScoredTheme> { it.score }
+                    .thenBy { it.theme.metadata.name.lowercase() }
+                    .thenBy { it.originalIndex }
+            )
+            .drop(offset.coerceAtLeast(0))
+            .take(limit)
+            .map { ThemeSearchResult(it.theme, it.score, it.matchedFields) }
     }
     
     /**
@@ -217,6 +256,26 @@ class ThemeLibrary {
      */
     fun getUserThemesDirectory(): File = USER_THEMES_DIR
 }
+
+data class ThemeSearchResult(
+    val theme: Theme,
+    val score: Int,
+    val matchedFields: List<String>
+)
+
+enum class ThemeSearchMatchField(val fieldName: String) {
+    NAME_EXACT("nameExact"),
+    NAME_PREFIX("namePrefix"),
+    NAME_SUBSTRING("nameSubstring"),
+    TAGS("tags")
+}
+
+private data class ScoredTheme(
+    val theme: Theme,
+    val score: Int,
+    val matchedFields: List<String>,
+    val originalIndex: Int
+)
 
 /**
  * Listener interface for theme library events
