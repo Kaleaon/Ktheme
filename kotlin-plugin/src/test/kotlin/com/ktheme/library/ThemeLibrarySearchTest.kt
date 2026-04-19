@@ -17,10 +17,9 @@ class ThemeLibrarySearchTest {
         val library = createLibraryWithThemes()
 
         val result = library.searchThemes("aurora")
-        val ids = result.map { it.metadata.id }
+        val ids = result.map { it.theme.metadata.id }
 
         assertEquals(ids.toSet().size, ids.size, "Expected search result IDs to be unique")
-        assertEquals(listOf("aurora-light", "midnight-blue"), ids)
     }
 
     @Test
@@ -31,8 +30,8 @@ class ThemeLibrarySearchTest {
         val second = library.searchThemes("aurora")
 
         assertEquals(
-            first.map { it.metadata.id },
-            second.map { it.metadata.id },
+            first.map { it.theme.metadata.id },
+            second.map { it.theme.metadata.id },
             "Expected deterministic ordering for repeated calls"
         )
     }
@@ -42,10 +41,44 @@ class ThemeLibrarySearchTest {
         val library = createLibraryWithThemes()
 
         val result = library.searchThemes("midnight, cool")
-        val ids = result.map { it.metadata.id }
+        val ids = result.map { it.theme.metadata.id }
 
-        assertEquals(listOf("midnight-blue", "aurora-light", "cool-breeze"), ids)
+        assertEquals(listOf("midnight-blue", "cool-breeze", "aurora", "aurora-light"), ids)
         assertTrue("sunset-warm" !in ids, "Expected unmatched themes to be excluded")
+    }
+
+    @Test
+    fun `searchThemes weighted scoring prefers exact over prefix over substring over tags`() {
+        val library = createLibraryWithThemes()
+
+        val result = library.searchThemes("aurora")
+
+        assertEquals(listOf("aurora", "aurora-light", "night-aurora", "midnight-blue"), result.map { it.theme.metadata.id })
+        assertEquals(listOf("nameExact"), result[0].matchedFields)
+        assertEquals(listOf("namePrefix"), result[1].matchedFields)
+        assertEquals(listOf("nameSubstring"), result[2].matchedFields)
+        assertEquals(listOf("tags"), result[3].matchedFields)
+        assertTrue(result[0].score > result[1].score && result[1].score > result[2].score && result[2].score > result[3].score)
+    }
+
+    @Test
+    fun `searchThemes supports optional filters and pagination`() {
+        val library = createLibraryWithThemes()
+
+        val result = library.searchThemes(
+            query = "",
+            darkMode = false,
+            author = "alice",
+            tags = setOf("cool"),
+            updatedAfter = "2026-01-06T00:00:00Z",
+            offset = 0,
+            limit = 10
+        )
+
+        assertEquals(listOf("cool-breeze"), result.map { it.theme.metadata.id })
+
+        val paged = library.searchThemes(query = "aurora", offset = 1, limit = 2)
+        assertEquals(listOf("aurora-light", "night-aurora"), paged.map { it.theme.metadata.id })
     }
 
     private fun createLibraryWithThemes(): ThemeLibrary {
@@ -54,10 +87,39 @@ class ThemeLibrarySearchTest {
         registerTheme(
             library,
             theme(
+                id = "aurora",
+                name = "Aurora",
+                description = "Exact match theme",
+                tags = listOf("cool"),
+                author = "alice",
+                darkMode = true,
+                updatedAt = "2026-01-04T00:00:00Z"
+            )
+        )
+
+        registerTheme(
+            library,
+            theme(
                 id = "aurora-light",
                 name = "Aurora Light",
                 description = "Soft aurora gradients",
-                tags = listOf("aurora", "cool")
+                tags = listOf("aurora", "cool"),
+                author = "alice",
+                darkMode = true,
+                updatedAt = "2026-01-05T00:00:00Z"
+            )
+        )
+
+        registerTheme(
+            library,
+            theme(
+                id = "night-aurora",
+                name = "Night Aurora Glow",
+                description = "Aurora appears in name as substring",
+                tags = listOf("night"),
+                author = "bob",
+                darkMode = true,
+                updatedAt = "2026-01-06T00:00:00Z"
             )
         )
 
@@ -67,7 +129,10 @@ class ThemeLibrarySearchTest {
                 id = "midnight-blue",
                 name = "Midnight Blue",
                 description = "Deep blue night theme",
-                tags = listOf("aurora", "dark")
+                tags = listOf("aurora", "dark"),
+                author = "charlie",
+                darkMode = true,
+                updatedAt = "2026-01-02T00:00:00Z"
             )
         )
 
@@ -77,7 +142,10 @@ class ThemeLibrarySearchTest {
                 id = "cool-breeze",
                 name = "Cool Breeze",
                 description = "Breezy neutral palette",
-                tags = listOf("cool", "fresh")
+                tags = listOf("cool", "fresh"),
+                author = "alice",
+                darkMode = false,
+                updatedAt = "2026-01-07T00:00:00Z"
             )
         )
 
@@ -87,7 +155,10 @@ class ThemeLibrarySearchTest {
                 id = "sunset-warm",
                 name = "Sunset Warm",
                 description = "Warm evening oranges",
-                tags = listOf("warm", "orange")
+                tags = listOf("warm", "orange"),
+                author = "alice",
+                darkMode = false,
+                updatedAt = "2026-01-03T00:00:00Z"
             )
         )
 
@@ -101,19 +172,27 @@ class ThemeLibrarySearchTest {
         engine.registerTheme(theme)
     }
 
-    private fun theme(id: String, name: String, description: String, tags: List<String>): Theme {
+    private fun theme(
+        id: String,
+        name: String,
+        description: String,
+        tags: List<String>,
+        author: String,
+        darkMode: Boolean,
+        updatedAt: String
+    ): Theme {
         return Theme(
             metadata = ThemeMetadata(
                 id = id,
                 name = name,
                 description = description,
-                author = "test",
+                author = author,
                 version = "1.0.0",
                 tags = tags,
                 createdAt = "2026-01-01T00:00:00Z",
-                updatedAt = "2026-01-01T00:00:00Z"
+                updatedAt = updatedAt
             ),
-            darkMode = true,
+            darkMode = darkMode,
             colorScheme = baseColorScheme(),
             typography = Typography(
                 fontFamily = "Inter",
