@@ -1,401 +1,118 @@
-# Ktheme - Advanced Theming and Design API
+# Ktheme Design System
 
-<div align="center">
+Ktheme is an **open-source theme engine and design API** for creating, managing, and applying rich application themes. The hallmark of the system is its **metallic effects** language (gold, silver, rose-gold, bronze, copper, platinum, titanium, chrome, cobalt) layered on top of a Material Design 3 color scheme — plus a curated catalog of **24 preset themes** spanning elegant metallic dark themes, an iconic library (LCARS, Frutiger Aero, Windows Phone Metro, Art Deco, Art Nouveau), and product-context themes (Solarpunk Civic, Calm Clinical, Neo-Noir Neon, Aurora Glass Night, Ink Terminal Modern).
 
-**An open-source theme engine for creating and managing beautiful application themes**
+Ktheme is **not a single product UI** — it's a *theming substrate* that other apps consume. Themes ship as portable JSON, get exported to CSS variables / Tailwind / Compose / SwiftUI / Flutter, and adapt apps' layout, icon, and component shape — not just their colors.
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
+## Source
 
-</div>
+- **Repository:** [Kaleaon/Ktheme](https://github.com/Kaleaon/Ktheme) — `main` branch
+- **Inspiration / sibling project:** [Kaleaon/CleverFerret](https://github.com/Kaleaon/CleverFerret) (the metallic theming language originated here)
+- **Engine entry:** `src/index.ts`, `src/core/ThemeEngine.ts`
+- **Preset catalog:** `src/themes/presets.ts`, `themes/examples/*.json` (24 JSON files)
+- **Effects:** `src/effects/metallic.ts`, `src/effects/advanced.ts`
+- **Adaptation primitives:** `src/adaptation/apply.ts`, `src/themes/adaptationPresets.ts`
+- **Theme Creator app:** `theme-creator/` (Vite + React + TS)
+- **Kotlin plugin:** `kotlin-plugin/`
 
-## 🎨 Overview
+## Index
 
-Ktheme is a powerful, flexible theming engine inspired by the advanced theming system from [CleverFerret](https://github.com/Kaleaon/CleverFerret). It provides a comprehensive solution for creating, managing, and applying themes to your applications with support for:
+- `colors_and_type.css` — semantic CSS variables for the Ktheme MD3 token system, plus Theme Creator's app shell tokens, plus active-theme defaults.
+- `themes/examples/*.json` — full preset catalog (24 themes), copied verbatim from the repo.
+- `themes/examples/iconic-previews.html` — original iconic-themes preview gallery.
+- `assets/` — logos and brand marks for the design system.
+- `preview/` — registered cards visible in the Design System tab.
+- `ui_kits/theme-creator/` — interactive recreation of the Theme Creator app (the canonical Ktheme product surface).
+- `ui_kits/preset-gallery/` — gallery view recreating the iconic-previews.html and showing all 24 presets.
+- `SKILL.md` — agent skill manifest.
 
-- ✨ **Metallic Effects** - Beautiful metallic gradients and shimmer effects (10 variants)
-- 🎭 **Advanced Visual Effects** - Shadows, gradients, blur, animations, and transitions
-- ♿ **Dynamic Contrast Guardrails** - Validation warnings for low-contrast color pairs
-- 🌈 **Rich Color Schemes** - Full Material Design 3 color system support
-- 🧠 **Semantic Role Colors** - Success/warning/info aliases beyond MD3 role names
-- 📦 **Theme Import/Export** - Easy JSON-based theme sharing
-- 🔍 **Theme Discovery** - Search and filter themes by tags and names
-- 🎨 **Theme Creator** - Web-based tool for creating custom themes
-- 🏗️ **Layout + Icon Adaptation** - Apply theme-specific layout/icon/component overrides
-- 🔧 **Kotlin Plugin** - Native Kotlin/JVM support for Android and backend applications
-<!-- GENERATED_PRESET_SUMMARY_START -->
-- 📱 **24 Preset Themes** - Generated from the shared preset registry (24 stable).
-<!-- GENERATED_PRESET_SUMMARY_END -->
-- 🧩 **Curated Theme Sets** - Ready-to-use bundles for onboarding and product contexts
-- 🚀 **Iconic Activation Packs** - One-call pack + variant + archetype activation workflow
+## Products represented
 
-## 🚀 Installation
+Ktheme has **two surfaces** that live in this repo:
 
-### TypeScript/JavaScript
+1. **Theme Creator** — a web app under `theme-creator/`. Vite + React + TypeScript. Sidebar with Presets / Customizer / AI / Bluesky tabs, a left customizer panel, and a right live-preview pane. Built dark by default with an indigo accent (`#818cf8`). This is the primary visual product.
+2. **Iconic Previews** — a static HTML gallery (`themes/examples/iconic-previews.html`) that demonstrates LCARS, Metro, and Frutiger Aero rules side-by-side.
 
-```bash
-npm install @ktheme/engine
-```
+The engine also has a **Kotlin plugin** for Android/JVM consumers, but it has no UI of its own.
 
-### Kotlin/Android
+## CONTENT FUNDAMENTALS
 
-```kotlin
-dependencies {
-    implementation("com.ktheme:ktheme-kotlin:1.0.0")
-}
-```
+Ktheme's voice is the voice of an **open-source library README** — declarative, technical, and slightly enthusiastic without being marketing-y. The README and inline docs use sentence-case headings prefixed with **emoji glyphs** (🎨 Overview, 🚀 Installation, 🎯 Features, ✨ Metallic Effects). Section headings are short, two or three words, often a noun phrase.
 
-See [kotlin-plugin/README.md](kotlin-plugin/README.md) for detailed Kotlin usage.
+**Pronouns and stance:** mostly imperative or third-person about the library itself ("Ktheme provides…", "Use curated sets to bootstrap…"). The README addresses the reader as "you" only sparingly. Code comes first; prose explains the code.
 
-## 📚 Quick Start
+**Casing:** Title Case for theme names ("Navy Gold", "Frutiger Aero", "Calm Clinical"), kebab-case for theme IDs (`navy-gold`, `art-nouveau-pack`), camelCase for API symbols (`createThemeEngine`, `setActiveTheme`, `MetallicVariant.GOLD`), CONSTANT_CASE for enum members (`GOLD_ROYAL_BLUE`, `ROSE_GOLD`).
 
-```typescript
-import { createThemeEngine } from '@ktheme/engine';
+**Tone examples (verbatim from the repo):**
+- "An open-source theme engine for creating and managing beautiful application themes"
+- "Beautiful metallic gradients and shimmer effects (10 variants)"
+- "Validation warnings for low-contrast color pairs"
+- "Use curated sets to quickly bootstrap the right style direction"
+- "Keep expensive effects optional and composable."
+- "LCARS UI rules: keep rail/sweep geometry and centered rail labels; vary palette by era"
 
-// Create a theme engine with preset themes
-const engine = createThemeEngine();
+**Tag vocabulary** in theme metadata is terse and lowercase: `metallic`, `elegant`, `dark`, `nature`, `warm`, `glassy`, `nostalgia`, `iconic`, `geometric`, `luxury`, `high-contrast`, `flat`, `console`, `sci-fi`. Use these when authoring new themes.
 
-// Set an active theme
-engine.setActiveTheme('navy-gold');
-
-// Get the active theme
-const theme = engine.getActiveTheme();
-console.log(theme.metadata.name); // "Navy Gold"
-```
-
-## 🎯 Features
-
-### Theme Management
-
-```typescript
-import { ThemeEngine, Theme } from '@ktheme/engine';
-
-const engine = new ThemeEngine();
-
-// Register a custom theme
-engine.registerTheme(myCustomTheme);
-
-// Get all themes
-const allThemes = engine.getAllThemes();
-
-// Search themes
-const metallicThemes = engine.searchByTags(['metallic']);
-const goldThemes = engine.searchByName('gold');
-
-// Export a theme
-const json = engine.exportTheme('navy-gold');
-
-// Import a theme
-const theme = engine.importTheme(json);
-```
-
-### Metallic Effects
-
-```typescript
-import { 
-  MetallicVariant, 
-  getMetallicGradient,
-  generateMetallicGradientCSS 
-} from '@ktheme/engine';
-
-// Get a metallic gradient
-const goldGradient = getMetallicGradient(MetallicVariant.GOLD);
-
-// Generate CSS for the gradient
-const css = generateMetallicGradientCSS(goldGradient, 135);
-```
-
-### Color Utilities
-
-```typescript
-import { 
-  hexToRgb, 
-  rgbToHex, 
-  darken, 
-  lighten,
-  getContrastColor 
-} from '@ktheme/engine';
-
-// Convert colors
-const rgb = hexToRgb('#D4AF37');
-const hex = rgbToHex({ r: 212, g: 175, b: 55 });
-
-// Manipulate colors
-const darker = darken('#D4AF37', 20);
-const lighter = lighten('#D4AF37', 20);
-
-// Get contrast color
-const contrast = getContrastColor('#0A1630'); // Returns white
-```
-
-## 🎨 Creating Custom Themes
-
-```typescript
-import { Theme, MetallicVariant } from '@ktheme/engine';
-
-const myTheme: Theme = {
-  metadata: {
-    id: 'my-custom-theme',
-    name: 'My Custom Theme',
-    description: 'A beautiful custom theme',
-    author: 'Your Name',
-    version: '1.0.0',
-    tags: ['custom', 'dark'],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  darkMode: true,
-  colorScheme: {
-    primary: '#D4AF37',
-    onPrimary: '#0A1630',
-    background: '#0A1630',
-    onBackground: '#E8E3D8',
-    // ... other required colors
-  },
-  effects: {
-    metallic: {
-      enabled: true,
-      variant: MetallicVariant.GOLD,
-      intensity: 0.8
-    },
-    shadows: {
-      enabled: true,
-      elevation: 4,
-      blur: 8,
-      color: '#00000066'
-    }
-  }
-};
-```
-
-## 🌟 Preset Themes
-
-The catalog below is generated from the shared preset registry:
-
-<!-- GENERATED_PRESET_LIST_START -->
-Ktheme includes **24 preset themes** defined in the shared catalog:
-
-1. **Navy Gold** (navy-gold) — Category: cleverferret core; Status: stable
-2. **Emerald Silver** (emerald-silver) — Category: cleverferret core; Status: stable
-3. **Rose Gold** (rose-gold) — Category: cleverferret core; Status: stable
-4. **Royal Bronze** (royal-bronze) — Category: cleverferret core; Status: stable
-5. **Midnight Amber** (midnight-amber) — Category: cleverferret core; Status: stable
-6. **Obsidian Crimson** (obsidian-crimson) — Category: cleverferret core; Status: stable
-7. **Slate Cyan** (slate-cyan) — Category: cleverferret core; Status: stable
-8. **Royal Silver** (royal-silver) — Category: cleverferret core; Status: stable
-9. **Forest Copper** (forest-copper) — Category: cleverferret core; Status: stable
-10. **Burgundy Rose Gold** (burgundy-rose-gold) — Category: cleverferret core; Status: stable
-11. **Charcoal Champagne** (charcoal-champagne) — Category: cleverferret core; Status: stable
-12. **Slate Gunmetal** (slate-gunmetal) — Category: cleverferret core; Status: stable
-13. **Deep Purple Platinum** (deep-purple-platinum) — Category: cleverferret core; Status: stable
-14. **Paper & Ink** (paper-ink) — Category: cleverferret core; Status: stable
-15. **Frutiger Aero** (frutiger-aero) — Category: official iconic; Status: stable
-16. **Solarpunk Civic** (solarpunk-civic) — Category: official iconic; Status: stable
-17. **Neo-Noir Neon** (neo-noir-neon) — Category: official iconic; Status: stable
-18. **Calm Clinical** (calm-clinical) — Category: official iconic; Status: stable
-19. **Ink Terminal Modern** (ink-terminal-modern) — Category: official iconic; Status: stable
-20. **Aurora Glass Night** (aurora-glass-night) — Category: official iconic; Status: stable
-21. **Windows Phone Metro** (windows-phone-metro) — Category: official iconic; Status: stable
-22. **LCARS** (lcars) — Category: official iconic; Status: stable
-23. **Art Nouveau** (art-nouveau) — Category: official iconic; Status: stable
-24. **Art Deco** (art-deco) — Category: official iconic; Status: stable
-<!-- GENERATED_PRESET_LIST_END -->
-
-All theme JSON files are available in `themes/examples/`, including `art-nouveau.json` and `art-deco.json`.
-For a quick visual reference of the new iconic presets, open `themes/examples/iconic-previews.html`.
-
-
-## 🧪 Theme Sets
-
-Use curated sets to quickly bootstrap the right style direction:
-
-```typescript
-import { ThemeSets } from '@ktheme/engine';
-
-const starter = ThemeSets.starter;
-console.log(starter.name);
-
-starter.themes.forEach(theme => engine.registerTheme(theme));
-```
-
-Available sets include `starter`, `metallicShowcase`, `executiveDark`, `creativeStudio`, `readability`, `iconicInterfaces`, and `nextWave`.
-
-### Aesthetic rulesets (quick guidance)
-
-- **LCARS format rule:** keep rail/sweep geometry and centered rail labels; vary palette by era (e.g. TNG warm vs Picard blue).
-- **Frutiger Aero rule:** use airy sky/nature palettes, glass panels, soft rounded corners, and subtle shimmer/blur to preserve readability.
-- **Metro rule:** keep flat sharp tiles and high-contrast accent blocks with minimal ornamental effects.
-
-### Themes I’d implement next (shortlist)
-
-- **Solarpunk Civic** — high-trust greens/daylight neutrals for climate and mobility products, with clear rules for optimistic accents, eco-status semantics, and legible outdoor contrast.
-- **Neo-Noir Neon** — focused dark palette for media/control-room dashboards, with strict rules that keep neon as sparse emphasis rather than full-surface glow.
-- **Calm Clinical** — low-stress healthcare/admin visual language, with explicit rules for high-clarity hierarchy, safe status colors, and touch-target accessibility defaults.
-- **Ink Terminal Modern** — retro-terminal personality for developer tools, with modern rules for readable mono typography, restrained bloom, and contrast-safe command surfaces.
-- **Aurora Glass Night** — premium glass UI for consumer experiences, with disciplined rules for blur depth, edge highlights, and always-readable foreground text layers.
-
-
-## 🔄 Cross-platform Exporters
-
-Convert a `Theme` into platform token bundles with:
-
-- `toCssVars(theme)`
-- `toTailwindConfig(theme)`
-- `toAndroidCompose(theme)`
-- `toSwiftUI(theme)`
-- `toFlutterTheme(theme)`
-- `toDesignTokensJson(theme)`
-
-See [docs/exporters.md](docs/exporters.md) for minimal app-consumption examples for each target.
-
-## 🧱 App Layout + Icon Adaptation
-
-Ktheme now supports app-level adaptation profiles so themes can reshape not just colors, but **layout structure**, **icon style**, and **component composition**.
-
-```typescript
-import {
-  createThemeEngine,
-  AdaptationPresets,
-  generateThemeAdaptationCSS
-} from '@ktheme/engine';
+**Theme descriptions** are one-liners, evocative but concrete: *"Elegant navy background with luxurious gold metallic accents"*, *"Glossy glassy sky-and-nature palette inspired by late 90s/early 2000s UI"*, *"Geometric symmetry, stepped motifs, and premium gold-black-ivory contrast"*. Pattern: **adjective adjective noun + with/and + accent description**.
 
-const engine = createThemeEngine();
-
-// Frutiger Aero style: glassy panels + softer icon language
-const adapted = engine.createAdaptedTheme('slate-cyan', AdaptationPresets.frutigerAero);
-
-// Generate CSS variables + component override CSS
-const css = generateThemeAdaptationCSS(adapted);
-```
-
-### Included adaptation presets
-
-- `frutigerAero` → glass surfaces, rounded layout language, duotone icon style
-- `windowsPhoneMetro` → sharp tile layout, pivot navigation rhythm, fluent/line icon style
-- `lcars` → rail layout and pill geometry suitable for LCARS-style interfaces
-- `artNouveau` → rounded/pill geometry, decorative overrides, and softer spacing cadence
-- `artDeco` → sharp geometry, stepped rhythm, and high-contrast panel framing
-
-This makes it practical to build themes that require structural restyling (e.g. Frutiger Aero, Windows Phone, LCARS, Art Nouveau, Art Deco).
+**Emoji** are used heavily as section glyphs in the README and as bullet markers (✨ 🎭 ♿ 🌈 🧠 📦 🔍 🎨 🏗️ 🔧 📱 🧩 🚀). They are *not* used in product UI copy, theme names, or component labels — only in docs.
 
-### Iconic Activation Packs
+**Aesthetic rulesets** are a documented voice convention. Each iconic theme gets a one-sentence rule that names what to keep constant and what to vary, e.g. *"LCARS format rule: keep rail/sweep geometry and centered rail labels; vary palette by era."* This is a pattern to follow when adding new iconic themes.
 
-Use `applyIconicPack(packId, { variant, appArchetype, expansionPacks })` to activate curated iconic recipes:
+## VISUAL FOUNDATIONS
 
-- `windows-activation-pack`
-- `lcars-activation-pack`
-- `art-nouveau-pack`
-- `art-deco-pack`
+**Identity.** Ktheme has no single "brand color" — it is a *meta-system* that hosts many palettes. Its baseline product chrome (Theme Creator app) is **dark slate** (`#0f1117` background, `#1a1c25` surface) with an **indigo accent** (`#818cf8`). The marketing/preset-list voice in the README leans into the "metallic accents on rich dark grounds" hero pairings — **Navy + Gold**, **Emerald + Silver**, **Rose Gold + Burgundy**.
 
-```typescript
-import { applyIconicPack } from '@ktheme/engine';
+**Color system.** All themes follow Material Design 3 roles: `primary / onPrimary / primaryContainer / onPrimaryContainer`, `secondary / onSecondary / …`, `tertiary`, `error`, `background / onBackground`, `surface / onSurface`, `surfaceVariant / onSurfaceVariant`, `outline / outlineVariant`, plus inverse triplet (`inverseSurface`, `inverseOnSurface`, `inversePrimary`) and `scrim`. Optional extensions: `stateLayers` (hover/pressed/focused/dragged) and `semanticRoles` (success/warning/info/critical).
 
-const dashboardTheme = applyIconicPack('windows-activation-pack', {
-  variant: 'high-contrast',
-  appArchetype: 'dashboard',
-  expansionPacks: ['platform-pack', 'accessibility-pack']
-});
-```
+**Type.** No webfont is bundled. The defaults are stack-based — `system-ui, -apple-system, sans-serif` for body, with theme-specific overrides (Art Deco specifies *"Futura", "Avenir Next", "Arial", sans-serif*). The Theme Creator app loads **Inter** as its primary UI font and **JetBrains Mono / Fira Code** for code blocks and hex values. Sizes follow the engine's small/medium/large/xlarge scale (12 / 16 / 20 / 28 px default; Art Deco escalates to 12 / 16 / 22 / 34). Weights: 300 light / 400 regular / 500 medium / 700 bold; Art Deco bumps to 600/800. Line height is 1.4–1.5; letter-spacing is 0 except for iconic themes (Art Deco 0.35, LCARS uses pronounced letter-spacing on bars, Metro uses uppercase tile labels).
 
-See full examples in [docs/iconic-activation.md](docs/iconic-activation.md).
+**Spacing & shape.** Engine tokens: `density` ∈ `compact | comfortable | spacious`, `spacingScale` 0.92–1.25, `cornerStyle` ∈ `sharp | rounded | pill`. Density mapping: compact ≈ 0.92, spacious ≈ 1.25. Theme Creator's chrome uses `--radius-sm: 6px / --radius: 8px / --radius-lg: 12px` and a 220px sidebar.
 
-## 🛠️ Theme Creator App
+**Backgrounds.** Most themes use **flat solid backgrounds** at the lowest layer; the iconic gradient themes (Frutiger Aero, Solarpunk Civic, Aurora Glass Night) define an explicit gradient with stops at 0 / 0.58 / 1.0 and a fixed angle (typically 135deg). No imagery, no full-bleed photography, no hand illustrations — Ktheme is purely tokenized chrome. Optional `overlays` add a tinted color with a blend-mode (typically `screen` or `soft-light`) for atmosphere; optional `noise` produces a subtle grain via repeating radial-gradient dots.
 
-Ktheme includes a web-based theme creator app for visually designing themes:
+**Effects (the brand).**
+- **Metallic gradient** (the signature): a 5-stop linear-gradient `shadow → base → highlight → base → shadow` at 135deg by default. 10 variants (Silver, Gold, Gold-Royal-Blue, Bronze, Copper, Platinum, Rose Gold, Titanium, Chrome, Cobalt). Each variant has `base / highlight / shadow / shimmer` colors.
+- **Shimmer**: an animated 3-stop gradient sliding `-200% → 200%` across the element, controlled by `speed` (s) and `intensity` (0–1) and `angle` (deg). Default 2–4s linear infinite. Auto-disabled under `prefers-reduced-motion`.
+- **Shadows**: configured per theme via `elevation` + `blur` + `color`. Two stacked shadows (ambient at `0 Y B rgba(0,0,0,0.12)` and a directional one with the theme color). Elevations seen in the catalog: 1 (Paper&Ink, Aero), 2 (Rose Gold), 3 (Emerald, Metro), 4 (Navy Gold, LCARS), 6 (Art Deco).
+- **Glassmorphism**: `backdrop-filter: blur(R) saturate(180%)` + tinted `background-color` + `opacity ~0.8`. Used by Frutiger Aero, Aurora Glass Night.
+- **Glow**: outer + inner box-shadow at the same color (`0 0 10·I 5·I color, 0 0 15·I color inset`) — used for neon themes.
+- **Gradient borders**: linear-gradient `border-box` clipped with mask-composite for hairline rainbow/metallic edges.
+- **Noise overlay**: `radial-gradient(rgba(255,255,255,O) 1px, transparent 1px)` at a configurable scale.
 
-```bash
-cd theme-creator
-npm install
-npm start
-```
+**Animation.** Built-in keyframes: `fadeIn` (opacity), `slideIn` (translate from any side), `pulse` (expanding shadow ring), `ripple` (scale 0→4 + opacity 1→0), `shimmer-move` (background-position pan). Default duration **300ms**, easing `ease` or `ease-in-out`. Reduced-motion preferences disable shimmer and shorten/disable transitions automatically.
 
-The theme creator provides:
-- 🎨 Visual color picker for all theme colors
-- 👁️ Live preview of your theme
-- 💾 Export themes to JSON
-- 📥 Import existing themes for editing
+**Hover/press states.** Theme Creator's reference: hover swaps `--bg-hover` (`#2a2d3a`) and shifts text from `--text-muted` to `--text`. Active = `transform: scale(0.97)` for 100ms. Focus = `outline: 2px solid var(--accent); outline-offset: 2px` (this is the engine's `focusRing` token — also exposed as `generateFocusRingCSS(color, width=2, offset=2)`). Theme-level state layers (`stateLayers.hover/pressed/focused/dragged`) tint surfaces with a low-opacity color overlay.
 
+**Borders & outlines.** MD3-style: `outline` is the primary stroke (mid-tone), `outlineVariant` is the soft hairline (10–15% contrast). Inputs and cards lean on `outlineVariant`; focus moves to `outline` or accent. Iconic themes break this — Art Deco draws a 1px gold rule at 45% alpha; LCARS uses no borders, only filled bars.
 
-## ⚙️ Accessibility and Motion Policies
+**Cards / panels.** In Theme Creator: surface tint (`--bg-elevated #22252f`), 1px `--border #2e3140`, `--radius 8px`, no shadow at rest, hover lifts to `--border-light #3b3f50`. The `panelStyle` adaptation token is one of `flat | glass | elevated`.
 
-Ktheme supports reduced-motion handling, dynamic contrast checks, and auto-generated accessibility CSS that is included for all themes by default.
+**Transparency & blur.** Used selectively: glassmorphism panels in Aero/Aurora, a `scrim` color (always `#000000`) for modal backdrops, accent-muted backgrounds at 20% alpha for selected states (`--accent-muted: #4f46e520`).
 
-```typescript
-const validation = engine.validateTheme(theme);
-console.log(validation.warnings); // includes low-contrast warnings when applicable
+**Imagery.** None native. Themes are pure tokens.
 
-const resolvedEffects = engine.resolveEffectsForRuntime(theme, {
-  prefersReducedMotion: true
-});
+## ICONOGRAPHY
 
-const resolvedAccessibility = engine.resolveAccessibilityForRuntime(theme, {
-  prefersReducedMotion: true,
-  prefersHighContrast: true,
-  userFontScale: 1.2
-});
+Ktheme treats icons as a *theme-adapted* layer, not a fixed asset library. The `IconAdaptation` token system in `src/core/types.ts` configures `family ∈ material | fluent | sf | line | duotone | custom`, `style ∈ line | filled | duotone`, plus `sizeScale`, `strokeWidth`, and `cornerStyle`.
 
-const css = generateThemeAdaptationCSS(theme);
-// css now includes accessibility variables/rules by default under [data-ktheme]
-```
+In the Theme Creator app, icons come from **Lucide** (referenced by name throughout the React components — Sparkles, Loader2, Wand2, Save, etc.). We use **Lucide via CDN** in our recreations (`lucide@latest`) to match.
 
-When reduced motion is preferred, shimmer is disabled and transitions/animations are reduced according to each effect policy. Accessibility utilities also enforce minimum target size, visible focus rings, link underlines, and reduced-motion fallbacks automatically.
+The `iconic-previews.html` reference uses **emoji-free** layouts — no glyph icons at all, only typographic labels and geometric shapes (LCARS bars, Metro tiles). This is a strong rule of the system: **emoji are not used in product UI**, only in README documentation.
 
-If you need to disable auto-inclusion for a specific theme, set `theme.accessibility.autoIncludeInGeneratedCSS = false`.
+**Substitutions flagged:**
+- Theme Creator codebase calls `lucide-react`. We render the same icons via Lucide CDN — no visual substitution.
+- No webfonts ship in the repo. Body type defaults to `system-ui`. Theme Creator implies Inter via CSS but the file isn't bundled — we load Inter from Google Fonts and JetBrains Mono for code, both as substitution flags.
 
-## 🔬 Essential Additions and Effects Research
+## Logos & marks
 
-See [ESSENTIAL_ADDITIONS_AND_EFFECTS.md](ESSENTIAL_ADDITIONS_AND_EFFECTS.md) for implementation notes and prioritized recommendations for expanding the engine.
-
-## 📖 API Documentation
-
-### ThemeEngine
-
-The main class for managing themes.
-
-#### Methods
-
-- `registerTheme(theme: Theme): void` - Register a new theme
-- `getTheme(id: string): Theme | undefined` - Get a theme by ID
-- `getAllThemes(): Theme[]` - Get all registered themes
-- `setActiveTheme(id: string): void` - Set the active theme
-- `getActiveTheme(): Theme | null` - Get the current active theme
-- `removeTheme(id: string): boolean` - Remove a theme
-- `validateTheme(theme: Theme): ThemeValidationResult` - Validate a theme
-- `exportTheme(id: string): string` - Export theme to JSON
-- `importTheme(json: string): Theme` - Import theme from JSON
-- `searchByTags(tags: string[]): Theme[]` - Search themes by tags
-- `searchByName(query: string): Theme[]` - Search themes by name
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request. This is an open-source project where anyone can add their custom themes.
-
-### Adding Your Theme
-
-1. Create your theme using the Theme Creator app or manually
-2. Export your theme to JSON
-3. Submit a PR with your theme in the `themes/community/` directory
-
-## 📄 License
-
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- Inspired by the advanced theming system in [CleverFerret](https://github.com/Kaleaon/CleverFerret)
-- Material Design 3 color system
-- The open-source community
-
-## 🔗 Links
-
-- [GitHub Repository](https://github.com/Kaleaon/Ktheme)
-- [CleverFerret](https://github.com/Kaleaon/CleverFerret)
-- [Issue Tracker](https://github.com/Kaleaon/Ktheme/issues)
+Ktheme has no committed logo asset in the repo. The README header uses an emoji palette (🎨) and the project name in plain text. We've authored a clean wordmark for the design system in `assets/ktheme-mark.svg` and a metallic-gold variant in `assets/ktheme-mark-gold.svg` — flagged as derived, not official.
 
 ---
 
-<div align="center">
+## ⚠️ Substitutions & open questions for the user
 
-**Made with ❤️ by the Ktheme community**
-
-</div>
+- **No official logo / brand mark** in the repo. We made a wordmark; please replace if you have an official one.
+- **No font files** in the repo. We use **Inter** + **JetBrains Mono** from Google Fonts as the closest match to the Theme Creator's stated stack. Please ship official `.woff2` if you have a preferred specific font.
+- The **CleverFerret** sibling project may contain richer visual context (icon set, iconography reference) — let us know if you want it folded in.
+- Ktheme is a *meta-system*. We selected **Navy Gold** as the canonical demo theme for the UI kit's chrome where neutral was needed; tell us if you want a different default.
