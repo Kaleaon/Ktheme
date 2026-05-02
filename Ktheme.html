@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Ktheme — Theme Maker app + Design System</title>
+<meta name="viewport" content="width=1440">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+<style>
+  html, body { margin: 0; padding: 0; font-family: "Inter", system-ui, sans-serif; background: #f0eee9; }
+  * { box-sizing: border-box; }
+  #root { width: 100%; min-height: 100vh; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="preview-surface.jsx"></script>
+<script type="text/babel" src="tm-v1.jsx"></script>
+<script type="text/babel" src="tm-v2.jsx"></script>
+<script type="text/babel" src="tm-v3.jsx"></script>
+<script type="text/babel" src="ds-docs.jsx"></script>
+
+<script type="text/babel">
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "previewTheme": "navy-gold",
+  "previewView": "dashboard",
+  "metallicIntensity": 0.8,
+  "showAi": true
+}/*EDITMODE-END*/;
+
+function App() {
+  const { useTweaks, TweaksPanel, TweakSection, TweakSelect, TweakSlider, TweakToggle, TweakRadio } = window;
+  const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
+
+  // Apply global metallic-intensity override.
+  React.useEffect(() => {
+    document.documentElement.style.setProperty('--shimmer-intensity', tweaks.metallicIntensity);
+  }, [tweaks.metallicIntensity]);
+
+  return (
+    <>
+      <DesignCanvas>
+        <DCSection
+          id="theme-maker"
+          title="Theme Maker · the app"
+          subtitle="Three directions for the canonical Ktheme product surface — conservative → bold."
+        >
+          <DCArtboard id="tm-conservative" label="A · Conservative — Material Theme Builder feel" width={1280} height={780} data-screen-label="01 Theme Maker — Conservative">
+            <ThemeMakerV1 themeKey={tweaks.previewTheme} view={tweaks.previewView} />
+          </DCArtboard>
+          <DCArtboard id="tm-featured" label="B · Featured — signature Ktheme balance" width={1280} height={780} data-screen-label="02 Theme Maker — Featured">
+            <ThemeMakerV2 themeKey={tweaks.previewTheme} view={tweaks.previewView} aiOpen={tweaks.showAi} />
+          </DCArtboard>
+          <DCArtboard id="tm-bold" label="C · Bold — metallic-forward Forge" width={1280} height={780} data-screen-label="03 Theme Maker — Bold">
+            <ThemeMakerV3 themeKey={tweaks.previewTheme} view={tweaks.previewView} />
+          </DCArtboard>
+        </DCSection>
+
+        <DCSection
+          id="design-system"
+          title="Design system · expansions"
+          subtitle="Reference docs that codify Ktheme as a real, governed system — not just a token bag."
+        >
+          <DCArtboard id="ds-components" label="Component library spec" width={1200} height={780} data-screen-label="04 Design System — Components">
+            <DSComponents />
+          </DCArtboard>
+          <DCArtboard id="ds-iconic" label="Iconic theme rule cards" width={1200} height={780} data-screen-label="05 Design System — Iconic Rules">
+            <DSIconic />
+          </DCArtboard>
+          <DCArtboard id="ds-access" label="Accessibility & contrast tooling" width={1200} height={780} data-screen-label="06 Design System — Accessibility">
+            <DSAccess />
+          </DCArtboard>
+          <DCArtboard id="ds-parity" label="Cross-platform parity matrix" width={1200} height={780} data-screen-label="07 Design System — Parity Matrix">
+            <DSParity />
+          </DCArtboard>
+        </DCSection>
+
+        <DCPostIt x={40} y={120} rotate={-2}>
+          Ktheme = a meta-system. The Theme Maker app is its primary surface; the design system is what makes that surface trustworthy across web/Android/iOS/Flutter.
+        </DCPostIt>
+        <DCPostIt x={40} y={520} rotate={1.5}>
+          Use Tweaks (toolbar, top-right) to switch the theme + preview app worn inside all three Theme Maker variants — they share state.
+        </DCPostIt>
+      </DesignCanvas>
+
+      <TweaksPanel title="Ktheme tweaks">
+        <TweakSection title="Preview content">
+          <TweakSelect
+            label="Preview theme"
+            value={tweaks.previewTheme}
+            onChange={(v) => setTweak('previewTheme', v)}
+            options={[
+              { value: "navy-gold",      label: "Navy Gold (marquee)" },
+              { value: "rose-gold",      label: "Rose Gold" },
+              { value: "emerald-silver", label: "Emerald Silver" },
+              { value: "neo-noir-neon",  label: "Neo-Noir Neon" },
+              { value: "frutiger-aero",  label: "Frutiger Aero" },
+            ]}
+          />
+          <TweakRadio
+            label="Preview app"
+            value={tweaks.previewView}
+            onChange={(v) => setTweak('previewView', v)}
+            options={[
+              { value: "dashboard", label: "Dashboard" },
+              { value: "sampler",   label: "Components" },
+              { value: "mail",      label: "Mail" },
+              { value: "iconic",    label: "Iconic" },
+            ]}
+          />
+        </TweakSection>
+        <TweakSection title="Effects">
+          <TweakSlider
+            label="Metallic intensity"
+            value={tweaks.metallicIntensity}
+            onChange={(v) => setTweak('metallicIntensity', v)}
+            min={0} max={1} step={0.05}
+          />
+          <TweakToggle
+            label="Show AI prompt (V2)"
+            value={tweaks.showAi}
+            onChange={(v) => setTweak('showAi', v)}
+          />
+        </TweakSection>
+      </TweaksPanel>
+    </>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App/>);
+</script>
+</body>
+</html>
