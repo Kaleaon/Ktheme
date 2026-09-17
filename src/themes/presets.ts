@@ -1566,6 +1566,141 @@ const SHARED_PRESET_THEME_IDS = SharedPresetThemeIds;
 /**
  * All preset themes
  */
+/**
+ * Linkpoint Gold Theme
+ */
+export const LinkpointGoldTheme: Theme = {
+  metadata: {
+    id: 'linkpoint-gold',
+    name: 'Linkpoint Gold',
+    description: 'Signature Linkpoint UI kit theme featuring high-contrast gold metallic accents',
+    author: 'Linkpoint & Ktheme',
+    version: '1.0.0',
+    tags: ['metallic', 'linkpoint', 'dark', 'gold'],
+    createdAt: PRESET_CREATED_AT,
+    updatedAt: PRESET_UPDATED_AT
+  },
+  darkMode: true,
+  colorScheme: {
+    primary: '#D4AF37',
+    onPrimary: '#0A0D14',
+    primaryContainer: '#856D34',
+    onPrimaryContainer: '#FFF8DC',
+    secondary: '#818CF8',
+    onSecondary: '#0A0D14',
+    secondaryContainer: '#312E81',
+    onSecondaryContainer: '#E0E7FF',
+    tertiary: '#38BDF8',
+    onTertiary: '#0A0D14',
+    tertiaryContainer: '#075985',
+    onTertiaryContainer: '#E0F2FE',
+    error: '#EF4444',
+    onError: '#FFFFFF',
+    errorContainer: '#7F1D1D',
+    onErrorContainer: '#FEE2E2',
+    background: '#0A0D14',
+    onBackground: '#F3F4F6',
+    surface: '#141722',
+    onSurface: '#F3F4F6',
+    surfaceVariant: '#1F293D',
+    onSurfaceVariant: '#9CA3AF',
+    outline: '#374151',
+    outlineVariant: '#1F293D',
+    scrim: '#000000',
+    inverseSurface: '#F3F4F6',
+    inverseOnSurface: '#0A0D14',
+    inversePrimary: '#856D34'
+  },
+  effects: {
+    metallic: {
+      enabled: true,
+      variant: MetallicVariant.GOLD,
+      gradient: getMetallicGradient(MetallicVariant.GOLD),
+      intensity: 0.85
+    },
+    shadows: {
+      enabled: true,
+      elevation: 6,
+      blur: 12,
+      color: '#00000080'
+    },
+    shimmer: {
+      enabled: true,
+      speed: 2.5,
+      intensity: 0.7,
+      angle: 135
+    }
+  }
+};
+
+/**
+ * Linkpoint Cobalt Theme
+ */
+export const LinkpointCobaltTheme: Theme = {
+  metadata: {
+    id: 'linkpoint-cobalt',
+    name: 'Linkpoint Cobalt',
+    description: 'Deep cobalt blue metallic theme designed for high-density command consoles',
+    author: 'Linkpoint & Ktheme',
+    version: '1.0.0',
+    tags: ['metallic', 'linkpoint', 'cobalt', 'dark'],
+    createdAt: PRESET_CREATED_AT,
+    updatedAt: PRESET_UPDATED_AT
+  },
+  darkMode: true,
+  colorScheme: {
+    primary: '#38BDF8',
+    onPrimary: '#030712',
+    primaryContainer: '#0369A1',
+    onPrimaryContainer: '#E0F2FE',
+    secondary: '#818CF8',
+    onSecondary: '#030712',
+    secondaryContainer: '#3730A3',
+    onSecondaryContainer: '#E0E7FF',
+    tertiary: '#F43F5E',
+    onTertiary: '#FFFFFF',
+    tertiaryContainer: '#881337',
+    onTertiaryContainer: '#FFE4E6',
+    error: '#EF4444',
+    onError: '#FFFFFF',
+    errorContainer: '#7F1D1D',
+    onErrorContainer: '#FEE2E2',
+    background: '#030712',
+    onBackground: '#F9FAFB',
+    surface: '#111827',
+    onSurface: '#F9FAFB',
+    surfaceVariant: '#1F2937',
+    onSurfaceVariant: '#9CA3AF',
+    outline: '#374151',
+    outlineVariant: '#1F2937',
+    scrim: '#000000',
+    inverseSurface: '#F9FAFB',
+    inverseOnSurface: '#030712',
+    inversePrimary: '#0369A1'
+  },
+  effects: {
+    metallic: {
+      enabled: true,
+      variant: MetallicVariant.COBALT,
+      gradient: getMetallicGradient(MetallicVariant.COBALT),
+      intensity: 0.8
+    },
+    shadows: {
+      enabled: true,
+      elevation: 4,
+      blur: 10,
+      color: '#00000080'
+    },
+    shimmer: {
+      enabled: true,
+      speed: 2.0,
+      intensity: 0.65,
+      angle: 135
+    }
+  }
+};
+
+
 export const PresetThemes = {
   NavyGold: NavyGoldTheme,
   EmeraldSilver: EmeraldSilverTheme,
@@ -1590,7 +1725,9 @@ export const PresetThemes = {
   WindowsPhoneMetro: WindowsPhoneMetroTheme,
   LCARS: LCARSTheme,
   ArtNouveau: ArtNouveauTheme,
-  ArtDeco: ArtDecoTheme
+  ArtDeco: ArtDecoTheme,
+  LinkpointGold: LinkpointGoldTheme,
+  LinkpointCobalt: LinkpointCobaltTheme
 };
 
 export const ENGINE_PRESET_IDS = Object.values(PresetThemes).map((theme) => theme.metadata.id);

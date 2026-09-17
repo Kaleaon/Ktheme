@@ -2,7 +2,7 @@
  * Shared preset registry consumed by both the engine and the theme creator.
  * Keep this list in sync with `PresetThemes` in `src/themes/presets.ts`.
  */
-export type SharedPresetCategory = 'cleverferret-core' | 'official-iconic';
+export type SharedPresetCategory = 'cleverferret-core' | 'official-iconic' | 'linkpoint-core';
 export type SharedPresetStatus = 'stable';
 
 export interface SharedPresetRegistryEntry {
@@ -36,7 +36,9 @@ export const SHARED_PRESET_REGISTRY = [
   { id: 'windows-phone-metro', name: 'Windows Phone Metro', category: 'official-iconic', status: 'stable' },
   { id: 'lcars', name: 'LCARS', category: 'official-iconic', status: 'stable' },
   { id: 'art-nouveau', name: 'Art Nouveau', category: 'official-iconic', status: 'stable' },
-  { id: 'art-deco', name: 'Art Deco', category: 'official-iconic', status: 'stable' }
+  { id: 'art-deco', name: 'Art Deco', category: 'official-iconic', status: 'stable' },
+  { id: 'linkpoint-gold', name: 'Linkpoint Gold', category: 'linkpoint-core', status: 'stable' },
+  { id: 'linkpoint-cobalt', name: 'Linkpoint Cobalt', category: 'linkpoint-core', status: 'stable' }
 ] as const satisfies readonly SharedPresetRegistryEntry[];
 
 export type SharedPresetId = (typeof SHARED_PRESET_REGISTRY)[number]['id'];

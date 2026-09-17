@@ -40,6 +40,42 @@ export const FrutigerAeroAdaptation: ThemeAdaptation = {
   ]
 };
 
+export const LinkpointAdaptation: ThemeAdaptation = {
+  layout: {
+    density: 'comfortable',
+    cornerStyle: 'rounded',
+    spacingScale: 1.05,
+    panelStyle: 'elevated',
+    navigationStyle: 'rail',
+    accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
+  },
+  icons: {
+    family: 'custom',
+    style: 'outlined',
+    sizeScale: 1.0,
+    strokeWidth: 1.6,
+    cornerStyle: 'rounded'
+  },
+  componentOverrides: [
+    {
+      selector: '.linkpoint-hero',
+      styles: {
+        'border-radius': 12,
+        border: '1px solid rgba(212, 175, 55, 0.35)',
+        'box-shadow': '0 8px 32px rgba(0, 0, 0, 0.45)'
+      }
+    },
+    {
+      selector: '.linkpoint-button',
+      styles: {
+        'border-radius': 8,
+        'letter-spacing': 0.3,
+        'font-weight': 600
+      }
+    }
+  ]
+};
+
 export const WindowsPhoneMetroAdaptation: ThemeAdaptation = {
   layout: {
     density: 'spacious',
@@ -202,6 +238,7 @@ export const ArtDecoAdaptation: ThemeAdaptation = {
 
 export const AdaptationPresets = {
   frutigerAero: FrutigerAeroAdaptation,
+  linkpoint: LinkpointAdaptation,
   windowsPhoneMetro: WindowsPhoneMetroAdaptation,
   lcars: LCARSAdaptation,
   artNouveau: ArtNouveauAdaptation,

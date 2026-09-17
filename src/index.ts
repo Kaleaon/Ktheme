@@ -29,6 +29,10 @@ export * from './themes/expansion';
 export * from './themes/iconicPacks';
 export * from './redesign/autoRedesign';
 
+// Component library & Linkpoint UI Kit exports
+export * from './components';
+export * from './linkpoint';
+
 // Media design tokens exports
 export * from './media/quickAccess';
 export * from './exporters';
