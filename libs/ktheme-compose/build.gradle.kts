@@ -1,6 +1,7 @@
 plugins {
     id("com.android.library")
     kotlin("android")
+    kotlin("plugin.compose") version "2.0.0"
     `maven-publish`
 }
 
