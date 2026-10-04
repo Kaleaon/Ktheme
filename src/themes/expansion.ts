@@ -1,5 +1,6 @@
 import { Theme } from '../core/types';
 import { darken, lighten, mix, opacity } from '../utils/colors';
+import { cloneTheme } from '../utils/clone';
 import { ExpansionPackPlans } from './strategy';
 import { DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE } from '../accessibility/defaults';
 
@@ -8,10 +9,6 @@ export interface ExpansionPackImplementation {
   name: string;
   summary: string;
   apply: (theme: Theme) => Theme;
-}
-
-function cloneTheme(theme: Theme): Theme {
-  return JSON.parse(JSON.stringify(theme)) as Theme;
 }
 
 

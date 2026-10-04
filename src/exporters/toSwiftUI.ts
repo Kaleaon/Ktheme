@@ -7,7 +7,7 @@ export interface SwiftUIExport {
 }
 
 function asSwiftColor(hex: string): string {
-  return `Color(hex: \"${hex}\")`;
+  return `Color(hex: "${hex}")`;
 }
 
 export function toSwiftUI(theme: Theme): SwiftUIExport {

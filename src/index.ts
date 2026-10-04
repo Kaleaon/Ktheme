@@ -19,6 +19,7 @@ export * from './accessibility/defaults';
 
 // Utility exports
 export * from './utils/colors';
+export * from './utils/clone';
 
 // Theme exports
 export * from './themes/presets';

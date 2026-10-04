@@ -1,6 +1,7 @@
 import { Theme, ThemeAdaptation } from '../core/types';
 import { applyExpansionPack } from './expansion';
 import { DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE } from '../accessibility/defaults';
+import { cloneTheme } from '../utils/clone';
 import {
   AuroraGlassNightTheme,
   CalmClinicalTheme,
@@ -45,9 +46,6 @@ const PresetThemeById = Object.values(PresetThemes).reduce<Record<string, Theme>
   acc[theme.metadata.id] = theme;
   return acc;
 }, {});
-
-const cloneTheme = (theme: Theme): Theme => JSON.parse(JSON.stringify(theme)) as Theme;
-const cloneValue = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
 
 export const IconicPackRecipes: Record<IconicPackId, IconicPackRecipe> = {
   'windows-activation-pack': {
@@ -231,7 +229,7 @@ export function applyIconicPack(packId: IconicPackId, options: ApplyIconicPackOp
     if (adaptation) {
       themed.adaptation = {
         ...(themed.adaptation ?? {}),
-        ...cloneValue(adaptation)
+        ...cloneTheme(adaptation)
       };
     }
   }
