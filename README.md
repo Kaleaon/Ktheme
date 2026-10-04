@@ -7,9 +7,41 @@ Ktheme is **not a single product UI** — it's a *theming substrate* that other 
 ## Source
 
 - **Repository:** [Kaleaon/Ktheme](https://github.com/Kaleaon/Ktheme) — `main` branch
+<!-- GENERATED_PRESET_SUMMARY_START -->
+- 📱 **24 Preset Themes** - Generated from the shared preset registry (24 stable).
+<!-- GENERATED_PRESET_SUMMARY_END -->
 - **Inspiration / sibling project:** [Kaleaon/CleverFerret](https://github.com/Kaleaon/CleverFerret) (the metallic theming language originated here)
 - **Engine entry:** `src/index.ts`, `src/core/ThemeEngine.ts`
 - **Preset catalog:** `src/themes/presets.ts`, `themes/examples/*.json` (24 JSON files)
+
+<!-- GENERATED_PRESET_LIST_START -->
+Ktheme includes **24 preset themes** defined in the shared catalog:
+
+1. **Navy Gold** (navy-gold) — Category: cleverferret core; Status: stable
+2. **Emerald Silver** (emerald-silver) — Category: cleverferret core; Status: stable
+3. **Rose Gold** (rose-gold) — Category: cleverferret core; Status: stable
+4. **Royal Bronze** (royal-bronze) — Category: cleverferret core; Status: stable
+5. **Midnight Amber** (midnight-amber) — Category: cleverferret core; Status: stable
+6. **Obsidian Crimson** (obsidian-crimson) — Category: cleverferret core; Status: stable
+7. **Slate Cyan** (slate-cyan) — Category: cleverferret core; Status: stable
+8. **Royal Silver** (royal-silver) — Category: cleverferret core; Status: stable
+9. **Forest Copper** (forest-copper) — Category: cleverferret core; Status: stable
+10. **Burgundy Rose Gold** (burgundy-rose-gold) — Category: cleverferret core; Status: stable
+11. **Charcoal Champagne** (charcoal-champagne) — Category: cleverferret core; Status: stable
+12. **Slate Gunmetal** (slate-gunmetal) — Category: cleverferret core; Status: stable
+13. **Deep Purple Platinum** (deep-purple-platinum) — Category: cleverferret core; Status: stable
+14. **Paper & Ink** (paper-ink) — Category: cleverferret core; Status: stable
+15. **Frutiger Aero** (frutiger-aero) — Category: official iconic; Status: stable
+16. **Solarpunk Civic** (solarpunk-civic) — Category: official iconic; Status: stable
+17. **Neo-Noir Neon** (neo-noir-neon) — Category: official iconic; Status: stable
+18. **Calm Clinical** (calm-clinical) — Category: official iconic; Status: stable
+19. **Ink Terminal Modern** (ink-terminal-modern) — Category: official iconic; Status: stable
+20. **Aurora Glass Night** (aurora-glass-night) — Category: official iconic; Status: stable
+21. **Windows Phone Metro** (windows-phone-metro) — Category: official iconic; Status: stable
+22. **LCARS** (lcars) — Category: official iconic; Status: stable
+23. **Art Nouveau** (art-nouveau) — Category: official iconic; Status: stable
+24. **Art Deco** (art-deco) — Category: official iconic; Status: stable
+<!-- GENERATED_PRESET_LIST_END -->
 - **Effects:** `src/effects/metallic.ts`, `src/effects/advanced.ts`
 - **Adaptation primitives:** `src/adaptation/apply.ts`, `src/themes/adaptationPresets.ts`
 - **Theme Creator app:** `theme-creator/` (Vite + React + TS)

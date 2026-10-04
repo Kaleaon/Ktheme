@@ -68,12 +68,16 @@ This workflow prevents preset drift between the engine and creator applications.
 - Add comments for complex logic
 - Write descriptive commit messages
 
-## Testing
+## CI/CD Tasks & Local Verification
 
-Before submitting a PR:
-- Test your changes locally
-- Ensure all existing tests pass
-- Add tests for new functionality
+Before opening a pull request, run all itemized verification tasks locally:
+
+1. **Lint codebase**: `npm run lint`
+2. **Execute unit test suite**: `npm test`
+3. **Build TypeScript engine**: `npm run build`
+4. **Verify theme catalog parity**: `npm run check:theme-catalog` (if presets were modified, sync with `npm run generate:theme-catalog`)
+
+The automated CI workflow (`.github/workflows/ci.yml`) enforces all 4 tasks on pull requests and pushes to `main`.
 
 ## Questions?
 
