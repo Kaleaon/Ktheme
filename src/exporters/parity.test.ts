@@ -1,10 +1,15 @@
-import { Theme } from '../core/types';
+import { Theme, MetallicVariant } from '../core/types';
 import { toAndroidCompose } from './toAndroidCompose';
 import { toCssVars } from './toCssVars';
 import { toDesignTokensJson } from './toDesignTokensJson';
 import { toFlutterTheme } from './toFlutterTheme';
 import { toSwiftUI } from './toSwiftUI';
 import { toTailwindConfig } from './toTailwindConfig';
+import {
+  exportEffectVars,
+  exportTypographyVars,
+  exportCornerVars
+} from './web';
 
 const fixtureTheme: Theme = {
   metadata: {
@@ -56,6 +61,64 @@ const fixtureTheme: Theme = {
       onInfo: '#FFFFFF',
       critical: '#B00020',
       onCritical: '#FFFFFF'
+    }
+  }
+};
+
+const richFixtureTheme: Theme = {
+  ...fixtureTheme,
+  effects: {
+    metallic: {
+      enabled: true,
+      variant: MetallicVariant.GOLD,
+      gradient: {
+        base: '#D4AF37',
+        highlight: '#FFD700',
+        shadow: '#856D34',
+        shimmer: '#FFF8DC'
+      },
+      intensity: 0.9
+    },
+    shimmer: {
+      enabled: true,
+      speed: 1.5,
+      intensity: 0.8,
+      angle: 120
+    },
+    blur: {
+      enabled: true,
+      radius: 12
+    },
+    focusRing: {
+      enabled: true,
+      color: '#FFD700',
+      width: 3,
+      offset: 2
+    }
+  },
+  typography: {
+    fontFamily: 'Roboto, sans-serif',
+    fontSize: {
+      small: 11,
+      medium: 15,
+      large: 20,
+      xlarge: 28
+    },
+    fontWeight: {
+      light: 200,
+      regular: 400,
+      medium: 600,
+      bold: 800
+    },
+    lineHeight: 1.4,
+    letterSpacing: 0.02
+  },
+  tokens: {
+    corners: {
+      small: 6,
+      medium: 10,
+      large: 14,
+      xlarge: 22
     }
   }
 };
@@ -188,5 +251,106 @@ describe('exporter parity', () => {
     expect(darkCompose.kotlin).not.toContain('lightColorScheme(');
     expect(lightCompose.kotlin).toContain('lightColorScheme(');
     expect(lightCompose.kotlin).not.toContain('darkColorScheme(');
+  });
+
+  describe('web exporters options and sub-modules', () => {
+    it('exports all domains by default for toCssVars and toTailwindConfig', () => {
+      const cssVars = toCssVars(fixtureTheme);
+      const tailwind = toTailwindConfig(fixtureTheme);
+
+      // CSS Vars checks
+      expect(cssVars.vars['--ktheme-primary']).toBe('#111111');
+      expect(cssVars.vars['--ktheme-effect-metallic-variant']).toBeDefined();
+      expect(cssVars.vars['--ktheme-effect-glass-blur']).toBe('10px');
+      expect(cssVars.vars['--ktheme-font-family']).toBe('system-ui, sans-serif');
+      expect(cssVars.vars['--ktheme-corner-small']).toBe('4px');
+      expect(cssVars.cssText).toContain('--ktheme-effect-glass-blur: 10px;');
+      expect(cssVars.cssText).toContain('--ktheme-font-family: system-ui, sans-serif;');
+
+      // Tailwind checks
+      expect(tailwind.theme.extend.colors.primary).toBe('#111111');
+      expect(tailwind.theme.extend.colors['metallic-base']).toBeDefined();
+      expect(tailwind.theme.extend.fontFamily?.primary).toEqual(['system-ui, sans-serif']);
+      expect(tailwind.theme.extend.borderRadius?.small).toBe('4px');
+    });
+
+    it('selectively excludes domains using options in toCssVars', () => {
+      const noEffects = toCssVars(fixtureTheme, { includeEffects: false });
+      expect(noEffects.vars['--ktheme-primary']).toBe('#111111');
+      expect(noEffects.vars['--ktheme-effect-metallic-variant']).toBeUndefined();
+      expect(noEffects.vars['--ktheme-font-family']).toBeDefined();
+      expect(noEffects.vars['--ktheme-corner-small']).toBeDefined();
+
+      const noTypography = toCssVars(fixtureTheme, { includeTypography: false });
+      expect(noTypography.vars['--ktheme-effect-metallic-variant']).toBeDefined();
+      expect(noTypography.vars['--ktheme-font-family']).toBeUndefined();
+      expect(noTypography.vars['--ktheme-corner-small']).toBeDefined();
+
+      const noCorners = toCssVars(fixtureTheme, { includeCorners: false });
+      expect(noCorners.vars['--ktheme-effect-metallic-variant']).toBeDefined();
+      expect(noCorners.vars['--ktheme-font-family']).toBeDefined();
+      expect(noCorners.vars['--ktheme-corner-small']).toBeUndefined();
+
+      const minimal = toCssVars(fixtureTheme, {
+        includeEffects: false,
+        includeTypography: false,
+        includeCorners: false
+      });
+      expect(Object.keys(minimal.vars)).toEqual([
+        '--ktheme-primary',
+        '--ktheme-on-primary',
+        '--ktheme-background',
+        '--ktheme-on-background',
+        '--ktheme-surface',
+        '--ktheme-on-surface',
+        '--ktheme-error',
+        '--ktheme-semantic-success',
+        '--ktheme-semantic-warning',
+        '--ktheme-semantic-info',
+        '--ktheme-semantic-critical'
+      ]);
+    });
+
+    it('selectively excludes domains using options in toTailwindConfig', () => {
+      const noEffects = toTailwindConfig(fixtureTheme, { includeEffects: false });
+      expect(noEffects.theme.extend.colors['metallic-base']).toBeUndefined();
+      expect(noEffects.theme.extend.boxShadow).toBeUndefined();
+      expect(noEffects.theme.extend.fontFamily).toBeDefined();
+      expect(noEffects.theme.extend.borderRadius).toBeDefined();
+
+      const noTypography = toTailwindConfig(fixtureTheme, { includeTypography: false });
+      expect(noTypography.theme.extend.colors['metallic-base']).toBeDefined();
+      expect(noTypography.theme.extend.fontFamily).toBeUndefined();
+      expect(noTypography.theme.extend.fontSize).toBeUndefined();
+      expect(noTypography.theme.extend.borderRadius).toBeDefined();
+
+      const noCorners = toTailwindConfig(fixtureTheme, { includeCorners: false });
+      expect(noCorners.theme.extend.colors['metallic-base']).toBeDefined();
+      expect(noCorners.theme.extend.fontFamily).toBeDefined();
+      expect(noCorners.theme.extend.borderRadius).toBeUndefined();
+    });
+
+    it('exports rich theme effects, typography, and corners correctly via domain builders', () => {
+      const effects = exportEffectVars(richFixtureTheme);
+      expect(effects.vars['--ktheme-effect-metallic-variant']).toBe('GOLD');
+      expect(effects.vars['--ktheme-effect-metallic-base']).toBe('#D4AF37');
+      expect(effects.vars['--ktheme-effect-shimmer-speed']).toBe('1.5s');
+      expect(effects.vars['--ktheme-effect-glass-blur']).toBe('12px');
+      expect(effects.vars['--ktheme-effect-glow-color']).toBe('#FFD700');
+      expect(effects.tailwind.colors?.['metallic-base']).toBe('#D4AF37');
+      expect(effects.tailwind.boxShadow?.glow).toBe('0 0 3px #FFD700');
+
+      const typography = exportTypographyVars(richFixtureTheme);
+      expect(typography.vars['--ktheme-font-family']).toBe('Roboto, sans-serif');
+      expect(typography.vars['--ktheme-font-size-small']).toBe('11px');
+      expect(typography.vars['--ktheme-font-size-xlarge']).toBe('28px');
+      expect(typography.vars['--ktheme-font-weight-bold']).toBe('800');
+      expect(typography.tailwind.fontFamily?.primary).toEqual(['Roboto, sans-serif']);
+
+      const corners = exportCornerVars(richFixtureTheme);
+      expect(corners.vars['--ktheme-corner-small']).toBe('6px');
+      expect(corners.vars['--ktheme-corner-large']).toBe('14px');
+      expect(corners.tailwind.borderRadius?.large).toBe('14px');
+    });
   });
 });

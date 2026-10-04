@@ -1,12 +1,25 @@
 import { Theme } from '../core/types';
 import { normalizeSemanticRoles, toHexColor } from './utils';
+import {
+  CssVarsOptions,
+  exportEffectVars,
+  exportTypographyVars,
+  exportCornerVars
+} from './web';
 
 export interface CssVarsExport {
   vars: Record<string, string>;
   cssText: string;
 }
 
-export function toCssVars(theme: Theme): CssVarsExport {
+export function toCssVars(theme: Theme, options?: CssVarsOptions): CssVarsExport {
+  const resolvedOptions: CssVarsOptions = {
+    includeEffects: true,
+    includeTypography: true,
+    includeCorners: true,
+    ...options
+  };
+
   const semantic = normalizeSemanticRoles(theme);
   const vars: Record<string, string> = {
     '--ktheme-primary': toHexColor(theme.colorScheme.primary),
@@ -21,6 +34,18 @@ export function toCssVars(theme: Theme): CssVarsExport {
     '--ktheme-semantic-info': semantic.info,
     '--ktheme-semantic-critical': semantic.critical
   };
+
+  if (resolvedOptions.includeEffects) {
+    Object.assign(vars, exportEffectVars(theme, resolvedOptions).vars);
+  }
+
+  if (resolvedOptions.includeTypography) {
+    Object.assign(vars, exportTypographyVars(theme, resolvedOptions).vars);
+  }
+
+  if (resolvedOptions.includeCorners) {
+    Object.assign(vars, exportCornerVars(theme, resolvedOptions).vars);
+  }
 
   const cssBody = Object.entries(vars)
     .map(([name, value]) => `  ${name}: ${value};`)
