@@ -5,7 +5,6 @@ import type { Theme } from './types';
 import { DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE } from '../accessibility/defaults';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { SCHEMA_VERSION } from './migrations';
 
 describe('ThemeEngine adaptations', () => {
   const loadFixture = (fileName: string): string =>
@@ -416,28 +415,28 @@ describe('ThemeEngine adaptations', () => {
     expect(engine.searchByName('legacy')).toHaveLength(1);
   });
 
-  it('imports legacy fixture without schemaVersion and migrates to current schema', () => {
+  it('rejects legacy fixture without schemaVersion during import and validation', () => {
     const engine = new ThemeEngine();
-    const imported = engine.importTheme(loadFixture('legacy-theme-no-schema.json'));
+    const rawFixture = JSON.parse(loadFixture('legacy-theme-no-schema.json')) as Theme;
 
-    expect(imported.schemaVersion).toBe(SCHEMA_VERSION);
+    const validation = engine.validateTheme(rawFixture);
+    expect(validation.valid).toBe(false);
+    expect(validation.errors).toContain('Schema version is required');
+    expect(validation.issues.some(issue => issue.code === 'missing-schema')).toBe(true);
 
-    const exported = JSON.parse(engine.exportTheme(imported.metadata.id)) as Theme;
-    expect(exported.schemaVersion).toBe(SCHEMA_VERSION);
+    expect(() => engine.importTheme(loadFixture('legacy-theme-no-schema.json'))).toThrow('Schema version is required');
   });
 
-  it('imports legacy v0 fixture and yields schema-equivalent migrated output', () => {
+  it('rejects legacy v0 fixture during import and validation', () => {
     const engine = new ThemeEngine();
-    const fromNoSchema = engine.importTheme(loadFixture('legacy-theme-no-schema.json'));
-    const fromV0 = engine.importTheme(loadFixture('legacy-theme-v0.json'));
+    const rawFixture = JSON.parse(loadFixture('legacy-theme-v0.json')) as Theme;
 
-    const { schemaVersion: noSchemaVersion, metadata: noSchemaMeta, ...noSchemaRest } = fromNoSchema;
-    const { schemaVersion: v0Version, metadata: v0Meta, ...v0Rest } = fromV0;
+    const validation = engine.validateTheme(rawFixture);
+    expect(validation.valid).toBe(false);
+    expect(validation.errors).toContain('Unsupported schema version: 0');
+    expect(validation.issues.some(issue => issue.code === 'invalid-schema')).toBe(true);
 
-    expect(noSchemaVersion).toBe(SCHEMA_VERSION);
-    expect(v0Version).toBe(SCHEMA_VERSION);
-    expect(noSchemaRest).toEqual(v0Rest);
-    expect(noSchemaMeta.id).not.toEqual(v0Meta.id);
+    expect(() => engine.importTheme(loadFixture('legacy-theme-v0.json'))).toThrow('Unsupported schema version: 0');
   });
 
   it('rejects invalid colors across scheme semantic roles state layers and effects', () => {

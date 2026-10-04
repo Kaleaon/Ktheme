@@ -467,6 +467,8 @@ export interface ThemeValidationIssue {
   severity: ThemeValidationSeverity;
   message: string;
   code:
+    | 'missing-schema'
+    | 'invalid-schema'
     | 'missing-metadata'
     | 'missing-color'
     | 'invalid-effects'
