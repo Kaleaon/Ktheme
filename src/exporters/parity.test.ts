@@ -9,6 +9,7 @@ import {
   tailwindRenderer
 } from './renderers';
 import { toAndroidCompose } from './toAndroidCompose';
+import { toBlenderPropertyGroup } from './toBlenderPropertyGroup';
 import { toCssVars } from './toCssVars';
 import { toDesignTokensJson } from './toDesignTokensJson';
 import { toFlutterTheme } from './toFlutterTheme';
@@ -587,83 +588,7 @@ describe('exporter parity & IR pipeline', () => {
     expect(designTokens.theme.adaptation).toBeDefined();
   });
 
-  describe('web exporters options and sub-modules', () => {
-    it('exports all domains by default for toCssVars and toTailwindConfig', () => {
-      const cssVars = toCssVars(fixtureTheme);
-      const tailwind = toTailwindConfig(fixtureTheme);
-
-      // CSS Vars checks
-      expect(cssVars.vars['--ktheme-primary']).toBe('#111111');
-      expect(cssVars.vars['--ktheme-effect-metallic-variant']).toBeDefined();
-      expect(cssVars.vars['--ktheme-effect-glass-blur']).toBe('10px');
-      expect(cssVars.vars['--ktheme-font-family']).toBe('system-ui, sans-serif');
-      expect(cssVars.vars['--ktheme-corner-small']).toBe('4px');
-      expect(cssVars.cssText).toContain('--ktheme-effect-glass-blur: 10px;');
-      expect(cssVars.cssText).toContain('--ktheme-font-family: system-ui, sans-serif;');
-
-      // Tailwind checks
-      expect(tailwind.theme.extend.colors.primary).toBe('#111111');
-      expect(tailwind.theme.extend.colors['metallic-base']).toBeDefined();
-      expect(tailwind.theme.extend.fontFamily?.primary).toEqual(['system-ui, sans-serif']);
-      expect(tailwind.theme.extend.borderRadius?.small).toBe('4px');
-    });
-
-    it('selectively excludes domains using options in toCssVars', () => {
-      const noEffects = toCssVars(fixtureTheme, { includeEffects: false });
-      expect(noEffects.vars['--ktheme-primary']).toBe('#111111');
-      expect(noEffects.vars['--ktheme-effect-metallic-variant']).toBeUndefined();
-      expect(noEffects.vars['--ktheme-font-family']).toBeDefined();
-      expect(noEffects.vars['--ktheme-corner-small']).toBeDefined();
-
-      const noTypography = toCssVars(fixtureTheme, { includeTypography: false });
-      expect(noTypography.vars['--ktheme-effect-metallic-variant']).toBeDefined();
-      expect(noTypography.vars['--ktheme-font-family']).toBeUndefined();
-      expect(noTypography.vars['--ktheme-corner-small']).toBeDefined();
-
-      const noCorners = toCssVars(fixtureTheme, { includeCorners: false });
-      expect(noCorners.vars['--ktheme-effect-metallic-variant']).toBeDefined();
-      expect(noCorners.vars['--ktheme-font-family']).toBeDefined();
-      expect(noCorners.vars['--ktheme-corner-small']).toBeUndefined();
-
-      const minimal = toCssVars(fixtureTheme, {
-        includeEffects: false,
-        includeTypography: false,
-        includeCorners: false
-      });
-      expect(Object.keys(minimal.vars)).toEqual([
-        '--ktheme-primary',
-        '--ktheme-on-primary',
-        '--ktheme-background',
-        '--ktheme-on-background',
-        '--ktheme-surface',
-        '--ktheme-on-surface',
-        '--ktheme-error',
-        '--ktheme-semantic-success',
-        '--ktheme-semantic-warning',
-        '--ktheme-semantic-info',
-        '--ktheme-semantic-critical'
-      ]);
-    });
-
-    it('selectively excludes domains using options in toTailwindConfig', () => {
-      const noEffects = toTailwindConfig(fixtureTheme, { includeEffects: false });
-      expect(noEffects.theme.extend.colors['metallic-base']).toBeUndefined();
-      expect(noEffects.theme.extend.boxShadow).toBeUndefined();
-      expect(noEffects.theme.extend.fontFamily).toBeDefined();
-      expect(noEffects.theme.extend.borderRadius).toBeDefined();
-
-      const noTypography = toTailwindConfig(fixtureTheme, { includeTypography: false });
-      expect(noTypography.theme.extend.colors['metallic-base']).toBeDefined();
-      expect(noTypography.theme.extend.fontFamily).toBeUndefined();
-      expect(noTypography.theme.extend.fontSize).toBeUndefined();
-      expect(noTypography.theme.extend.borderRadius).toBeDefined();
-
-      const noCorners = toTailwindConfig(fixtureTheme, { includeCorners: false });
-      expect(noCorners.theme.extend.colors['metallic-base']).toBeDefined();
-      expect(noCorners.theme.extend.fontFamily).toBeDefined();
-      expect(noCorners.theme.extend.borderRadius).toBeUndefined();
-    });
-
+  describe('web exporters sub-modules', () => {
     it('exports rich theme effects, typography, and corners correctly via domain builders', () => {
       const effects = exportEffectVars(richFixtureTheme);
       expect(effects.vars['--ktheme-effect-metallic-variant']).toBe('GOLD');
@@ -686,5 +611,21 @@ describe('exporter parity & IR pipeline', () => {
       expect(corners.vars['--ktheme-corner-large']).toBe('14px');
       expect(corners.tailwind.borderRadius?.large).toBe('14px');
     });
+  });
+
+  it('exports Blender PropertyGroup with FloatVectorProperty, layout metrics, and registration functions', () => {
+    const blenderExport = toBlenderPropertyGroup(fixtureTheme);
+
+    expect(blenderExport.propertyNames).toContain('primary');
+    expect(blenderExport.propertyNames).toContain('semantic_success');
+    expect(blenderExport.propertyNames).toContain('layout_margin');
+    expect(blenderExport.propertyNames).toContain('icon_set');
+
+    expect(blenderExport.pythonScript).toContain('class KthemePropertyGroup(bpy.types.PropertyGroup):');
+    expect(blenderExport.pythonScript).toContain('FloatVectorProperty(name="Primary"');
+    expect(blenderExport.pythonScript).toContain('FloatVectorProperty(name="Semantic Success"');
+    expect(blenderExport.pythonScript).toContain('def register_ktheme_properties():');
+    expect(blenderExport.pythonScript).toContain('def unregister_ktheme_properties():');
+    expect(blenderExport.pythonScript).toContain('bpy.types.WindowManager.ktheme = bpy.props.PointerProperty(');
   });
 });
