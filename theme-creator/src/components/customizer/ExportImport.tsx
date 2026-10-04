@@ -2,6 +2,7 @@ import { useId, useRef, useState } from 'react';
 import { Download, Upload } from 'lucide-react';
 import { useTheme } from '../../state/ThemeContext.tsx';
 import type { KTheme } from '../../types/theme.ts';
+import { FormField } from '../common/FormField.tsx';
 
 export function ExportImport() {
   const { state, dispatch } = useTheme();
@@ -57,15 +58,15 @@ export function ExportImport() {
           <Upload size={16} aria-hidden="true" focusable="false" />
           Import JSON
         </button>
-        <label htmlFor={importInputId} className="sr-only">Import theme JSON file</label>
-        <input
-          id={importInputId}
-          ref={fileRef}
-          type="file"
-          accept=".json"
-          style={{ display: 'none' }}
-          onChange={handleImport}
-        />
+        <FormField id={importInputId} label="Import theme JSON file" hideLabel>
+          <input
+            ref={fileRef}
+            type="file"
+            accept=".json"
+            style={{ display: 'none' }}
+            onChange={handleImport}
+          />
+        </FormField>
       </div>
       <p className="sr-only" role="status" aria-live="polite">{statusMessage}</p>
     </section>
