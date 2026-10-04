@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { KButton, KCard, KChip, KNavRail, KToggle, KSlider, KSwatch, KInput } from '../components/DCs';
+import { KButton, KCard, KChip, KToggle, KSlider, KInput } from '../components/DCs';
 
 export type DeviceSize = 'desktop' | 'tablet' | 'mobile';
 export type LayoutPack = 'standard' | 'compact' | 'hero' | 'grid';

@@ -5,7 +5,7 @@
 
 type StyleMap = Record<string, string>;
 
-let pendingMutations: Map<HTMLElement, StyleMap> = new Map();
+const pendingMutations: Map<HTMLElement, StyleMap> = new Map();
 let rafId: number | null = null;
 
 function flushMutations() {

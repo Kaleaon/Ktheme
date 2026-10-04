@@ -33,6 +33,8 @@ const METALLIC_VARIANTS = [
   { id: 'COBALT', label: 'Cobalt', base: '#3A6BD9', highlight: '#7FA5F0', shadow: '#1A3A8A' },
 ];
 
+type StudioTab = 'customizer' | 'presets' | 'metallic' | 'preview';
+
 export function ThemeStudio({
   embedded = false,
   onExport,
@@ -212,7 +214,7 @@ export function ThemeStudio({
             ].map(([tabKey, label]) => (
               <button
                 key={tabKey}
-                onClick={() => setActiveTab(tabKey as any)}
+                onClick={() => setActiveTab(tabKey as StudioTab)}
                 style={{
                   background:
                     activeTab === tabKey

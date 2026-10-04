@@ -68,13 +68,14 @@ export const FormField: React.FC<FormFieldProps> = ({
 
   const renderedChildren = React.Children.map(children, (child) => {
     if (!React.isValidElement(child)) return child;
-    const element = child as React.ReactElement<any>;
+    const element = child as React.ReactElement<Record<string, unknown>>;
+    const elProps = (element.props || {}) as Record<string, unknown>;
     return React.cloneElement(element, {
-      id: element.props.id || inputId,
-      'aria-describedby': element.props['aria-describedby'] || ariaDescribedBy,
-      'aria-invalid': element.props['aria-invalid'] !== undefined ? element.props['aria-invalid'] : (error ? true : undefined),
-      'aria-errormessage': element.props['aria-errormessage'] || (error ? errorId : undefined),
-    });
+      id: elProps.id || inputId,
+      'aria-describedby': elProps['aria-describedby'] || ariaDescribedBy,
+      'aria-invalid': elProps['aria-invalid'] !== undefined ? elProps['aria-invalid'] : (error ? true : undefined),
+      'aria-errormessage': elProps['aria-errormessage'] || (error ? errorId : undefined),
+    } as Record<string, unknown>);
   });
 
   return (
@@ -236,7 +237,7 @@ export const FormSwitch = React.forwardRef<HTMLSpanElement, FormSwitchProps>(fun
       aria-describedby={ariaDescribedBy}
       aria-invalid={ariaInvalid}
       aria-errormessage={ariaErrorMessage}
-      aria-label={ariaLabel}
+      aria-label={ariaLabel || label}
       aria-labelledby={ariaLabelledBy || context?.labelId}
       className={`ktheme-form-switch ${className}`}
       style={{
