@@ -8,14 +8,14 @@ Ktheme is **not a single product UI** — it's a *theming substrate* that other 
 
 - **Repository:** [Kaleaon/Ktheme](https://github.com/Kaleaon/Ktheme) — `main` branch
 <!-- GENERATED_PRESET_SUMMARY_START -->
-- 📱 **24 Preset Themes** - Generated from the shared preset registry (24 stable).
+- 📱 **26 Preset Themes** - Generated from the shared preset registry (26 stable).
 <!-- GENERATED_PRESET_SUMMARY_END -->
 - **Inspiration / sibling project:** [Kaleaon/CleverFerret](https://github.com/Kaleaon/CleverFerret) (the metallic theming language originated here)
 - **Engine entry:** `src/index.ts`, `src/core/ThemeEngine.ts`
 - **Preset catalog:** `src/themes/presets.ts`, `themes/examples/*.json` (24 JSON files)
 
 <!-- GENERATED_PRESET_LIST_START -->
-Ktheme includes **24 preset themes** defined in the shared catalog:
+Ktheme includes **26 preset themes** defined in the shared catalog:
 
 1. **Navy Gold** (navy-gold) — Category: cleverferret core; Status: stable
 2. **Emerald Silver** (emerald-silver) — Category: cleverferret core; Status: stable
@@ -41,6 +41,8 @@ Ktheme includes **24 preset themes** defined in the shared catalog:
 22. **LCARS** (lcars) — Category: official iconic; Status: stable
 23. **Art Nouveau** (art-nouveau) — Category: official iconic; Status: stable
 24. **Art Deco** (art-deco) — Category: official iconic; Status: stable
+25. **Linkpoint Gold** (linkpoint-gold) — Category: linkpoint core; Status: stable
+26. **Linkpoint Cobalt** (linkpoint-cobalt) — Category: linkpoint core; Status: stable
 <!-- GENERATED_PRESET_LIST_END -->
 - **Effects:** `src/effects/metallic.ts`, `src/effects/advanced.ts`
 - **Adaptation primitives:** `src/adaptation/apply.ts`, `src/themes/adaptationPresets.ts`
