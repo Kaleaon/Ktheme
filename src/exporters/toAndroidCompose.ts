@@ -7,6 +7,10 @@ export interface AndroidComposeExport {
   kotlin: string;
 }
 
+export interface AndroidComposeOptions {
+  packageName?: string;
+}
+
 const MATERIAL3_COLOR_SCHEME_KEYS = [
   'primary',
   'onPrimary',
@@ -38,11 +42,31 @@ const MATERIAL3_COLOR_SCHEME_KEYS = [
   'inversePrimary'
 ] as const;
 
-function asComposeColor(hex: string): string {
-  return `Color(0xFF${hex.replace('#', '')})`;
+function formatArgbHex(hex: string): string {
+  const clean = hex.replace('#', '').trim().toUpperCase();
+  if (clean.length === 8) {
+    return clean;
+  }
+  if (clean.length === 6) {
+    return `FF${clean}`;
+  }
+  if (clean.length === 3) {
+    const [r, g, b] = clean;
+    return `FF${r}${r}${g}${g}${b}${b}`;
+  }
+  if (clean.length === 4) {
+    const [a, r, g, b] = clean;
+    return `${a}${a}${r}${r}${g}${g}${b}${b}`;
+  }
+  return clean.padStart(8, 'F');
 }
 
-export function toAndroidCompose(theme: Theme): AndroidComposeExport {
+function asComposeColor(hex: string): string {
+  return `Color(0x${formatArgbHex(hex)})`;
+}
+
+export function toAndroidCompose(theme: Theme, options?: AndroidComposeOptions): AndroidComposeExport {
+  const packageName = options?.packageName ?? 'io.ktheme.compose';
   const semantic = normalizeSemanticRoles(theme);
 
   const colorScheme = MATERIAL3_COLOR_SCHEME_KEYS.reduce<Record<string, string>>((acc, key) => {
@@ -57,6 +81,8 @@ export function toAndroidCompose(theme: Theme): AndroidComposeExport {
     critical: semantic.critical
   };
 
+  const packageHeader = `package ${packageName}\n\nimport androidx.compose.material3.darkColorScheme\nimport androidx.compose.material3.lightColorScheme\nimport androidx.compose.ui.graphics.Color`;
+
   const colorSchemeFunction = theme.darkMode ? 'darkColorScheme' : 'lightColorScheme';
   const kotlinColorScheme = `val KthemeColorScheme = ${colorSchemeFunction}(\n${Object.entries(colorScheme)
     .map(([key, value]) => `    ${key} = ${asComposeColor(value)}`)
@@ -69,6 +95,6 @@ export function toAndroidCompose(theme: Theme): AndroidComposeExport {
   return {
     colorScheme,
     semanticColors,
-    kotlin: `${kotlinColorScheme}\n\n${kotlinSemanticColors}`
+    kotlin: `${packageHeader}\n\n${kotlinColorScheme}\n\n${kotlinSemanticColors}`
   };
 }

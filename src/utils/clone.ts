@@ -28,17 +28,12 @@ export function cloneTheme<T>(obj: T): T {
     return obj;
   }
   if (Array.isArray(obj)) {
-    return obj.map(cloneTheme) as unknown as T;
+    return obj.map(item => cloneTheme(item)) as unknown as T;
   }
-  if (obj instanceof Date) {
-    return new Date(obj.getTime()) as unknown as T;
-  }
-  if (obj instanceof RegExp) {
-    return new RegExp(obj.source, obj.flags) as unknown as T;
-  }
-  const copy = {} as Record<string | symbol, unknown>;
-  for (const key of Reflect.ownKeys(obj)) {
-    copy[key] = cloneTheme((obj as Record<string | symbol, unknown>)[key]);
+  const copy = {} as Record<string, unknown>;
+  const record = obj as Record<string, unknown>;
+  for (const key of Object.keys(record)) {
+    copy[key] = cloneTheme(record[key]);
   }
   return copy as T;
 }

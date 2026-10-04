@@ -1,7 +1,6 @@
 plugins {
     id("com.android.library")
     kotlin("android")
-    id("org.jetbrains.kotlin.plugin.compose")
     `maven-publish`
 }
 
@@ -13,6 +12,7 @@ android {
     compileSdk = 35
     defaultConfig { minSdk = 24 }
     buildFeatures { compose = true }
+    composeOptions { kotlinCompilerExtensionVersion = "1.5.14" }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -21,7 +21,7 @@ android {
 }
 
 dependencies {
-    api(project(":ktheme-core"))
+    api(project(if (findProject(":libs:ktheme-core") != null) ":libs:ktheme-core" else ":ktheme-core"))
     implementation(platform("androidx.compose:compose-bom:2024.09.02"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
