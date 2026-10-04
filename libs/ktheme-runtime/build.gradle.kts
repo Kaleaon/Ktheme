@@ -4,7 +4,7 @@ plugins {
     `maven-publish`
 }
 
-group = "io.ktheme"
+group = "com.ktheme"
 version = "1.0.0"
 
 kotlin {
@@ -21,7 +21,6 @@ java {
 
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
     testImplementation(kotlin("test"))
 }
 
@@ -29,10 +28,13 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             from(components["java"])
-            artifactId = "ktheme-core"
+            groupId = "com.ktheme"
+            artifactId = "ktheme-runtime"
+            version = "1.0.0"
+
             pom {
-                name.set("Ktheme Core")
-                description.set("Theme engine, JSON model, and preset catalog for the Ktheme design system.")
+                name.set("Ktheme Runtime")
+                description.set("Kotlin Multiplatform / JVM runtime theme models and KthemeAPI for Ktheme.")
                 url.set("https://github.com/Kaleaon/Ktheme")
                 licenses {
                     license {
