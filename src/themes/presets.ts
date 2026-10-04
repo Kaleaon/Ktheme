@@ -13,6 +13,21 @@ import {
   WindowsPhoneMetroAdaptation
 } from './adaptationPresets';
 import { SHARED_PRESET_IDS } from './shared-preset-ids';
+import {
+  EMERALD_SILVER_COLOR_SCHEME,
+  EMERALD_SILVER_METADATA,
+  NAVY_GOLD_COLOR_SCHEME,
+  NAVY_GOLD_METADATA,
+  NAVY_GOLD_TYPOGRAPHY,
+  OBSIDIAN_CRIMSON_COLOR_SCHEME,
+  OBSIDIAN_CRIMSON_METADATA,
+  PAPER_INK_COLOR_SCHEME,
+  PAPER_INK_METADATA,
+  ROSE_GOLD_COLOR_SCHEME,
+  ROSE_GOLD_METADATA,
+  SLATE_CYAN_COLOR_SCHEME,
+  SLATE_CYAN_METADATA
+} from './data/shared-presets-data';
 
 const PRESET_CREATED_AT = '2026-03-30T00:00:00.000Z';
 const PRESET_UPDATED_AT = '2026-03-30T00:00:00.000Z';
@@ -22,52 +37,12 @@ const PRESET_UPDATED_AT = '2026-03-30T00:00:00.000Z';
  */
 export const NavyGoldTheme: Theme = {
   metadata: {
-    id: 'navy-gold',
-    name: 'Navy Gold',
-    description: 'Elegant navy background with luxurious gold metallic accents',
-    author: 'Ktheme',
-    version: '1.0.0',
-    tags: ['metallic', 'elegant', 'dark'],
+    ...NAVY_GOLD_METADATA,
     createdAt: PRESET_CREATED_AT,
     updatedAt: PRESET_UPDATED_AT
   },
   darkMode: true,
-  colorScheme: {
-    primary: '#D4AF37',
-    onPrimary: '#0A1630',
-    primaryContainer: '#856D34',
-    onPrimaryContainer: '#FFF8DC',
-    
-    secondary: '#4A90E2',
-    onSecondary: '#FFFFFF',
-    secondaryContainer: '#2C5F9E',
-    onSecondaryContainer: '#E3F2FD',
-    
-    tertiary: '#9C8970',
-    onTertiary: '#FFFFFF',
-    tertiaryContainer: '#6B5D4F',
-    onTertiaryContainer: '#F5E6D3',
-    
-    error: '#CF6679',
-    onError: '#FFFFFF',
-    errorContainer: '#93000A',
-    onErrorContainer: '#FFDAD6',
-    
-    background: '#0A1630',
-    onBackground: '#E8E3D8',
-    surface: '#1A2645',
-    onSurface: '#E8E3D8',
-    surfaceVariant: '#2A3655',
-    onSurfaceVariant: '#C9C4B9',
-    
-    outline: '#938F84',
-    outlineVariant: '#44483E',
-    
-    scrim: '#000000',
-    inverseSurface: '#E8E3D8',
-    inverseOnSurface: '#0A1630',
-    inversePrimary: '#6D5D28'
-  },
+  colorScheme: NAVY_GOLD_COLOR_SCHEME,
   effects: {
     metallic: {
       enabled: true,
@@ -88,23 +63,7 @@ export const NavyGoldTheme: Theme = {
       angle: 135
     }
   },
-  typography: {
-    fontFamily: 'system-ui, -apple-system, sans-serif',
-    fontSize: {
-      small: 12,
-      medium: 16,
-      large: 20,
-      xlarge: 28
-    },
-    fontWeight: {
-      light: 300,
-      regular: 400,
-      medium: 500,
-      bold: 700
-    },
-    lineHeight: 1.5,
-    letterSpacing: 0
-  }
+  typography: NAVY_GOLD_TYPOGRAPHY
 };
 
 /**
@@ -112,52 +71,12 @@ export const NavyGoldTheme: Theme = {
  */
 export const EmeraldSilverTheme: Theme = {
   metadata: {
-    id: 'emerald-silver',
-    name: 'Emerald Silver',
-    description: 'Rich emerald green with elegant silver metallic accents',
-    author: 'Ktheme',
-    version: '1.0.0',
-    tags: ['metallic', 'nature', 'dark'],
+    ...EMERALD_SILVER_METADATA,
     createdAt: PRESET_CREATED_AT,
     updatedAt: PRESET_UPDATED_AT
   },
   darkMode: true,
-  colorScheme: {
-    primary: '#C0C0C0',
-    onPrimary: '#0D3B2E',
-    primaryContainer: '#505050',
-    onPrimaryContainer: '#F5F5F5',
-    
-    secondary: '#50C878',
-    onSecondary: '#FFFFFF',
-    secondaryContainer: '#2E7D5A',
-    onSecondaryContainer: '#D5F4E6',
-    
-    tertiary: '#8BA888',
-    onTertiary: '#FFFFFF',
-    tertiaryContainer: '#5D7A5A',
-    onTertiaryContainer: '#E8F5E8',
-    
-    error: '#CF6679',
-    onError: '#FFFFFF',
-    errorContainer: '#93000A',
-    onErrorContainer: '#FFDAD6',
-    
-    background: '#0D3B2E',
-    onBackground: '#E8F5E8',
-    surface: '#1A5544',
-    onSurface: '#E8F5E8',
-    surfaceVariant: '#2A6554',
-    onSurfaceVariant: '#C9E4D9',
-    
-    outline: '#8A9E94',
-    outlineVariant: '#3E4E44',
-    
-    scrim: '#000000',
-    inverseSurface: '#E8F5E8',
-    inverseOnSurface: '#0D3B2E',
-    inversePrimary: '#6B6B6B'
-  },
+  colorScheme: EMERALD_SILVER_COLOR_SCHEME,
   effects: {
     metallic: {
       enabled: true,
@@ -179,52 +98,12 @@ export const EmeraldSilverTheme: Theme = {
  */
 export const RoseGoldTheme: Theme = {
   metadata: {
-    id: 'rose-gold',
-    name: 'Rose Gold',
-    description: 'Warm and elegant rose gold with burgundy undertones',
-    author: 'Ktheme',
-    version: '1.0.0',
-    tags: ['metallic', 'warm', 'elegant', 'dark'],
+    ...ROSE_GOLD_METADATA,
     createdAt: PRESET_CREATED_AT,
     updatedAt: PRESET_UPDATED_AT
   },
   darkMode: true,
-  colorScheme: {
-    primary: '#B76E79',
-    onPrimary: '#3D1F2B',
-    primaryContainer: '#7D4A52',
-    onPrimaryContainer: '#F5D5D8',
-    
-    secondary: '#D4A5A5',
-    onSecondary: '#442929',
-    secondaryContainer: '#8C6969',
-    onSecondaryContainer: '#F5E5E5',
-    
-    tertiary: '#C9A9A9',
-    onTertiary: '#3D2929',
-    tertiaryContainer: '#8A7474',
-    onTertiaryContainer: '#F5EAEA',
-    
-    error: '#FFB4AB',
-    onError: '#690005',
-    errorContainer: '#93000A',
-    onErrorContainer: '#FFDAD6',
-    
-    background: '#3D1F2B',
-    onBackground: '#F5E5E8',
-    surface: '#4D2F3B',
-    onSurface: '#F5E5E8',
-    surfaceVariant: '#5D3F4B',
-    onSurfaceVariant: '#E5D5D8',
-    
-    outline: '#9E8A8E',
-    outlineVariant: '#4E3A3E',
-    
-    scrim: '#000000',
-    inverseSurface: '#F5E5E8',
-    inverseOnSurface: '#3D1F2B',
-    inversePrimary: '#8A5A64'
-  },
+  colorScheme: ROSE_GOLD_COLOR_SCHEME,
   effects: {
     metallic: {
       enabled: true,
@@ -386,52 +265,12 @@ export const MidnightAmberTheme: Theme = {
  */
 export const ObsidianCrimsonTheme: Theme = {
   metadata: {
-    id: 'obsidian-crimson',
-    name: 'Obsidian Crimson',
-    description: 'Bold dramatic obsidian black with vibrant crimson accents',
-    author: 'Ktheme',
-    version: '1.0.0',
-    tags: ['metallic', 'dramatic', 'dark'],
+    ...OBSIDIAN_CRIMSON_METADATA,
     createdAt: PRESET_CREATED_AT,
     updatedAt: PRESET_UPDATED_AT
   },
   darkMode: true,
-  colorScheme: {
-    primary: '#DC143C',
-    onPrimary: '#0A0A0A',
-    primaryContainer: '#B00F30',
-    onPrimaryContainer: '#E5395F',
-    
-    secondary: '#262626',
-    onSecondary: '#F5F5F5',
-    secondaryContainer: '#141414',
-    onSecondaryContainer: '#F5F5F5',
-    
-    tertiary: '#A8505A',
-    onTertiary: '#FFFFFF',
-    tertiaryContainer: '#7D3C45',
-    onTertiaryContainer: '#F5D9DC',
-    
-    error: '#FF6B6B',
-    onError: '#0A0A0A',
-    errorContainer: '#CC0000',
-    onErrorContainer: '#FFD9D9',
-    
-    background: '#0A0A0A',
-    onBackground: '#F5F5F5',
-    surface: '#141414',
-    onSurface: '#F5F5F5',
-    surfaceVariant: '#2D2D2D',
-    onSurfaceVariant: '#D0D0D0',
-    
-    outline: '#8A8A8A',
-    outlineVariant: '#3D3D3D',
-    
-    scrim: '#000000',
-    inverseSurface: '#F5F5F5',
-    inverseOnSurface: '#0A0A0A',
-    inversePrimary: '#8A0F28'
-  },
+  colorScheme: OBSIDIAN_CRIMSON_COLOR_SCHEME,
   effects: {
     metallic: {
       enabled: true,
@@ -453,52 +292,12 @@ export const ObsidianCrimsonTheme: Theme = {
  */
 export const SlateCyanTheme: Theme = {
   metadata: {
-    id: 'slate-cyan',
-    name: 'Slate Cyan',
-    description: 'Cool modern slate gray with vibrant cyan metallic accents',
-    author: 'Ktheme',
-    version: '1.0.0',
-    tags: ['metallic', 'modern', 'dark'],
+    ...SLATE_CYAN_METADATA,
     createdAt: PRESET_CREATED_AT,
     updatedAt: PRESET_UPDATED_AT
   },
   darkMode: true,
-  colorScheme: {
-    primary: '#00D9FF',
-    onPrimary: '#1A1F24',
-    primaryContainer: '#00A8CC',
-    onPrimaryContainer: '#4DE2FF',
-    
-    secondary: '#2A333D',
-    onSecondary: '#E8F0F5',
-    secondaryContainer: '#232930',
-    onSecondaryContainer: '#E8F0F5',
-    
-    tertiary: '#6BA5B8',
-    onTertiary: '#1A1F24',
-    tertiaryContainer: '#547D8F',
-    onTertiaryContainer: '#D9EDF5',
-    
-    error: '#CF6679',
-    onError: '#FFFFFF',
-    errorContainer: '#93000A',
-    onErrorContainer: '#FFDAD6',
-    
-    background: '#1A1F24',
-    onBackground: '#E8F0F5',
-    surface: '#232930',
-    onSurface: '#E8F0F5',
-    surfaceVariant: '#3D4854',
-    onSurfaceVariant: '#B8CAD6',
-    
-    outline: '#7A8A99',
-    outlineVariant: '#4D5A66',
-    
-    scrim: '#000000',
-    inverseSurface: '#E8F0F5',
-    inverseOnSurface: '#1A1F24',
-    inversePrimary: '#0080A0'
-  },
+  colorScheme: SLATE_CYAN_COLOR_SCHEME,
   effects: {
     metallic: {
       enabled: true,
@@ -928,52 +727,12 @@ export const DeepPurplePlatinumTheme: Theme = {
  */
 export const PaperInkTheme: Theme = {
   metadata: {
-    id: 'paper-ink',
-    name: 'Paper & Ink',
-    description: 'Minimalist light theme for comfortable reading',
-    author: 'Ktheme',
-    version: '1.0.0',
-    tags: ['minimalist', 'light', 'reader'],
+    ...PAPER_INK_METADATA,
     createdAt: PRESET_CREATED_AT,
     updatedAt: PRESET_UPDATED_AT
   },
   darkMode: false,
-  colorScheme: {
-    primary: '#2C2C2C',
-    onPrimary: '#FAF9F6',
-    primaryContainer: '#454545',
-    onPrimaryContainer: '#FAF9F6',
-    
-    secondary: '#595959',
-    onSecondary: '#FAF9F6',
-    secondaryContainer: '#737373',
-    onSecondaryContainer: '#FAF9F6',
-    
-    tertiary: '#6B6B6B',
-    onTertiary: '#FAF9F6',
-    tertiaryContainer: '#828282',
-    onTertiaryContainer: '#FAF9F6',
-    
-    error: '#BA1A1A',
-    onError: '#FFFFFF',
-    errorContainer: '#FFDAD6',
-    onErrorContainer: '#410002',
-    
-    background: '#F0F0EB',
-    onBackground: '#2C2C2C',
-    surface: '#FAF9F6',
-    onSurface: '#2C2C2C',
-    surfaceVariant: '#EBEAE4',
-    onSurfaceVariant: '#454545',
-    
-    outline: '#7A7A7A',
-    outlineVariant: '#C9C9C9',
-    
-    scrim: '#000000',
-    inverseSurface: '#2C2C2C',
-    inverseOnSurface: '#FAF9F6',
-    inversePrimary: '#9A9A9A'
-  },
+  colorScheme: PAPER_INK_COLOR_SCHEME,
   effects: {
     shadows: {
       enabled: true,

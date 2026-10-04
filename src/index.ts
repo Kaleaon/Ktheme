@@ -28,6 +28,8 @@ export * from './themes/adaptationPresets';
 export * from './themes/strategy';
 export * from './themes/expansion';
 export * from './themes/iconicPacks';
+export * from './themes/shared-preset-themes';
+export * from './themes/data/shared-presets-data';
 export * from './redesign/autoRedesign';
 
 // Component library & Linkpoint UI Kit exports
