@@ -13,7 +13,7 @@ const I3 = {
   flame: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2.5-1.5-3.5C8 7 7.5 5 7.5 3 6 4 4.5 6 4.5 9c0 4 4 6 4 6s4-2 4-6c0-1-.5-2-1-3"/>',
 };
 
-function ThemeMakerV3({ themeKey = "navy-gold", view = "dashboard" }) {
+function ThemeMakerV3({ themeKey = "navy-gold", view = "dashboard", density = "standard", layoutMode = "grid", breakpoint = "desktop" }) {
   return (
     <div style={{
       width: "100%", height: "100%",
@@ -109,7 +109,7 @@ function ThemeMakerV3({ themeKey = "navy-gold", view = "dashboard" }) {
               border: "1px solid rgba(212,175,55,.45)",
               boxShadow: "0 24px 48px rgba(0,0,0,.7), 0 0 0 1px rgba(255,248,220,.08) inset, 0 0 30px rgba(212,175,55,.2)",
             }}>
-              <ThemedSurface theme={themeKey} view={view} />
+              <ThemedSurface theme={themeKey} view={view} density={density} layoutMode={layoutMode} breakpoint={breakpoint} />
             </div>
           </div>
 

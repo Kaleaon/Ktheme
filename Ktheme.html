@@ -33,6 +33,9 @@
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "previewTheme": "navy-gold",
   "previewView": "dashboard",
+  "layoutMode": "grid",
+  "density": "standard",
+  "breakpoint": "desktop",
   "metallicIntensity": 0.8,
   "showAi": true
 }/*EDITMODE-END*/;
@@ -55,13 +58,13 @@ function App() {
           subtitle="Three directions for the canonical Ktheme product surface — conservative → bold."
         >
           <DCArtboard id="tm-conservative" label="A · Conservative — Material Theme Builder feel" width={1280} height={780} data-screen-label="01 Theme Maker — Conservative">
-            <ThemeMakerV1 themeKey={tweaks.previewTheme} view={tweaks.previewView} />
+            <ThemeMakerV1 themeKey={tweaks.previewTheme} view={tweaks.previewView} density={tweaks.density} layoutMode={tweaks.layoutMode} breakpoint={tweaks.breakpoint} />
           </DCArtboard>
           <DCArtboard id="tm-featured" label="B · Featured — signature Ktheme balance" width={1280} height={780} data-screen-label="02 Theme Maker — Featured">
-            <ThemeMakerV2 themeKey={tweaks.previewTheme} view={tweaks.previewView} aiOpen={tweaks.showAi} />
+            <ThemeMakerV2 themeKey={tweaks.previewTheme} view={tweaks.previewView} density={tweaks.density} layoutMode={tweaks.layoutMode} breakpoint={tweaks.breakpoint} aiOpen={tweaks.showAi} />
           </DCArtboard>
           <DCArtboard id="tm-bold" label="C · Bold — metallic-forward Forge" width={1280} height={780} data-screen-label="03 Theme Maker — Bold">
-            <ThemeMakerV3 themeKey={tweaks.previewTheme} view={tweaks.previewView} />
+            <ThemeMakerV3 themeKey={tweaks.previewTheme} view={tweaks.previewView} density={tweaks.density} layoutMode={tweaks.layoutMode} breakpoint={tweaks.breakpoint} />
           </DCArtboard>
         </DCSection>
 
@@ -115,6 +118,39 @@ function App() {
               { value: "sampler",   label: "Components" },
               { value: "mail",      label: "Mail" },
               { value: "iconic",    label: "Iconic" },
+            ]}
+          />
+        </TweakSection>
+        <TweakSection title="Layout & Viewport">
+          <TweakRadio
+            label="Layout Mode"
+            value={tweaks.layoutMode || "grid"}
+            onChange={(v) => setTweak('layoutMode', v)}
+            options={[
+              { value: "grid",  label: "Grid" },
+              { value: "list",  label: "List" },
+              { value: "rail",  label: "Rail" },
+              { value: "split", label: "Split" },
+            ]}
+          />
+          <TweakRadio
+            label="Density"
+            value={tweaks.density || "standard"}
+            onChange={(v) => setTweak('density', v)}
+            options={[
+              { value: "compact",     label: "Compact" },
+              { value: "standard",    label: "Standard" },
+              { value: "comfortable", label: "Comfy" },
+            ]}
+          />
+          <TweakRadio
+            label="Breakpoint"
+            value={tweaks.breakpoint || "desktop"}
+            onChange={(v) => setTweak('breakpoint', v)}
+            options={[
+              { value: "mobile",  label: "Mobile" },
+              { value: "tablet",  label: "Tablet" },
+              { value: "desktop", label: "Desktop" },
             ]}
           />
         </TweakSection>
