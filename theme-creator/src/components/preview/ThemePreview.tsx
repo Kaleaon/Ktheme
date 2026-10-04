@@ -7,6 +7,9 @@ function getCSSVars(theme: KTheme): React.CSSProperties {
   const typo = theme.typography;
   const metallic = effects.metallic;
   const shadows = effects.shadows;
+  const gradients = effects.gradients;
+  const focusRing = effects.focusRing;
+  const transitions = effects.transitions;
 
   const vars: Record<string, string> = {
     '--c-primary': c.primary,
@@ -28,6 +31,9 @@ function getCSSVars(theme: KTheme): React.CSSProperties {
     '--c-outline': c.outline,
     '--c-error': c.error,
     '--c-on-error': c.onError,
+    '--focus-color': focusRing?.color || c.primary,
+    '--focus-width': `${focusRing?.enabled ? focusRing.width : 0}px`,
+    '--focus-offset': `${focusRing?.offset || 0}px`,
   };
 
   if (typo) {
@@ -50,6 +56,11 @@ function getCSSVars(theme: KTheme): React.CSSProperties {
     const g = metallic.gradient;
     vars['--metallic-gradient'] = `linear-gradient(135deg, ${g.shadow}, ${g.base}, ${g.highlight}, ${g.shimmer}, ${g.highlight}, ${g.base})`;
   }
+  if (gradients?.enabled) {
+    const stops = [...gradients.stops].sort((a, b) => a.offset - b.offset).map((stop) => `${stop.color} ${stop.offset * 100}%`).join(', ');
+    vars['--preview-background'] = `linear-gradient(${gradients.angle}deg, ${stops})`;
+  } else vars['--preview-background'] = c.background;
+  vars['--preview-transition'] = transitions?.enabled ? transitions.properties.map((property) => `${property} ${transitions.duration}ms ease`).join(', ') : 'none';
 
   return vars as React.CSSProperties;
 }
@@ -60,10 +71,16 @@ export function ThemePreview() {
   const effects = theme.effects || {};
   const shimmer = effects.shimmer;
   const metallic = effects.metallic;
+  const blur = effects.blur;
+  const overlay = effects.overlays;
+  const noise = effects.noise;
+  const animations = effects.animations;
 
   return (
     <div className="preview-wrapper" style={getCSSVars(theme)}>
-      <div className="preview-frame" style={{ background: 'var(--c-background)', color: 'var(--c-on-background)', fontFamily: 'var(--font-family, system-ui)' }}>
+      <div className={`preview-frame ${animations?.enabled ? 'effects-animated' : ''}`} style={{ background: 'var(--preview-background)', color: 'var(--c-on-background)', fontFamily: 'var(--font-family, system-ui)', backdropFilter: blur?.enabled ? `blur(${blur.radius}px)` : undefined, transition: 'var(--preview-transition)', animationDuration: animations?.enabled ? `${animations.duration}ms` : undefined, animationTimingFunction: animations?.easing }}>
+        {overlay?.enabled && <div className="pv-effect-layer" aria-hidden="true" style={{ background: overlay.color, opacity: overlay.opacity, mixBlendMode: overlay.blendMode }} />}
+        {noise?.enabled && <div className="pv-effect-layer pv-noise" aria-hidden="true" style={{ opacity: noise.opacity, backgroundSize: `${noise.scale}px ${noise.scale}px` }} />}
         {/* App bar */}
         <div className="pv-appbar" style={{ background: 'var(--c-surface)', color: 'var(--c-on-surface)', boxShadow: 'var(--shadow)' }}>
           <span className="pv-appbar-title" style={{ fontSize: 'var(--font-size-lg)', fontWeight: 700 }}>
