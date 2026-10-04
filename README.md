@@ -116,3 +116,41 @@ Ktheme has no committed logo asset in the repo. The README header uses an emoji 
 - **No font files** in the repo. We use **Inter** + **JetBrains Mono** from Google Fonts as the closest match to the Theme Creator's stated stack. Please ship official `.woff2` if you have a preferred specific font.
 - The **CleverFerret** sibling project may contain richer visual context (icon set, iconography reference) — let us know if you want it folded in.
 - Ktheme is a *meta-system*. We selected **Navy Gold** as the canonical demo theme for the UI kit's chrome where neutral was needed; tell us if you want a different default.
+
+
+## Preset Catalog
+
+<!-- GENERATED_PRESET_SUMMARY_START -->
+- 📱 **26 Preset Themes** - Generated from the shared preset registry (26 stable).
+<!-- GENERATED_PRESET_SUMMARY_END -->
+
+<!-- GENERATED_PRESET_LIST_START -->
+Ktheme includes **26 preset themes** defined in the shared catalog:
+
+1. **Navy Gold** (navy-gold) — Category: cleverferret core; Status: stable
+2. **Emerald Silver** (emerald-silver) — Category: cleverferret core; Status: stable
+3. **Rose Gold** (rose-gold) — Category: cleverferret core; Status: stable
+4. **Royal Bronze** (royal-bronze) — Category: cleverferret core; Status: stable
+5. **Midnight Amber** (midnight-amber) — Category: cleverferret core; Status: stable
+6. **Obsidian Crimson** (obsidian-crimson) — Category: cleverferret core; Status: stable
+7. **Slate Cyan** (slate-cyan) — Category: cleverferret core; Status: stable
+8. **Royal Silver** (royal-silver) — Category: cleverferret core; Status: stable
+9. **Forest Copper** (forest-copper) — Category: cleverferret core; Status: stable
+10. **Burgundy Rose Gold** (burgundy-rose-gold) — Category: cleverferret core; Status: stable
+11. **Charcoal Champagne** (charcoal-champagne) — Category: cleverferret core; Status: stable
+12. **Slate Gunmetal** (slate-gunmetal) — Category: cleverferret core; Status: stable
+13. **Deep Purple Platinum** (deep-purple-platinum) — Category: cleverferret core; Status: stable
+14. **Paper & Ink** (paper-ink) — Category: cleverferret core; Status: stable
+15. **Frutiger Aero** (frutiger-aero) — Category: official iconic; Status: stable
+16. **Solarpunk Civic** (solarpunk-civic) — Category: official iconic; Status: stable
+17. **Neo-Noir Neon** (neo-noir-neon) — Category: official iconic; Status: stable
+18. **Calm Clinical** (calm-clinical) — Category: official iconic; Status: stable
+19. **Ink Terminal Modern** (ink-terminal-modern) — Category: official iconic; Status: stable
+20. **Aurora Glass Night** (aurora-glass-night) — Category: official iconic; Status: stable
+21. **Windows Phone Metro** (windows-phone-metro) — Category: official iconic; Status: stable
+22. **LCARS** (lcars) — Category: official iconic; Status: stable
+23. **Art Nouveau** (art-nouveau) — Category: official iconic; Status: stable
+24. **Art Deco** (art-deco) — Category: official iconic; Status: stable
+25. **Linkpoint Gold** (linkpoint-gold) — Category: linkpoint core; Status: stable
+26. **Linkpoint Cobalt** (linkpoint-cobalt) — Category: linkpoint core; Status: stable
+<!-- GENERATED_PRESET_LIST_END -->
