@@ -81,7 +81,7 @@ export function extractThemeTokens(theme: Theme): NormalizedThemeTokens {
 
   // Resolve typography tokens
   const typography = theme.typography;
-  const fontFamily = typography?.fontFamily ?? 'system-ui';
+  const fontFamily = typography?.fontFamily ?? 'system-ui, -apple-system, sans-serif';
   const fontSize = {
     small: typography?.fontSize?.small ?? 12,
     medium: typography?.fontSize?.medium ?? 16,

@@ -8,6 +8,7 @@ import {
   swiftUIRenderer,
   tailwindRenderer
 } from './renderers';
+import { NavyGoldTheme } from '../themes/presets';
 import { toAndroidCompose } from './toAndroidCompose';
 import { toCssVars } from './toCssVars';
 import { toDesignTokensJson } from './toDesignTokensJson';
@@ -159,6 +160,50 @@ const fixtureTheme: Theme = {
   }
 };
 
+const sparseTheme: Theme = {
+  metadata: {
+    id: 'sparse-fixture',
+    name: 'Sparse Exporter Fixture',
+    description: 'Sparse theme for fallback testing',
+    author: 'tests',
+    version: '1.0.0',
+    tags: ['test'],
+    createdAt: '2026-01-01T00:00:00.000Z',
+    updatedAt: '2026-01-01T00:00:00.000Z'
+  },
+  darkMode: false,
+  colorScheme: {
+    primary: '#111111',
+    onPrimary: '#FFFFFF',
+    primaryContainer: '#333333',
+    onPrimaryContainer: '#FFFFFF',
+    secondary: '#222222',
+    onSecondary: '#FFFFFF',
+    secondaryContainer: '#444444',
+    onSecondaryContainer: '#FFFFFF',
+    tertiary: '#555555',
+    onTertiary: '#FFFFFF',
+    tertiaryContainer: '#666666',
+    onTertiaryContainer: '#FFFFFF',
+    error: '#D32F2F',
+    onError: '#FFFFFF',
+    errorContainer: '#FFCDD2',
+    onErrorContainer: '#000000',
+    background: '#121212',
+    onBackground: '#F5F5F5',
+    surface: '#1E1E1E',
+    onSurface: '#FAFAFA',
+    surfaceVariant: '#2A2A2A',
+    onSurfaceVariant: '#EEEEEE',
+    outline: '#777777',
+    outlineVariant: '#888888',
+    scrim: '#000000',
+    inverseSurface: '#F5F5F5',
+    inverseOnSurface: '#111111',
+    inversePrimary: '#999999'
+  }
+};
+
 const richFixtureTheme: Theme = {
   ...fixtureTheme,
   effects: {
@@ -214,6 +259,46 @@ const richFixtureTheme: Theme = {
       large: 14,
       xlarge: 22
     }
+  }
+};
+
+const configuredTheme: Theme = {
+  ...fixtureTheme,
+  effects: {
+    blur: { enabled: true, radius: 14 },
+    metallic: {
+      enabled: true,
+      variant: MetallicVariant.GOLD,
+      intensity: 0.85,
+      gradient: {
+        base: '#D4AF37',
+        highlight: '#FFD700',
+        shadow: '#856D34',
+        shimmer: '#FFF8DC'
+      }
+    },
+    shadows: {
+      enabled: true,
+      elevation: 6,
+      blur: 12,
+      color: '#00000088'
+    },
+    shimmer: {
+      enabled: true,
+      speed: 2.5,
+      intensity: 0.7,
+      angle: 120
+    }
+  },
+  typography: {
+    fontFamily: '"Inter", sans-serif',
+    fontSize: { small: 14, medium: 18, large: 24, xlarge: 32 },
+    fontWeight: { light: 300, regular: 400, medium: 600, bold: 800 },
+    lineHeight: 1.6,
+    letterSpacing: 0.02
+  },
+  tokens: {
+    corners: { small: 6, medium: 10, large: 16, xlarge: 24 }
   }
 };
 
@@ -341,7 +426,7 @@ describe('exporter parity & IR pipeline', () => {
       expect(ir.layout.density).toBe('comfortable');
       expect(ir.layout.cornerStyle).toBe('rounded');
       expect(ir.layout.spacingScale).toBe(1.0);
-      expect(ir.typography.fontFamily).toBe('system-ui');
+      expect(ir.typography.fontFamily).toBe('system-ui, -apple-system, sans-serif');
       expect(ir.effects.metallic.enabled).toBe(false);
       expect(ir.effects.shadows.enabled).toBe(false);
     });
@@ -595,17 +680,17 @@ describe('exporter parity & IR pipeline', () => {
       // CSS Vars checks
       expect(cssVars.vars['--ktheme-primary']).toBe('#111111');
       expect(cssVars.vars['--ktheme-effect-metallic-variant']).toBeDefined();
-      expect(cssVars.vars['--ktheme-effect-glass-blur']).toBe('10px');
-      expect(cssVars.vars['--ktheme-font-family']).toBe('system-ui, sans-serif');
-      expect(cssVars.vars['--ktheme-corner-small']).toBe('4px');
-      expect(cssVars.cssText).toContain('--ktheme-effect-glass-blur: 10px;');
-      expect(cssVars.cssText).toContain('--ktheme-font-family: system-ui, sans-serif;');
+      expect(cssVars.vars['--ktheme-effect-glass-blur']).toBe('12px');
+      expect(cssVars.vars['--ktheme-font-family']).toBe('Inter, sans-serif');
+      expect(cssVars.vars['--ktheme-corner-small']).toBe('6px');
+      expect(cssVars.cssText).toContain('--ktheme-effect-glass-blur: 12px;');
+      expect(cssVars.cssText).toContain('--ktheme-font-family: Inter, sans-serif;');
 
       // Tailwind checks
       expect(tailwind.theme.extend.colors.primary).toBe('#111111');
       expect(tailwind.theme.extend.colors['metallic-base']).toBeDefined();
-      expect(tailwind.theme.extend.fontFamily?.primary).toEqual(['system-ui, sans-serif']);
-      expect(tailwind.theme.extend.borderRadius?.small).toBe('4px');
+      expect(tailwind.theme.extend.fontFamily?.primary).toEqual('Inter, sans-serif');
+      expect(tailwind.theme.extend.borderRadius?.small).toBe('6px');
     });
 
     it('selectively excludes domains using options in toCssVars', () => {
@@ -687,4 +772,116 @@ describe('exporter parity & IR pipeline', () => {
       expect(corners.tailwind.borderRadius?.large).toBe('14px');
     });
   });
+
+  it('exports expanded CSS variables for fully configured themes and uses fallbacks for sparse themes', () => {
+    // Test sparse theme fallbacks
+    const sparseVars = toCssVars(sparseTheme);
+    expect(sparseVars.vars['--ktheme-glass-blur']).toBe('0px');
+    expect(sparseVars.vars['--ktheme-metallic-variant']).toBe('SILVER');
+    expect(sparseVars.vars['--ktheme-metallic-intensity']).toBe('0');
+    expect(sparseVars.vars['--ktheme-metallic-base']).toBe('#C0C0C0');
+    expect(sparseVars.vars['--ktheme-glow-intensity']).toBe('0');
+    expect(sparseVars.vars['--ktheme-glow-blur']).toBe('0px');
+    expect(sparseVars.vars['--ktheme-shimmer-speed']).toBe('0s');
+    expect(sparseVars.vars['--ktheme-font-family']).toBe('system-ui, -apple-system, sans-serif');
+    expect(sparseVars.vars['--ktheme-font-size-small']).toBe('12px');
+    expect(sparseVars.vars['--ktheme-corner-small']).toBe('4px');
+    expect(sparseVars.cssText).toContain('--ktheme-glass-blur: 0px;');
+
+    // Test configured theme
+    const fullVars = toCssVars(configuredTheme);
+    expect(fullVars.vars['--ktheme-glass-blur']).toBe('14px');
+    expect(fullVars.vars['--ktheme-metallic-variant']).toBe('GOLD');
+    expect(fullVars.vars['--ktheme-metallic-intensity']).toBe('0.85');
+    expect(fullVars.vars['--ktheme-metallic-base']).toBe('#D4AF37');
+    expect(fullVars.vars['--ktheme-metallic-highlight']).toBe('#FFD700');
+    expect(fullVars.vars['--ktheme-glow-intensity']).toBe('6');
+    expect(fullVars.vars['--ktheme-glow-blur']).toBe('12px');
+    expect(fullVars.vars['--ktheme-glow-color']).toBe('#00000088');
+    expect(fullVars.vars['--ktheme-shimmer-speed']).toBe('2.5s');
+    expect(fullVars.vars['--ktheme-shimmer-intensity']).toBe('0.7');
+    expect(fullVars.vars['--ktheme-shimmer-angle']).toBe('120deg');
+    expect(fullVars.vars['--ktheme-font-family']).toBe('"Inter", sans-serif');
+    expect(fullVars.vars['--ktheme-font-size-small']).toBe('14px');
+    expect(fullVars.vars['--ktheme-font-size-medium']).toBe('18px');
+    expect(fullVars.vars['--ktheme-font-size-large']).toBe('24px');
+    expect(fullVars.vars['--ktheme-font-size-xlarge']).toBe('32px');
+    expect(fullVars.vars['--ktheme-font-weight-bold']).toBe('800');
+    expect(fullVars.vars['--ktheme-font-line-height']).toBe('1.6');
+    expect(fullVars.vars['--ktheme-font-letter-spacing']).toBe('0.02em');
+    expect(fullVars.vars['--ktheme-corner-small']).toBe('6px');
+    expect(fullVars.vars['--ktheme-corner-medium']).toBe('10px');
+    expect(fullVars.vars['--ktheme-corner-large']).toBe('16px');
+    expect(fullVars.vars['--ktheme-corner-xlarge']).toBe('24px');
+
+    expect(fullVars.cssText).toContain(':root {');
+    expect(fullVars.cssText).toContain('--ktheme-glass-blur: 14px;');
+    expect(fullVars.cssText).toContain('--ktheme-metallic-variant: GOLD;');
+    expect(fullVars.cssText).toContain('--ktheme-corner-xlarge: 24px;');
+
+    // Test with preset theme NavyGoldTheme
+    const navyGoldVars = toCssVars(NavyGoldTheme);
+    expect(navyGoldVars.vars['--ktheme-metallic-variant']).toBe('GOLD_ROYAL_BLUE');
+    expect(navyGoldVars.vars['--ktheme-shimmer-speed']).toBe('3s');
+  });
+
+  it('exports expanded Tailwind configurations with borderRadius, typography, shadows, backdropBlur, and animation', () => {
+    // Test sparse theme
+    const sparseTailwind = toTailwindConfig(sparseTheme);
+    expect(sparseTailwind.theme.extend.borderRadius).toEqual({
+      small: '4px',
+      medium: '8px',
+      large: '12px',
+      xlarge: '16px'
+    });
+    expect(sparseTailwind.theme.extend.fontFamily?.sans).toBe('system-ui, -apple-system, sans-serif');
+    expect(sparseTailwind.theme.extend.fontSize?.medium).toBe('16px');
+    expect(sparseTailwind.theme.extend.fontWeight?.bold).toBe('700');
+    expect(sparseTailwind.theme.extend.lineHeight?.normal).toBe('1.5');
+    expect(sparseTailwind.theme.extend.letterSpacing?.normal).toBe('0em');
+    expect(sparseTailwind.theme.extend.backdropBlur?.glass).toBe('0px');
+    expect(sparseTailwind.theme.extend.animation?.shimmer).toBe('shimmer 0s linear infinite');
+
+    // Test fully configured theme
+    const fullTailwind = toTailwindConfig(configuredTheme);
+    expect(fullTailwind.theme.extend.borderRadius).toEqual({
+      small: '6px',
+      medium: '10px',
+      large: '16px',
+      xlarge: '24px'
+    });
+    expect(fullTailwind.theme.extend.fontFamily).toEqual({
+      sans: '"Inter", sans-serif',
+      primary: '"Inter", sans-serif'
+    });
+    expect(fullTailwind.theme.extend.fontSize).toEqual({
+      small: '14px',
+      medium: '18px',
+      large: '24px',
+      xlarge: '32px'
+    });
+    expect(fullTailwind.theme.extend.fontWeight).toEqual({
+      light: '300',
+      regular: '400',
+      medium: '600',
+      bold: '800'
+    });
+    expect(fullTailwind.theme.extend.lineHeight).toEqual({
+      normal: '1.6'
+    });
+    expect(fullTailwind.theme.extend.letterSpacing).toEqual({
+      normal: '0.02em'
+    });
+    expect(fullTailwind.theme.extend.boxShadow).toEqual({
+      glow: '0 0 12px #00000088',
+      elevation: '0 6px 12px #00000088'
+    });
+    expect(fullTailwind.theme.extend.backdropBlur).toEqual({
+      glass: '14px'
+    });
+    expect(fullTailwind.theme.extend.animation).toEqual({
+      shimmer: 'shimmer 2.5s linear infinite'
+    });
+  });
 });
+
