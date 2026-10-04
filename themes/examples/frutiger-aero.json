@@ -19,6 +19,10 @@
   },
   "darkMode": false,
   "colorScheme": {
+    "error": "#BA1A1A",
+    "onError": "#FFFFFF",
+    "errorContainer": "#FFDAD6",
+    "onErrorContainer": "#410002",
     "primary": "#39B6F0",
     "onPrimary": "#022A40",
     "primaryContainer": "#A9E6FF",
@@ -31,10 +35,6 @@
     "onTertiary": "#0D2C4F",
     "tertiaryContainer": "#DAEEFF",
     "onTertiaryContainer": "#123659",
-    "error": "#BA1A1A",
-    "onError": "#FFFFFF",
-    "errorContainer": "#FFDAD6",
-    "onErrorContainer": "#410002",
     "background": "#EAF7FF",
     "onBackground": "#14344A",
     "surface": "#F7FCFF",
@@ -107,7 +107,32 @@
       "cornerStyle": "rounded",
       "spacingScale": 1.1,
       "panelStyle": "glass",
-      "navigationStyle": "tabs"
+      "navigationStyle": "tabs",
+      "accessibility": {
+        "landmarks": {
+          "main": "main",
+          "nav": "navigation",
+          "header": "header",
+          "footer": "footer"
+        },
+        "naming": {
+          "strategy": "native",
+          "main": "Main Content",
+          "nav": "Primary Navigation",
+          "header": "Application Header",
+          "footer": "Footer"
+        },
+        "keyboard": {
+          "order": "document",
+          "focusPolicy": "native",
+          "trapFocusWithinModals": true
+        },
+        "liveRegion": {
+          "mode": "polite",
+          "atomic": true,
+          "relevant": "additions"
+        }
+      }
     },
     "icons": {
       "family": "custom",
@@ -133,5 +158,6 @@
         }
       }
     ]
-  }
+  },
+  "schemaVersion": 2
 }

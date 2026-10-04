@@ -1,5 +1,4 @@
 {
-  "schemaVersion": 1,
   "metadata": {
     "id": "slate-cyan",
     "name": "Slate Cyan",
@@ -16,6 +15,10 @@
   },
   "darkMode": true,
   "colorScheme": {
+    "error": "#CF6679",
+    "onError": "#FFFFFF",
+    "errorContainer": "#93000A",
+    "onErrorContainer": "#FFDAD6",
     "primary": "#00D9FF",
     "onPrimary": "#1A1F24",
     "primaryContainer": "#00A8CC",
@@ -28,10 +31,6 @@
     "onTertiary": "#1A1F24",
     "tertiaryContainer": "#547D8F",
     "onTertiaryContainer": "#D9EDF5",
-    "error": "#CF6679",
-    "onError": "#FFFFFF",
-    "errorContainer": "#93000A",
-    "onErrorContainer": "#FFDAD6",
     "background": "#1A1F24",
     "onBackground": "#E8F0F5",
     "surface": "#232930",
@@ -63,5 +62,7 @@
       "blur": 6,
       "color": "#00000055"
     }
-  }
+  },
+  "schemaVersion": 2,
+  "adaptation": {}
 }

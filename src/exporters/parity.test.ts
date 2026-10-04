@@ -1,4 +1,4 @@
-import { Theme } from '../core/types';
+import { MetallicVariant, Theme } from '../core/types';
 import { toAndroidCompose } from './toAndroidCompose';
 import { toCssVars } from './toCssVars';
 import { toDesignTokensJson } from './toDesignTokensJson';
@@ -188,5 +188,105 @@ describe('exporter parity', () => {
     expect(darkCompose.kotlin).not.toContain('lightColorScheme(');
     expect(lightCompose.kotlin).toContain('lightColorScheme(');
     expect(lightCompose.kotlin).not.toContain('darkColorScheme(');
+  });
+
+  it('exports typography, visual effects, and adaptation tokens across all adapters', () => {
+    const themeWithTokens: Theme = {
+      ...fixtureTheme,
+      typography: {
+        fontFamily: 'Roboto, sans-serif',
+        fontSize: { small: 12, medium: 16, large: 20, xlarge: 28 },
+        fontWeight: { light: 300, regular: 400, medium: 500, bold: 700 },
+        lineHeight: 1.5,
+        letterSpacing: 0.05
+      },
+      effects: {
+        metallic: {
+          enabled: true,
+          variant: MetallicVariant.GOLD,
+          intensity: 0.8,
+          gradient: {
+            base: '#FFD700',
+            highlight: '#FFF8DC',
+            shadow: '#B8860B',
+            shimmer: '#FFFFFF'
+          }
+        },
+        shadows: {
+          enabled: true,
+          elevation: 4,
+          blur: 8,
+          color: '#000000'
+        }
+      },
+      adaptation: {
+        layout: {
+          density: 'compact',
+          cornerStyle: 'sharp',
+          spacingScale: 1.0
+        },
+        desktopAdaptation: {
+          windowChrome: {
+            titleBarHeight: 28,
+            headerStyle: 'embedded',
+            cornerStyle: 'sharp',
+            panelRadius: 8,
+            controlRadius: 6,
+            borderWidth: 1,
+            shadow: '0 10px 20px rgba(0,0,0,0.5)'
+          },
+          menuBar: {
+            height: 30,
+            fontSize: 12
+          },
+          taskbar: {
+            height: 44,
+            buttonRadius: 6
+          },
+          cameraHud: {
+            panelRadius: 10
+          },
+          sweep: {
+            elbowWidth: 32
+          }
+        }
+      }
+    };
+
+    const css = toCssVars(themeWithTokens);
+    expect(css.vars['--ktheme-typography-font-family']).toBe('Roboto, sans-serif');
+    expect(css.vars['--ktheme-effects-metallic-enabled']).toBe('true');
+    expect(css.vars['--ktheme-adaptation-desktop-window-chrome-title-bar-height']).toBe('28px');
+
+    const tailwind = toTailwindConfig(themeWithTokens);
+    expect(tailwind.theme.extend.typography).toBeDefined();
+    expect(tailwind.theme.extend.effects).toBeDefined();
+    expect(tailwind.theme.extend.adaptation).toBeDefined();
+
+    const compose = toAndroidCompose(themeWithTokens);
+    expect(compose.typography).toBeDefined();
+    expect(compose.effects).toBeDefined();
+    expect(compose.adaptation).toBeDefined();
+    expect(compose.kotlin).toContain('object KthemeTypography');
+    expect(compose.kotlin).toContain('object KthemeAdaptation');
+
+    const swift = toSwiftUI(themeWithTokens);
+    expect(swift.typography).toBeDefined();
+    expect(swift.effects).toBeDefined();
+    expect(swift.adaptation).toBeDefined();
+    expect(swift.swift).toContain('struct KthemeTypography');
+    expect(swift.swift).toContain('struct KthemeAdaptation');
+
+    const flutter = toFlutterTheme(themeWithTokens);
+    expect(flutter.typography).toBeDefined();
+    expect(flutter.effects).toBeDefined();
+    expect(flutter.adaptation).toBeDefined();
+    expect(flutter.dart).toContain('class KthemeTypography');
+    expect(flutter.dart).toContain('class KthemeAdaptation');
+
+    const designTokens = toDesignTokensJson(themeWithTokens);
+    expect(designTokens.theme.typography).toBeDefined();
+    expect(designTokens.theme.effect).toBeDefined();
+    expect(designTokens.theme.adaptation).toBeDefined();
   });
 });

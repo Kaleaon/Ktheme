@@ -30,7 +30,7 @@ const ALLOWED_COMPONENT_OVERRIDE_PROPERTIES = new Set([
   'opacity', 'filter', 'backdrop-filter',
   // Border and outline
   'border', 'border-top', 'border-right', 'border-bottom', 'border-left',
-  'border-color', 'border-width', 'border-style',
+  'border-color', 'border-width', 'border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width', 'border-style',
   'border-radius', 'border-top-left-radius', 'border-top-right-radius', 'border-bottom-left-radius', 'border-bottom-right-radius',
   'outline', 'outline-color', 'outline-width', 'outline-style', 'outline-offset',
   // Effects
@@ -46,11 +46,11 @@ const UNSUPPORTED_PSEUDO_SELECTORS = [
   ':host-context'
 ];
 
-const SAFE_KEYWORD_PATTERN = /^(?:inherit|initial|unset|revert|none|auto|normal|bold|bolder|lighter|uppercase|lowercase|capitalize|transparent|currentcolor|solid|dashed|dotted|double|hidden|visible|relative|absolute|static|sticky|fixed|block|inline|inline-block|inline-flex|flex|grid|contents|center|left|right|start|end|stretch|space-between|space-around|space-evenly|nowrap|wrap|column|row|baseline|middle|top|bottom)$/i;
+const SAFE_KEYWORD_PATTERN = /^(?:inherit|initial|unset|revert|none|auto|normal|bold|bolder|lighter|uppercase|lowercase|capitalize|transparent|currentcolor|solid|dashed|dotted|double|hidden|visible|relative|absolute|static|sticky|fixed|block|inline|inline-block|inline-flex|flex|grid|contents|center|left|right|start|end|stretch|space-between|space-around|space-evenly|nowrap|wrap|column|row|baseline|middle|top|bottom|inset|sans-serif|serif|monospace|system-ui|border-box|content-box|cover|contain)$/i;
 const SAFE_NUMBER_PATTERN = /^-?\d+(\.\d+)?$/;
 const SAFE_LENGTH_PATTERN = /^-?\d+(\.\d+)?(px|em|rem|%|vh|vw|vmin|vmax|ch|ex|pt|pc|cm|mm|in|fr)$/i;
 const SAFE_HEX_PATTERN = /^#([0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
-const SAFE_FUNCTION_PATTERN = /^(rgba?|hsla?|calc|min|max|clamp|var|blur|saturate|contrast|brightness|grayscale|sepia|hue-rotate|drop-shadow|linear-gradient|radial-gradient|conic-gradient)\(/i;
+const SAFE_FUNCTION_PATTERN = /^(rgba?|hsla?|calc|min|max|clamp|var|blur|saturate|contrast|brightness|grayscale|sepia|hue-rotate|drop-shadow|linear-gradient|radial-gradient|conic-gradient|repeating-linear-gradient|repeating-radial-gradient)\(/i;
 
 function normalizeNumericValue(key: string, value: string | number): string {
   if (typeof value === 'number' && !['opacity', 'z-index', 'font-weight', 'line-height'].includes(key)) {
@@ -63,12 +63,21 @@ function tokenizeCssValue(raw: string): string[] {
   const tokens: string[] = [];
   let current = '';
   let depth = 0;
+  let inQuote: string | null = null;
 
-  for (const char of raw) {
-    if (char === '(') depth += 1;
-    if (char === ')') depth = Math.max(0, depth - 1);
+  for (let i = 0; i < raw.length; i++) {
+    const char = raw[i];
+    if (char === "'" || char === '"') {
+      if (inQuote === char) {
+        inQuote = null;
+      } else if (!inQuote) {
+        inQuote = char;
+      }
+    }
+    if (char === '(' && !inQuote) depth += 1;
+    if (char === ')' && !inQuote) depth = Math.max(0, depth - 1);
 
-    if (/\s/.test(char) && depth === 0) {
+    if (/\s/.test(char) && depth === 0 && !inQuote) {
       if (current) {
         tokens.push(current);
         current = '';
@@ -82,14 +91,18 @@ function tokenizeCssValue(raw: string): string[] {
   return tokens;
 }
 
-function isSafeCssValueToken(token: string): boolean {
-  if (!token) return false;
+function isSafeCssValueToken(rawToken: string): boolean {
+  if (!rawToken) return false;
+  const token = rawToken.replace(/,$/, '');
+  if (!token) return true;
+  if (/^["'].*["']$/.test(token)) return true;
   if (SAFE_KEYWORD_PATTERN.test(token)) return true;
   if (SAFE_NUMBER_PATTERN.test(token)) return true;
   if (SAFE_LENGTH_PATTERN.test(token)) return true;
   if (SAFE_HEX_PATTERN.test(token)) return true;
   if (SAFE_FUNCTION_PATTERN.test(token)) return true;
   if (/^var\(--[a-z0-9-_]+\)$/i.test(token)) return true;
+  if (/^[a-z0-9-_]+$/i.test(token)) return true;
   return false;
 }
 

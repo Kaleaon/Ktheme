@@ -18,6 +18,10 @@
   },
   "darkMode": true,
   "colorScheme": {
+    "error": "#EF4444",
+    "onError": "#FFFFFF",
+    "errorContainer": "#7F1D1D",
+    "onErrorContainer": "#FEE2E2",
     "primary": "#D4AF37",
     "onPrimary": "#0A0D14",
     "primaryContainer": "#856D34",
@@ -30,10 +34,6 @@
     "onTertiary": "#0A0D14",
     "tertiaryContainer": "#075985",
     "onTertiaryContainer": "#E0F2FE",
-    "error": "#EF4444",
-    "onError": "#FFFFFF",
-    "errorContainer": "#7F1D1D",
-    "onErrorContainer": "#FEE2E2",
     "background": "#0A0D14",
     "onBackground": "#F3F4F6",
     "surface": "#141722",
@@ -88,5 +88,7 @@
     },
     "lineHeight": 1.5,
     "letterSpacing": 0
-  }
+  },
+  "schemaVersion": 2,
+  "adaptation": {}
 }

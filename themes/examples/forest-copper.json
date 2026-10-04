@@ -1,5 +1,4 @@
 {
-  "schemaVersion": 1,
   "metadata": {
     "id": "forest-copper",
     "name": "Forest Copper",
@@ -16,6 +15,10 @@
   },
   "darkMode": true,
   "colorScheme": {
+    "error": "#CF6679",
+    "onError": "#FFFFFF",
+    "errorContainer": "#93000A",
+    "onErrorContainer": "#FFDAD6",
     "primary": "#B87333",
     "onPrimary": "#0D1F0D",
     "primaryContainer": "#935E29",
@@ -28,10 +31,6 @@
     "onTertiary": "#0D1F0D",
     "tertiaryContainer": "#6D7D68",
     "onTertiaryContainer": "#E8F5E8",
-    "error": "#CF6679",
-    "onError": "#FFFFFF",
-    "errorContainer": "#93000A",
-    "onErrorContainer": "#FFDAD6",
     "background": "#0D1F0D",
     "onBackground": "#E8F5E8",
     "surface": "#152915",
@@ -63,5 +62,7 @@
       "blur": 8,
       "color": "#00000066"
     }
-  }
+  },
+  "schemaVersion": 2,
+  "adaptation": {}
 }

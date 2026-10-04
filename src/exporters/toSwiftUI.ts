@@ -1,8 +1,11 @@
 import { Theme } from '../core/types';
-import { normalizeSemanticRoles, toHexColor } from './utils';
+import { normalizeAdaptation, normalizeEffects, normalizeSemanticRoles, normalizeTypography, toHexColor } from './utils';
 
 export interface SwiftUIExport {
   colors: Record<string, string>;
+  typography: Record<string, unknown>;
+  effects: Record<string, unknown>;
+  adaptation: Record<string, unknown>;
   swift: string;
 }
 
@@ -12,6 +15,9 @@ function asSwiftColor(hex: string): string {
 
 export function toSwiftUI(theme: Theme): SwiftUIExport {
   const semantic = normalizeSemanticRoles(theme);
+  const typography = normalizeTypography(theme);
+  const effects = normalizeEffects(theme);
+  const adaptation = normalizeAdaptation(theme);
 
   const colors: Record<string, string> = {
     primary: toHexColor(theme.colorScheme.primary),
@@ -24,12 +30,22 @@ export function toSwiftUI(theme: Theme): SwiftUIExport {
     critical: semantic.critical
   };
 
-  const swift = `struct KthemePalette {\n${Object.entries(colors)
+  const swiftPalette = `struct KthemePalette {\n${Object.entries(colors)
     .map(([key, value]) => `    let ${key} = ${asSwiftColor(value)}`)
     .join('\n')}\n}`;
 
+  const swiftTypography = `struct KthemeTypography {\n    let fontFamily = "${typography.fontFamily}"\n    let fontSizeSmall: CGFloat = ${typography.fontSize.small}\n    let fontSizeMedium: CGFloat = ${typography.fontSize.medium}\n    let fontSizeLarge: CGFloat = ${typography.fontSize.large}\n    let fontSizeXLarge: CGFloat = ${typography.fontSize.xlarge}\n}`;
+
+  const layoutObj = adaptation.layout as Record<string, unknown>;
+  const swiftAdaptation = `struct KthemeAdaptation {\n    let density = "${String(layoutObj.density)}"\n    let cornerStyle = "${String(layoutObj.cornerStyle)}"\n}`;
+
+  const swift = `${swiftPalette}\n\n${swiftTypography}\n\n${swiftAdaptation}`;
+
   return {
     colors,
+    typography,
+    effects,
+    adaptation,
     swift
   };
 }

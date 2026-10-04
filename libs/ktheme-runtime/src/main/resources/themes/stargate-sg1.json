@@ -2,7 +2,7 @@
   "metadata": {
     "id": "stargate-sg1",
     "name": "Stargate SG-1",
-    "description": "Iris-bronze and event-horizon teal \u2014 warm gate-room console feel with restrained neon accents",
+    "description": "Iris-bronze and event-horizon teal — warm gate-room console feel with restrained neon accents",
     "author": "Linkpoint",
     "version": "1.0.0",
     "tags": [
@@ -17,6 +17,10 @@
   },
   "darkMode": true,
   "colorScheme": {
+    "error": "#FF6B6B",
+    "onError": "#2A0A0A",
+    "errorContainer": "#7A1F1F",
+    "onErrorContainer": "#FFD9D9",
     "primary": "#FFC15A",
     "onPrimary": "#1A0E04",
     "primaryContainer": "#B07820",
@@ -29,10 +33,6 @@
     "onTertiary": "#1B0033",
     "tertiaryContainer": "#5C2B80",
     "onTertiaryContainer": "#F0DAFF",
-    "error": "#FF6B6B",
-    "onError": "#2A0A0A",
-    "errorContainer": "#7A1F1F",
-    "onErrorContainer": "#FFD9D9",
     "background": "#04141C",
     "onBackground": "#E8F4FF",
     "surface": "#0E2C3E",
@@ -135,5 +135,6 @@
         "showElbowBar": true
       }
     }
-  }
+  },
+  "schemaVersion": 2
 }

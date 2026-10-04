@@ -1,5 +1,4 @@
 {
-  "schemaVersion": 1,
   "metadata": {
     "id": "charcoal-champagne",
     "name": "Charcoal Champagne",
@@ -16,6 +15,10 @@
   },
   "darkMode": true,
   "colorScheme": {
+    "error": "#CF6679",
+    "onError": "#FFFFFF",
+    "errorContainer": "#93000A",
+    "onErrorContainer": "#FFDAD6",
     "primary": "#F7E7CE",
     "onPrimary": "#1F1F1F",
     "primaryContainer": "#C5B8A5",
@@ -28,10 +31,6 @@
     "onTertiary": "#1F1F1F",
     "tertiaryContainer": "#A89C86",
     "onTertiaryContainer": "#FFF5E6",
-    "error": "#CF6679",
-    "onError": "#FFFFFF",
-    "errorContainer": "#93000A",
-    "onErrorContainer": "#FFDAD6",
     "background": "#1F1F1F",
     "onBackground": "#F5F5F5",
     "surface": "#2A2A2A",
@@ -63,5 +62,7 @@
       "blur": 4,
       "color": "#00000044"
     }
-  }
+  },
+  "schemaVersion": 2,
+  "adaptation": {}
 }

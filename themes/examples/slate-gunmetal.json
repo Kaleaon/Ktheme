@@ -1,5 +1,4 @@
 {
-  "schemaVersion": 1,
   "metadata": {
     "id": "slate-gunmetal",
     "name": "Slate Gunmetal",
@@ -16,6 +15,10 @@
   },
   "darkMode": true,
   "colorScheme": {
+    "error": "#CF6679",
+    "onError": "#FFFFFF",
+    "errorContainer": "#93000A",
+    "onErrorContainer": "#FFDAD6",
     "primary": "#8F9CA8",
     "onPrimary": "#1A2029",
     "primaryContainer": "#6F7D87",
@@ -28,10 +31,6 @@
     "onTertiary": "#1A2029",
     "tertiaryContainer": "#7A8590",
     "onTertiaryContainer": "#D9E3ED",
-    "error": "#CF6679",
-    "onError": "#FFFFFF",
-    "errorContainer": "#93000A",
-    "onErrorContainer": "#FFDAD6",
     "background": "#1A2029",
     "onBackground": "#E6ECF2",
     "surface": "#232C38",
@@ -63,5 +62,7 @@
       "blur": 6,
       "color": "#00000055"
     }
-  }
+  },
+  "schemaVersion": 2,
+  "adaptation": {}
 }

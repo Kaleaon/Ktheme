@@ -229,6 +229,8 @@ export interface VisualEffects {
  */
 export interface Typography {
   fontFamily: string;
+  displayFontFamily?: string;
+  displayFont?: string;
   fontSize: {
     small: number;
     medium: number;
@@ -272,7 +274,7 @@ export interface LayoutAdaptation {
   spacingScale: number;
   panelStyle?: 'flat' | 'elevated' | 'glass';
   navigationStyle?: 'tabs' | 'rail' | 'drawer' | 'pivot';
-  accessibility: LayoutAccessibilityProfile;
+  accessibility?: LayoutAccessibilityProfile;
   breakpoints?: LayoutBreakpoints;
   multiPane?: MultiPaneSpecs;
 }
@@ -326,11 +328,96 @@ export interface ComponentOverride {
 }
 
 /**
+ * Window chrome adaptation specification for desktop windows.
+ */
+export interface WindowChromeSpec {
+  titleBarHeight?: number;
+  headerStyle?: 'standard' | 'embedded' | 'compact' | 'tabs' | 'none' | string;
+  cornerStyle?: 'sharp' | 'rounded' | 'pill' | string;
+  panelRadius?: number;
+  controlRadius?: number;
+  borderWidth?: number;
+  backdropBlur?: number;
+  shadow?: string;
+}
+
+/**
+ * Menu bar adaptation specification for desktop application menus.
+ */
+export interface MenuBarSpec {
+  height?: number;
+  fontSize?: number;
+  letterSpacing?: string;
+  textTransform?: 'uppercase' | 'lowercase' | 'capitalize' | 'none' | string;
+  dropdownRadius?: number;
+  dropdownShadow?: string;
+}
+
+/**
+ * Taskbar and dock adaptation specification.
+ */
+export interface TaskbarSpec {
+  height?: number;
+  buttonRadius?: number;
+  dockAlignment?: 'left' | 'center' | 'right' | string;
+  quickChatBorderRadius?: number;
+}
+
+/**
+ * Camera and HUD control panel adaptation specification.
+ */
+export interface CameraHudSpec {
+  panelRadius?: number;
+  buttonRadius?: number;
+  shadow?: string;
+}
+
+/**
+ * LCARS sweep / curved rail frame adaptation specification.
+ */
+export interface SweepSpec {
+  elbowWidth?: number;
+  titleCapRadius?: number | string;
+  accentBand?: string;
+  showElbowBar?: boolean;
+}
+
+/**
+ * Desktop adaptation configuration aggregating desktop window chrome, menu bar, taskbar, HUD, and sweep specs.
+ */
+export interface DesktopAdaptation {
+  windowChrome?: WindowChromeSpec;
+  menuBar?: MenuBarSpec;
+  taskbar?: TaskbarSpec;
+  cameraHud?: CameraHudSpec;
+  sweep?: SweepSpec;
+}
+
+/**
+ * Layout specification entry for root layout variations.
+ */
+export interface LayoutSpec {
+  id: string;
+  name?: string;
+  navModel?: 'TILES' | 'SWEEP' | 'TABS' | 'RAIL' | string;
+  cornerProfile?: 'SHARP' | 'PILLED' | 'ROUNDED' | string;
+  densityProfile?: 'COMFORTABLE' | 'COMPACT' | 'STANDARD' | string;
+  motionProfile?: 'STANDARD' | 'EXPRESSIVE' | string;
+  font?: string;
+  displayFont?: string;
+  cardLook?: string;
+  headLook?: string;
+  segLook?: string;
+  description?: string;
+}
+
+/**
  * Theme adaptation profile used to restyle layout, icons and app chrome.
  */
 export interface ThemeAdaptation {
   layout?: LayoutAdaptation;
   icons?: IconAdaptation;
+  desktopAdaptation?: DesktopAdaptation;
   componentOverrides?: ComponentOverride[];
   assets?: {
     wallpaper?: string;
@@ -441,6 +528,8 @@ export interface ThemeMetadata {
  */
 export interface Theme {
   schemaVersion?: number;
+  $schema?: string;
+  layouts?: LayoutSpec[];
   metadata: ThemeMetadata;
   darkMode: boolean;
   colorScheme: ColorScheme;
@@ -478,6 +567,7 @@ export interface ThemeValidationIssue {
     | 'low-contrast'
     | 'incomplete-semantic-role'
     | 'invalid-token'
-    | 'invalid-accessibility';
+    | 'invalid-accessibility'
+    | 'unknown-property';
   path?: string;
 }

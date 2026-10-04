@@ -12,6 +12,7 @@ import {
   ThemeAdaptation,
   ThemeValidationIssue,
   ThemeValidationResult,
+  ThemeValidationSeverity,
   VisualEffects
 } from './types';
 import { contrastRatio, normalizeColor } from '../utils/colors';
@@ -198,6 +199,42 @@ export class ThemeEngine {
       }
     };
 
+    const checkAllowedKeys = (
+      obj: unknown,
+      allowed: string[],
+      path: string,
+      code: ThemeValidationIssue['code'] = 'unknown-property',
+      severity: ThemeValidationSeverity = 'warning'
+    ): void => {
+      if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return;
+      const allowedSet = new Set(allowed);
+      for (const key of Object.keys(obj as object)) {
+        if (!allowedSet.has(key)) {
+          addIssue({
+            severity,
+            message: `Unrecognized or unmapped property '${key}' at ${path ? path + '.' + key : key}`,
+            code,
+            path: path ? `${path}.${key}` : key
+          });
+        }
+      }
+    };
+
+    // Strict validation for top-level keys
+    checkAllowedKeys(theme, [
+      'schemaVersion',
+      '$schema',
+      'metadata',
+      'darkMode',
+      'colorScheme',
+      'effects',
+      'typography',
+      'tokens',
+      'adaptation',
+      'accessibility',
+      'layouts'
+    ], '');
+
     // Validate schema version
     if (theme.schemaVersion === undefined) {
       addError('Schema version is required', 'missing-schema', 'schemaVersion');
@@ -209,6 +246,9 @@ export class ThemeEngine {
     if (!theme.metadata) {
       addError('Theme metadata is required', 'missing-metadata', 'metadata');
     } else {
+      checkAllowedKeys(theme.metadata, [
+        'id', 'name', 'description', 'author', 'version', 'tags', 'createdAt', 'updatedAt'
+      ], 'metadata');
       if (!theme.metadata.id) addError('Theme ID is required', 'missing-metadata', 'metadata.id');
       if (!theme.metadata.name) addError('Theme name is required', 'missing-metadata', 'metadata.name');
       if (!theme.metadata.description) addError('Theme description is required', 'missing-metadata', 'metadata.description');
@@ -225,6 +265,16 @@ export class ThemeEngine {
     if (!theme.colorScheme) {
       addError('Color scheme is required', 'missing-color', 'colorScheme');
     } else {
+      checkAllowedKeys(theme.colorScheme, [
+        'primary', 'onPrimary', 'primaryContainer', 'onPrimaryContainer',
+        'secondary', 'onSecondary', 'secondaryContainer', 'onSecondaryContainer',
+        'tertiary', 'onTertiary', 'tertiaryContainer', 'onTertiaryContainer',
+        'error', 'onError', 'errorContainer', 'onErrorContainer',
+        'background', 'onBackground', 'surface', 'onSurface', 'surfaceVariant', 'onSurfaceVariant',
+        'outline', 'outlineVariant', 'scrim', 'inverseSurface', 'inverseOnSurface', 'inversePrimary',
+        'stateLayers', 'semanticRoles'
+      ], 'colorScheme');
+
       const requiredColors = [
         'primary', 'onPrimary', 'background', 'onBackground',
         'surface', 'onSurface', 'error', 'onError'
@@ -246,6 +296,12 @@ export class ThemeEngine {
 
     const roles = theme.colorScheme?.semanticRoles;
     if (roles) {
+      checkAllowedKeys(roles, [
+        'success', 'onSuccess', 'successContainer', 'onSuccessContainer',
+        'warning', 'onWarning', 'warningContainer', 'onWarningContainer',
+        'info', 'onInfo', 'infoContainer', 'onInfoContainer',
+        'critical', 'onCritical'
+      ], 'colorScheme.semanticRoles');
       Object.entries(roles).forEach(([key, value]) => {
         if (value !== undefined) {
           validateColorField(value, `colorScheme.semanticRoles.${key}`);
@@ -255,9 +311,132 @@ export class ThemeEngine {
 
     const layers = theme.colorScheme?.stateLayers;
     if (layers) {
+      checkAllowedKeys(layers, ['hover', 'pressed', 'focused', 'dragged'], 'colorScheme.stateLayers');
       Object.entries(layers).forEach(([key, value]) => {
         if (value !== undefined) {
           validateColorField(value, `colorScheme.stateLayers.${key}`);
+        }
+      });
+    }
+
+    if (theme.effects) {
+      checkAllowedKeys(theme.effects, [
+        'metallic', 'shadows', 'gradients', 'shimmer', 'blur',
+        'animations', 'transitions', 'overlays', 'focusRing', 'noise'
+      ], 'effects');
+    }
+
+    if (theme.typography) {
+      checkAllowedKeys(theme.typography, [
+        'fontFamily', 'displayFontFamily', 'displayFont', 'fontSize', 'fontWeight', 'lineHeight', 'letterSpacing'
+      ], 'typography');
+      if (theme.typography.fontSize) {
+        checkAllowedKeys(theme.typography.fontSize, ['small', 'medium', 'large', 'xlarge'], 'typography.fontSize');
+      }
+      if (theme.typography.fontWeight) {
+        checkAllowedKeys(theme.typography.fontWeight, ['light', 'regular', 'medium', 'bold'], 'typography.fontWeight');
+      }
+    }
+
+    if (theme.tokens) {
+      checkAllowedKeys(theme.tokens, ['density', 'corners'], 'tokens');
+      if (theme.tokens.density) {
+        checkAllowedKeys(theme.tokens.density, ['scale', 'baseSpacing'], 'tokens.density');
+      }
+      if (theme.tokens.corners) {
+        checkAllowedKeys(theme.tokens.corners, ['small', 'medium', 'large', 'xlarge'], 'tokens.corners');
+      }
+    }
+
+    if (theme.adaptation) {
+      checkAllowedKeys(theme.adaptation, [
+        'layout', 'icons', 'desktopAdaptation', 'componentOverrides', 'assets'
+      ], 'adaptation');
+
+      if (theme.adaptation.assets) {
+        checkAllowedKeys(theme.adaptation.assets, ['wallpaper', 'iconSprite', 'fontFamilyOverride'], 'adaptation.assets');
+      }
+
+      if (theme.adaptation.desktopAdaptation) {
+        const da = theme.adaptation.desktopAdaptation;
+        checkAllowedKeys(da, ['windowChrome', 'menuBar', 'taskbar', 'cameraHud', 'sweep'], 'adaptation.desktopAdaptation');
+
+        if (da.windowChrome) {
+          checkAllowedKeys(da.windowChrome, [
+            'titleBarHeight', 'headerStyle', 'cornerStyle', 'panelRadius', 'controlRadius', 'borderWidth', 'backdropBlur', 'shadow'
+          ], 'adaptation.desktopAdaptation.windowChrome');
+
+          const numFields: Array<keyof typeof da.windowChrome> = ['titleBarHeight', 'panelRadius', 'controlRadius', 'borderWidth', 'backdropBlur'];
+          numFields.forEach(field => {
+            const val = da.windowChrome![field];
+            if (val !== undefined && (typeof val !== 'number' || !Number.isFinite(val) || val < 0)) {
+              addError(`windowChrome.${field} must be a non-negative number`, 'invalid-adaptation', `adaptation.desktopAdaptation.windowChrome.${field}`);
+            }
+          });
+        }
+
+        if (da.menuBar) {
+          checkAllowedKeys(da.menuBar, [
+            'height', 'fontSize', 'letterSpacing', 'textTransform', 'dropdownRadius', 'dropdownShadow'
+          ], 'adaptation.desktopAdaptation.menuBar');
+
+          const numFields: Array<keyof typeof da.menuBar> = ['height', 'fontSize', 'dropdownRadius'];
+          numFields.forEach(field => {
+            const val = da.menuBar![field];
+            if (val !== undefined && (typeof val !== 'number' || !Number.isFinite(val) || val < 0)) {
+              addError(`menuBar.${field} must be a non-negative number`, 'invalid-adaptation', `adaptation.desktopAdaptation.menuBar.${field}`);
+            }
+          });
+        }
+
+        if (da.taskbar) {
+          checkAllowedKeys(da.taskbar, [
+            'height', 'buttonRadius', 'dockAlignment', 'quickChatBorderRadius'
+          ], 'adaptation.desktopAdaptation.taskbar');
+
+          const numFields: Array<keyof typeof da.taskbar> = ['height', 'buttonRadius', 'quickChatBorderRadius'];
+          numFields.forEach(field => {
+            const val = da.taskbar![field];
+            if (val !== undefined && (typeof val !== 'number' || !Number.isFinite(val) || val < 0)) {
+              addError(`taskbar.${field} must be a non-negative number`, 'invalid-adaptation', `adaptation.desktopAdaptation.taskbar.${field}`);
+            }
+          });
+        }
+
+        if (da.cameraHud) {
+          checkAllowedKeys(da.cameraHud, [
+            'panelRadius', 'buttonRadius', 'shadow'
+          ], 'adaptation.desktopAdaptation.cameraHud');
+
+          const numFields: Array<keyof typeof da.cameraHud> = ['panelRadius', 'buttonRadius'];
+          numFields.forEach(field => {
+            const val = da.cameraHud![field];
+            if (val !== undefined && (typeof val !== 'number' || !Number.isFinite(val) || val < 0)) {
+              addError(`cameraHud.${field} must be a non-negative number`, 'invalid-adaptation', `adaptation.desktopAdaptation.cameraHud.${field}`);
+            }
+          });
+        }
+
+        if (da.sweep) {
+          checkAllowedKeys(da.sweep, [
+            'elbowWidth', 'titleCapRadius', 'accentBand', 'showElbowBar'
+          ], 'adaptation.desktopAdaptation.sweep');
+
+          if (da.sweep.elbowWidth !== undefined && (typeof da.sweep.elbowWidth !== 'number' || !Number.isFinite(da.sweep.elbowWidth) || da.sweep.elbowWidth < 0)) {
+            addError('sweep.elbowWidth must be a non-negative number', 'invalid-adaptation', 'adaptation.desktopAdaptation.sweep.elbowWidth');
+          }
+        }
+      }
+    }
+
+    if (Array.isArray(theme.layouts)) {
+      theme.layouts.forEach((layout, index) => {
+        checkAllowedKeys(layout, [
+          'id', 'name', 'navModel', 'cornerProfile', 'densityProfile', 'motionProfile',
+          'font', 'displayFont', 'cardLook', 'headLook', 'segLook', 'description'
+        ], `layouts[${index}]`);
+        if (!layout.id) {
+          addError('Layout spec id is required', 'invalid-adaptation', `layouts[${index}].id`);
         }
       });
     }
@@ -363,39 +542,39 @@ export class ThemeEngine {
       } else {
         const requiredLandmarks: Array<keyof typeof accessibility.landmarks> = ['main', 'nav', 'header', 'footer'];
         requiredLandmarks.forEach(key => {
-          if (!accessibility.landmarks[key]) {
+          if (!accessibility.landmarks?.[key]) {
             addError(`Layout accessibility landmark ${key} is required`, 'invalid-adaptation', `adaptation.layout.accessibility.landmarks.${key}`);
           }
-          if (!accessibility.naming[key]) {
+          if (!accessibility.naming?.[key]) {
             addError(`Layout accessibility naming label ${key} is required`, 'invalid-adaptation', `adaptation.layout.accessibility.naming.${key}`);
           }
         });
 
-        if (!accessibility.naming.strategy) {
+        if (!accessibility.naming?.strategy) {
           addError('Layout accessibility naming strategy is required', 'invalid-adaptation', 'adaptation.layout.accessibility.naming.strategy');
         }
 
-        if (!accessibility.keyboard.order) {
+        if (!accessibility.keyboard?.order) {
           addError('Layout accessibility keyboard order is required', 'invalid-adaptation', 'adaptation.layout.accessibility.keyboard.order');
         }
 
-        if (!accessibility.keyboard.focusPolicy) {
+        if (!accessibility.keyboard?.focusPolicy) {
           addError('Layout accessibility focus policy is required', 'invalid-adaptation', 'adaptation.layout.accessibility.keyboard.focusPolicy');
         }
 
-        if (accessibility.keyboard.trapFocusWithinModals === undefined) {
+        if (accessibility.keyboard?.trapFocusWithinModals === undefined) {
           addError('Layout accessibility trapFocusWithinModals is required', 'invalid-adaptation', 'adaptation.layout.accessibility.keyboard.trapFocusWithinModals');
         }
 
-        if (!accessibility.liveRegion.mode) {
+        if (!accessibility.liveRegion?.mode) {
           addError('Layout accessibility live-region mode is required', 'invalid-adaptation', 'adaptation.layout.accessibility.liveRegion.mode');
         }
 
-        if (accessibility.liveRegion.atomic === undefined) {
+        if (accessibility.liveRegion?.atomic === undefined) {
           addError('Layout accessibility live-region atomic is required', 'invalid-adaptation', 'adaptation.layout.accessibility.liveRegion.atomic');
         }
 
-        if (!accessibility.liveRegion.relevant) {
+        if (!accessibility.liveRegion?.relevant) {
           addError('Layout accessibility live-region relevant policy is required', 'invalid-adaptation', 'adaptation.layout.accessibility.liveRegion.relevant');
         }
       }
