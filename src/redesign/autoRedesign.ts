@@ -1,5 +1,6 @@
 import { ThemeEngine } from '../core/ThemeEngine';
 import { Theme, ThemeAdaptation } from '../core/types';
+import { cloneTheme } from '../utils/clone';
 import { contrastRatio } from '../utils/colors';
 import { AdaptationPresets } from '../themes/adaptationPresets';
 import { applyExpansionPack } from '../themes/expansion';
@@ -76,9 +77,6 @@ const archetypeDefaults: Record<string, { packs: string[]; adaptation?: keyof ty
   storefront: { packs: ['seasonal-pack', 'widget-skin-pack'], adaptation: 'frutigerAero' }
 };
 
-function cloneTheme(theme: Theme): Theme {
-  return JSON.parse(JSON.stringify(theme)) as Theme;
-}
 
 function mergeAdaptation(base: ThemeAdaptation | undefined, addition: ThemeAdaptation | undefined): ThemeAdaptation | undefined {
   if (!base && !addition) return undefined;
