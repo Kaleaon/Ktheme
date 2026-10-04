@@ -10,6 +10,7 @@ version = "1.0.0"
 
 repositories {
     mavenCentral()
+    google()
 }
 
 dependencies {
@@ -25,6 +26,7 @@ dependencies {
 
     // Testing
     testImplementation(kotlin("test"))
+    testImplementation("junit:junit:4.13.2")
 }
 
 tasks.test {
@@ -32,7 +34,7 @@ tasks.test {
 }
 
 kotlin {
-    jvmToolchain(11)
+    jvmToolchain(21)
 }
 
 application {
