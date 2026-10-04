@@ -61,7 +61,7 @@ function ColorRoleRow({ name, hex, warn }) {
   );
 }
 
-function ThemeMakerV1({ themeKey = "navy-gold", view = "sampler", aiOpen = false }) {
+function ThemeMakerV1({ themeKey = "navy-gold", view = "sampler", density = "standard", layoutMode = "grid", breakpoint = "desktop", aiOpen = false }) {
   return (
     <div style={{
       width: "100%", height: "100%",
@@ -165,7 +165,7 @@ function ThemeMakerV1({ themeKey = "navy-gold", view = "sampler", aiOpen = false
             </div>
           </div>
           <div style={{ flex: 1, minHeight: 0, borderRadius: 12, overflow: "hidden", boxShadow: "0 0 0 1px var(--tm-border)" }}>
-            <ThemedSurface theme={themeKey} view={view} />
+            <ThemedSurface theme={themeKey} view={view} density={density} layoutMode={layoutMode} breakpoint={breakpoint} />
           </div>
         </div>
 

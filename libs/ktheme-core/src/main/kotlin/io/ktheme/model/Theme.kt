@@ -124,12 +124,27 @@ public data class Adaptation(
 )
 
 @Serializable
+public data class LayoutBreakpoints(
+    public val compact: Int = 600,
+    public val medium: Int = 840,
+    public val expanded: Int = 1200
+)
+
+@Serializable
+public data class MultiPaneSpecs(
+    public val splitRatio: Double = 0.44,
+    public val minPaneWidth: Int = 320
+)
+
+@Serializable
 public data class LayoutAdaptation(
     public val density: Density = Density.Comfortable,
     public val cornerStyle: CornerStyle = CornerStyle.Rounded,
     public val spacingScale: Double = 1.0,
     public val panelStyle: PanelStyle = PanelStyle.Flat,
     public val navigationStyle: NavigationStyle = NavigationStyle.Tabs,
+    public val breakpoints: LayoutBreakpoints? = null,
+    public val multiPane: MultiPaneSpecs? = null
 )
 
 @Serializable

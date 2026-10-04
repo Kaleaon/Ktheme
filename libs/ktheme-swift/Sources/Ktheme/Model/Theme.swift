@@ -92,12 +92,23 @@ public struct Adaptation: Codable, Hashable, Sendable {
     public let componentOverrides: [ComponentOverride]?
 }
 
+public struct LayoutBreakpoints: Codable, Hashable, Sendable {
+    public let compact, medium, expanded: Int
+}
+
+public struct MultiPaneSpecs: Codable, Hashable, Sendable {
+    public let splitRatio: Double
+    public let minPaneWidth: Int
+}
+
 public struct LayoutAdaptation: Codable, Hashable, Sendable {
     public let density: Density
     public let cornerStyle: CornerStyle
     public let spacingScale: Double
     public let panelStyle: PanelStyle
     public let navigationStyle: NavigationStyle
+    public let breakpoints: LayoutBreakpoints?
+    public let multiPane: MultiPaneSpecs?
 }
 
 public enum Density: String, Codable, Hashable, Sendable {

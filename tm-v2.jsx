@@ -37,7 +37,7 @@ const v2RolePairs = [
   ["surface", "#1A2645", "onSurface", "#E8E3D8"],
 ];
 
-function ThemeMakerV2({ themeKey = "navy-gold", view = "dashboard", aiOpen = true }) {
+function ThemeMakerV2({ themeKey = "navy-gold", view = "dashboard", density = "standard", layoutMode = "grid", breakpoint = "desktop", aiOpen = true }) {
   return (
     <div style={{
       width: "100%", height: "100%",
@@ -202,7 +202,7 @@ function ThemeMakerV2({ themeKey = "navy-gold", view = "dashboard", aiOpen = tru
             flex: 1, minHeight: 0, borderRadius: 14, overflow: "hidden",
             boxShadow: "0 0 0 1px var(--tm-border), 0 24px 48px rgba(0,0,0,.4), 0 0 0 1px rgba(212,175,55,.18)",
           }}>
-            <ThemedSurface theme={themeKey} view={view} />
+            <ThemedSurface theme={themeKey} view={view} density={density} layoutMode={layoutMode} breakpoint={breakpoint} />
           </div>
 
           {/* Floating AI prompt */}

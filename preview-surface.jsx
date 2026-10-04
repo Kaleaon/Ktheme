@@ -65,87 +65,111 @@ function PvCard({ children, style }) {
   );
 }
 
-// ── Sampler ── full-bleed components grid
-function SamplerSurface() {
+// ── Sampler ── full-bleed components grid / list / rail / split
+function SamplerSurface({ density = "standard", layoutMode = "grid" }) {
+  const pad = "var(--pv-pad, 18px)";
+  const gap = "var(--pv-gap, 12px)";
+  const isList = layoutMode === "list";
+  const isRail = layoutMode === "rail";
+  const isSplit = layoutMode === "split";
+
   return (
-    <div style={{ padding: 18, color: "var(--pv-on-bg)", fontFamily: "var(--kt-font-ui)" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 14 }}>
-        <div>
-          <div style={{ fontSize: 11, letterSpacing: 1.4, textTransform: "uppercase", color: "var(--pv-on-surf-v)" }}>Components</div>
-          <div style={{ fontSize: 22, fontWeight: 700, marginTop: 2 }}>Sampler</div>
+    <div style={{ padding: pad, color: "var(--pv-on-bg)", fontFamily: "var(--kt-font-ui)", display: isRail ? "grid" : "block", gridTemplateColumns: isRail ? "60px 1fr" : "none", gap: gap }}>
+      {isRail && (
+        <div style={{ background: "var(--pv-surface-v)", borderRadius: "var(--pv-radius, 8px)", padding: "8px 4px", display: "flex", flexDirection: "column", gap: 8, alignItems: "center" }}>
+          <span style={{ fontSize: 16 }}>⊞</span>
+          <span style={{ fontSize: 16 }}>☰</span>
+          <span style={{ fontSize: 16 }}>⚙</span>
         </div>
-        <div style={{ display: "flex", gap: 6 }}>
-          <PvChip label="All" on />
-          <PvChip label="Inputs" />
-          <PvChip label="Display" />
+      )}
+      <div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 14 }}>
+          <div>
+            <div style={{ fontSize: 11, letterSpacing: 1.4, textTransform: "uppercase", color: "var(--pv-on-surf-v)" }}>Components</div>
+            <div style={{ fontSize: 22, fontWeight: 700, marginTop: 2 }}>Sampler ({layoutMode})</div>
+          </div>
+          <div style={{ display: "flex", gap: 6 }}>
+            <PvChip label="All" on />
+            <PvChip label="Inputs" />
+            <PvChip label="Display" />
+          </div>
         </div>
-      </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-        <PvCard>
-          <div style={{ fontSize: 11, color: "var(--pv-on-surf-v)", marginBottom: 8 }}>BUTTONS</div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-            <PvButton label="Filled" />
-            <PvButton label="Tonal" kind="tonal" />
-            <PvButton label="Outline" kind="outline" />
-            <PvButton label="Text" kind="text" />
-          </div>
-          <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
-            <PvButton label="Metallic" metallic />
-          </div>
-        </PvCard>
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: isList ? "1fr" : isSplit ? "1fr 1.5fr" : "1fr 1fr",
+          gap: gap
+        }}>
+          <PvCard>
+            <div style={{ fontSize: 11, color: "var(--pv-on-surf-v)", marginBottom: 8 }}>BUTTONS</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              <PvButton label="Filled" />
+              <PvButton label="Tonal" kind="tonal" />
+              <PvButton label="Outline" kind="outline" />
+              <PvButton label="Text" kind="text" />
+            </div>
+            <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+              <PvButton label="Metallic" metallic />
+            </div>
+          </PvCard>
 
-        <PvCard>
-          <div style={{ fontSize: 11, color: "var(--pv-on-surf-v)", marginBottom: 8 }}>CHIPS</div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-            <PvChip label="Selected" on />
-            <PvChip label="Default" />
-            <PvChip label="Filter" />
-            <PvChip label="Tag" />
-          </div>
-          <div style={{ fontSize: 11, color: "var(--pv-on-surf-v)", marginTop: 14, marginBottom: 6 }}>INPUT</div>
-          <div style={{
-            display: "flex", alignItems: "center", gap: 8,
-            padding: "8px 12px", borderRadius: "var(--pv-radius, 8px)",
-            background: "var(--pv-surface-v)", color: "var(--pv-on-surf-v)",
-            boxShadow: "inset 0 0 0 1px var(--pv-outline-v)",
-            fontSize: 12,
-          }}>
-            {ICONS.search}<span>Search components…</span>
-          </div>
-        </PvCard>
+          <PvCard>
+            <div style={{ fontSize: 11, color: "var(--pv-on-surf-v)", marginBottom: 8 }}>CHIPS & INPUT</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              <PvChip label="Selected" on />
+              <PvChip label="Default" />
+              <PvChip label="Filter" />
+              <PvChip label="Tag" />
+            </div>
+            <div style={{ fontSize: 11, color: "var(--pv-on-surf-v)", marginTop: 14, marginBottom: 6 }}>INPUT</div>
+            <div style={{
+              display: "flex", alignItems: "center", gap: 8,
+              padding: "8px 12px", borderRadius: "var(--pv-radius, 8px)",
+              background: "var(--pv-surface-v)", color: "var(--pv-on-surf-v)",
+              boxShadow: "inset 0 0 0 1px var(--pv-outline-v)",
+              fontSize: 12,
+            }}>
+              {ICONS.search}<span>Search components…</span>
+            </div>
+          </PvCard>
 
-        <PvCard style={{ gridColumn: "1 / -1" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
-            <div style={{ fontSize: 11, color: "var(--pv-on-surf-v)" }}>DATA TABLE</div>
-            <div style={{ fontSize: 11, color: "var(--pv-primary)" }}>View all →</div>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1.2fr .8fr .8fr .6fr", gap: 0, fontSize: 12 }}>
-            {["Theme", "Author", "Tags", "v"].map(h => (
-              <div key={h} style={{ padding: "6px 8px", color: "var(--pv-on-surf-v)", fontSize: 10, textTransform: "uppercase", letterSpacing: 0.8, borderBottom: "1px solid var(--pv-outline-v)" }}>{h}</div>
-            ))}
-            {[
-              ["Navy Gold", "Ktheme", "metallic, dark", "1.0"],
-              ["Frutiger Aero", "Ktheme", "glassy, nostalgia", "1.0"],
-              ["LCARS", "Ktheme", "iconic, console", "1.0"],
-            ].map((row, i) => row.map((c, j) => (
-              <div key={`${i}-${j}`} style={{
-                padding: "8px", borderBottom: "1px solid var(--pv-outline-v)",
-                color: j === 0 ? "var(--pv-primary)" : "var(--pv-on-surf)",
-                fontWeight: j === 0 ? 600 : 400,
-              }}>{c}</div>
-            )))}
-          </div>
-        </PvCard>
+          <PvCard style={{ gridColumn: isSplit ? "auto" : "1 / -1" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
+              <div style={{ fontSize: 11, color: "var(--pv-on-surf-v)" }}>DATA TABLE</div>
+              <div style={{ fontSize: 11, color: "var(--pv-primary)" }}>View all →</div>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1.2fr .8fr .8fr .6fr", gap: 0, fontSize: 12 }}>
+              {["Theme", "Author", "Tags", "v"].map(h => (
+                <div key={h} style={{ padding: "6px 8px", color: "var(--pv-on-surf-v)", fontSize: 10, textTransform: "uppercase", letterSpacing: 0.8, borderBottom: "1px solid var(--pv-outline-v)" }}>{h}</div>
+              ))}
+              {[
+                ["Navy Gold", "Ktheme", "metallic, dark", "1.0"],
+                ["Frutiger Aero", "Ktheme", "glassy, nostalgia", "1.0"],
+                ["LCARS", "Ktheme", "iconic, console", "1.0"],
+              ].map((row, i) => row.map((c, j) => (
+                <div key={`${i}-${j}`} style={{
+                  padding: "8px", borderBottom: "1px solid var(--pv-outline-v)",
+                  color: j === 0 ? "var(--pv-primary)" : "var(--pv-on-surf)",
+                  fontWeight: j === 0 ? 600 : 400,
+                }}>{c}</div>
+              )))}
+            </div>
+          </PvCard>
+        </div>
       </div>
     </div>
   );
 }
 
 // ── Mini dashboard ── KPI cards + chart
-function DashboardSurface() {
+function DashboardSurface({ density = "standard", layoutMode = "grid" }) {
+  const pad = "var(--pv-pad, 18px)";
+  const gap = "var(--pv-gap, 10px)";
+  const isList = layoutMode === "list";
+  const isSplit = layoutMode === "split";
+
   return (
-    <div style={{ padding: 18, color: "var(--pv-on-bg)", fontFamily: "var(--kt-font-ui)" }}>
+    <div style={{ padding: pad, color: "var(--pv-on-bg)", fontFamily: "var(--kt-font-ui)" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
         <div>
           <div style={{ fontSize: 11, letterSpacing: 1.4, textTransform: "uppercase", color: "var(--pv-on-surf-v)" }}>Operations</div>
@@ -153,7 +177,12 @@ function DashboardSurface() {
         </div>
         <PvButton label="+ New" metallic />
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 12 }}>
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: isList ? "1fr" : isSplit ? "1fr 2fr" : "repeat(3, 1fr)",
+        gap: gap,
+        marginBottom: 12
+      }}>
         {[
           { l: "Active", v: "1,284", d: "+12.4%", ok: true },
           { l: "Revenue", v: "$48.2k", d: "+8.1%", ok: true },
@@ -318,8 +347,12 @@ const THEMES = {
   },
 };
 
-function ThemedSurface({ theme = "navy-gold", view = "sampler", style }) {
+function ThemedSurface({ theme = "navy-gold", view = "sampler", density = "standard", layoutMode = "grid", breakpoint = "desktop", style }) {
   const t = THEMES[theme] || THEMES["navy-gold"];
+  const padVal = density === "compact" ? "8px" : density === "comfortable" ? "24px" : "16px";
+  const gapVal = density === "compact" ? "6px" : density === "comfortable" ? "16px" : "10px";
+  const frameWidth = breakpoint === "mobile" ? "375px" : breakpoint === "tablet" ? "768px" : "100%";
+
   const vars = {
     "--pv-bg": t.bg, "--pv-surface": t.surface, "--pv-surface-v": t.surfaceV,
     "--pv-on-bg": t.onBg, "--pv-on-surf": t.onSurf, "--pv-on-surf-v": t.onSurfV,
@@ -327,6 +360,7 @@ function ThemedSurface({ theme = "navy-gold", view = "sampler", style }) {
     "--pv-primary-c": t.primaryC, "--pv-on-primary-c": t.onPrimaryC,
     "--pv-tertiary": t.tertiary, "--pv-outline": t.outline, "--pv-outline-v": t.outlineV,
     "--pv-radius": t.radius + "px", "--pv-elev": t.elev,
+    "--pv-pad": padVal, "--pv-gap": gapVal,
     // Metallic basis for in-preview metallic buttons
     "--mb-b": "var(--m-grb-b)", "--mb-h": "var(--m-grb-h)",
     "--mb-s": t.bg, "--mb-sh": "var(--m-grb-sh)",
@@ -335,13 +369,15 @@ function ThemedSurface({ theme = "navy-gold", view = "sampler", style }) {
   return (
     <div style={{
       ...vars, background: t.bg, color: t.onBg, height: "100%",
+      width: frameWidth, maxWidth: "100%", margin: breakpoint === "desktop" ? "0" : "0 auto",
       overflow: "auto", borderRadius: 10,
+      transition: "width 0.2s, margin 0.2s, padding 0.2s",
       ...style,
-    }} className="km-noscroll">
-      {view === "sampler" && <SamplerSurface />}
-      {view === "dashboard" && <DashboardSurface />}
-      {view === "iconic" && <IconicSurface />}
-      {view === "mail" && <MailSurface />}
+    }} className="km-noscroll" data-layout-mode={layoutMode} data-density={density} data-breakpoint={breakpoint}>
+      {view === "sampler" && <SamplerSurface density={density} layoutMode={layoutMode} />}
+      {view === "dashboard" && <DashboardSurface density={density} layoutMode={layoutMode} />}
+      {view === "iconic" && <IconicSurface density={density} layoutMode={layoutMode} />}
+      {view === "mail" && <MailSurface density={density} layoutMode={layoutMode} />}
     </div>
   );
 }

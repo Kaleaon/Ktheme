@@ -139,6 +139,16 @@ describe('preset themes coverage', () => {
   },
   {
     "createdAt": "2026-03-30T00:00:00.000Z",
+    "id": "linkpoint-cobalt",
+    "updatedAt": "2026-03-30T00:00:00.000Z",
+  },
+  {
+    "createdAt": "2026-03-30T00:00:00.000Z",
+    "id": "linkpoint-gold",
+    "updatedAt": "2026-03-30T00:00:00.000Z",
+  },
+  {
+    "createdAt": "2026-03-30T00:00:00.000Z",
     "id": "midnight-amber",
     "updatedAt": "2026-03-30T00:00:00.000Z",
   },
