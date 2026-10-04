@@ -247,6 +247,23 @@ export interface Typography {
 
 
 /**
+ * Responsive layout breakpoint thresholds (in dp / pixels).
+ */
+export interface LayoutBreakpoints {
+  compact: number;
+  medium: number;
+  expanded: number;
+}
+
+/**
+ * Multi-pane layout specification tokens.
+ */
+export interface MultiPaneSpecs {
+  splitRatio: number;
+  minPaneWidth: number;
+}
+
+/**
  * Layout adaptation tokens for reshaping app structure per theme.
  */
 export interface LayoutAdaptation {
@@ -256,6 +273,8 @@ export interface LayoutAdaptation {
   panelStyle?: 'flat' | 'elevated' | 'glass';
   navigationStyle?: 'tabs' | 'rail' | 'drawer' | 'pivot';
   accessibility: LayoutAccessibilityProfile;
+  breakpoints?: LayoutBreakpoints;
+  multiPane?: MultiPaneSpecs;
 }
 
 /**
