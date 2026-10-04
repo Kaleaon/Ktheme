@@ -133,7 +133,13 @@ describe('exporter parity', () => {
   it('exports Android Compose using only valid Material 3 ColorScheme roles', () => {
     const compose = toAndroidCompose(fixtureTheme);
 
+    expect(compose.kotlin).toContain('package io.ktheme.compose');
+    expect(compose.kotlin).toContain('import androidx.compose.ui.graphics.Color');
     expect(compose.kotlin).toContain('val KthemeColorScheme = darkColorScheme(');
+    expect(compose.kotlin).toContain('Color(0xFF111111)');
+
+    const customCompose = toAndroidCompose(fixtureTheme, { packageName: 'com.charmorph.app.ui.theme' });
+    expect(customCompose.kotlin).toContain('package com.charmorph.app.ui.theme');
 
     const colorSchemeArgs = compose.kotlin
       .split('val KthemeColorScheme = darkColorScheme(')[1]
