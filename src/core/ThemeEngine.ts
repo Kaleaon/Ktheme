@@ -17,7 +17,7 @@ import {
 import { contrastRatio, normalizeColor } from '../utils/colors';
 import { resolveAccessibilitySettings } from '../accessibility/defaults';
 import { validateComponentOverridePolicy } from '../adaptation/apply';
-import { migrateTheme, SCHEMA_VERSION } from './migrations';
+import { SCHEMA_VERSION } from './migrations';
 
 export class ThemeEngine {
   private themes: Map<string, Theme> = new Map();
@@ -27,15 +27,12 @@ export class ThemeEngine {
    * Register a new theme
    */
   registerTheme(theme: Theme): void {
-    const normalizedTheme = theme.schemaVersion
-      ? theme
-      : migrateTheme(theme, 0, SCHEMA_VERSION);
-    const validation = this.validateTheme(normalizedTheme);
+    const validation = this.validateTheme(theme);
     if (!validation.valid) {
       throw new Error(`Invalid theme: ${validation.errors.join(', ')}`);
     }
     
-    this.themes.set(normalizedTheme.metadata.id, normalizedTheme);
+    this.themes.set(theme.metadata.id, theme);
   }
 
   /**
@@ -200,6 +197,13 @@ export class ThemeEngine {
         addError(options.message, 'invalid-effects', path);
       }
     };
+
+    // Validate schema version
+    if (theme.schemaVersion === undefined) {
+      addError('Schema version is required', 'missing-schema', 'schemaVersion');
+    } else if (theme.schemaVersion !== SCHEMA_VERSION) {
+      addError(`Unsupported schema version: ${theme.schemaVersion}`, 'invalid-schema', 'schemaVersion');
+    }
 
     // Validate metadata
     if (!theme.metadata) {
@@ -588,13 +592,8 @@ export class ThemeEngine {
   importTheme(json: string): Theme {
     try {
       const importedTheme = JSON.parse(json) as Theme;
-      const fromVersion = importedTheme.schemaVersion ?? 0;
-      const theme =
-        fromVersion === SCHEMA_VERSION
-          ? importedTheme
-          : migrateTheme(importedTheme, fromVersion, SCHEMA_VERSION);
-      this.registerTheme(theme);
-      return theme;
+      this.registerTheme(importedTheme);
+      return importedTheme;
     } catch (error) {
       throw new Error(`Failed to import theme: ${error}`);
     }

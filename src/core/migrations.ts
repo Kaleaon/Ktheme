@@ -4,12 +4,7 @@ export const SCHEMA_VERSION = 1;
 
 type ThemeMigration = (theme: Theme) => Theme;
 
-const migrations: Record<number, ThemeMigration> = {
-  1: (theme: Theme): Theme => ({
-    ...theme,
-    schemaVersion: 1
-  })
-};
+const migrations: Record<number, ThemeMigration> = {};
 
 export function migrateTheme(theme: Theme, fromVersion: number, toVersion: number): Theme {
   if (fromVersion > toVersion) {

@@ -10,28 +10,14 @@ export function cloneTheme<T>(theme: T): T {
   if (typeof structuredClone === 'function') {
     return structuredClone(theme);
   }
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const v8 = require('v8');
-    if (v8 && typeof v8.serialize === 'function') {
-      return v8.deserialize(v8.serialize(theme));
-    }
-  } catch {
-    // fallback if not in node
+  if (theme === null || typeof theme !== 'object') {
+    return theme;
   }
-  return JSON.parse(JSON.stringify(theme));
-export function cloneTheme<T>(obj: T): T {
-  if (typeof structuredClone === 'function') {
-    return structuredClone(obj);
-  }
-  if (obj === null || typeof obj !== 'object') {
-    return obj;
-  }
-  if (Array.isArray(obj)) {
-    return obj.map(item => cloneTheme(item)) as unknown as T;
+  if (Array.isArray(theme)) {
+    return theme.map((item) => cloneTheme(item)) as unknown as T;
   }
   const copy = {} as Record<string, unknown>;
-  const record = obj as Record<string, unknown>;
+  const record = theme as Record<string, unknown>;
   for (const key of Object.keys(record)) {
     copy[key] = cloneTheme(record[key]);
   }

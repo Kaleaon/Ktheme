@@ -1,4 +1,5 @@
 {
+  "schemaVersion": 1,
   "metadata": {
     "id": "solarpunk-civic",
     "name": "Solarpunk Civic",
@@ -79,9 +80,18 @@
       "enabled": true,
       "angle": 135,
       "stops": [
-        { "offset": 0, "color": "#EAF7FF" },
-        { "offset": 0.58, "color": "#DAF0FF" },
-        { "offset": 1, "color": "#BEEBFF" }
+        {
+          "offset": 0,
+          "color": "#EAF7FF"
+        },
+        {
+          "offset": 0.58,
+          "color": "#DAF0FF"
+        },
+        {
+          "offset": 1,
+          "color": "#BEEBFF"
+        }
       ]
     },
     "shimmer": {
