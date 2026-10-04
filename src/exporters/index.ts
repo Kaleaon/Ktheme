@@ -4,3 +4,4 @@ export * from './toAndroidCompose';
 export * from './toSwiftUI';
 export * from './toFlutterTheme';
 export * from './toDesignTokensJson';
+export * from './toBlenderPropertyGroup';

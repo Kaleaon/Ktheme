@@ -1,5 +1,6 @@
 import { MetallicVariant, Theme } from '../core/types';
 import { toAndroidCompose } from './toAndroidCompose';
+import { toBlenderPropertyGroup } from './toBlenderPropertyGroup';
 import { toCssVars } from './toCssVars';
 import { toDesignTokensJson } from './toDesignTokensJson';
 import { toFlutterTheme } from './toFlutterTheme';
@@ -288,5 +289,21 @@ describe('exporter parity', () => {
     expect(designTokens.theme.typography).toBeDefined();
     expect(designTokens.theme.effect).toBeDefined();
     expect(designTokens.theme.adaptation).toBeDefined();
+  });
+
+  it('exports Blender PropertyGroup with FloatVectorProperty, layout metrics, and registration functions', () => {
+    const blenderExport = toBlenderPropertyGroup(fixtureTheme);
+
+    expect(blenderExport.propertyNames).toContain('primary');
+    expect(blenderExport.propertyNames).toContain('semantic_success');
+    expect(blenderExport.propertyNames).toContain('layout_margin');
+    expect(blenderExport.propertyNames).toContain('icon_set');
+
+    expect(blenderExport.pythonScript).toContain('class KthemePropertyGroup(bpy.types.PropertyGroup):');
+    expect(blenderExport.pythonScript).toContain('FloatVectorProperty(name="Primary"');
+    expect(blenderExport.pythonScript).toContain('FloatVectorProperty(name="Semantic Success"');
+    expect(blenderExport.pythonScript).toContain('def register_ktheme_properties():');
+    expect(blenderExport.pythonScript).toContain('def unregister_ktheme_properties():');
+    expect(blenderExport.pythonScript).toContain('bpy.types.WindowManager.ktheme = bpy.props.PointerProperty(');
   });
 });
