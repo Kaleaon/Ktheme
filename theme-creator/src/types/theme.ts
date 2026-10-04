@@ -52,6 +52,28 @@ export interface ColorScheme {
   inverseSurface: string;
   inverseOnSurface: string;
   inversePrimary: string;
+  stateLayers?: {
+    hover?: string;
+    pressed?: string;
+    focused?: string;
+    dragged?: string;
+  };
+  semanticRoles?: {
+    success: string;
+    onSuccess: string;
+    successContainer?: string;
+    onSuccessContainer?: string;
+    warning: string;
+    onWarning: string;
+    warningContainer?: string;
+    onWarningContainer?: string;
+    info: string;
+    onInfo: string;
+    infoContainer?: string;
+    onInfoContainer?: string;
+    critical?: string;
+    onCritical?: string;
+  };
 }
 
 export interface VisualEffects {
@@ -76,6 +98,39 @@ export interface VisualEffects {
   blur?: {
     enabled: boolean;
     radius: number;
+  };
+  gradients?: {
+    enabled: boolean;
+    angle: number;
+    stops: Array<{ offset: number; color: string }>;
+  };
+  animations?: {
+    enabled: boolean;
+    duration: number;
+    easing: 'linear' | 'ease' | 'ease-in' | 'ease-out' | 'ease-in-out';
+    reducedMotionPolicy?: 'none' | 'reduce' | 'disable';
+  };
+  transitions?: {
+    enabled: boolean;
+    duration: number;
+    properties: string[];
+  };
+  overlays?: {
+    enabled: boolean;
+    color: string;
+    opacity: number;
+    blendMode?: 'normal' | 'multiply' | 'screen' | 'overlay' | 'soft-light' | 'hard-light';
+  };
+  focusRing?: {
+    enabled: boolean;
+    color: string;
+    width: number;
+    offset: number;
+  };
+  noise?: {
+    enabled: boolean;
+    opacity: number;
+    scale: number;
   };
 }
 

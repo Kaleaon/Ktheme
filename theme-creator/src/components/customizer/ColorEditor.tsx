@@ -43,6 +43,7 @@ const COLOR_GROUPS = [
     pairs: [
       ['outline', 'outlineVariant'],
       ['inverseSurface', 'inverseOnSurface'],
+      ['inversePrimary', 'scrim'],
     ],
   },
 ];
@@ -106,6 +107,14 @@ export function ColorEditor() {
           })}
         </div>
       ))}
+      {colors.semanticRoles && <div className="color-group">
+        <h4 className="group-label">Semantic roles</h4>
+        {([['success', 'onSuccess'], ['warning', 'onWarning'], ['info', 'onInfo'], ['critical', 'onCritical']] as const).map(([bg, fg]) => {
+          const bgVal = colors.semanticRoles?.[bg] || '#000000';
+          const fgVal = colors.semanticRoles?.[fg] || '#FFFFFF';
+          return <div className="color-pair" key={bg}><div className="color-picker-row">{[bg, fg].map((key) => <label className="color-picker" key={key}><input type="color" value={key === bg ? bgVal : fgVal} onChange={(e) => dispatch({ type: 'UPDATE_THEME', payload: { colorScheme: { ...colors, semanticRoles: { ...colors.semanticRoles!, [key]: e.target.value } } } })} /><span className="color-label">{formatLabel(key)}</span></label>)}</div><div className="color-swatch-preview" style={{ background: bgVal, color: fgVal }}>Semantic status</div></div>;
+        })}
+      </div>}
     </section>
   );
 }
