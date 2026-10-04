@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "metadata": {
     "id": "art-deco",
     "name": "Art Deco",
@@ -155,6 +155,5 @@
         }
       }
     ]
-  },
-  "schemaVersion": 2
+  }
 }

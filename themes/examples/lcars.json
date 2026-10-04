@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "metadata": {
     "id": "lcars",
     "name": "LCARS",
@@ -125,6 +125,5 @@
         }
       }
     ]
-  },
-  "schemaVersion": 2
+  }
 }

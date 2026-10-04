@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "metadata": {
     "id": "linkpoint-cobalt",
     "name": "Linkpoint Cobalt",
@@ -89,6 +89,5 @@
     "lineHeight": 1.5,
     "letterSpacing": 0
   },
-  "schemaVersion": 2,
   "adaptation": {}
 }

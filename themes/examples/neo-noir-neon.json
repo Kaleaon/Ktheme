@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "metadata": {
     "id": "neo-noir-neon",
     "name": "Neo-Noir Neon",
@@ -73,6 +73,5 @@
       "angle": 125
     }
   },
-  "schemaVersion": 2,
   "adaptation": {}
 }

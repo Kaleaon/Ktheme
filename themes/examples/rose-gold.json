@@ -1,4 +1,5 @@
 {
+  "schemaVersion": 2,
   "metadata": {
     "id": "rose-gold",
     "name": "Rose Gold",
@@ -70,6 +71,5 @@
       "angle": 120
     }
   },
-  "schemaVersion": 2,
   "adaptation": {}
 }

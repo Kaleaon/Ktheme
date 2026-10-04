@@ -1,4 +1,5 @@
 import { ThemeEngine } from './ThemeEngine';
+import { SCHEMA_VERSION } from './migrations';
 import { NavyGoldTheme } from '../themes/presets';
 import { AdaptationPresets } from '../themes/adaptationPresets';
 import type { Theme } from './types';

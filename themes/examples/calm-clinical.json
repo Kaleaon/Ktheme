@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "metadata": {
     "id": "calm-clinical",
     "name": "Calm Clinical",
@@ -56,6 +56,5 @@
       "color": "#00000011"
     }
   },
-  "schemaVersion": 2,
   "adaptation": {}
 }

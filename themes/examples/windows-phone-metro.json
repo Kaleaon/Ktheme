@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "metadata": {
     "id": "windows-phone-metro",
     "name": "Windows Phone Metro",
@@ -122,6 +122,5 @@
         }
       }
     ]
-  },
-  "schemaVersion": 2
+  }
 }

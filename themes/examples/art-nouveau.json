@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "metadata": {
     "id": "art-nouveau",
     "name": "Art Nouveau",
@@ -143,6 +143,5 @@
         }
       }
     ]
-  },
-  "schemaVersion": 2
+  }
 }

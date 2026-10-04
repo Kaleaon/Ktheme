@@ -18,7 +18,7 @@ import {
 import { contrastRatio, normalizeColor } from '../utils/colors';
 import { resolveAccessibilitySettings } from '../accessibility/defaults';
 import { validateComponentOverridePolicy } from '../adaptation/apply';
-import { SCHEMA_VERSION } from './migrations';
+import { SCHEMA_VERSION, migrateTheme } from './migrations';
 
 export class ThemeEngine {
   private themes: Map<string, Theme> = new Map();
@@ -770,11 +770,19 @@ export class ThemeEngine {
    */
   importTheme(json: string): Theme {
     try {
-      const importedTheme = JSON.parse(json) as Theme;
-      this.registerTheme(importedTheme);
-      return importedTheme;
+      const rawTheme = JSON.parse(json) as Record<string, unknown>;
+      if (rawTheme.schemaVersion === undefined) {
+        throw new Error('Schema version is required');
+      }
+      if (typeof rawTheme.schemaVersion === 'number' && rawTheme.schemaVersion < 1) {
+        throw new Error(`Unsupported schema version: ${rawTheme.schemaVersion}`);
+      }
+      const version = rawTheme.schemaVersion as number;
+      const theme = migrateTheme(rawTheme, version, SCHEMA_VERSION);
+      this.registerTheme(theme);
+      return theme;
     } catch (error) {
-      throw new Error(`Failed to import theme: ${error}`);
+      throw new Error(`Failed to import theme: ${error instanceof Error ? error.message : error}`);
     }
   }
 

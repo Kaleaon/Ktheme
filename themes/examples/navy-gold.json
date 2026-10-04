@@ -1,4 +1,5 @@
 {
+  "schemaVersion": 2,
   "metadata": {
     "id": "navy-gold",
     "name": "Navy Gold",
@@ -86,6 +87,5 @@
     "lineHeight": 1.5,
     "letterSpacing": 0
   },
-  "schemaVersion": 2,
   "adaptation": {}
 }

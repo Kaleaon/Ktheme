@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "metadata": {
     "id": "aurora-glass-night",
     "name": "Aurora Glass Night",
@@ -77,6 +77,5 @@
       "blendMode": "screen"
     }
   },
-  "schemaVersion": 2,
   "adaptation": {}
 }

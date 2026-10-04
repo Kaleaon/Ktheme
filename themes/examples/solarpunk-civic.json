@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "metadata": {
     "id": "solarpunk-civic",
     "name": "Solarpunk Civic",
@@ -101,6 +101,5 @@
       "angle": 120
     }
   },
-  "schemaVersion": 2,
   "adaptation": {}
 }

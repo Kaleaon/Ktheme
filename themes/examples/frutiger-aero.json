@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "metadata": {
     "id": "frutiger-aero",
     "name": "Frutiger Aero",
@@ -158,6 +158,5 @@
         }
       }
     ]
-  },
-  "schemaVersion": 2
+  }
 }

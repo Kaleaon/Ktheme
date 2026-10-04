@@ -36,7 +36,7 @@ const PRESET_UPDATED_AT = '2026-03-30T00:00:00.000Z';
  * Navy Gold Theme - Elegant navy background with gold accents
  */
 export const NavyGoldTheme: Theme = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   metadata: {
     ...NAVY_GOLD_METADATA,
     createdAt: PRESET_CREATED_AT,
@@ -71,7 +71,7 @@ export const NavyGoldTheme: Theme = {
  * Emerald Silver Theme - Rich emerald with silver metallic highlights
  */
 export const EmeraldSilverTheme: Theme = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   metadata: {
     ...EMERALD_SILVER_METADATA,
     createdAt: PRESET_CREATED_AT,
@@ -99,7 +99,7 @@ export const EmeraldSilverTheme: Theme = {
  * Rose Gold Theme - Warm rose gold with burgundy accents
  */
 export const RoseGoldTheme: Theme = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   metadata: {
     ...ROSE_GOLD_METADATA,
     createdAt: PRESET_CREATED_AT,
@@ -133,7 +133,7 @@ export const RoseGoldTheme: Theme = {
  * Royal Bronze Theme - Regal purple with bronze accents
  */
 export const RoyalBronzeTheme: Theme = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   metadata: {
     id: 'royal-bronze',
     name: 'Royal Bronze',
@@ -201,7 +201,7 @@ export const RoyalBronzeTheme: Theme = {
  * Midnight Amber Theme - Sophisticated midnight blue with amber
  */
 export const MidnightAmberTheme: Theme = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   metadata: {
     id: 'midnight-amber',
     name: 'Midnight Amber',
@@ -269,7 +269,7 @@ export const MidnightAmberTheme: Theme = {
  * Obsidian Crimson Theme - Bold dramatic black with crimson
  */
 export const ObsidianCrimsonTheme: Theme = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   metadata: {
     ...OBSIDIAN_CRIMSON_METADATA,
     createdAt: PRESET_CREATED_AT,
@@ -297,7 +297,7 @@ export const ObsidianCrimsonTheme: Theme = {
  * Slate Cyan Theme - Cool modern slate with cyan
  */
 export const SlateCyanTheme: Theme = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   metadata: {
     ...SLATE_CYAN_METADATA,
     createdAt: PRESET_CREATED_AT,
@@ -325,7 +325,7 @@ export const SlateCyanTheme: Theme = {
  * Royal Silver Theme - Matching original Android theme
  */
 export const RoyalSilverTheme: Theme = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   metadata: {
     id: 'royal-silver',
     name: 'Royal Silver',
@@ -393,7 +393,7 @@ export const RoyalSilverTheme: Theme = {
  * Forest Copper Theme - Deep forest green with copper
  */
 export const ForestCopperTheme: Theme = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   metadata: {
     id: 'forest-copper',
     name: 'Forest Copper',
@@ -461,7 +461,7 @@ export const ForestCopperTheme: Theme = {
  * Burgundy Rose Gold Theme - Rich burgundy with rose gold
  */
 export const BurgundyRoseGoldTheme: Theme = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   metadata: {
     id: 'burgundy-rose-gold',
     name: 'Burgundy Rose Gold',
@@ -535,7 +535,7 @@ export const BurgundyRoseGoldTheme: Theme = {
  * Charcoal Champagne Theme - Sophisticated charcoal with champagne
  */
 export const CharcoalChampagneTheme: Theme = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   metadata: {
     id: 'charcoal-champagne',
     name: 'Charcoal Champagne',
@@ -603,7 +603,7 @@ export const CharcoalChampagneTheme: Theme = {
  * Slate Gunmetal Theme - Industrial slate with gunmetal
  */
 export const SlateGunmetalTheme: Theme = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   metadata: {
     id: 'slate-gunmetal',
     name: 'Slate Gunmetal',
@@ -671,7 +671,7 @@ export const SlateGunmetalTheme: Theme = {
  * Deep Purple Platinum Theme - Deep purple with platinum
  */
 export const DeepPurplePlatinumTheme: Theme = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   metadata: {
     id: 'deep-purple-platinum',
     name: 'Deep Purple Platinum',
@@ -739,7 +739,7 @@ export const DeepPurplePlatinumTheme: Theme = {
  * Paper Ink Theme - Minimalist reader theme (light mode)
  */
 export const PaperInkTheme: Theme = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   metadata: {
     ...PAPER_INK_METADATA,
     createdAt: PRESET_CREATED_AT,
@@ -761,7 +761,7 @@ export const PaperInkTheme: Theme = {
  * Frutiger Aero Theme - Late 90s / early 2000s glossy glass aesthetic
  */
 export const FrutigerAeroTheme: Theme = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   ...PaperInkTheme,
   metadata: {
     ...PaperInkTheme.metadata,
@@ -840,7 +840,7 @@ export const FrutigerAeroTheme: Theme = {
  * Solarpunk Civic Theme - Optimistic civic/nature interface language
  */
 export const SolarpunkCivicTheme: Theme = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   ...FrutigerAeroTheme,
   metadata: {
     ...FrutigerAeroTheme.metadata,
@@ -883,7 +883,7 @@ export const SolarpunkCivicTheme: Theme = {
  * Neo-Noir Neon Theme - Cinematic dark base with disciplined neon accents
  */
 export const NeoNoirNeonTheme: Theme = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   ...ObsidianCrimsonTheme,
   metadata: {
     ...ObsidianCrimsonTheme.metadata,
@@ -935,7 +935,7 @@ export const NeoNoirNeonTheme: Theme = {
  * Calm Clinical Theme - Low-stress clinical palette with accessibility-first clarity
  */
 export const CalmClinicalTheme: Theme = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   ...PaperInkTheme,
   metadata: {
     ...PaperInkTheme.metadata,
@@ -978,7 +978,7 @@ export const CalmClinicalTheme: Theme = {
  * Ink Terminal Modern Theme - Terminal-inspired palette with readability guardrails
  */
 export const InkTerminalModernTheme: Theme = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   ...SlateGunmetalTheme,
   metadata: {
     ...SlateGunmetalTheme.metadata,
@@ -1035,7 +1035,7 @@ export const InkTerminalModernTheme: Theme = {
  * Aurora Glass Night Theme - Premium glassmorphism over aurora-tinted dark surfaces
  */
 export const AuroraGlassNightTheme: Theme = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   ...SlateCyanTheme,
   metadata: {
     ...SlateCyanTheme.metadata,
@@ -1097,7 +1097,7 @@ export const AuroraGlassNightTheme: Theme = {
  * Windows Phone Metro Theme - Flat, high-contrast tile-oriented theme
  */
 export const WindowsPhoneMetroTheme: Theme = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   ...SlateCyanTheme,
   metadata: {
     ...SlateCyanTheme.metadata,
@@ -1139,7 +1139,7 @@ export const WindowsPhoneMetroTheme: Theme = {
  * LCARS Theme - Starship-console inspired color and panel language
  */
 export const LCARSTheme: Theme = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   ...RoyalBronzeTheme,
   metadata: {
     ...RoyalBronzeTheme.metadata,
@@ -1181,7 +1181,7 @@ export const LCARSTheme: Theme = {
  * Art Nouveau Theme - Organic curves, botanical accents, and decorative linework.
  */
 export const ArtNouveauTheme: Theme = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   metadata: {
     id: 'art-nouveau',
     name: 'Art Nouveau',
@@ -1261,7 +1261,7 @@ export const ArtNouveauTheme: Theme = {
  * Art Deco Theme - Geometric symmetry with premium high-contrast finishes.
  */
 export const ArtDecoTheme: Theme = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   metadata: {
     id: 'art-deco',
     name: 'Art Deco',
@@ -1352,7 +1352,7 @@ export const SharedPresetThemeIds = [...SHARED_PRESET_IDS];
  * Linkpoint Gold Theme
  */
 export const LinkpointGoldTheme: Theme = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   metadata: {
     id: 'linkpoint-gold',
     name: 'Linkpoint Gold',
@@ -1420,7 +1420,7 @@ export const LinkpointGoldTheme: Theme = {
  * Linkpoint Cobalt Theme
  */
 export const LinkpointCobaltTheme: Theme = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   metadata: {
     id: 'linkpoint-cobalt',
     name: 'Linkpoint Cobalt',

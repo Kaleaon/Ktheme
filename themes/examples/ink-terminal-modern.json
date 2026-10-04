@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "metadata": {
     "id": "ink-terminal-modern",
     "name": "Ink Terminal Modern",
@@ -84,6 +84,5 @@
     "lineHeight": 1.55,
     "letterSpacing": 0
   },
-  "schemaVersion": 2,
   "adaptation": {}
 }
