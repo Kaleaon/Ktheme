@@ -42,7 +42,5 @@
     "inverseSurface": "#E5E7EB",
     "inverseOnSurface": "#111827",
     "inversePrimary": "#93C5FD"
-  },
-  "schemaVersion": 2,
-  "adaptation": {}
+  }
 }
