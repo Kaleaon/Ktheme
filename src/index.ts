@@ -39,6 +39,7 @@ export * from './linkpoint';
 // Media design tokens exports
 export * from './media/quickAccess';
 export * from './exporters';
+export * as cli from './cli';
 
 // Re-export for convenience
 import { ThemeEngine } from './core/ThemeEngine';

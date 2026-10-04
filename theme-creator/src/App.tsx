@@ -7,6 +7,7 @@ import { ThemePreview } from './components/preview/ThemePreview.tsx';
 import { AIDesigner } from './components/ai/AIDesigner.tsx';
 import { BlueskyPanel } from './components/bluesky/BlueskyPanel.tsx';
 import { PresetsPanel } from './components/presets/PresetsPanel.tsx';
+import { CatalogSyncPanel } from './components/catalog/CatalogSyncPanel.tsx';
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState('customize');
@@ -21,6 +22,8 @@ function AppContent() {
         return <BlueskyPanel />;
       case 'presets':
         return <PresetsPanel />;
+      case 'catalog':
+        return <CatalogSyncPanel />;
       default:
         return <CustomizerPanel />;
     }
