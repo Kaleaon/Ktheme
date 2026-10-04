@@ -1,14 +1,7 @@
-// libs/ktheme-compose/build.gradle.kts
-//
-// Jetpack Compose integration. Depends on ktheme-core for models and
-// the engine. Targets Android (Compose Material 3) but the Modifiers
-// are pure Compose so a Compose-Multiplatform consumer can use them
-// on Desktop/iOS too with minor sourceSet rearrangement.
-
 plugins {
-    id("com.android.library") version "8.5.0"
-    kotlin("android") version "2.0.0"
-    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
+    id("com.android.library")
+    kotlin("android")
+    id("org.jetbrains.kotlin.plugin.compose")
     `maven-publish`
 }
 
