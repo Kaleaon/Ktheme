@@ -1,4 +1,5 @@
-import { Theme } from '../core/types';
+import { MetallicVariant, Theme } from '../core/types';
+import { NavyGoldTheme } from '../themes/presets';
 import { toAndroidCompose } from './toAndroidCompose';
 import { toCssVars } from './toCssVars';
 import { toDesignTokensJson } from './toDesignTokensJson';
@@ -57,6 +58,46 @@ const fixtureTheme: Theme = {
       critical: '#B00020',
       onCritical: '#FFFFFF'
     }
+  }
+};
+
+const configuredTheme: Theme = {
+  ...fixtureTheme,
+  effects: {
+    blur: { enabled: true, radius: 14 },
+    metallic: {
+      enabled: true,
+      variant: MetallicVariant.GOLD,
+      intensity: 0.85,
+      gradient: {
+        base: '#D4AF37',
+        highlight: '#FFD700',
+        shadow: '#856D34',
+        shimmer: '#FFF8DC'
+      }
+    },
+    shadows: {
+      enabled: true,
+      elevation: 6,
+      blur: 12,
+      color: '#00000088'
+    },
+    shimmer: {
+      enabled: true,
+      speed: 2.5,
+      intensity: 0.7,
+      angle: 120
+    }
+  },
+  typography: {
+    fontFamily: '"Inter", sans-serif',
+    fontSize: { small: 14, medium: 18, large: 24, xlarge: 32 },
+    fontWeight: { light: 300, regular: 400, medium: 600, bold: 800 },
+    lineHeight: 1.6,
+    letterSpacing: 0.02
+  },
+  tokens: {
+    corners: { small: 6, medium: 10, large: 16, xlarge: 24 }
   }
 };
 
@@ -189,4 +230,116 @@ describe('exporter parity', () => {
     expect(lightCompose.kotlin).toContain('lightColorScheme(');
     expect(lightCompose.kotlin).not.toContain('darkColorScheme(');
   });
+
+  it('exports expanded CSS variables for fully configured themes and uses fallbacks for sparse themes', () => {
+    // Test sparse theme fallbacks
+    const sparseVars = toCssVars(fixtureTheme);
+    expect(sparseVars.vars['--ktheme-glass-blur']).toBe('0px');
+    expect(sparseVars.vars['--ktheme-metallic-variant']).toBe('SILVER');
+    expect(sparseVars.vars['--ktheme-metallic-intensity']).toBe('0');
+    expect(sparseVars.vars['--ktheme-metallic-base']).toBe('#C0C0C0');
+    expect(sparseVars.vars['--ktheme-glow-intensity']).toBe('0');
+    expect(sparseVars.vars['--ktheme-glow-blur']).toBe('0px');
+    expect(sparseVars.vars['--ktheme-shimmer-speed']).toBe('0s');
+    expect(sparseVars.vars['--ktheme-font-family']).toBe('system-ui, -apple-system, sans-serif');
+    expect(sparseVars.vars['--ktheme-font-size-small']).toBe('12px');
+    expect(sparseVars.vars['--ktheme-corner-small']).toBe('4px');
+    expect(sparseVars.cssText).toContain('--ktheme-glass-blur: 0px;');
+
+    // Test configured theme
+    const fullVars = toCssVars(configuredTheme);
+    expect(fullVars.vars['--ktheme-glass-blur']).toBe('14px');
+    expect(fullVars.vars['--ktheme-metallic-variant']).toBe('GOLD');
+    expect(fullVars.vars['--ktheme-metallic-intensity']).toBe('0.85');
+    expect(fullVars.vars['--ktheme-metallic-base']).toBe('#D4AF37');
+    expect(fullVars.vars['--ktheme-metallic-highlight']).toBe('#FFD700');
+    expect(fullVars.vars['--ktheme-glow-intensity']).toBe('6');
+    expect(fullVars.vars['--ktheme-glow-blur']).toBe('12px');
+    expect(fullVars.vars['--ktheme-glow-color']).toBe('#00000088');
+    expect(fullVars.vars['--ktheme-shimmer-speed']).toBe('2.5s');
+    expect(fullVars.vars['--ktheme-shimmer-intensity']).toBe('0.7');
+    expect(fullVars.vars['--ktheme-shimmer-angle']).toBe('120deg');
+    expect(fullVars.vars['--ktheme-font-family']).toBe('"Inter", sans-serif');
+    expect(fullVars.vars['--ktheme-font-size-small']).toBe('14px');
+    expect(fullVars.vars['--ktheme-font-size-medium']).toBe('18px');
+    expect(fullVars.vars['--ktheme-font-size-large']).toBe('24px');
+    expect(fullVars.vars['--ktheme-font-size-xlarge']).toBe('32px');
+    expect(fullVars.vars['--ktheme-font-weight-bold']).toBe('800');
+    expect(fullVars.vars['--ktheme-font-line-height']).toBe('1.6');
+    expect(fullVars.vars['--ktheme-font-letter-spacing']).toBe('0.02em');
+    expect(fullVars.vars['--ktheme-corner-small']).toBe('6px');
+    expect(fullVars.vars['--ktheme-corner-medium']).toBe('10px');
+    expect(fullVars.vars['--ktheme-corner-large']).toBe('16px');
+    expect(fullVars.vars['--ktheme-corner-xlarge']).toBe('24px');
+
+    expect(fullVars.cssText).toContain(':root {');
+    expect(fullVars.cssText).toContain('--ktheme-glass-blur: 14px;');
+    expect(fullVars.cssText).toContain('--ktheme-metallic-variant: GOLD;');
+    expect(fullVars.cssText).toContain('--ktheme-corner-xlarge: 24px;');
+
+    // Test with preset theme NavyGoldTheme
+    const navyGoldVars = toCssVars(NavyGoldTheme);
+    expect(navyGoldVars.vars['--ktheme-metallic-variant']).toBe('GOLD_ROYAL_BLUE');
+    expect(navyGoldVars.vars['--ktheme-shimmer-speed']).toBe('3s');
+  });
+
+  it('exports expanded Tailwind configurations with borderRadius, typography, shadows, backdropBlur, and animation', () => {
+    // Test sparse theme
+    const sparseTailwind = toTailwindConfig(fixtureTheme);
+    expect(sparseTailwind.theme.extend.borderRadius).toEqual({
+      small: '4px',
+      medium: '8px',
+      large: '12px',
+      xlarge: '16px'
+    });
+    expect(sparseTailwind.theme.extend.fontFamily.sans).toBe('system-ui, -apple-system, sans-serif');
+    expect(sparseTailwind.theme.extend.fontSize.medium).toBe('16px');
+    expect(sparseTailwind.theme.extend.fontWeight.bold).toBe('700');
+    expect(sparseTailwind.theme.extend.lineHeight.normal).toBe('1.5');
+    expect(sparseTailwind.theme.extend.letterSpacing.normal).toBe('0em');
+    expect(sparseTailwind.theme.extend.backdropBlur.glass).toBe('0px');
+    expect(sparseTailwind.theme.extend.animation.shimmer).toBe('shimmer 0s linear infinite');
+
+    // Test fully configured theme
+    const fullTailwind = toTailwindConfig(configuredTheme);
+    expect(fullTailwind.theme.extend.borderRadius).toEqual({
+      small: '6px',
+      medium: '10px',
+      large: '16px',
+      xlarge: '24px'
+    });
+    expect(fullTailwind.theme.extend.fontFamily).toEqual({
+      sans: '"Inter", sans-serif',
+      primary: '"Inter", sans-serif'
+    });
+    expect(fullTailwind.theme.extend.fontSize).toEqual({
+      small: '14px',
+      medium: '18px',
+      large: '24px',
+      xlarge: '32px'
+    });
+    expect(fullTailwind.theme.extend.fontWeight).toEqual({
+      light: '300',
+      regular: '400',
+      medium: '600',
+      bold: '800'
+    });
+    expect(fullTailwind.theme.extend.lineHeight).toEqual({
+      normal: '1.6'
+    });
+    expect(fullTailwind.theme.extend.letterSpacing).toEqual({
+      normal: '0.02em'
+    });
+    expect(fullTailwind.theme.extend.boxShadow).toEqual({
+      glow: '0 0 12px #00000088',
+      elevation: '0 6px 12px #00000088'
+    });
+    expect(fullTailwind.theme.extend.backdropBlur).toEqual({
+      glass: '14px'
+    });
+    expect(fullTailwind.theme.extend.animation).toEqual({
+      shimmer: 'shimmer 2.5s linear infinite'
+    });
+  });
 });
+
