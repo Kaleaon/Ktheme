@@ -10,6 +10,7 @@ const LOG_MODE = process.env.AI_LOG_MODE || 'metadata'; // none | metadata | ful
 const sessions = new Map();
 const rateLimits = new Map();
 const interactionLogs = [];
+const upstreamComponents = [];
 
 const SYSTEM_PROMPT = `You are Ktheme AI, an expert theme designer for the Ktheme theming engine. You help users create beautiful, accessible application themes.
 
@@ -291,6 +292,82 @@ createServer(async (req, res) => {
     } catch (error) {
       return json(res, 500, { error: error instanceof Error ? error.message : 'Request failed' });
     }
+  }
+
+  if (req.method === 'POST' && req.url.startsWith('/api/sync/component-upstream')) {
+    try {
+      const body = await parseBody(req);
+      const newItems = Array.isArray(body.components)
+        ? body.components
+        : (body.id ? [body] : []);
+
+      for (const item of newItems) {
+        if (item && item.id && item.name) {
+          item.receivedAt = new Date().toISOString();
+          const existingIdx = upstreamComponents.findIndex(c => c.id === item.id);
+          if (existingIdx !== -1) {
+            upstreamComponents[existingIdx] = item;
+          } else {
+            upstreamComponents.push(item);
+          }
+        }
+      }
+
+      return json(res, 200, {
+        ok: true,
+        count: newItems.length,
+        total: upstreamComponents.length,
+        message: `Successfully received ${newItems.length} upstream components`,
+      });
+    } catch (err) {
+      return json(res, 400, { error: err.message });
+    }
+  }
+
+  if (req.method === 'GET' && req.url.startsWith('/api/sync/component-upstream')) {
+    return json(res, 200, {
+      ok: true,
+      count: upstreamComponents.length,
+      components: upstreamComponents,
+    });
+  }
+
+  if (req.url.startsWith('/api/sync/token-downstream')) {
+    const urlObj = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+    const themeId = urlObj.searchParams.get('themeId') || 'navy-gold';
+
+    const tokens = {
+      light: {
+        primary: '0xFF1E3A8A',
+        onPrimary: '0xFFFFFFFF',
+        primaryContainer: '0xFFDBEAFE',
+        onPrimaryContainer: '0xFF1E40AF',
+        secondary: '0xFFD97706',
+        onSecondary: '0xFFFFFFFF',
+        background: '0xFFF8FAFC',
+        onBackground: '0xFF0F172A',
+        surface: '0xFFFFFFFF',
+        onSurface: '0xFF0F172A',
+      },
+      dark: {
+        primary: '0xFF60A5FA',
+        onPrimary: '0xFF1E3A8A',
+        primaryContainer: '0xFF1E40AF',
+        onPrimaryContainer: '0xFFDBEAFE',
+        secondary: '0xFFFBBF24',
+        onSecondary: '0xFF78350F',
+        background: '0xFF0F172A',
+        onBackground: '0xFFF8FAFC',
+        surface: '0xFF1E293B',
+        onSurface: '0xFFF8FAFC',
+      },
+    };
+
+    return json(res, 200, {
+      ok: true,
+      themeId,
+      tokens,
+    });
   }
 
   if (req.method === 'POST' && req.url === '/api/ai/session/revoke') {
