@@ -84,6 +84,10 @@ export function TypographyEditor() {
           </label>
         ))}
       </div>
+      <h4 className="group-label">Font Weights</h4>
+      <div className="form-grid">
+        {(Object.keys(typo.fontWeight) as Array<keyof Typography['fontWeight']>).map((weight) => <label key={weight} className="form-field"><span className="field-label">{weight}: {typo.fontWeight[weight]}</span><input type="range" min="100" max="900" step="100" value={typo.fontWeight[weight]} onChange={(e) => update({ fontWeight: { ...typo.fontWeight, [weight]: Number(e.target.value) } })} /></label>)}
+      </div>
     </section>
   );
 }

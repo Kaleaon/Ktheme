@@ -1312,3 +1312,14 @@ input[type="range"]::-webkit-slider-thumb {
     justify-content: center;
   }
 }
+
+/* Composable live-preview effects */
+.preview-frame { position: relative; isolation: isolate; }
+.preview-frame > :not(.pv-effect-layer) { position: relative; z-index: 1; }
+.pv-effect-layer { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+.pv-noise { background-image: radial-gradient(rgba(255, 255, 255, 0.9) 0.7px, transparent 0.8px); }
+.effects-animated { animation: preview-arrive 300ms ease both; }
+@keyframes preview-arrive { from { opacity: 0.72; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
+.preview-frame button:focus-visible, .preview-frame .pv-input:focus-visible { outline: var(--focus-width) solid var(--focus-color); outline-offset: var(--focus-offset); }
+.gradient-stop { display: grid; grid-template-columns: minmax(80px, 0.8fr) 1.2fr; align-items: center; gap: 8px; }
+.section-hint { color: var(--text-muted); font-size: 11px; line-height: 1.5; margin: -4px 0 6px; }

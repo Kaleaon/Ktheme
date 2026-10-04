@@ -3,6 +3,7 @@ import {
   Sparkles,
   CloudUpload,
   Library,
+  Package,
   Sun,
   Moon,
   Save,
@@ -21,6 +22,7 @@ const tabs = [
   { id: 'ai', label: 'AI Designer', icon: Sparkles },
   { id: 'bluesky', label: 'Bluesky', icon: CloudUpload },
   { id: 'presets', label: 'Presets', icon: Library },
+  { id: 'catalog', label: 'Catalog Sync', icon: Package },
 ];
 
 export function Sidebar({ activeTab, onTabChange }: SidebarProps) {

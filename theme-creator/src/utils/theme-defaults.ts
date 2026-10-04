@@ -29,6 +29,15 @@ export const DEFAULT_COLOR_SCHEME: ColorScheme = {
   inverseSurface: '#E6E1E5',
   inverseOnSurface: '#313033',
   inversePrimary: '#6750A4',
+  stateLayers: {
+    hover: '#FFFFFF14', pressed: '#FFFFFF1F', focused: '#FFFFFF1F', dragged: '#FFFFFF29',
+  },
+  semanticRoles: {
+    success: '#4ADE80', onSuccess: '#052E16', successContainer: '#14532D', onSuccessContainer: '#DCFCE7',
+    warning: '#FBBF24', onWarning: '#422006', warningContainer: '#78350F', onWarningContainer: '#FEF3C7',
+    info: '#60A5FA', onInfo: '#172554', infoContainer: '#1E3A8A', onInfoContainer: '#DBEAFE',
+    critical: '#FB7185', onCritical: '#4C0519',
+  },
 };
 
 export const DEFAULT_EFFECTS: VisualEffects = {
@@ -55,6 +64,17 @@ export const DEFAULT_EFFECTS: VisualEffects = {
     intensity: 0.5,
     angle: 135,
   },
+  blur: { enabled: false, radius: 12 },
+  gradients: {
+    enabled: false,
+    angle: 135,
+    stops: [{ offset: 0, color: '#6750A4' }, { offset: 1, color: '#1C1B1F' }],
+  },
+  animations: { enabled: true, duration: 300, easing: 'ease-in-out', reducedMotionPolicy: 'reduce' },
+  transitions: { enabled: true, duration: 200, properties: ['background-color', 'color', 'box-shadow', 'transform'] },
+  overlays: { enabled: false, color: '#6750A4', opacity: 0.12, blendMode: 'soft-light' },
+  focusRing: { enabled: true, color: '#6750A4', width: 2, offset: 2 },
+  noise: { enabled: false, opacity: 0.05, scale: 4 },
 };
 
 export const DEFAULT_TYPOGRAPHY: Typography = {
@@ -79,9 +99,9 @@ export function createDefaultTheme(): KTheme {
       updatedAt: now,
     },
     darkMode: true,
-    colorScheme: { ...DEFAULT_COLOR_SCHEME },
+    colorScheme: JSON.parse(JSON.stringify(DEFAULT_COLOR_SCHEME)),
     effects: JSON.parse(JSON.stringify(DEFAULT_EFFECTS)),
-    typography: { ...DEFAULT_TYPOGRAPHY },
+    typography: JSON.parse(JSON.stringify(DEFAULT_TYPOGRAPHY)),
   };
 }
 

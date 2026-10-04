@@ -1,0 +1,126 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ktheme.io/ktheme-component-schema.json",
+  "title": "Ktheme Component Catalog Schema",
+  "description": "Schema for specifying cross-platform UI component metadata, prop types, and design token bindings.",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "framework",
+    "props"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the component catalog item."
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable name of the UI component."
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the component functionality."
+    },
+    "framework": {
+      "type": "string",
+      "enum": [
+        "jetpack-compose",
+        "blender-python",
+        "react",
+        "swift-ui",
+        "flutter",
+        "other"
+      ],
+      "description": "Target framework or platform for the component."
+    },
+    "category": {
+      "type": "string",
+      "description": "Categorization (e.g. controls, panels, morphs, rigging, typography, layout)."
+    },
+    "sourceFile": {
+      "type": "string",
+      "description": "Path or filename where the component source lives."
+    },
+    "props": {
+      "type": "array",
+      "description": "List of component parameters/properties or state controls.",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "type"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "defaultValue": {},
+          "description": {
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "min": {
+                "type": "number"
+              },
+              "max": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
+    },
+    "tokenBindings": {
+      "type": "object",
+      "description": "Map of component elements or props to Ktheme token names.",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional platform or component metadata.",
+      "properties": {
+        "author": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "bl_idname": {
+          "type": "string"
+        },
+        "bl_label": {
+          "type": "string"
+        },
+        "bl_category": {
+          "type": "string"
+        },
+        "previewHtml": {
+          "type": "string"
+        },
+        "sourceCode": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}
