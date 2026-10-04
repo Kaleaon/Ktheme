@@ -14,9 +14,6 @@ import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.security.MessageDigest
 import com.ktheme.utils.ThemeIdCollisionPolicy
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import java.io.File
 
 /**
  * Theme Library - Central repository for managing and sharing themes across applications
@@ -40,6 +37,7 @@ class ThemeLibrary(
     private val indexJson = Json {
         prettyPrint = true
         ignoreUnknownKeys = true
+    }
     private val json = Json { prettyPrint = true }
     
     companion object {
@@ -136,18 +134,6 @@ class ThemeLibrary(
     /**
      * Rebuild catalog index from the filesystem.
      */
-    private fun loadThemesFromDirectory(directory: File, source: String) {
-        if (!directory.exists() || !directory.isDirectory) {
-            println("Theme directory not found: ${directory.absolutePath}")
-            return
-        }
-        
-        directory.listFiles()?.filter { it.extension == "json" }?.forEach { file ->
-            try {
-                val theme = engine.loadThemeFromFile(file, signatureVerifier)
-                println("✓ Loaded theme: ${theme.metadata.name} from $source")
-            } catch (e: Exception) {
-                println("✗ Failed to load ${file.name}: ${e.message}")
     fun rebuildCatalogIndex(bundledThemesDir: File? = null): List<ThemeCatalogEntry> {
         val entries = mutableListOf<ThemeCatalogEntry>()
 
@@ -273,7 +259,6 @@ class ThemeLibrary(
             }
             .sortedWith(
                 compareByDescending<ScoredTheme> { it.score }
-                    .thenBy { it.theme.metadata.name.lowercase() }
                     .thenBy { it.originalIndex }
             )
             .drop(offset.coerceAtLeast(0))
@@ -294,10 +279,8 @@ class ThemeLibrary(
     fun shareTheme(themeId: String, signer: ThemeFileMetadataSigner? = null): Boolean {
         return try {
             val theme = engine.getTheme(themeId) ?: return false
-            val sharedFile = File(SHARED_THEMES_DIR, "${theme.metadata.id}.json")
-            engine.saveThemeToFile(themeId, sharedFile, signer)
             val sharedFile = File(sharedThemesDirectory, "${theme.metadata.id}.json")
-            engine.saveThemeToFile(themeId, sharedFile)
+            engine.saveThemeToFile(themeId, sharedFile, signer)
             println("Theme shared: ${theme.metadata.name}")
             true
         } catch (e: Exception) {
@@ -332,16 +315,11 @@ class ThemeLibrary(
     ): Theme? {
         return try {
             val theme = engine.loadThemeFromFile(file, signatureVerifier)
-            // Copy to user themes directory
-            val userFile = File(userThemesDirectory, file.name)
+            val userFile = File(userThemesDirectory, "${theme.metadata.id}.json")
+            userFile.parentFile?.mkdirs()
             Files.copy(file.toPath(), userFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
             notifyThemeImported(theme)
             theme
-            val importedTheme = engine.importTheme(file.readText(), collisionPolicy)
-            val userFile = File(USER_THEMES_DIR, "${importedTheme.metadata.id}.json")
-            userFile.writeText(json.encodeToString(importedTheme))
-            notifyThemeImported(importedTheme)
-            importedTheme
         } catch (e: Exception) {
             println("Failed to import theme: ${e.message}")
             null
@@ -462,6 +440,7 @@ private data class ScoredTheme(
     val score: Int,
     val matchedFields: List<String>,
     val originalIndex: Int
+)
 @Serializable
 data class ThemeCatalogIndex(
     val entries: List<ThemeCatalogEntry> = emptyList()

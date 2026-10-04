@@ -3,21 +3,18 @@ package com.ktheme.core
 import com.ktheme.models.Theme
 import com.ktheme.utils.ThemeIdCollisionPolicy
 import com.ktheme.utils.ThemeIdUtils
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
-import java.security.MessageDigest
+import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.jsonObject
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
+import java.security.MessageDigest
 import java.time.Instant
 
 /**
@@ -45,28 +42,26 @@ class ThemeEngine {
         theme: Theme,
         collisionPolicy: ThemeIdCollisionPolicy = ThemeIdCollisionPolicy.OVERWRITE
     ): Theme {
-        val normalizedTheme = ThemeIdUtils.withNormalizedId(theme)
-    fun registerTheme(theme: Theme) {
         val normalizedTheme = if (theme.schemaVersion == SCHEMA_VERSION) theme else theme.copy(schemaVersion = SCHEMA_VERSION)
-        val validation = validateTheme(normalizedTheme)
+        val normalizedThemeWithId = ThemeIdUtils.withNormalizedId(normalizedTheme)
+        val validation = validateTheme(normalizedThemeWithId)
         if (!validation.valid) {
             throw IllegalArgumentException("Invalid theme: ${validation.errors.joinToString(", ")}")
         }
 
         val resolvedId = ThemeIdUtils.resolveCollision(
-            normalizedTheme.metadata.id,
+            normalizedThemeWithId.metadata.id,
             themes.keys,
             collisionPolicy
         )
-        val resolvedTheme = if (resolvedId == normalizedTheme.metadata.id) {
-            normalizedTheme
+        val resolvedTheme = if (resolvedId == normalizedThemeWithId.metadata.id) {
+            normalizedThemeWithId
         } else {
-            normalizedTheme.copy(metadata = normalizedTheme.metadata.copy(id = resolvedId))
+            normalizedThemeWithId.copy(metadata = normalizedThemeWithId.metadata.copy(id = resolvedId))
         }
 
         themes[resolvedTheme.metadata.id] = resolvedTheme
         return resolvedTheme
-        themes[normalizedTheme.metadata.id] = normalizedTheme
     }
 
     /**
@@ -154,11 +149,6 @@ class ThemeEngine {
         collisionPolicy: ThemeIdCollisionPolicy = ThemeIdCollisionPolicy.OVERWRITE
     ): Theme {
         return try {
-            val theme = parseThemeJson(jsonString).theme
-            registerTheme(theme)
-            theme
-            val theme = json.decodeFromString<Theme>(jsonString)
-            registerTheme(theme, collisionPolicy)
             val rawTheme = json.parseToJsonElement(jsonString).jsonObject
             val importMetadata = parseThemeImportMetadata(rawTheme, json)
             val migratedPayload = if (importMetadata.schemaVersion == SCHEMA_VERSION) {
@@ -175,8 +165,7 @@ class ThemeEngine {
                     "Migrated theme '$fallbackName' ($fallbackId) is invalid: ${validation.errors.joinToString(", ")}"
                 )
             }
-            registerTheme(migratedTheme)
-            migratedTheme
+            registerTheme(migratedTheme, collisionPolicy)
         } catch (e: Exception) {
             throw IllegalArgumentException("Failed to import theme: ${e.message}", e)
         }

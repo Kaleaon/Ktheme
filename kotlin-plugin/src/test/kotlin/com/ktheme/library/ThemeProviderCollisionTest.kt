@@ -46,7 +46,7 @@ class ThemeProviderCollisionTest {
         assertTrue(provider.publishTheme(themeWithId("dup", "Second"), ThemeIdCollisionPolicy.OVERWRITE))
 
         val file = java.io.File(sharedDir, "dup.json")
-        val persisted = json.decodeFromString<Theme>(file.readText())
+        val persisted = com.ktheme.core.ThemeEngine().loadThemeFromFile(file)
         assertEquals("Second", persisted.metadata.name)
     }
 

@@ -110,6 +110,7 @@ internal object ThemeValidator {
             } else if (transitions.properties.any { it.isBlank() }) {
                 errors.add("effects.transitions.properties must not contain blank values")
             }
+            Unit
         }
 
         effects.particles?.let { particles ->

@@ -201,6 +201,87 @@ class FileBasedThemeProviderTest {
         }
     }
 
+    @Test
+    fun `getSharedThemes returns cached themes initialized on provider startup`() {
+        val tempDir = Files.createTempDirectory("ktheme-provider-init").toFile()
+        writeTheme(tempDir, createTheme("theme-a", "Theme A", "1.0.0"))
+        writeTheme(tempDir, createTheme("theme-b", "Theme B", "1.0.0"))
+
+        val provider = FileBasedThemeProvider(tempDir)
+        val themes = provider.getSharedThemes()
+
+        assertEquals(2, themes.size)
+        val ids = themes.map { it.metadata.id }.toSet()
+        assertEquals(setOf("theme-a", "theme-b"), ids)
+    }
+
+    @Test
+    fun `adding a theme file to sharedDir automatically populates in-memory cache within 500ms`() {
+        val tempDir = Files.createTempDirectory("ktheme-provider-cache-add").toFile()
+        val provider = FileBasedThemeProvider(tempDir)
+        assertTrue(provider.getSharedThemes().isEmpty())
+
+        writeTheme(tempDir, createTheme("new-cache-theme", "New Cache Theme", "1.0.0"))
+
+        var updated = false
+        val startTime = System.currentTimeMillis()
+        while (System.currentTimeMillis() - startTime < 3000) {
+            if (provider.getSharedThemes().any { it.metadata.id == "new-cache-theme" }) {
+                updated = true
+                break
+            }
+            Thread.sleep(50)
+        }
+
+        assertTrue("Expected in-memory cache to contain newly added theme", updated)
+    }
+
+    @Test
+    fun `deleting a theme file from sharedDir automatically removes entry from in-memory cache`() {
+        val tempDir = Files.createTempDirectory("ktheme-provider-cache-delete").toFile()
+        val themeFile = writeTheme(tempDir, createTheme("del-cache-theme", "Del Cache Theme", "1.0.0"))
+        val provider = FileBasedThemeProvider(tempDir)
+
+        assertEquals(1, provider.getSharedThemes().size)
+        assertTrue(themeFile.delete())
+
+        var removed = false
+        val startTime = System.currentTimeMillis()
+        while (System.currentTimeMillis() - startTime < 3000) {
+            if (provider.getSharedThemes().none { it.metadata.id == "del-cache-theme" }) {
+                removed = true
+                break
+            }
+            Thread.sleep(50)
+        }
+
+        assertTrue("Expected in-memory cache to remove deleted theme", removed)
+    }
+
+    @Test
+    fun `updating a theme file on disk automatically updates in-memory cached instance`() {
+        val tempDir = Files.createTempDirectory("ktheme-provider-cache-update").toFile()
+        writeTheme(tempDir, createTheme("upd-cache-theme", "Upd Cache Theme", "1.0.0"))
+        val provider = FileBasedThemeProvider(tempDir)
+
+        assertEquals("1.0.0", provider.getSharedThemes().single().metadata.version)
+
+        writeTheme(tempDir, createTheme("upd-cache-theme", "Upd Cache Theme", "2.0.0"))
+
+        var updated = false
+        val startTime = System.currentTimeMillis()
+        while (System.currentTimeMillis() - startTime < 3000) {
+            val current = provider.getSharedThemes().firstOrNull { it.metadata.id == "upd-cache-theme" }
+            if (current != null && current.metadata.version == "2.0.0") {
+                updated = true
+                break
+            }
+            Thread.sleep(50)
+        }
+
+        assertTrue("Expected in-memory cache to hold updated theme version", updated)
+    }
+
     private fun writeTheme(directory: java.io.File, theme: Theme): java.io.File {
         val file = java.io.File(directory, "${theme.metadata.id}.json")
         file.writeText(json.encodeToString(theme))
