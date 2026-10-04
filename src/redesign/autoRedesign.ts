@@ -156,7 +156,7 @@ function resolveBaseTheme(targetAestheticFamily?: string): {
       fallbackDecisions
     };
   } catch {
-    fallbackDecisions.push(`Unknown aesthetic \"${targetAestheticFamily ?? 'undefined'}\". Fell back to PaperInk preset.`);
+    fallbackDecisions.push(`Unknown aesthetic "${targetAestheticFamily ?? 'undefined'}". Fell back to PaperInk preset.`);
     return {
       selectedFamily: 'paper-ink',
       theme: cloneTheme(PresetThemes.PaperInk),
@@ -338,14 +338,14 @@ export function autoRedesign(input: AutoRedesignInput): AutoRedesignResult {
       workingTheme = applyExpansionPack(workingTheme, packId);
       appliedPacks.push(packId);
     } catch {
-      base.fallbackDecisions.push(`Ignored unknown expansion pack \"${packId}\".`);
+      base.fallbackDecisions.push(`Ignored unknown expansion pack "${packId}".`);
     }
   }
 
   const adaptationPresetId = input.adaptationPresetId ?? defaults?.adaptation;
   const adaptationPreset = adaptationPresetId ? AdaptationPresets[adaptationPresetId] : undefined;
   if (adaptationPresetId && !adaptationPreset) {
-    base.fallbackDecisions.push(`Unknown adaptation preset \"${adaptationPresetId}\". Kept base adaptation.`);
+    base.fallbackDecisions.push(`Unknown adaptation preset "${adaptationPresetId}". Kept base adaptation.`);
   }
 
   const assistiveConstraints = resolveAssistiveConstraints(input.constraints);

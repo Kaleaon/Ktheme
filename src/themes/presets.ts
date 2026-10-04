@@ -1562,7 +1562,6 @@ export const ArtDecoTheme: Theme = {
 
 
 export const SharedPresetThemeIds = [...SHARED_PRESET_IDS];
-const SHARED_PRESET_THEME_IDS = SharedPresetThemeIds;
 /**
  * All preset themes
  */
