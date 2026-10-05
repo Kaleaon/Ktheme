@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "metadata": {
     "id": "art-deco",
     "name": "Art Deco",
@@ -17,6 +17,10 @@
   },
   "darkMode": true,
   "colorScheme": {
+    "error": "#FFB4AB",
+    "onError": "#690005",
+    "errorContainer": "#93000A",
+    "onErrorContainer": "#FFDAD6",
     "primary": "#D4AF37",
     "onPrimary": "#1A1405",
     "primaryContainer": "#8F7121",
@@ -29,10 +33,6 @@
     "onTertiary": "#F6EAD1",
     "tertiaryContainer": "#2A2A2E",
     "onTertiaryContainer": "#F2E2B2",
-    "error": "#FFB4AB",
-    "onError": "#690005",
-    "errorContainer": "#93000A",
-    "onErrorContainer": "#FFDAD6",
     "background": "#0B0A0A",
     "onBackground": "#F3E8D0",
     "surface": "#141314",
@@ -94,7 +94,32 @@
       "cornerStyle": "sharp",
       "spacingScale": 0.94,
       "panelStyle": "elevated",
-      "navigationStyle": "rail"
+      "navigationStyle": "rail",
+      "accessibility": {
+        "landmarks": {
+          "main": "main",
+          "nav": "navigation",
+          "header": "header",
+          "footer": "footer"
+        },
+        "naming": {
+          "strategy": "native",
+          "main": "Main Content",
+          "nav": "Primary Navigation",
+          "header": "Application Header",
+          "footer": "Footer"
+        },
+        "keyboard": {
+          "order": "document",
+          "focusPolicy": "native",
+          "trapFocusWithinModals": true
+        },
+        "liveRegion": {
+          "mode": "polite",
+          "atomic": true,
+          "relevant": "additions"
+        }
+      }
     },
     "icons": {
       "family": "material",

@@ -1,17 +1,23 @@
 import { Theme } from '../core/types';
-import { normalizeSemanticRoles, toHexColor } from './utils';
+import { normalizeAdaptation, normalizeEffects, normalizeSemanticRoles, normalizeTypography, toHexColor } from './utils';
 
 export interface TailwindConfigExport {
   darkMode: 'class' | 'media';
   theme: {
     extend: {
       colors: Record<string, string>;
+      typography?: Record<string, unknown>;
+      effects?: Record<string, unknown>;
+      adaptation?: Record<string, unknown>;
     };
   };
 }
 
 export function toTailwindConfig(theme: Theme): TailwindConfigExport {
   const semantic = normalizeSemanticRoles(theme);
+  const typography = normalizeTypography(theme);
+  const effects = normalizeEffects(theme);
+  const adaptation = normalizeAdaptation(theme);
 
   return {
     darkMode: theme.darkMode ? 'class' : 'media',
@@ -26,7 +32,10 @@ export function toTailwindConfig(theme: Theme): TailwindConfigExport {
           warning: semantic.warning,
           info: semantic.info,
           critical: semantic.critical
-        }
+        },
+        typography,
+        effects,
+        adaptation
       }
     }
   };

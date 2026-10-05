@@ -1,9 +1,12 @@
 import { Theme } from '../core/types';
-import { normalizeSemanticRoles, toHexColor } from './utils';
+import { normalizeAdaptation, normalizeEffects, normalizeSemanticRoles, normalizeTypography, toHexColor } from './utils';
 
 export interface AndroidComposeExport {
   colorScheme: Record<string, string>;
   semanticColors: Record<string, string>;
+  typography: Record<string, unknown>;
+  effects: Record<string, unknown>;
+  adaptation: Record<string, unknown>;
   kotlin: string;
 }
 
@@ -68,6 +71,9 @@ function asComposeColor(hex: string): string {
 export function toAndroidCompose(theme: Theme, options?: AndroidComposeOptions): AndroidComposeExport {
   const packageName = options?.packageName ?? 'io.ktheme.compose';
   const semantic = normalizeSemanticRoles(theme);
+  const typography = normalizeTypography(theme);
+  const effects = normalizeEffects(theme);
+  const adaptation = normalizeAdaptation(theme);
 
   const colorScheme = MATERIAL3_COLOR_SCHEME_KEYS.reduce<Record<string, string>>((acc, key) => {
     acc[key] = toHexColor(theme.colorScheme[key]);
@@ -92,9 +98,17 @@ export function toAndroidCompose(theme: Theme, options?: AndroidComposeOptions):
     .map(([key, value]) => `    ${key} = ${asComposeColor(value)}`)
     .join(',\n')}\n)`;
 
+  const kotlinTypography = `object KthemeTypography {\n    val fontFamily = "${typography.fontFamily}"\n    val fontSizeSmall = ${typography.fontSize.small}.sp\n    val fontSizeMedium = ${typography.fontSize.medium}.sp\n    val fontSizeLarge = ${typography.fontSize.large}.sp\n    val fontSizeXLarge = ${typography.fontSize.xlarge}.sp\n}`;
+
+  const layoutObj = adaptation.layout as Record<string, unknown>;
+  const kotlinAdaptation = `object KthemeAdaptation {\n    val density = "${String(layoutObj.density)}"\n    val cornerStyle = "${String(layoutObj.cornerStyle)}"\n}`;
+
   return {
     colorScheme,
     semanticColors,
-    kotlin: `${packageHeader}\n\n${kotlinColorScheme}\n\n${kotlinSemanticColors}`
+    typography,
+    effects,
+    adaptation,
+    kotlin: `${packageHeader}\n\n${kotlinColorScheme}\n\n${kotlinSemanticColors}\n\n${kotlinTypography}\n\n${kotlinAdaptation}`
   };
 }
