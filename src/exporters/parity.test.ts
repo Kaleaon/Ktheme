@@ -1,4 +1,13 @@
 import { MetallicVariant, Theme } from '../core/types';
+import { extractThemeTokens } from './ir/extractIR';
+import {
+  androidComposeRenderer,
+  cssVarsRenderer,
+  designTokensRenderer,
+  flutterRenderer,
+  swiftUIRenderer,
+  tailwindRenderer
+} from './renderers';
 import { toAndroidCompose } from './toAndroidCompose';
 import { toBlenderPropertyGroup } from './toBlenderPropertyGroup';
 import { toCssVars } from './toCssVars';
@@ -6,6 +15,11 @@ import { toDesignTokensJson } from './toDesignTokensJson';
 import { toFlutterTheme } from './toFlutterTheme';
 import { toSwiftUI } from './toSwiftUI';
 import { toTailwindConfig } from './toTailwindConfig';
+import {
+  exportEffectVars,
+  exportTypographyVars,
+  exportCornerVars
+} from './web';
 
 const fixtureTheme: Theme = {
   metadata: {
@@ -58,6 +72,149 @@ const fixtureTheme: Theme = {
       critical: '#B00020',
       onCritical: '#FFFFFF'
     }
+  },
+  typography: {
+    fontFamily: 'Inter, sans-serif',
+    fontSize: {
+      small: 13,
+      medium: 16,
+      large: 22,
+      xlarge: 32
+    },
+    fontWeight: {
+      light: 300,
+      regular: 400,
+      medium: 500,
+      bold: 700
+    },
+    lineHeight: 1.6,
+    letterSpacing: 0.5
+  },
+  tokens: {
+    corners: {
+      small: 6,
+      medium: 10,
+      large: 16,
+      xlarge: 24
+    }
+  },
+  adaptation: {
+    layout: {
+      density: 'compact',
+      cornerStyle: 'pill',
+      spacingScale: 1.2,
+      panelStyle: 'glass',
+      navigationStyle: 'rail',
+      accessibility: {
+        landmarks: { main: 'main', nav: 'nav', header: 'header', footer: 'footer' },
+        naming: { strategy: 'native', main: 'main', nav: 'nav', header: 'header', footer: 'footer' },
+        keyboard: { order: 'document', focusPolicy: 'native', trapFocusWithinModals: false },
+        liveRegion: { mode: 'off', atomic: true, relevant: 'all' }
+      },
+      breakpoints: {
+        compact: 500,
+        medium: 900,
+        expanded: 1300
+      }
+    }
+  },
+  effects: {
+    metallic: {
+      enabled: true,
+      variant: MetallicVariant.GOLD,
+      intensity: 0.8,
+      gradient: {
+        base: '#D4AF37',
+        highlight: '#FFF8DC',
+        shadow: '#8B6508',
+        shimmer: '#FFDF00'
+      }
+    },
+    shadows: {
+      enabled: true,
+      elevation: 4,
+      blur: 8,
+      color: '#00000066'
+    },
+    shimmer: {
+      enabled: true,
+      speed: 1500,
+      intensity: 0.7,
+      angle: 60
+    },
+    blur: {
+      enabled: true,
+      radius: 12
+    },
+    animations: {
+      enabled: true,
+      duration: 250,
+      easing: 'ease-out'
+    },
+    focusRing: {
+      enabled: true,
+      color: '#111111',
+      width: 3,
+      offset: 2
+    }
+  }
+};
+
+const richFixtureTheme: Theme = {
+  ...fixtureTheme,
+  effects: {
+    metallic: {
+      enabled: true,
+      variant: MetallicVariant.GOLD,
+      gradient: {
+        base: '#D4AF37',
+        highlight: '#FFD700',
+        shadow: '#856D34',
+        shimmer: '#FFF8DC'
+      },
+      intensity: 0.9
+    },
+    shimmer: {
+      enabled: true,
+      speed: 1.5,
+      intensity: 0.8,
+      angle: 120
+    },
+    blur: {
+      enabled: true,
+      radius: 12
+    },
+    focusRing: {
+      enabled: true,
+      color: '#FFD700',
+      width: 3,
+      offset: 2
+    }
+  },
+  typography: {
+    fontFamily: 'Roboto, sans-serif',
+    fontSize: {
+      small: 11,
+      medium: 15,
+      large: 20,
+      xlarge: 28
+    },
+    fontWeight: {
+      light: 200,
+      regular: 400,
+      medium: 600,
+      bold: 800
+    },
+    lineHeight: 1.4,
+    letterSpacing: 0.02
+  },
+  tokens: {
+    corners: {
+      small: 6,
+      medium: 10,
+      large: 14,
+      xlarge: 22
+    }
   }
 };
 
@@ -92,103 +249,243 @@ const material3Roles = [
   'inversePrimary'
 ] as const;
 
-describe('exporter parity', () => {
-  it('maps semantic role colors consistently across all export adapters', () => {
-    const cssVars = toCssVars(fixtureTheme);
-    const tailwind = toTailwindConfig(fixtureTheme);
-    const compose = toAndroidCompose(fixtureTheme);
-    const swift = toSwiftUI(fixtureTheme);
-    const flutter = toFlutterTheme(fixtureTheme);
-    const designTokens = toDesignTokensJson(fixtureTheme);
+describe('exporter parity & IR pipeline', () => {
+  describe('IR Extraction (extractThemeTokens)', () => {
+    it('extracts complete NormalizedThemeTokens covering color, layout, typography, and effects categories', () => {
+      const ir = extractThemeTokens(fixtureTheme);
 
-    expect(cssVars.vars['--ktheme-semantic-success']).toBe('#00C853');
-    expect(cssVars.vars['--ktheme-semantic-warning']).toBe('#FFAB00');
-    expect(cssVars.vars['--ktheme-semantic-info']).toBe('#2196F3');
-    expect(cssVars.vars['--ktheme-semantic-critical']).toBe('#B00020');
+      expect(ir.metadata.id).toBe('export-fixture');
+      expect(ir.metadata.name).toBe('Exporter Fixture');
+      expect(ir.darkMode).toBe(true);
 
-    expect(tailwind.theme.extend.colors.success).toBe('#00C853');
-    expect(compose.semanticColors.success).toBe('#00C853');
-    expect(swift.colors.success).toBe('#00C853');
-    expect(flutter.colorScheme.success).toBe('#00C853');
-    expect(designTokens.theme.color.semantic.success.$value).toBe('#00C853');
+      // Color category
+      expect(ir.color.primary).toBe('#111111');
+      expect(ir.color.background).toBe('#121212');
+      expect(ir.color.semantic.success).toBe('#00C853');
+      expect(ir.color.semantic.warning).toBe('#FFAB00');
 
-    expect(tailwind.theme.extend.colors.warning).toBe('#FFAB00');
-    expect(compose.semanticColors.warning).toBe('#FFAB00');
-    expect(swift.colors.warning).toBe('#FFAB00');
-    expect(flutter.colorScheme.warning).toBe('#FFAB00');
-    expect(designTokens.theme.color.semantic.warning.$value).toBe('#FFAB00');
+      // Layout category
+      expect(ir.layout.density).toBe('compact');
+      expect(ir.layout.cornerStyle).toBe('pill');
+      expect(ir.layout.spacingScale).toBe(1.2);
+      expect(ir.layout.panelStyle).toBe('glass');
+      expect(ir.layout.navigationStyle).toBe('rail');
+      expect(ir.layout.breakpoints).toEqual({ compact: 500, medium: 900, expanded: 1300 });
+      expect(ir.layout.corners).toEqual({ small: 6, medium: 10, large: 16, xlarge: 24 });
 
-    expect(tailwind.theme.extend.colors.info).toBe('#2196F3');
-    expect(compose.semanticColors.info).toBe('#2196F3');
-    expect(swift.colors.info).toBe('#2196F3');
-    expect(flutter.colorScheme.info).toBe('#2196F3');
-    expect(designTokens.theme.color.semantic.info.$value).toBe('#2196F3');
+      // Typography category
+      expect(ir.typography.fontFamily).toBe('Inter, sans-serif');
+      expect(ir.typography.fontSize.large).toBe(22);
+      expect(ir.typography.fontWeight.bold).toBe(700);
+      expect(ir.typography.lineHeight).toBe(1.6);
+      expect(ir.typography.letterSpacing).toBe(0.5);
 
-    expect(tailwind.theme.extend.colors.critical).toBe('#B00020');
-    expect(compose.semanticColors.critical).toBe('#B00020');
-    expect(swift.colors.critical).toBe('#B00020');
-    expect(flutter.colorScheme.critical).toBe('#B00020');
-    expect(designTokens.theme.color.semantic.critical.$value).toBe('#B00020');
-  });
+      // Visual effects category
+      expect(ir.effects.metallic.enabled).toBe(true);
+      expect(ir.effects.metallic.variant).toBe(MetallicVariant.GOLD);
+      expect(ir.effects.metallic.gradient.base).toBe('#D4AF37');
+      expect(ir.effects.shadows.elevation).toBe(4);
+      expect(ir.effects.shimmer.speed).toBe(1500);
+      expect(ir.effects.blur.radius).toBe(12);
+      expect(ir.effects.animations.duration).toBe(250);
+      expect(ir.effects.focusRing.width).toBe(3);
+    });
 
-  it('exports Android Compose using only valid Material 3 ColorScheme roles', () => {
-    const compose = toAndroidCompose(fixtureTheme);
+    it('executes full fallback resolution for partial themes without dropping tokens', () => {
+      const minimalTheme: Theme = {
+        metadata: {
+          id: 'minimal',
+          name: 'Minimal',
+          description: '',
+          author: '',
+          version: '1.0.0',
+          tags: [],
+          createdAt: '',
+          updatedAt: ''
+        },
+        darkMode: false,
+        colorScheme: {
+          primary: '#0055FF',
+          onPrimary: '#FFFFFF',
+          primaryContainer: '#0022AA',
+          onPrimaryContainer: '#FFFFFF',
+          secondary: '#333333',
+          onSecondary: '#FFFFFF',
+          secondaryContainer: '#111111',
+          onSecondaryContainer: '#FFFFFF',
+          tertiary: '#777777',
+          onTertiary: '#FFFFFF',
+          tertiaryContainer: '#444444',
+          onTertiaryContainer: '#FFFFFF',
+          error: '#FF0000',
+          onError: '#FFFFFF',
+          errorContainer: '#AA0000',
+          onErrorContainer: '#FFFFFF',
+          background: '#FFFFFF',
+          onBackground: '#000000',
+          surface: '#F8F8F8',
+          onSurface: '#000000',
+          surfaceVariant: '#EEEEEE',
+          onSurfaceVariant: '#000000',
+          outline: '#CCCCCC',
+          outlineVariant: '#DDDDDD',
+          scrim: '#000000',
+          inverseSurface: '#000000',
+          inverseOnSurface: '#FFFFFF',
+          inversePrimary: '#88BBFF'
+        }
+      };
 
-    expect(compose.kotlin).toContain('package io.ktheme.compose');
-    expect(compose.kotlin).toContain('import androidx.compose.ui.graphics.Color');
-    expect(compose.kotlin).toContain('val KthemeColorScheme = darkColorScheme(');
-    expect(compose.kotlin).toContain('Color(0xFF111111)');
+      const ir = extractThemeTokens(minimalTheme);
 
-    const customCompose = toAndroidCompose(fixtureTheme, { packageName: 'com.charmorph.app.ui.theme' });
-    expect(customCompose.kotlin).toContain('package com.charmorph.app.ui.theme');
-
-    const colorSchemeArgs = compose.kotlin
-      .split('val KthemeColorScheme = darkColorScheme(')[1]
-      .split('\n)')[0]
-      .split('\n')
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0)
-      .map((line) => line.replace(/,$/, '').split(' = ')[0]);
-
-    const argSet = new Set(colorSchemeArgs);
-
-    for (const role of material3Roles) {
-      expect(argSet.has(role)).toBe(true);
-      expect(compose.colorScheme[role]).toBeDefined();
-    }
-
-    for (const arg of argSet) {
-      expect(material3Roles).toContain(arg as (typeof material3Roles)[number]);
-    }
-
-    expect(argSet.has('success')).toBe(false);
-    expect(argSet.has('warning')).toBe(false);
-    expect(argSet.has('info')).toBe(false);
-    expect(argSet.has('critical')).toBe(false);
-  });
-
-  it('exports semantic Android Compose roles separately from ColorScheme', () => {
-    const compose = toAndroidCompose(fixtureTheme);
-
-    expect(compose.kotlin).toContain('data class KthemeSemanticColors(');
-    expect(compose.kotlin).toContain('val KthemeSemanticColors = KthemeSemanticColors(');
-
-    expect(compose.semanticColors).toEqual({
-      success: '#00C853',
-      warning: '#FFAB00',
-      info: '#2196F3',
-      critical: '#B00020'
+      expect(ir.color.primary).toBe('#0055FF');
+      expect(ir.layout.density).toBe('comfortable');
+      expect(ir.layout.cornerStyle).toBe('rounded');
+      expect(ir.layout.spacingScale).toBe(1.0);
+      expect(ir.typography.fontFamily).toBe('system-ui');
+      expect(ir.effects.metallic.enabled).toBe(false);
+      expect(ir.effects.shadows.enabled).toBe(false);
     });
   });
 
-  it('switches Android Compose color scheme function based on darkMode', () => {
-    const darkCompose = toAndroidCompose(fixtureTheme);
-    const lightCompose = toAndroidCompose({ ...fixtureTheme, darkMode: false });
+  describe('Target Platform Renderers', () => {
+    it('maps semantic role colors consistently across all export adapters', () => {
+      const cssVars = toCssVars(fixtureTheme);
+      const tailwind = toTailwindConfig(fixtureTheme);
+      const compose = toAndroidCompose(fixtureTheme);
+      const swift = toSwiftUI(fixtureTheme);
+      const flutter = toFlutterTheme(fixtureTheme);
+      const designTokens = toDesignTokensJson(fixtureTheme);
 
-    expect(darkCompose.kotlin).toContain('darkColorScheme(');
-    expect(darkCompose.kotlin).not.toContain('lightColorScheme(');
-    expect(lightCompose.kotlin).toContain('lightColorScheme(');
-    expect(lightCompose.kotlin).not.toContain('darkColorScheme(');
+      expect(cssVars.vars['--ktheme-semantic-success']).toBe('#00C853');
+      expect(cssVars.vars['--ktheme-semantic-warning']).toBe('#FFAB00');
+      expect(cssVars.vars['--ktheme-semantic-info']).toBe('#2196F3');
+      expect(cssVars.vars['--ktheme-semantic-critical']).toBe('#B00020');
+
+      expect(tailwind.theme.extend.colors.success).toBe('#00C853');
+      expect(compose.semanticColors.success).toBe('#00C853');
+      expect(swift.colors.success).toBe('#00C853');
+      expect(flutter.colorScheme.success).toBe('#00C853');
+      expect(designTokens.theme.color.semantic.success.$value).toBe('#00C853');
+    });
+
+    it('guarantees end-to-end parity between direct IR rendering and exporter wrappers', () => {
+      const ir = extractThemeTokens(fixtureTheme);
+
+      expect(cssVarsRenderer.render(ir)).toEqual(toCssVars(fixtureTheme));
+      expect(tailwindRenderer.render(ir)).toEqual(toTailwindConfig(fixtureTheme));
+      expect(androidComposeRenderer.render(ir)).toEqual(toAndroidCompose(fixtureTheme));
+      expect(swiftUIRenderer.render(ir)).toEqual(toSwiftUI(fixtureTheme));
+      expect(flutterRenderer.render(ir)).toEqual(toFlutterTheme(fixtureTheme));
+      expect(designTokensRenderer.render(ir)).toEqual(toDesignTokensJson(fixtureTheme));
+    });
+
+    it('implements TokenRenderer contract across all six platform renderers', () => {
+      const renderers = [
+        cssVarsRenderer,
+        tailwindRenderer,
+        androidComposeRenderer,
+        swiftUIRenderer,
+        flutterRenderer,
+        designTokensRenderer
+      ];
+
+      const ir = extractThemeTokens(fixtureTheme);
+
+      for (const renderer of renderers) {
+        expect(renderer.id).toBeDefined();
+        expect(renderer.name).toBeDefined();
+        const output = renderer.render(ir);
+        expect(output).toBeDefined();
+        expect(typeof output).toBe('object');
+      }
+    });
+
+    it('exports Android Compose using only valid Material 3 ColorScheme roles', () => {
+      const compose = toAndroidCompose(fixtureTheme);
+
+      expect(compose.kotlin).toContain('package io.ktheme.compose');
+      expect(compose.kotlin).toContain('import androidx.compose.ui.graphics.Color');
+      expect(compose.kotlin).toContain('val KthemeColorScheme = darkColorScheme(');
+      expect(compose.kotlin).toContain('Color(0xFF111111)');
+
+      const customCompose = toAndroidCompose(fixtureTheme, { packageName: 'com.charmorph.app.ui.theme' });
+      expect(customCompose.kotlin).toContain('package com.charmorph.app.ui.theme');
+
+      const colorSchemeArgs = compose.kotlin
+        .split('val KthemeColorScheme = darkColorScheme(')[1]
+        .split('\n)')[0]
+        .split('\n')
+        .map((line) => line.trim())
+        .filter((line) => line.length > 0)
+        .map((line) => line.replace(/,$/, '').split(' = ')[0]);
+
+      const argSet = new Set(colorSchemeArgs);
+
+      for (const role of material3Roles) {
+        expect(argSet.has(role)).toBe(true);
+        expect(compose.colorScheme[role]).toBeDefined();
+      }
+
+      for (const arg of argSet) {
+        expect(material3Roles).toContain(arg as (typeof material3Roles)[number]);
+      }
+
+      expect(argSet.has('success')).toBe(false);
+      expect(argSet.has('warning')).toBe(false);
+      expect(argSet.has('info')).toBe(false);
+      expect(argSet.has('critical')).toBe(false);
+    });
+
+    it('exports semantic Android Compose roles separately from ColorScheme', () => {
+      const compose = toAndroidCompose(fixtureTheme);
+
+      expect(compose.kotlin).toContain('data class KthemeSemanticColors(');
+      expect(compose.kotlin).toContain('val KthemeSemanticColors = KthemeSemanticColors(');
+
+      expect(compose.semanticColors).toEqual({
+        success: '#00C853',
+        warning: '#FFAB00',
+        info: '#2196F3',
+        critical: '#B00020'
+      });
+    });
+
+    it('switches Android Compose color scheme function based on darkMode', () => {
+      const darkCompose = toAndroidCompose(fixtureTheme);
+      const lightCompose = toAndroidCompose({ ...fixtureTheme, darkMode: false });
+
+      expect(darkCompose.kotlin).toContain('darkColorScheme(');
+      expect(darkCompose.kotlin).not.toContain('lightColorScheme(');
+      expect(lightCompose.kotlin).toContain('lightColorScheme(');
+      expect(lightCompose.kotlin).not.toContain('darkColorScheme(');
+    });
+  });
+
+  describe('Performance & Determinism', () => {
+    it('executes IR extraction and rendering in under 5 milliseconds per execution', () => {
+      const start = performance.now();
+      const ir = extractThemeTokens(fixtureTheme);
+      cssVarsRenderer.render(ir);
+      tailwindRenderer.render(ir);
+      androidComposeRenderer.render(ir);
+      swiftUIRenderer.render(ir);
+      flutterRenderer.render(ir);
+      designTokensRenderer.render(ir);
+      const duration = performance.now() - start;
+
+      expect(duration).toBeLessThan(5);
+    });
+
+    it('produces deterministic code output across repeated executions', () => {
+      const ir1 = extractThemeTokens(fixtureTheme);
+      const ir2 = extractThemeTokens(fixtureTheme);
+
+      expect(ir1).toEqual(ir2);
+      expect(cssVarsRenderer.render(ir1)).toEqual(cssVarsRenderer.render(ir2));
+      expect(androidComposeRenderer.render(ir1)).toEqual(androidComposeRenderer.render(ir2));
+      expect(tailwindRenderer.render(ir1)).toEqual(tailwindRenderer.render(ir2));
+    });
   });
 
   it('exports typography, visual effects, and adaptation tokens across all adapters', () => {
@@ -305,5 +602,104 @@ describe('exporter parity', () => {
     expect(blenderExport.pythonScript).toContain('def register_ktheme_properties():');
     expect(blenderExport.pythonScript).toContain('def unregister_ktheme_properties():');
     expect(blenderExport.pythonScript).toContain('bpy.types.WindowManager.ktheme = bpy.props.PointerProperty(');
+  describe('web exporters options and sub-modules', () => {
+    it('exports all domains by default for toCssVars and toTailwindConfig', () => {
+      const cssVars = toCssVars(fixtureTheme);
+      const tailwind = toTailwindConfig(fixtureTheme);
+
+      // CSS Vars checks
+      expect(cssVars.vars['--ktheme-primary']).toBe('#111111');
+      expect(cssVars.vars['--ktheme-effect-metallic-variant']).toBeDefined();
+      expect(cssVars.vars['--ktheme-effect-glass-blur']).toBe('10px');
+      expect(cssVars.vars['--ktheme-font-family']).toBe('system-ui, sans-serif');
+      expect(cssVars.vars['--ktheme-corner-small']).toBe('4px');
+      expect(cssVars.cssText).toContain('--ktheme-effect-glass-blur: 10px;');
+      expect(cssVars.cssText).toContain('--ktheme-font-family: system-ui, sans-serif;');
+
+      // Tailwind checks
+      expect(tailwind.theme.extend.colors.primary).toBe('#111111');
+      expect(tailwind.theme.extend.colors['metallic-base']).toBeDefined();
+      expect(tailwind.theme.extend.fontFamily?.primary).toEqual(['system-ui, sans-serif']);
+      expect(tailwind.theme.extend.borderRadius?.small).toBe('4px');
+    });
+
+    it('selectively excludes domains using options in toCssVars', () => {
+      const noEffects = toCssVars(fixtureTheme, { includeEffects: false });
+      expect(noEffects.vars['--ktheme-primary']).toBe('#111111');
+      expect(noEffects.vars['--ktheme-effect-metallic-variant']).toBeUndefined();
+      expect(noEffects.vars['--ktheme-font-family']).toBeDefined();
+      expect(noEffects.vars['--ktheme-corner-small']).toBeDefined();
+
+      const noTypography = toCssVars(fixtureTheme, { includeTypography: false });
+      expect(noTypography.vars['--ktheme-effect-metallic-variant']).toBeDefined();
+      expect(noTypography.vars['--ktheme-font-family']).toBeUndefined();
+      expect(noTypography.vars['--ktheme-corner-small']).toBeDefined();
+
+      const noCorners = toCssVars(fixtureTheme, { includeCorners: false });
+      expect(noCorners.vars['--ktheme-effect-metallic-variant']).toBeDefined();
+      expect(noCorners.vars['--ktheme-font-family']).toBeDefined();
+      expect(noCorners.vars['--ktheme-corner-small']).toBeUndefined();
+
+      const minimal = toCssVars(fixtureTheme, {
+        includeEffects: false,
+        includeTypography: false,
+        includeCorners: false
+      });
+      expect(Object.keys(minimal.vars)).toEqual([
+        '--ktheme-primary',
+        '--ktheme-on-primary',
+        '--ktheme-background',
+        '--ktheme-on-background',
+        '--ktheme-surface',
+        '--ktheme-on-surface',
+        '--ktheme-error',
+        '--ktheme-semantic-success',
+        '--ktheme-semantic-warning',
+        '--ktheme-semantic-info',
+        '--ktheme-semantic-critical'
+      ]);
+    });
+
+    it('selectively excludes domains using options in toTailwindConfig', () => {
+      const noEffects = toTailwindConfig(fixtureTheme, { includeEffects: false });
+      expect(noEffects.theme.extend.colors['metallic-base']).toBeUndefined();
+      expect(noEffects.theme.extend.boxShadow).toBeUndefined();
+      expect(noEffects.theme.extend.fontFamily).toBeDefined();
+      expect(noEffects.theme.extend.borderRadius).toBeDefined();
+
+      const noTypography = toTailwindConfig(fixtureTheme, { includeTypography: false });
+      expect(noTypography.theme.extend.colors['metallic-base']).toBeDefined();
+      expect(noTypography.theme.extend.fontFamily).toBeUndefined();
+      expect(noTypography.theme.extend.fontSize).toBeUndefined();
+      expect(noTypography.theme.extend.borderRadius).toBeDefined();
+
+      const noCorners = toTailwindConfig(fixtureTheme, { includeCorners: false });
+      expect(noCorners.theme.extend.colors['metallic-base']).toBeDefined();
+      expect(noCorners.theme.extend.fontFamily).toBeDefined();
+      expect(noCorners.theme.extend.borderRadius).toBeUndefined();
+    });
+
+    it('exports rich theme effects, typography, and corners correctly via domain builders', () => {
+      const effects = exportEffectVars(richFixtureTheme);
+      expect(effects.vars['--ktheme-effect-metallic-variant']).toBe('GOLD');
+      expect(effects.vars['--ktheme-effect-metallic-base']).toBe('#D4AF37');
+      expect(effects.vars['--ktheme-effect-shimmer-speed']).toBe('1.5s');
+      expect(effects.vars['--ktheme-effect-glass-blur']).toBe('12px');
+      expect(effects.vars['--ktheme-effect-glow-color']).toBe('#FFD700');
+      expect(effects.tailwind.colors?.['metallic-base']).toBe('#D4AF37');
+      expect(effects.tailwind.boxShadow?.glow).toBe('0 0 3px #FFD700');
+
+      const typography = exportTypographyVars(richFixtureTheme);
+      expect(typography.vars['--ktheme-font-family']).toBe('Roboto, sans-serif');
+      expect(typography.vars['--ktheme-font-size-small']).toBe('11px');
+      expect(typography.vars['--ktheme-font-size-xlarge']).toBe('28px');
+      expect(typography.vars['--ktheme-font-weight-bold']).toBe('800');
+      expect(typography.tailwind.fontFamily?.primary).toEqual(['Roboto, sans-serif']);
+
+      const corners = exportCornerVars(richFixtureTheme);
+      expect(corners.vars['--ktheme-corner-small']).toBe('6px');
+      expect(corners.vars['--ktheme-corner-large']).toBe('14px');
+      expect(corners.tailwind.borderRadius?.large).toBe('14px');
+    });
   });
 });

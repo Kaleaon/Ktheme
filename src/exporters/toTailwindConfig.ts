@@ -1,42 +1,10 @@
 import { Theme } from '../core/types';
-import { normalizeAdaptation, normalizeEffects, normalizeSemanticRoles, normalizeTypography, toHexColor } from './utils';
+import { extractThemeTokens } from './ir/extractIR';
+import { tailwindRenderer, TailwindConfigExport } from './renderers/tailwindRenderer';
 
-export interface TailwindConfigExport {
-  darkMode: 'class' | 'media';
-  theme: {
-    extend: {
-      colors: Record<string, string>;
-      typography?: Record<string, unknown>;
-      effects?: Record<string, unknown>;
-      adaptation?: Record<string, unknown>;
-    };
-  };
-}
+export type { TailwindConfigExport };
 
 export function toTailwindConfig(theme: Theme): TailwindConfigExport {
-  const semantic = normalizeSemanticRoles(theme);
-  const typography = normalizeTypography(theme);
-  const effects = normalizeEffects(theme);
-  const adaptation = normalizeAdaptation(theme);
-
-  return {
-    darkMode: theme.darkMode ? 'class' : 'media',
-    theme: {
-      extend: {
-        colors: {
-          primary: toHexColor(theme.colorScheme.primary),
-          background: toHexColor(theme.colorScheme.background),
-          surface: toHexColor(theme.colorScheme.surface),
-          error: toHexColor(theme.colorScheme.error),
-          success: semantic.success,
-          warning: semantic.warning,
-          info: semantic.info,
-          critical: semantic.critical
-        },
-        typography,
-        effects,
-        adaptation
-      }
-    }
-  };
+  const ir = extractThemeTokens(theme);
+  return tailwindRenderer.render(ir);
 }
