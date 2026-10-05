@@ -10,7 +10,7 @@
     "screenshots": "node ./scripts/capture-pages.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
-    "check:a11y": "node ./scripts/check-a11y-semantics.mjs",
+    "check:a11y": "node ./scripts/check-a11y-semantics.mjs && node ./scripts/verify-customizer-labels.mjs",
     "dev:backend": "node ./backend/server.mjs",
     "dev:full": "concurrently \"npm run dev:backend\" \"npm run dev\""
   },

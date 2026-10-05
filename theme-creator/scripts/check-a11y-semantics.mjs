@@ -27,6 +27,38 @@ const checks = [
     ],
   },
   {
+    file: 'src/components/customizer/MetadataEditor.tsx',
+    rules: [
+      { regex: /htmlFor={nameId}/, message: 'Metadata name field is missing explicit label wiring.' },
+      { regex: /htmlFor={authorId}/, message: 'Metadata author field is missing explicit label wiring.' },
+      { regex: /htmlFor={descriptionId}/, message: 'Metadata description field is missing explicit label wiring.' },
+      { regex: /htmlFor={tagsId}/, message: 'Metadata tags field is missing explicit label wiring.' },
+    ],
+  },
+  {
+    file: 'src/components/customizer/TypographyEditor.tsx',
+    rules: [
+      { regex: /htmlFor={fontFamilyId}/, message: 'Typography font family field is missing explicit label wiring.' },
+      { regex: /htmlFor={lineHeightId}/, message: 'Typography line height field is missing explicit label wiring.' },
+      { regex: /htmlFor={letterSpacingId}/, message: 'Typography letter spacing field is missing explicit label wiring.' },
+      { regex: /htmlFor={inputId}/, message: 'Typography mapped controls are missing explicit label wiring.' },
+    ],
+  },
+  {
+    file: 'src/components/customizer/ColorEditor.tsx',
+    rules: [
+      { regex: /htmlFor={bgId}/, message: 'ColorEditor background color pickers are missing explicit label wiring.' },
+      { regex: /htmlFor={fgId}/, message: 'ColorEditor foreground color pickers are missing explicit label wiring.' },
+    ],
+  },
+  {
+    file: 'src/components/customizer/EffectsEditor.tsx',
+    rules: [
+      { regex: /htmlFor={metallicEnabledId}/, message: 'EffectsEditor metallic toggle is missing explicit label wiring.' },
+      { regex: /htmlFor={id}/, message: 'EffectsEditor Range/EffectToggle helpers are missing explicit label wiring.' },
+    ],
+  },
+  {
     file: 'src/components/customizer/ExportImport.tsx',
     rules: [
       { regex: /role="status"/, message: 'Import\/Export panel is missing a live status region.' },
