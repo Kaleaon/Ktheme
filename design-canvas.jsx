@@ -46,7 +46,7 @@ if (typeof document !== 'undefined' && !document.getElementById('dc-styles')) {
     '.dc-labeltext{cursor:pointer;border-radius:4px;padding:3px 6px;display:flex;align-items:center;transition:background .12s}',
     '.dc-labeltext:hover{background:rgba(0,0,0,.05)}',
     '.dc-expand{position:absolute;bottom:100%;right:0;margin-bottom:5px;z-index:2;opacity:0;transition:opacity .12s,background .12s;',
-    '  width:22px;height:22px;border-radius:5px;border:none;cursor:pointer;padding:0;',
+    '  min-width:24px;min-height:24px;width:24px;height:24px;border-radius:5px;border:none;cursor:pointer;padding:0;',
     '  background:transparent;color:rgba(60,50,40,.7);display:flex;align-items:center;justify-content:center}',
     '.dc-expand:hover{background:rgba(0,0,0,.06);color:#2a251f}',
     '[data-dc-slot]:hover .dc-expand{opacity:1}',

@@ -1,7 +1,7 @@
+import { useId } from 'react';
 import { useTheme } from '../../state/ThemeContext.tsx';
 import type { Typography } from '../../types/theme.ts';
 import { DEFAULT_TYPOGRAPHY } from '../../utils/theme-defaults.ts';
-import { FormField } from '../common/FormField.tsx';
 
 const FONT_STACKS = [
   "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
@@ -16,6 +16,12 @@ export function TypographyEditor() {
   const { state, dispatch } = useTheme();
   const typo = state.currentTheme.typography || DEFAULT_TYPOGRAPHY;
 
+  const fontFamilyId = useId();
+  const lineHeightId = useId();
+  const letterSpacingId = useId();
+  const fontSizeBaseId = useId();
+  const fontWeightBaseId = useId();
+
   function update(patch: Partial<Typography>) {
     dispatch({ type: 'UPDATE_TYPOGRAPHY', payload: { ...typo, ...patch } });
   }
@@ -24,8 +30,10 @@ export function TypographyEditor() {
     <section className="editor-section">
       <h3 className="section-title">Typography</h3>
 
-      <FormField label="Font Family" fullWidth>
+      <label className="form-field full-width" htmlFor={fontFamilyId}>
+        <span className="field-label">Font Family</span>
         <select
+          id={fontFamilyId}
           value={typo.fontFamily}
           onChange={(e) => update({ fontFamily: e.target.value })}
         >
@@ -35,11 +43,13 @@ export function TypographyEditor() {
             </option>
           ))}
         </select>
-      </FormField>
+      </label>
 
       <div className="form-grid">
-        <FormField label={`Line Height: ${typo.lineHeight}`}>
+        <label className="form-field" htmlFor={lineHeightId}>
+          <span className="field-label">Line Height: {typo.lineHeight}</span>
           <input
+            id={lineHeightId}
             type="range"
             min="1"
             max="2.5"
@@ -47,9 +57,11 @@ export function TypographyEditor() {
             value={typo.lineHeight}
             onChange={(e) => update({ lineHeight: parseFloat(e.target.value) })}
           />
-        </FormField>
-        <FormField label={`Letter Spacing: ${typo.letterSpacing}px`}>
+        </label>
+        <label className="form-field" htmlFor={letterSpacingId}>
+          <span className="field-label">Letter Spacing: {typo.letterSpacing}px</span>
           <input
+            id={letterSpacingId}
             type="range"
             min="-2"
             max="5"
@@ -57,46 +69,54 @@ export function TypographyEditor() {
             value={typo.letterSpacing}
             onChange={(e) => update({ letterSpacing: parseFloat(e.target.value) })}
           />
-        </FormField>
+        </label>
       </div>
 
       <h4 className="group-label">Font Sizes</h4>
       <div className="form-grid">
-        {(Object.keys(typo.fontSize) as Array<keyof Typography['fontSize']>).map((size) => (
-          <FormField key={size} label={`${size}: ${typo.fontSize[size]}px`}>
-            <input
-              type="range"
-              min="8"
-              max="48"
-              step="1"
-              value={typo.fontSize[size]}
-              onChange={(e) =>
-                update({
-                  fontSize: { ...typo.fontSize, [size]: parseInt(e.target.value) },
-                })
-              }
-            />
-          </FormField>
-        ))}
+        {(Object.keys(typo.fontSize) as Array<keyof Typography['fontSize']>).map((size) => {
+          const inputId = `${fontSizeBaseId}-${size}`;
+          return (
+            <label key={size} className="form-field" htmlFor={inputId}>
+              <span className="field-label">
+                {size}: {typo.fontSize[size]}px
+              </span>
+              <input
+                id={inputId}
+                type="range"
+                min="8"
+                max="48"
+                step="1"
+                value={typo.fontSize[size]}
+                onChange={(e) =>
+                  update({
+                    fontSize: { ...typo.fontSize, [size]: parseInt(e.target.value) },
+                  })
+                }
+              />
+            </label>
+          );
+        })}
       </div>
       <h4 className="group-label">Font Weights</h4>
       <div className="form-grid">
-        {(Object.keys(typo.fontWeight) as Array<keyof Typography['fontWeight']>).map((weight) => (
-          <FormField key={weight} label={`${weight}: ${typo.fontWeight[weight]}`}>
-            <input
-              type="range"
-              min="100"
-              max="900"
-              step="100"
-              value={typo.fontWeight[weight]}
-              onChange={(e) =>
-                update({
-                  fontWeight: { ...typo.fontWeight, [weight]: Number(e.target.value) },
-                })
-              }
-            />
-          </FormField>
-        ))}
+        {(Object.keys(typo.fontWeight) as Array<keyof Typography['fontWeight']>).map((weight) => {
+          const inputId = `${fontWeightBaseId}-${weight}`;
+          return (
+            <label key={weight} className="form-field" htmlFor={inputId}>
+              <span className="field-label">{weight}: {typo.fontWeight[weight]}</span>
+              <input
+                id={inputId}
+                type="range"
+                min="100"
+                max="900"
+                step="100"
+                value={typo.fontWeight[weight]}
+                onChange={(e) => update({ fontWeight: { ...typo.fontWeight, [weight]: Number(e.target.value) } })}
+              />
+            </label>
+          );
+        })}
       </div>
     </section>
   );
