@@ -39,6 +39,8 @@ const checks = [
       { regex: /role="tablist"/, message: 'Bluesky panel is missing role="tablist".' },
       { regex: /role="tabpanel"/, message: 'Bluesky panel is missing role="tabpanel".' },
       { regex: /aria-label="Log out"/, message: 'Log out icon button is missing accessible name.' },
+      { regex: /role="alert"/, message: 'Bluesky panel login error is missing role="alert".' },
+      { regex: /aria-live="assertive"/, message: 'Bluesky panel login error is missing aria-live="assertive".' },
     ],
   },
 ];

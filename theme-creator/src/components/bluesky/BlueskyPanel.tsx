@@ -1,9 +1,9 @@
 import { type KeyboardEvent, useId, useState, useEffect } from 'react';
 import { LogIn, LogOut, Upload, RefreshCw, Loader, Download, Package } from 'lucide-react';
-import { useBluesky } from '../../state/BlueskyContext.tsx';
-import { useTheme } from '../../state/ThemeContext.tsx';
-import { shareTheme, shareThemePack, fetchSharedThemes, fetchUserThemes } from '../../services/bluesky-themes.ts';
-import type { KTheme } from '../../types/theme.ts';
+import { useBluesky } from '../../state/BlueskyContext';
+import { useTheme } from '../../state/ThemeContext';
+import { shareTheme, shareThemePack, fetchSharedThemes, fetchUserThemes } from '../../services/bluesky-themes';
+import type { KTheme } from '../../types/theme';
 
 type SubTab = 'community' | 'my-themes' | 'share';
 
@@ -142,7 +142,11 @@ export function BlueskyPanel() {
           <h2>Connect to Bluesky</h2>
           <p>Log in to share themes and discover community theme packs on Bluesky.</p>
 
-          {loginError && <div className="bsky-error">{loginError}</div>}
+          {loginError && (
+            <div className="bsky-error" role="alert" aria-live="assertive">
+              {loginError}
+            </div>
+          )}
 
           <label className="form-field">
             <span className="field-label">Handle or Email</span>
