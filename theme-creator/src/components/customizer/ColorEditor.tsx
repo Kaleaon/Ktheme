@@ -1,5 +1,6 @@
 import { useTheme } from '../../state/ThemeContext.tsx';
 import { contrastRatio } from '../../utils/colors.ts';
+import { FormField } from '../common/FormField.tsx';
 
 const COLOR_GROUPS = [
   {
@@ -74,24 +75,36 @@ export function ColorEditor() {
             return (
               <div key={`${bg}-${fg}`} className="color-pair">
                 <div className="color-picker-row">
-                  <label className="color-picker">
+                  <FormField
+                    className="color-picker"
+                    label={
+                      <>
+                        <span className="color-label">{formatLabel(bg)}</span>
+                        <span className="color-hex">{bgVal}</span>
+                      </>
+                    }
+                  >
                     <input
                       type="color"
                       value={bgVal}
                       onChange={(e) => setColor(bg, e.target.value)}
                     />
-                    <span className="color-label">{formatLabel(bg)}</span>
-                    <span className="color-hex">{bgVal}</span>
-                  </label>
-                  <label className="color-picker">
+                  </FormField>
+                  <FormField
+                    className="color-picker"
+                    label={
+                      <>
+                        <span className="color-label">{formatLabel(fg)}</span>
+                        <span className="color-hex">{fgVal}</span>
+                      </>
+                    }
+                  >
                     <input
                       type="color"
                       value={fgVal}
                       onChange={(e) => setColor(fg, e.target.value)}
                     />
-                    <span className="color-label">{formatLabel(fg)}</span>
-                    <span className="color-hex">{fgVal}</span>
-                  </label>
+                  </FormField>
                 </div>
                 <div className={`contrast-badge ${crOk ? 'ok' : 'warn'}`}>
                   {cr.toFixed(1)}:1 {crOk ? 'AA' : '!'}
@@ -107,14 +120,61 @@ export function ColorEditor() {
           })}
         </div>
       ))}
-      {colors.semanticRoles && <div className="color-group">
-        <h4 className="group-label">Semantic roles</h4>
-        {([['success', 'onSuccess'], ['warning', 'onWarning'], ['info', 'onInfo'], ['critical', 'onCritical']] as const).map(([bg, fg]) => {
-          const bgVal = colors.semanticRoles?.[bg] || '#000000';
-          const fgVal = colors.semanticRoles?.[fg] || '#FFFFFF';
-          return <div className="color-pair" key={bg}><div className="color-picker-row">{[bg, fg].map((key) => <label className="color-picker" key={key}><input type="color" value={key === bg ? bgVal : fgVal} onChange={(e) => dispatch({ type: 'UPDATE_THEME', payload: { colorScheme: { ...colors, semanticRoles: { ...colors.semanticRoles!, [key]: e.target.value } } } })} /><span className="color-label">{formatLabel(key)}</span></label>)}</div><div className="color-swatch-preview" style={{ background: bgVal, color: fgVal }}>Semantic status</div></div>;
-        })}
-      </div>}
+      {colors.semanticRoles && (
+        <div className="color-group">
+          <h4 className="group-label">Semantic roles</h4>
+          {([
+            ['success', 'onSuccess'],
+            ['warning', 'onWarning'],
+            ['info', 'onInfo'],
+            ['critical', 'onCritical'],
+          ] as const).map(([bg, fg]) => {
+            const bgVal = colors.semanticRoles?.[bg] || '#000000';
+            const fgVal = colors.semanticRoles?.[fg] || '#FFFFFF';
+            return (
+              <div className="color-pair" key={bg}>
+                <div className="color-picker-row">
+                  {[bg, fg].map((key) => {
+                    const val = key === bg ? bgVal : fgVal;
+                    return (
+                      <FormField
+                        key={key}
+                        className="color-picker"
+                        label={<span className="color-label">{formatLabel(key)}</span>}
+                      >
+                        <input
+                          type="color"
+                          value={val}
+                          onChange={(e) =>
+                            dispatch({
+                              type: 'UPDATE_THEME',
+                              payload: {
+                                colorScheme: {
+                                  ...colors,
+                                  semanticRoles: {
+                                    ...colors.semanticRoles!,
+                                    [key]: e.target.value,
+                                  },
+                                },
+                              },
+                            })
+                          }
+                        />
+                      </FormField>
+                    );
+                  })}
+                </div>
+                <div
+                  className="color-swatch-preview"
+                  style={{ background: bgVal, color: fgVal }}
+                >
+                  Semantic status
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }

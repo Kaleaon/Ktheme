@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { RefreshCw, Layers, Code, CheckCircle, Package } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { RefreshCw, Package } from 'lucide-react';
 
 interface ComponentCatalogItem {
   id: string;
@@ -19,7 +19,7 @@ export function CatalogSyncPanel() {
   const [filterFramework, setFilterFramework] = useState<string>('all');
   const [selectedItem, setSelectedItem] = useState<ComponentCatalogItem | null>(null);
 
-  async function fetchUpstreamComponents() {
+  const fetchUpstreamComponents = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch('/api/sync/component-upstream');
@@ -27,8 +27,8 @@ export function CatalogSyncPanel() {
         const data = await res.json() as { components?: ComponentCatalogItem[] };
         if (data.components) {
           setComponents(data.components);
-          if (data.components.length > 0 && !selectedItem) {
-            setSelectedItem(data.components[0]);
+          if (data.components.length > 0) {
+            setSelectedItem((prev) => prev || data.components![0]);
           }
         }
       }
@@ -37,11 +37,12 @@ export function CatalogSyncPanel() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     fetchUpstreamComponents();
-  }, []);
+  }, [fetchUpstreamComponents]);
 
   const filteredComponents = components.filter(c => {
     if (filterFramework === 'all') return true;

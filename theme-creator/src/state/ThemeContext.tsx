@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useReducer, type ReactNode } from 'react';
 import type { KTheme, ThemePack } from '../types/theme.ts';
 import { createDefaultTheme } from '../utils/theme-defaults.ts';
