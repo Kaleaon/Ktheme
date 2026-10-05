@@ -74,6 +74,7 @@ export function CatalogSyncPanel() {
         <button
           type="button"
           className={`filter-btn ${filterFramework === 'all' ? 'active' : ''}`}
+          aria-pressed={filterFramework === 'all'}
           onClick={() => setFilterFramework('all')}
         >
           All ({components.length})
@@ -81,6 +82,7 @@ export function CatalogSyncPanel() {
         <button
           type="button"
           className={`filter-btn ${filterFramework === 'jetpack-compose' ? 'active' : ''}`}
+          aria-pressed={filterFramework === 'jetpack-compose'}
           onClick={() => setFilterFramework('jetpack-compose')}
         >
           Compose
@@ -88,6 +90,7 @@ export function CatalogSyncPanel() {
         <button
           type="button"
           className={`filter-btn ${filterFramework === 'blender-python' ? 'active' : ''}`}
+          aria-pressed={filterFramework === 'blender-python'}
           onClick={() => setFilterFramework('blender-python')}
         >
           Blender UI

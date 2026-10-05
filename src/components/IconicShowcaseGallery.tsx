@@ -42,6 +42,8 @@ export const IconicShowcaseGallery: React.FC = () => {
           {packs.map((p) => (
             <button
               key={p.id}
+              type="button"
+              aria-pressed={selectedPack === p.id}
               onClick={() => setSelectedPack(p.id)}
               style={{
                 padding: '8px 16px',
@@ -64,6 +66,8 @@ export const IconicShowcaseGallery: React.FC = () => {
           {(['dark', 'light', 'high-contrast'] as const).map((v) => (
             <button
               key={v}
+              type="button"
+              aria-pressed={variant === v}
               onClick={() => setVariant(v)}
               style={{
                 padding: '4px 10px',

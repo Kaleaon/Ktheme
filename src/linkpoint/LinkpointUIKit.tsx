@@ -127,6 +127,8 @@ export const LinkpointUIKit: React.FC = () => {
             {(['desktop', 'tablet', 'mobile'] as DeviceSize[]).map((d) => (
               <button
                 key={d}
+                type="button"
+                aria-pressed={device === d}
                 onClick={() => setDevice(d)}
                 style={{
                   padding: '6px 12px',
@@ -149,6 +151,8 @@ export const LinkpointUIKit: React.FC = () => {
             {(['standard', 'compact', 'hero', 'grid'] as LayoutPack[]).map((p) => (
               <button
                 key={p}
+                type="button"
+                aria-pressed={layoutPack === p}
                 onClick={() => setLayoutPack(p)}
                 style={{
                   padding: '6px 12px',
