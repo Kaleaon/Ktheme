@@ -258,6 +258,23 @@ a:focus-visible {
   grid-column: 1 / -1;
 }
 
+.form-field.color-picker {
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+.field-helper-text {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.field-error {
+  font-size: 11px;
+  color: var(--error, #ef4444);
+}
+
 .field-label {
   font-size: 11px;
   font-weight: 600;
