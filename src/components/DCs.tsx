@@ -194,23 +194,26 @@ export interface NavRailProps {
 
 export const KNavRail: React.FC<NavRailProps> = ({ items, activeId, onSelect }) => {
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '8px',
-      width: '72px',
-      backgroundColor: 'var(--ktheme-bg-surface, #1a1c25)',
-      padding: '12px 8px',
-      borderRight: '1px solid var(--ktheme-border, #2e3140)',
-      alignItems: 'center'
-    }}>
+    <nav
+      aria-label="Sidebar Navigation"
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '8px',
+        width: '72px',
+        backgroundColor: 'var(--ktheme-bg-surface, #1a1c25)',
+        padding: '12px 8px',
+        borderRight: '1px solid var(--ktheme-border, #2e3140)',
+        alignItems: 'center'
+      }}
+    >
       {items.map((item) => {
         const isActive = item.id === activeId;
         return (
           <button
             key={item.id}
             type="button"
-            aria-selected={isActive}
+            aria-current={isActive ? 'page' : undefined}
             onClick={() => onSelect(item.id)}
             style={{
               display: 'flex',
@@ -234,7 +237,7 @@ export const KNavRail: React.FC<NavRailProps> = ({ items, activeId, onSelect }) 
           </button>
         );
       })}
-    </div>
+    </nav>
   );
 };
 
@@ -270,6 +273,8 @@ export const KDialog: React.FC<DialogProps> = ({
     const focusables = Array.from(container.querySelectorAll<HTMLElement>(focusableSelector));
     if (focusables.length > 0) {
       focusables[0].focus();
+    } else {
+      container.focus();
     }
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -296,7 +301,9 @@ export const KDialog: React.FC<DialogProps> = ({
     window.addEventListener('keydown', handleKeyDown);
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      if (previousFocusRef.current) previousFocusRef.current.focus();
+      if (previousFocusRef.current && typeof previousFocusRef.current.focus === 'function') {
+        previousFocusRef.current.focus();
+      }
     };
   }, [isOpen, onClose]);
 
@@ -304,10 +311,9 @@ export const KDialog: React.FC<DialogProps> = ({
 
   return (
     <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="kdialog-title"
-      aria-describedby={description ? "kdialog-desc" : undefined}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
       style={{
         position: 'fixed',
         inset: 0,
@@ -320,6 +326,11 @@ export const KDialog: React.FC<DialogProps> = ({
     >
       <div
         ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="kdialog-title"
+        aria-describedby={description ? 'kdialog-desc' : undefined}
+        tabIndex={-1}
         style={{
           width: '400px',
           backgroundColor: 'var(--ktheme-bg-surface, #1a1c25)',
@@ -327,11 +338,16 @@ export const KDialog: React.FC<DialogProps> = ({
           borderRadius: '16px',
           padding: '24px',
           color: 'var(--ktheme-text, #f3f4f6)',
-          boxShadow: '0 20px 40px rgba(0,0,0,0.5)'
+          boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
+          outline: 'none'
         }}
       >
         <h3 id="kdialog-title" style={{ margin: '0 0 8px 0', fontSize: '20px' }}>{title}</h3>
-        {description && <p id="kdialog-desc" style={{ fontSize: '14px', color: 'var(--ktheme-text-muted)', marginBottom: '20px' }}>{description}</p>}
+        {description && (
+          <p id="kdialog-desc" style={{ fontSize: '14px', color: 'var(--ktheme-text-muted)', marginBottom: '20px' }}>
+            {description}
+          </p>
+        )}
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
           <KButton variant="outlined" onClick={onClose}>Cancel</KButton>
           {onConfirm && <KButton variant="filled" onClick={onConfirm}>{confirmText}</KButton>}
@@ -349,12 +365,19 @@ export interface ToggleProps {
 }
 
 export const KToggle: React.FC<ToggleProps> = ({ checked, onChange, label }) => {
+  const generatedId = React.useId ? React.useId() : `ktoggle-${Math.random().toString(36).substring(2, 9)}`;
+  const toggleId = generatedId;
+  const labelId = `${toggleId}-label`;
+
   return (
-    <label style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
       <button
+        id={toggleId}
         type="button"
         role="switch"
         aria-checked={checked}
+        aria-labelledby={label ? labelId : undefined}
+        aria-label={label ? undefined : 'Toggle switch'}
         onClick={() => onChange(!checked)}
         style={{
           width: '44px',
@@ -379,13 +402,22 @@ export const KToggle: React.FC<ToggleProps> = ({ checked, onChange, label }) => 
           transition: 'left 0.2s ease'
         }} />
       </button>
-      {label && <span style={{ fontSize: '14px' }}>{label}</span>}
-    </label>
+      {label && (
+        <span
+          id={labelId}
+          onClick={() => onChange(!checked)}
+          style={{ fontSize: '14px', cursor: 'pointer', userSelect: 'none' }}
+        >
+          {label}
+        </span>
+      )}
+    </div>
   );
 };
 
 // ─── Sliders ───
 export interface SliderProps {
+  id?: string;
   value: number;
   min?: number;
   max?: number;
@@ -395,6 +427,7 @@ export interface SliderProps {
 }
 
 export const KSlider: React.FC<SliderProps> = ({
+  id: explicitId,
   value,
   min = 0,
   max = 100,
@@ -402,20 +435,27 @@ export const KSlider: React.FC<SliderProps> = ({
   label,
   onChange
 }) => {
+  const generatedId = React.useId ? React.useId() : `kslider-${Math.random().toString(36).substring(2, 9)}`;
+  const sliderId = explicitId || generatedId;
+  const labelId = `${sliderId}-label`;
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
       {label && (
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--ktheme-text-muted)' }}>
-          <span>{label}</span>
+          <span id={labelId}>{label}</span>
           <span>{value}</span>
         </div>
       )}
       <input
+        id={sliderId}
         type="range"
         min={min}
         max={max}
         step={step}
         value={value}
+        aria-labelledby={label ? labelId : undefined}
+        aria-label={label ? undefined : 'Slider'}
         onChange={(e) => onChange(parseFloat(e.target.value))}
         style={{ width: '100%', accentColor: 'var(--ktheme-accent, #818cf8)' }}
       />
@@ -448,11 +488,24 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
   error?: string;
 }
 
-export const KInput: React.FC<InputProps> = ({ label, error, style, ...props }) => {
+export const KInput: React.FC<InputProps> = ({ id: explicitId, label, error, style, ...props }) => {
+  const generatedId = React.useId ? React.useId() : `kinput-${Math.random().toString(36).substring(2, 9)}`;
+  const inputId = explicitId || generatedId;
+  const labelId = `${inputId}-label`;
+  const errorId = `${inputId}-error`;
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-      {label && <label style={{ fontSize: '12px', color: 'var(--ktheme-text-muted)' }}>{label}</label>}
+      {label && (
+        <label id={labelId} htmlFor={inputId} style={{ fontSize: '12px', color: 'var(--ktheme-text-muted)' }}>
+          {label}
+        </label>
+      )}
       <input
+        id={inputId}
+        aria-invalid={Boolean(error)}
+        aria-describedby={error ? errorId : undefined}
+        aria-errormessage={error ? errorId : undefined}
         style={{
           padding: '8px 12px',
           borderRadius: '6px',
@@ -465,7 +518,11 @@ export const KInput: React.FC<InputProps> = ({ label, error, style, ...props }) 
         }}
         {...props}
       />
-      {error && <span style={{ fontSize: '11px', color: 'var(--ktheme-error, #ef4444)' }}>{error}</span>}
+      {error && (
+        <span id={errorId} role="alert" style={{ fontSize: '11px', color: 'var(--ktheme-error, #ef4444)' }}>
+          {error}
+        </span>
+      )}
     </div>
   );
 };
