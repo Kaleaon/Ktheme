@@ -256,29 +256,82 @@ export const KDialog: React.FC<DialogProps> = ({
   onConfirm,
   confirmText = 'Confirm'
 }) => {
+  const dialogRef = React.useRef<HTMLDivElement>(null);
+  const previousFocusRef = React.useRef<HTMLElement | null>(null);
+
+  React.useEffect(() => {
+    if (!isOpen) return;
+
+    previousFocusRef.current = document.activeElement as HTMLElement;
+    const container = dialogRef.current;
+    if (!container) return;
+
+    const focusableSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+    const focusables = Array.from(container.querySelectorAll<HTMLElement>(focusableSelector));
+    if (focusables.length > 0) {
+      focusables[0].focus();
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (e.key === 'Tab' && focusables.length > 0) {
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      if (previousFocusRef.current) previousFocusRef.current.focus();
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
-    <div style={{
-      position: 'fixed',
-      inset: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.65)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 1000
-    }}>
-      <div style={{
-        width: '400px',
-        backgroundColor: 'var(--ktheme-bg-surface, #1a1c25)',
-        border: '1px solid var(--ktheme-border, #2e3140)',
-        borderRadius: '16px',
-        padding: '24px',
-        color: 'var(--ktheme-text, #f3f4f6)',
-        boxShadow: '0 20px 40px rgba(0,0,0,0.5)'
-      }}>
-        <h3 style={{ margin: '0 0 8px 0', fontSize: '20px' }}>{title}</h3>
-        {description && <p style={{ fontSize: '14px', color: 'var(--ktheme-text-muted)', marginBottom: '20px' }}>{description}</p>}
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="kdialog-title"
+      aria-describedby={description ? "kdialog-desc" : undefined}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.65)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000
+      }}
+    >
+      <div
+        ref={dialogRef}
+        style={{
+          width: '400px',
+          backgroundColor: 'var(--ktheme-bg-surface, #1a1c25)',
+          border: '1px solid var(--ktheme-border, #2e3140)',
+          borderRadius: '16px',
+          padding: '24px',
+          color: 'var(--ktheme-text, #f3f4f6)',
+          boxShadow: '0 20px 40px rgba(0,0,0,0.5)'
+        }}
+      >
+        <h3 id="kdialog-title" style={{ margin: '0 0 8px 0', fontSize: '20px' }}>{title}</h3>
+        {description && <p id="kdialog-desc" style={{ fontSize: '14px', color: 'var(--ktheme-text-muted)', marginBottom: '20px' }}>{description}</p>}
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
           <KButton variant="outlined" onClick={onClose}>Cancel</KButton>
           {onConfirm && <KButton variant="filled" onClick={onConfirm}>{confirmText}</KButton>}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { KChip, KNavRail, KToggle } from './DCs';
+import { KChip, KNavRail, KToggle, KDialog } from './DCs';
 import { LinkpointUIKit } from '../linkpoint/LinkpointUIKit';
 import { IconicShowcaseGallery } from './IconicShowcaseGallery';
 
@@ -120,6 +120,44 @@ describe('Accessibility ARIA State Binding Tests', () => {
       fireEvent.click(lightVariantBtn);
       expect(darkVariantBtn.getAttribute('aria-pressed')).toBe('false');
       expect(lightVariantBtn.getAttribute('aria-pressed')).toBe('true');
+    });
+  });
+
+  describe('KDialog Component', () => {
+    it('renders role="dialog", aria-modal="true", aria-labelledby, aria-describedby and manages focus / Escape key', () => {
+      const handleClose = jest.fn();
+      const handleConfirm = jest.fn();
+
+      const { rerender } = render(
+        <KDialog
+          isOpen={true}
+          title="Test Title"
+          description="Test Description"
+          onClose={handleClose}
+          onConfirm={handleConfirm}
+        />
+      );
+
+      const dialogEl = screen.getByRole('dialog');
+      expect(dialogEl).not.toBeNull();
+      expect(dialogEl.getAttribute('aria-modal')).toBe('true');
+      expect(dialogEl.getAttribute('aria-labelledby')).toBe('kdialog-title');
+      expect(dialogEl.getAttribute('aria-describedby')).toBe('kdialog-desc');
+
+      expect(screen.getByText('Test Title').getAttribute('id')).toBe('kdialog-title');
+      expect(screen.getByText('Test Description').getAttribute('id')).toBe('kdialog-desc');
+
+      fireEvent.keyDown(window, { key: 'Escape' });
+      expect(handleClose).toHaveBeenCalledTimes(1);
+
+      rerender(
+        <KDialog
+          isOpen={false}
+          title="Test Title"
+          onClose={handleClose}
+        />
+      );
+      expect(screen.queryByRole('dialog')).toBeNull();
     });
   });
 });
