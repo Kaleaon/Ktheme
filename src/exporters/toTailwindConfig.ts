@@ -1,14 +1,15 @@
 import { Theme } from '../core/types';
 import {
+  normalizeAdaptation,
   normalizeBlur,
   normalizeCorners,
+  normalizeEffects,
   normalizeSemanticRoles,
   normalizeShadows,
   normalizeShimmer,
   normalizeTypography,
   toHexColor
 } from './utils';
-import { normalizeAdaptation, normalizeEffects, normalizeSemanticRoles, normalizeTypography, toHexColor } from './utils';
 
 export interface TailwindConfigExport {
   darkMode: 'class' | 'media';
@@ -38,7 +39,6 @@ export function toTailwindConfig(theme: Theme): TailwindConfigExport {
   const shimmer = normalizeShimmer(theme);
   const typography = normalizeTypography(theme);
   const corners = normalizeCorners(theme);
-  const typography = normalizeTypography(theme);
   const effects = normalizeEffects(theme);
   const adaptation = normalizeAdaptation(theme);
 
@@ -93,7 +93,7 @@ export function toTailwindConfig(theme: Theme): TailwindConfigExport {
         },
         animation: {
           shimmer: `shimmer ${shimmer.speed}s linear infinite`
-        }
+        },
         typography,
         effects,
         adaptation
@@ -101,4 +101,3 @@ export function toTailwindConfig(theme: Theme): TailwindConfigExport {
     }
   };
 }
-

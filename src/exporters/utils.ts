@@ -102,7 +102,7 @@ export function normalizeShimmer(theme: Theme): NormalizedShimmer {
   };
 }
 
-export interface NormalizedTypography {
+export type NormalizedTypography = {
   fontFamily: string;
   fontSize: {
     small: number;
@@ -118,26 +118,27 @@ export interface NormalizedTypography {
   };
   lineHeight: number;
   letterSpacing: number;
-}
+  [key: string]: unknown;
+};
 
 export function normalizeTypography(theme: Theme): NormalizedTypography {
-  const typography = theme.typography;
+  const typo = theme.typography;
   return {
-    fontFamily: typography?.fontFamily ?? 'system-ui, -apple-system, sans-serif',
+    fontFamily: typo?.fontFamily ?? 'system-ui, -apple-system, sans-serif',
     fontSize: {
-      small: typography?.fontSize?.small ?? 12,
-      medium: typography?.fontSize?.medium ?? 16,
-      large: typography?.fontSize?.large ?? 20,
-      xlarge: typography?.fontSize?.xlarge ?? 28
+      small: typo?.fontSize?.small ?? 12,
+      medium: typo?.fontSize?.medium ?? 16,
+      large: typo?.fontSize?.large ?? 20,
+      xlarge: typo?.fontSize?.xlarge ?? 28
     },
     fontWeight: {
-      light: typography?.fontWeight?.light ?? 300,
-      regular: typography?.fontWeight?.regular ?? 400,
-      medium: typography?.fontWeight?.medium ?? 500,
-      bold: typography?.fontWeight?.bold ?? 700
+      light: typo?.fontWeight?.light ?? 300,
+      regular: typo?.fontWeight?.regular ?? 400,
+      medium: typo?.fontWeight?.medium ?? 500,
+      bold: typo?.fontWeight?.bold ?? 700
     },
-    lineHeight: typography?.lineHeight ?? 1.5,
-    letterSpacing: typography?.letterSpacing ?? 0
+    lineHeight: typo?.lineHeight ?? 1.5,
+    letterSpacing: typo?.letterSpacing ?? 0
   };
 }
 
@@ -158,3 +159,93 @@ export function normalizeCorners(theme: Theme): NormalizedCorners {
   };
 }
 
+export function normalizeEffects(theme: Theme): Record<string, unknown> {
+  const eff = theme.effects || {};
+  const result: Record<string, unknown> = {};
+
+  if (eff.metallic) {
+    result.metallic = {
+      enabled: eff.metallic.enabled,
+      variant: eff.metallic.variant,
+      intensity: eff.metallic.intensity,
+      gradient: {
+        base: toHexColor(eff.metallic.gradient.base),
+        highlight: toHexColor(eff.metallic.gradient.highlight),
+        shadow: toHexColor(eff.metallic.gradient.shadow),
+        shimmer: toHexColor(eff.metallic.gradient.shimmer)
+      }
+    };
+  } else {
+    result.metallic = { enabled: false };
+  }
+
+  if (eff.shadows) {
+    result.shadows = {
+      enabled: eff.shadows.enabled,
+      elevation: eff.shadows.elevation,
+      blur: eff.shadows.blur,
+      color: toHexColor(eff.shadows.color)
+    };
+  } else {
+    result.shadows = { enabled: false };
+  }
+
+  if (eff.shimmer) {
+    result.shimmer = {
+      enabled: eff.shimmer.enabled,
+      speed: eff.shimmer.speed,
+      intensity: eff.shimmer.intensity,
+      angle: eff.shimmer.angle
+    };
+  } else {
+    result.shimmer = { enabled: false };
+  }
+
+  if (eff.blur) {
+    result.blur = {
+      enabled: eff.blur.enabled,
+      radius: eff.blur.radius
+    };
+  } else {
+    result.blur = { enabled: false };
+  }
+
+  if (eff.focusRing) {
+    result.focusRing = {
+      enabled: eff.focusRing.enabled,
+      color: toHexColor(eff.focusRing.color),
+      width: eff.focusRing.width,
+      offset: eff.focusRing.offset
+    };
+  } else {
+    result.focusRing = { enabled: false };
+  }
+
+  return result;
+}
+
+export function normalizeAdaptation(theme: Theme): Record<string, unknown> {
+  const adapt = theme.adaptation || {};
+  const result: Record<string, unknown> = {
+    layout: {
+      density: adapt.layout?.density ?? 'comfortable',
+      cornerStyle: adapt.layout?.cornerStyle ?? 'rounded',
+      spacingScale: adapt.layout?.spacingScale ?? 1.0,
+      panelStyle: adapt.layout?.panelStyle ?? 'elevated',
+      navigationStyle: adapt.layout?.navigationStyle ?? 'tabs'
+    },
+    icons: {
+      family: adapt.icons?.family ?? 'material',
+      style: adapt.icons?.style ?? 'outlined',
+      sizeScale: adapt.icons?.sizeScale ?? 1.0,
+      strokeWidth: adapt.icons?.strokeWidth ?? 2,
+      cornerStyle: adapt.icons?.cornerStyle ?? 'rounded'
+    }
+  };
+
+  if (adapt.desktopAdaptation) {
+    result.desktopAdaptation = adapt.desktopAdaptation;
+  }
+
+  return result;
+}

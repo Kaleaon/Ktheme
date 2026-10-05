@@ -1,7 +1,9 @@
-import { Theme } from '../core/types';
+import { DesktopAdaptation, Theme } from '../core/types';
 import {
+  normalizeAdaptation,
   normalizeBlur,
   normalizeCorners,
+  normalizeEffects,
   normalizeMetallic,
   normalizeSemanticRoles,
   normalizeShadows,
@@ -9,8 +11,6 @@ import {
   normalizeTypography,
   toHexColor
 } from './utils';
-import { DesktopAdaptation, Theme } from '../core/types';
-import { normalizeAdaptation, normalizeEffects, normalizeSemanticRoles, normalizeTypography, toHexColor } from './utils';
 
 export interface CssVarsExport {
   vars: Record<string, string>;
@@ -25,7 +25,6 @@ export function toCssVars(theme: Theme): CssVarsExport {
   const shimmer = normalizeShimmer(theme);
   const typography = normalizeTypography(theme);
   const corners = normalizeCorners(theme);
-  const typography = normalizeTypography(theme);
   const effects = normalizeEffects(theme);
   const adaptation = normalizeAdaptation(theme);
 
@@ -76,12 +75,6 @@ export function toCssVars(theme: Theme): CssVarsExport {
     '--ktheme-font-line-height': `${typography.lineHeight}`,
     '--ktheme-font-letter-spacing': `${typography.letterSpacing}em`,
 
-    // Corner radii
-    '--ktheme-corner-small': `${corners.small}px`,
-    '--ktheme-corner-medium': `${corners.medium}px`,
-    '--ktheme-corner-large': `${corners.large}px`,
-    '--ktheme-corner-xlarge': `${corners.xlarge}px`
-    // Typography
     '--ktheme-typography-font-family': typography.fontFamily,
     '--ktheme-typography-font-size-small': `${typography.fontSize.small}px`,
     '--ktheme-typography-font-size-medium': `${typography.fontSize.medium}px`,
@@ -94,29 +87,35 @@ export function toCssVars(theme: Theme): CssVarsExport {
     '--ktheme-typography-line-height': `${typography.lineHeight}`,
     '--ktheme-typography-letter-spacing': `${typography.letterSpacing}em`,
 
+    // Corner radii
+    '--ktheme-corner-small': `${corners.small}px`,
+    '--ktheme-corner-medium': `${corners.medium}px`,
+    '--ktheme-corner-large': `${corners.large}px`,
+    '--ktheme-corner-xlarge': `${corners.xlarge}px`,
+
     // Adaptation
     '--ktheme-adaptation-layout-density': String((adaptation.layout as Record<string, unknown>).density),
     '--ktheme-adaptation-layout-corner-style': String((adaptation.layout as Record<string, unknown>).cornerStyle),
     '--ktheme-adaptation-layout-spacing-scale': `${String((adaptation.layout as Record<string, unknown>).spacingScale)}`
   };
 
-  const metallic = effects.metallic as Record<string, unknown> | undefined;
-  if (metallic?.enabled) {
-    const grad = metallic.gradient as Record<string, string>;
+  const effMetallic = effects.metallic as Record<string, unknown> | undefined;
+  if (effMetallic?.enabled) {
+    const grad = effMetallic.gradient as Record<string, string>;
     vars['--ktheme-effects-metallic-enabled'] = 'true';
-    vars['--ktheme-effects-metallic-variant'] = String(metallic.variant);
-    vars['--ktheme-effects-metallic-intensity'] = `${String(metallic.intensity)}`;
+    vars['--ktheme-effects-metallic-variant'] = String(effMetallic.variant);
+    vars['--ktheme-effects-metallic-intensity'] = `${String(effMetallic.intensity)}`;
     vars['--ktheme-effects-metallic-base'] = grad.base;
     vars['--ktheme-effects-metallic-highlight'] = grad.highlight;
     vars['--ktheme-effects-metallic-shadow'] = grad.shadow;
     vars['--ktheme-effects-metallic-shimmer'] = grad.shimmer;
   }
 
-  const shadows = effects.shadows as Record<string, unknown> | undefined;
-  if (shadows?.enabled) {
-    vars['--ktheme-effects-shadow-elevation'] = `${String(shadows.elevation)}px`;
-    vars['--ktheme-effects-shadow-blur'] = `${String(shadows.blur)}px`;
-    vars['--ktheme-effects-shadow-color'] = String(shadows.color);
+  const effShadows = effects.shadows as Record<string, unknown> | undefined;
+  if (effShadows?.enabled) {
+    vars['--ktheme-effects-shadow-elevation'] = `${String(effShadows.elevation)}px`;
+    vars['--ktheme-effects-shadow-blur'] = `${String(effShadows.blur)}px`;
+    vars['--ktheme-effects-shadow-color'] = String(effShadows.color);
   }
 
   const da = adaptation.desktopAdaptation as DesktopAdaptation | undefined;
@@ -153,4 +152,3 @@ export function toCssVars(theme: Theme): CssVarsExport {
     cssText: `:root {\n${cssBody}\n}`
   };
 }
-
