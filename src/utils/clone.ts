@@ -8,7 +8,11 @@
  */
 export function cloneTheme<T>(theme: T): T {
   if (typeof structuredClone === 'function') {
-    return structuredClone(theme);
+    try {
+      return structuredClone(theme);
+    } catch {
+      // Fallback if structuredClone fails on non-serializable objects
+    }
   }
   if (theme === null || typeof theme !== 'object') {
     return theme;
