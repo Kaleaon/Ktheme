@@ -6,22 +6,19 @@
  * @param obj - The theme object or value to deep clone
  * @returns A deep copy of the theme with isolated references
  */
-export function cloneTheme<T>(theme: T): T {
-  if (typeof structuredClone === 'function') {
-    try {
-      return structuredClone(theme);
-    } catch {
-      // Fallback if structuredClone fails on non-serializable objects
-    }
+export function cloneTheme<T>(obj: T): T {
+  const sc = typeof structuredClone === 'function' ? structuredClone : (globalThis as Record<string, unknown>).structuredClone;
+  if (typeof sc === 'function') {
+    return sc(obj);
   }
-  if (theme === null || typeof theme !== 'object') {
-    return theme;
+  if (obj === null || typeof obj !== 'object') {
+    return obj;
   }
-  if (Array.isArray(theme)) {
-    return theme.map((item) => cloneTheme(item)) as unknown as T;
+  if (Array.isArray(obj)) {
+    return obj.map((item) => cloneTheme(item)) as unknown as T;
   }
   const copy = {} as Record<string, unknown>;
-  const record = theme as Record<string, unknown>;
+  const record = obj as Record<string, unknown>;
   for (const key of Object.keys(record)) {
     copy[key] = cloneTheme(record[key]);
   }
