@@ -8,6 +8,7 @@ import {
   normalizeTypography,
   toHexColor
 } from './utils';
+import { normalizeAdaptation, normalizeEffects, normalizeSemanticRoles, normalizeTypography, toHexColor } from './utils';
 
 export interface TailwindConfigExport {
   darkMode: 'class' | 'media';
@@ -23,6 +24,9 @@ export interface TailwindConfigExport {
       boxShadow: Record<string, string>;
       backdropBlur: Record<string, string>;
       animation: Record<string, string>;
+      typography?: Record<string, unknown>;
+      effects?: Record<string, unknown>;
+      adaptation?: Record<string, unknown>;
     };
   };
 }
@@ -34,6 +38,9 @@ export function toTailwindConfig(theme: Theme): TailwindConfigExport {
   const shimmer = normalizeShimmer(theme);
   const typography = normalizeTypography(theme);
   const corners = normalizeCorners(theme);
+  const typography = normalizeTypography(theme);
+  const effects = normalizeEffects(theme);
+  const adaptation = normalizeAdaptation(theme);
 
   return {
     darkMode: theme.darkMode ? 'class' : 'media',
@@ -87,6 +94,9 @@ export function toTailwindConfig(theme: Theme): TailwindConfigExport {
         animation: {
           shimmer: `shimmer ${shimmer.speed}s linear infinite`
         }
+        typography,
+        effects,
+        adaptation
       }
     }
   };

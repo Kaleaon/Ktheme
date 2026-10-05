@@ -11,14 +11,15 @@
     "ajv": "^8.12.0"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && tsc -p packages/react/tsconfig.json",
     "dev": "tsc --watch",
     "test": "jest",
-    "lint": "eslint src --ext .ts",
+    "lint": "eslint src packages --ext .ts,.tsx",
     "creator": "cd theme-creator && npm start",
     "release:bump-preset-updated-at": "node scripts/release/bump-preset-updated-at.mjs",
     "generate:theme-catalog": "node scripts/generate-theme-catalog.mjs",
-    "check:theme-catalog": "node scripts/generate-theme-catalog.mjs --check"
+    "check:theme-catalog": "node scripts/generate-theme-catalog.mjs --check",
+    "sync-schemas": "npx ts-node scripts/sync-schemas.ts"
   },
   "keywords": [
     "theme",

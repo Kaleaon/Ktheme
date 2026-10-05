@@ -20,6 +20,10 @@
   },
   "darkMode": true,
   "colorScheme": {
+    "error": "#C46462",
+    "onError": "#2A0A0A",
+    "errorContainer": "#6B1F1F",
+    "onErrorContainer": "#FFD9D9",
     "primary": "#C4A062",
     "onPrimary": "#0B1B2E",
     "primaryContainer": "#8A6E3D",
@@ -32,10 +36,6 @@
     "onTertiary": "#2A2008",
     "tertiaryContainer": "#7A6638",
     "onTertiaryContainer": "#FFF8E0",
-    "error": "#C46462",
-    "onError": "#2A0A0A",
-    "errorContainer": "#6B1F1F",
-    "onErrorContainer": "#FFD9D9",
     "background": "#0B1B2E",
     "onBackground": "#E8EFF7",
     "surface": "#133355",
@@ -138,14 +138,39 @@
     "layout": {
       "density": "comfortable",
       "cornerStyle": "sharp",
-      "spacingScale": 1.0,
+      "spacingScale": 1,
       "panelStyle": "flat",
-      "navigationStyle": "tabs"
+      "navigationStyle": "tabs",
+      "accessibility": {
+        "landmarks": {
+          "main": "main",
+          "nav": "navigation",
+          "header": "header",
+          "footer": "footer"
+        },
+        "naming": {
+          "strategy": "native",
+          "main": "Main Content",
+          "nav": "Primary Navigation",
+          "header": "Application Header",
+          "footer": "Footer"
+        },
+        "keyboard": {
+          "order": "document",
+          "focusPolicy": "native",
+          "trapFocusWithinModals": true
+        },
+        "liveRegion": {
+          "mode": "polite",
+          "atomic": true,
+          "relevant": "additions"
+        }
+      }
     },
     "icons": {
       "family": "custom",
       "style": "line",
-      "sizeScale": 1.0,
+      "sizeScale": 1,
       "strokeWidth": 1.5,
       "cornerStyle": "sharp"
     },
@@ -220,5 +245,6 @@
         "showElbowBar": true
       }
     }
-  }
+  },
+  "schemaVersion": 2
 }

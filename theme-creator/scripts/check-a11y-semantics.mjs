@@ -30,7 +30,7 @@ const checks = [
     file: 'src/components/customizer/ExportImport.tsx',
     rules: [
       { regex: /role="status"/, message: 'Import\/Export panel is missing a live status region.' },
-      { regex: /htmlFor={importInputId}/, message: 'Import input is missing an explicit label.' },
+      { regex: /FormField/, message: 'Import input is missing an explicit label.' },
     ],
   },
   {

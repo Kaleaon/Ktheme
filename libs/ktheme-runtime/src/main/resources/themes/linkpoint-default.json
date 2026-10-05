@@ -14,6 +14,10 @@
   },
   "darkMode": true,
   "colorScheme": {
+    "error": "#B91C1C",
+    "onError": "#FFFFFF",
+    "errorContainer": "#EF4444",
+    "onErrorContainer": "#FEF2F2",
     "primary": "#1976D2",
     "onPrimary": "#FFFFFF",
     "secondary": "#00BCD4",
@@ -23,5 +27,7 @@
     "surface": "#2D2D2D",
     "onSurface": "#FFFFFF",
     "onSurfaceVariant": "#B0B0B0"
-  }
+  },
+  "schemaVersion": 2,
+  "adaptation": {}
 }

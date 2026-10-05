@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "metadata": {
     "id": "windows-phone-metro",
     "name": "Windows Phone Metro",
@@ -18,6 +18,10 @@
   },
   "darkMode": true,
   "colorScheme": {
+    "error": "#CF6679",
+    "onError": "#FFFFFF",
+    "errorContainer": "#93000A",
+    "onErrorContainer": "#FFDAD6",
     "primary": "#00AEEF",
     "onPrimary": "#00151F",
     "primaryContainer": "#0078D7",
@@ -30,10 +34,6 @@
     "onTertiary": "#001021",
     "tertiaryContainer": "#547D8F",
     "onTertiaryContainer": "#D9EDF5",
-    "error": "#CF6679",
-    "onError": "#FFFFFF",
-    "errorContainer": "#93000A",
-    "onErrorContainer": "#FFDAD6",
     "background": "#001A33",
     "onBackground": "#F0F8FF",
     "surface": "#002448",
@@ -72,7 +72,32 @@
       "cornerStyle": "sharp",
       "spacingScale": 1.25,
       "panelStyle": "flat",
-      "navigationStyle": "pivot"
+      "navigationStyle": "pivot",
+      "accessibility": {
+        "landmarks": {
+          "main": "main",
+          "nav": "navigation",
+          "header": "header",
+          "footer": "footer"
+        },
+        "naming": {
+          "strategy": "native",
+          "main": "Main Content",
+          "nav": "Primary Navigation",
+          "header": "Application Header",
+          "footer": "Footer"
+        },
+        "keyboard": {
+          "order": "document",
+          "focusPolicy": "native",
+          "trapFocusWithinModals": true
+        },
+        "liveRegion": {
+          "mode": "polite",
+          "atomic": true,
+          "relevant": "additions"
+        }
+      }
     },
     "icons": {
       "family": "fluent",

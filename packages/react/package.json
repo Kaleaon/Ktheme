@@ -1,0 +1,34 @@
+{
+  "name": "@ktheme/react",
+  "version": "1.0.0",
+  "description": "Unified Ktheme React ThemeProvider, dynamic token hooks, and Theme Studio",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./studio": {
+      "types": "./dist/studio/index.d.ts",
+      "import": "./dist/studio/index.js",
+      "require": "./dist/studio/index.js"
+    },
+    "./support": {
+      "types": "./dist/support/index.d.ts",
+      "import": "./dist/support/index.js",
+      "require": "./dist/support/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "license": "Apache-2.0"
+}

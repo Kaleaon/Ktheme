@@ -16,6 +16,10 @@
   },
   "darkMode": true,
   "colorScheme": {
+    "error": "#FFB4AB",
+    "onError": "#690005",
+    "errorContainer": "#93000A",
+    "onErrorContainer": "#FFDAD6",
     "primary": "#C1818B",
     "onPrimary": "#3D1F2B",
     "primaryContainer": "#7D4A52",
@@ -28,10 +32,6 @@
     "onTertiary": "#3D2929",
     "tertiaryContainer": "#8A7474",
     "onTertiaryContainer": "#F5EAEA",
-    "error": "#FFB4AB",
-    "onError": "#690005",
-    "errorContainer": "#93000A",
-    "onErrorContainer": "#FFDAD6",
     "background": "#3D1F2B",
     "onBackground": "#F5E5E8",
     "surface": "#4D2F3B",
@@ -107,5 +107,6 @@
         "showElbowBar": true
       }
     }
-  }
+  },
+  "schemaVersion": 2
 }

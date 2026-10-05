@@ -3,7 +3,7 @@
  * Buttons, Cards, Chips, Nav Rail, Dialogs, Toggles, Sliders, Swatches, Forms
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 
 // ─── Buttons ───
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -134,9 +134,19 @@ export interface ChipProps {
 }
 
 export const KChip: React.FC<ChipProps> = ({ label, active, onDelete, onClick }) => {
+  const handleDeleteKeyDown = (e: React.KeyboardEvent<HTMLSpanElement>) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      e.stopPropagation();
+      onDelete?.();
+    }
+  };
+
   return (
-    <span
+    <button
+      type="button"
       onClick={onClick}
+      aria-pressed={active}
       style={{
         display: 'inline-flex',
         alignItems: 'center',
@@ -155,13 +165,17 @@ export const KChip: React.FC<ChipProps> = ({ label, active, onDelete, onClick })
       {label}
       {onDelete && (
         <span
+          role="button"
+          tabIndex={0}
+          aria-label={`Remove ${label}`}
           onClick={(e) => { e.stopPropagation(); onDelete(); }}
+          onKeyDown={handleDeleteKeyDown}
           style={{ cursor: 'pointer', fontWeight: 'bold', marginLeft: '2px' }}
         >
           ×
         </span>
       )}
-    </span>
+    </button>
   );
 };
 
@@ -195,6 +209,8 @@ export const KNavRail: React.FC<NavRailProps> = ({ items, activeId, onSelect }) 
         return (
           <button
             key={item.id}
+            type="button"
+            aria-selected={isActive}
             onClick={() => onSelect(item.id)}
             style={{
               display: 'flex',
@@ -282,7 +298,10 @@ export interface ToggleProps {
 export const KToggle: React.FC<ToggleProps> = ({ checked, onChange, label }) => {
   return (
     <label style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
-      <div
+      <button
+        type="button"
+        role="switch"
+        aria-checked={checked}
         onClick={() => onChange(!checked)}
         style={{
           width: '44px',
@@ -290,7 +309,10 @@ export const KToggle: React.FC<ToggleProps> = ({ checked, onChange, label }) => 
           borderRadius: '9999px',
           backgroundColor: checked ? 'var(--ktheme-accent, #818cf8)' : 'var(--ktheme-border, #2e3140)',
           position: 'relative',
-          transition: 'background-color 0.2s ease'
+          transition: 'background-color 0.2s ease',
+          border: 'none',
+          padding: 0,
+          cursor: 'pointer',
         }}
       >
         <div style={{
@@ -303,7 +325,7 @@ export const KToggle: React.FC<ToggleProps> = ({ checked, onChange, label }) => 
           left: checked ? '23px' : '3px',
           transition: 'left 0.2s ease'
         }} />
-      </div>
+      </button>
       {label && <span style={{ fontSize: '14px' }}>{label}</span>}
     </label>
   );

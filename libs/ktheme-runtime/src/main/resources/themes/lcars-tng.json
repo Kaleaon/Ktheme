@@ -1,7 +1,7 @@
 {
   "metadata": {
     "id": "lcars-tng",
-    "name": "LCARS \u2014 TNG",
+    "name": "LCARS — TNG",
     "description": "Warm rail/sweep LCARS palette tuned for TNG-era amber and lilac, with strict pill geometry",
     "author": "Linkpoint",
     "version": "1.0.0",
@@ -17,6 +17,10 @@
   },
   "darkMode": true,
   "colorScheme": {
+    "error": "#CF6679",
+    "onError": "#000000",
+    "errorContainer": "#7A1F1F",
+    "onErrorContainer": "#FFD9D9",
     "primary": "#F2A65A",
     "onPrimary": "#120C1C",
     "primaryContainer": "#CC7A2B",
@@ -29,10 +33,6 @@
     "onTertiary": "#000000",
     "tertiaryContainer": "#4B2D80",
     "onTertiaryContainer": "#E7CBFF",
-    "error": "#CF6679",
-    "onError": "#000000",
-    "errorContainer": "#7A1F1F",
-    "onErrorContainer": "#FFD9D9",
     "background": "#120C1C",
     "onBackground": "#F3E9FF",
     "surface": "#1C132A",
@@ -88,7 +88,32 @@
       "cornerStyle": "pill",
       "spacingScale": 0.92,
       "panelStyle": "flat",
-      "navigationStyle": "rail"
+      "navigationStyle": "rail",
+      "accessibility": {
+        "landmarks": {
+          "main": "main",
+          "nav": "navigation",
+          "header": "header",
+          "footer": "footer"
+        },
+        "naming": {
+          "strategy": "native",
+          "main": "Main Content",
+          "nav": "Primary Navigation",
+          "header": "Application Header",
+          "footer": "Footer"
+        },
+        "keyboard": {
+          "order": "document",
+          "focusPolicy": "native",
+          "trapFocusWithinModals": true
+        },
+        "liveRegion": {
+          "mode": "polite",
+          "atomic": true,
+          "relevant": "additions"
+        }
+      }
     },
     "icons": {
       "family": "custom",
@@ -173,5 +198,6 @@
         "showElbowBar": true
       }
     }
-  }
+  },
+  "schemaVersion": 2
 }

@@ -1,4 +1,5 @@
 import { ThemeEngine } from './ThemeEngine';
+import { SCHEMA_VERSION } from './migrations';
 import { NavyGoldTheme } from '../themes/presets';
 import { AdaptationPresets } from '../themes/adaptationPresets';
 import type { Theme } from './types';
@@ -582,6 +583,76 @@ describe('ThemeEngine adaptations', () => {
     } as unknown as Theme;
 
     const validation = engine.validateTheme(valid);
+    expect(validation.errors).toEqual([]);
+  });
+
+  it('detects unknown properties and reports structured validation issues', () => {
+    const engine = new ThemeEngine();
+    const themeWithUnknown = {
+      ...NavyGoldTheme,
+      unmappedTopLevelKey: 'invalidValue',
+      adaptation: {
+        ...NavyGoldTheme.adaptation,
+        unmappedAdaptationKey: 123
+      }
+    } as unknown as Theme;
+
+    const validation = engine.validateTheme(themeWithUnknown);
+    const unknownIssues = validation.issues.filter(issue => issue.code === 'unknown-property');
+    expect(unknownIssues.length).toBeGreaterThanOrEqual(2);
+    expect(unknownIssues.some(i => i.path === 'unmappedTopLevelKey')).toBe(true);
+    expect(unknownIssues.some(i => i.path === 'adaptation.unmappedAdaptationKey')).toBe(true);
+  });
+
+  it('validates desktopAdaptation fields and reports errors for invalid values', () => {
+    const engine = new ThemeEngine();
+    const themeWithInvalidDesktopAdaptation = {
+      ...NavyGoldTheme,
+      adaptation: {
+        ...NavyGoldTheme.adaptation,
+        desktopAdaptation: {
+          windowChrome: {
+            titleBarHeight: -5 as unknown as number
+          },
+          menuBar: {
+            height: 'invalid' as unknown as number
+          }
+        }
+      }
+    } as unknown as Theme;
+
+    const validation = engine.validateTheme(themeWithInvalidDesktopAdaptation);
+    expect(validation.valid).toBe(false);
+    expect(validation.issues.some(i => i.code === 'invalid-adaptation')).toBe(true);
+  });
+
+  it('migrates legacy theme with root desktopAdaptation into adaptation.desktopAdaptation', () => {
+    const engine = new ThemeEngine();
+    const legacyDesktopTheme = {
+      schemaVersion: 1,
+      metadata: NavyGoldTheme.metadata,
+      darkMode: NavyGoldTheme.darkMode,
+      colorScheme: NavyGoldTheme.colorScheme,
+      desktopAdaptation: {
+        windowChrome: { titleBarHeight: 26 },
+        menuBar: { height: 28 },
+        taskbar: { height: 40 },
+        cameraHud: { panelRadius: 10 },
+        sweep: { elbowWidth: 30 }
+      },
+      layouts: [
+        { id: 'lcars', name: 'LCARS' }
+      ]
+    };
+
+    const imported = engine.importTheme(JSON.stringify(legacyDesktopTheme));
+    expect(imported.schemaVersion).toBe(SCHEMA_VERSION);
+    expect(imported.adaptation?.desktopAdaptation?.windowChrome?.titleBarHeight).toBe(26);
+    expect(imported.adaptation?.desktopAdaptation?.menuBar?.height).toBe(28);
+    expect(imported.layouts).toBeDefined();
+    expect(imported.layouts?.[0].id).toBe('lcars');
+
+    const validation = engine.validateTheme(imported);
     expect(validation.errors).toEqual([]);
   });
 });

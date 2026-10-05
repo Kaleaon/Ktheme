@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "metadata": {
     "id": "midnight-amber",
     "name": "Midnight Amber",
@@ -16,6 +16,10 @@
   },
   "darkMode": true,
   "colorScheme": {
+    "error": "#CF6679",
+    "onError": "#FFFFFF",
+    "errorContainer": "#93000A",
+    "onErrorContainer": "#FFDAD6",
     "primary": "#FFBF00",
     "onPrimary": "#0C1824",
     "primaryContainer": "#CC9900",
@@ -28,10 +32,6 @@
     "onTertiary": "#0C1824",
     "tertiaryContainer": "#A68254",
     "onTertiaryContainer": "#F5E6D3",
-    "error": "#CF6679",
-    "onError": "#FFFFFF",
-    "errorContainer": "#93000A",
-    "onErrorContainer": "#FFDAD6",
     "background": "#0C1824",
     "onBackground": "#E8EEF5",
     "surface": "#15202E",
@@ -63,5 +63,6 @@
       "blur": 6,
       "color": "#00000055"
     }
-  }
+  },
+  "adaptation": {}
 }
