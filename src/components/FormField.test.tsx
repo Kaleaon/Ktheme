@@ -4,7 +4,7 @@ import { FormField, FormInput, FormSwitch } from './FormField';
 
 describe('FormField & Controls Accessibility', () => {
   it('connects label to input via htmlFor and generated ID', () => {
-    const { container } = render(
+    render(
       <FormField label="Username">
         <FormInput placeholder="Enter username" />
       </FormField>
