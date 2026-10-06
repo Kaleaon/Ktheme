@@ -20,6 +20,7 @@ export interface TailwindConfigExport {
       typography?: Record<string, unknown>;
       effects?: Record<string, unknown>;
       adaptation?: Record<string, unknown>;
+      animation?: Record<string, string>;
       [key: string]: unknown;
     };
   };
