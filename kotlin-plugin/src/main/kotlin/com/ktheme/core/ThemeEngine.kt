@@ -34,7 +34,7 @@ class ThemeEngine {
     private val quarantineDir = File(System.getProperty("user.home"), ".ktheme/quarantine").apply {
         mkdirs()
     }
-    
+
     /**
      * Register a new theme.
      */

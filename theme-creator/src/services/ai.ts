@@ -46,6 +46,37 @@ export interface AISession {
 
 export type AIProvider = 'claude' | 'gemini';
 
+export type ThemeExtractionStatus =
+  | 'NO_JSON_BLOCK'
+  | 'INVALID_JSON'
+  | 'INVALID_SCHEMA'
+  | 'SUCCESS';
+
+export interface ThemeExtractionNoJsonResult {
+  status: 'NO_JSON_BLOCK';
+}
+
+export interface ThemeExtractionInvalidJsonResult {
+  status: 'INVALID_JSON';
+  errorDetails: string;
+}
+
+export interface ThemeExtractionInvalidSchemaResult {
+  status: 'INVALID_SCHEMA';
+  errorDetails: string;
+}
+
+export interface ThemeExtractionSuccessResult {
+  status: 'SUCCESS';
+  response: AIThemeResponse;
+}
+
+export type ThemeExtractionResult =
+  | ThemeExtractionNoJsonResult
+  | ThemeExtractionInvalidJsonResult
+  | ThemeExtractionInvalidSchemaResult
+  | ThemeExtractionSuccessResult;
+
 async function postJson<T>(path: string, payload: Record<string, unknown>): Promise<T> {
   const response = await fetch(`${AI_API_BASE}${path}`, {
     method: 'POST',
@@ -133,17 +164,34 @@ function parseRedesignPlan(value: unknown): AIRedesignPlan | undefined {
   };
 }
 
-function validateThemeSchema(theme: unknown): theme is KTheme {
-  if (!isRecord(theme)) return false;
+function validateThemeSchemaDetailed(theme: unknown): { valid: boolean; errorDetails?: string } {
+  if (!isRecord(theme)) {
+    return { valid: false, errorDetails: 'Theme payload must be a JSON object' };
+  }
+
   const metadata = theme.metadata;
-  const colorScheme = theme.colorScheme;
-  if (!isRecord(metadata) || !isRecord(colorScheme)) return false;
+  if (!isRecord(metadata)) {
+    return { valid: false, errorDetails: 'Missing "metadata" object in theme schema' };
+  }
 
   const metadataFields = ['id', 'name', 'description', 'author', 'version', 'createdAt', 'updatedAt'];
-  const validMetadata = metadataFields.every((field) => typeof metadata[field] === 'string');
-  if (!validMetadata || !isStringArray(metadata.tags)) return false;
+  const missingMetadataField = metadataFields.find((field) => typeof metadata[field] !== 'string');
+  if (missingMetadataField) {
+    return { valid: false, errorDetails: `Missing or invalid string field "${missingMetadataField}" in metadata` };
+  }
 
-  if (typeof theme.darkMode !== 'boolean') return false;
+  if (!isStringArray(metadata.tags)) {
+    return { valid: false, errorDetails: 'Metadata "tags" must be an array of strings' };
+  }
+
+  if (typeof theme.darkMode !== 'boolean') {
+    return { valid: false, errorDetails: 'Field "darkMode" must be a boolean' };
+  }
+
+  const colorScheme = theme.colorScheme;
+  if (!isRecord(colorScheme)) {
+    return { valid: false, errorDetails: 'Missing "colorScheme" object in theme schema' };
+  }
 
   const requiredColorKeys = [
     'primary', 'onPrimary', 'primaryContainer', 'onPrimaryContainer', 'secondary', 'onSecondary',
@@ -153,44 +201,81 @@ function validateThemeSchema(theme: unknown): theme is KTheme {
     'outlineVariant', 'scrim', 'inverseSurface', 'inverseOnSurface', 'inversePrimary',
   ];
 
-  if (!requiredColorKeys.every((key) => isHexColor(colorScheme[key]))) return false;
-
-  if (!isRecord(theme.effects) || !isRecord(theme.typography)) return true;
-
-  if (isRecord(theme.effects.metallic)) {
-    const metallic = theme.effects.metallic;
-    if (
-      typeof metallic.enabled !== 'boolean' ||
-      typeof metallic.intensity !== 'number' ||
-      !METALLIC_VARIANTS.has(String(metallic.variant)) ||
-      !isRecord(metallic.gradient) ||
-      !isHexColor(metallic.gradient.base) ||
-      !isHexColor(metallic.gradient.highlight) ||
-      !isHexColor(metallic.gradient.shadow) ||
-      !isHexColor(metallic.gradient.shimmer)
-    ) return false;
+  const missingOrInvalidColor = requiredColorKeys.find((key) => !isHexColor(colorScheme[key]));
+  if (missingOrInvalidColor) {
+    return {
+      valid: false,
+      errorDetails: `Color "${missingOrInvalidColor}" in colorScheme is missing or not a valid hex color code (e.g. #FFFFFF)`,
+    };
   }
 
-  return true;
+  if (isRecord(theme.effects) && isRecord(theme.effects.metallic)) {
+    const metallic = theme.effects.metallic;
+    if (typeof metallic.enabled !== 'boolean') {
+      return { valid: false, errorDetails: 'effects.metallic.enabled must be a boolean' };
+    }
+    if (typeof metallic.intensity !== 'number') {
+      return { valid: false, errorDetails: 'effects.metallic.intensity must be a number' };
+    }
+    if (!METALLIC_VARIANTS.has(String(metallic.variant))) {
+      return { valid: false, errorDetails: `Invalid metallic variant "${String(metallic.variant)}"` };
+    }
+    if (!isRecord(metallic.gradient)) {
+      return { valid: false, errorDetails: 'effects.metallic.gradient must be an object' };
+    }
+    const gradientObj = metallic.gradient as Record<string, unknown>;
+    const gradientKeys = ['base', 'highlight', 'shadow', 'shimmer'];
+    const invalidGradKey = gradientKeys.find((k) => !isHexColor(gradientObj[k]));
+    if (invalidGradKey) {
+      return { valid: false, errorDetails: `effects.metallic.gradient.${invalidGradKey} is missing or invalid hex color` };
+    }
+  }
+
+  return { valid: true };
+}
+
+export function validateThemeSchema(theme: unknown): theme is KTheme {
+  return validateThemeSchemaDetailed(theme).valid;
+}
+
+export function extractThemeResult(text: string): ThemeExtractionResult {
+  const jsonMatch = text.match(/```json\s*([\s\S]*?)```/);
+  if (!jsonMatch) {
+    return { status: 'NO_JSON_BLOCK' };
+  }
+
+  const codeBlockText = jsonMatch[1].trim();
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(codeBlockText);
+  } catch (err) {
+    return {
+      status: 'INVALID_JSON',
+      errorDetails: err instanceof Error ? err.message : 'Failed to parse JSON code block',
+    };
+  }
+
+  const themeCandidate = isRecord(parsed) && parsed.theme ? parsed.theme : parsed;
+  const validation = validateThemeSchemaDetailed(themeCandidate);
+
+  if (!validation.valid) {
+    return {
+      status: 'INVALID_SCHEMA',
+      errorDetails: validation.errorDetails ?? 'Theme object failed schema validation',
+    };
+  }
+
+  return {
+    status: 'SUCCESS',
+    response: {
+      theme: themeCandidate as KTheme,
+      redesignPlan: parseRedesignPlan(isRecord(parsed) ? parsed.redesignPlan : undefined),
+    },
+  };
 }
 
 export function extractThemeFromResponse(text: string): AIThemeResponse | null {
-  const jsonMatch = text.match(/```json\s*([\s\S]*?)```/);
-  if (!jsonMatch) return null;
-
-  try {
-    const parsed = JSON.parse(jsonMatch[1]);
-    const themeCandidate = parsed?.theme ?? parsed;
-
-    if (!validateThemeSchema(themeCandidate)) {
-      return null;
-    }
-
-    return {
-      theme: themeCandidate as KTheme,
-      redesignPlan: parseRedesignPlan(parsed?.redesignPlan),
-    };
-  } catch {
-    return null;
-  }
+  const result = extractThemeResult(text);
+  return result.status === 'SUCCESS' ? result.response : null;
 }

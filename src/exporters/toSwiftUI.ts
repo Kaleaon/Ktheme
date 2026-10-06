@@ -1,6 +1,6 @@
-import { Theme } from '../core/types';
-import { extractThemeTokens } from './ir/extractIR';
-import { swiftUIRenderer, SwiftUIExport } from './renderers/swiftUIRenderer';
+import { Theme } from "../core/types";
+import { extractThemeTokens } from "./ir/extractIR";
+import { swiftUIRenderer, SwiftUIExport } from "./renderers/swiftUIRenderer";
 
 export type { SwiftUIExport };
 

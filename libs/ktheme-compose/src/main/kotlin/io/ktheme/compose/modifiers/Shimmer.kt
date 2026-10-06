@@ -23,6 +23,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import io.ktheme.compose.LocalKtheme
+import io.ktheme.compose.LocalReduceMotion
 import io.ktheme.compose.toComposeColor
 
 /**
@@ -37,24 +38,31 @@ public fun Modifier.shimmer(
     angleDeg: Float = 110f,
 ): Modifier = composed {
     val theme = LocalKtheme.current
+    val reduceMotion = LocalReduceMotion.current
     val s = theme.effects.shimmer
     val on = enabled && (s?.enabled ?: false)
     if (!on) return@composed this
 
-    val cycleMs = ((speedSeconds ?: s!!.speed.toFloat()) * 1000f).toInt().coerceAtLeast(400)
     val alpha = (intensity ?: s!!.intensity.toFloat()).coerceIn(0f, 1f)
     val shimmerColor = theme.effects.metallic.gradient.shimmer.toComposeColor().copy(alpha = alpha)
 
-    val transition = rememberInfiniteTransition(label = "ktheme-shimmer")
-    val offset by transition.animateFloat(
-        initialValue = -1f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(cycleMs, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart,
-        ),
-        label = "ktheme-shimmer-offset",
-    )
+    val offset: Float
+    if (reduceMotion) {
+        offset = 0f
+    } else {
+        val cycleMs = ((speedSeconds ?: s!!.speed.toFloat()) * 1000f).toInt().coerceAtLeast(400)
+        val transition = rememberInfiniteTransition(label = "ktheme-shimmer")
+        val animatedOffset by transition.animateFloat(
+            initialValue = -1f,
+            targetValue = 1f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(cycleMs, easing = LinearEasing),
+                repeatMode = RepeatMode.Restart,
+            ),
+            label = "ktheme-shimmer-offset",
+        )
+        offset = animatedOffset
+    }
 
     val rad = Math.toRadians(angleDeg.toDouble())
     val dx = Math.cos(rad).toFloat()

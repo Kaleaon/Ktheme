@@ -1,0 +1,6 @@
+- id: ktheme-style-lint
+  name: ktheme-style-lint
+  description: Detects hardcoded hex color codes and inline style overrides in design components.
+  entry: python3 scripts/ktheme-style-lint.py
+  language: python
+  types_or: [javascript, jsx, ts, tsx, css, html]

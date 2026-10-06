@@ -5,10 +5,12 @@ This note captures practical additions that improve Ktheme's usability across pr
 ## 1) Essential engine additions (implemented)
 
 1. **Theme sets (curated bundles)**
+
    - Why: teams choose faster from meaningful groups than from long flat lists.
    - Implemented in `src/themes/sets.ts` with starter, metallic showcase, executive dark, creative studio, and readability bundles.
 
 2. **Effect tokens for accessibility and depth**
+
    - Why: modern UI systems need focus visibility, subtle depth, and layered surfaces.
    - Implemented in `VisualEffects` (`src/core/types.ts`):
      - `focusRing`
@@ -16,6 +18,7 @@ This note captures practical additions that improve Ktheme's usability across pr
      - `noise`
 
 3. **Portable CSS generators for essential effects**
+
    - Why: consumers can apply effects consistently even outside framework-specific style systems.
    - Implemented in `src/effects/advanced.ts`:
      - `generateFocusRingCSS`
@@ -23,6 +26,7 @@ This note captures practical additions that improve Ktheme's usability across pr
      - `generateNoiseTextureCSS`
 
 4. **Layout and icon adaptation primitives**
+
    - Why: some themes (Frutiger Aero, Windows Phone, LCARS) require structural UI changes, not only color swaps.
    - Implemented in `src/core/types.ts`, `src/adaptation/apply.ts`, and `src/themes/adaptationPresets.ts`:
      - layout adaptation tokens
@@ -31,18 +35,22 @@ This note captures practical additions that improve Ktheme's usability across pr
      - adaptation presets and CSS generation helpers
 
 5. **State-layer colors**
+
    - Why: hover/pressed/focused/dragged layers are key for interactive systems.
    - Implemented in `ColorScheme.stateLayers`.
 
 6. **Semantic role aliasing**
+
    - Why: many product systems think in semantic statuses, not only MD3 role names.
    - Implemented in `ColorScheme.semanticRoles` (`success`, `warning`, `info`, optional `critical` variants).
 
 7. **Dynamic contrast guardrails**
+
    - Why: low-contrast pairings should be caught early.
    - Implemented in `ThemeEngine.validateTheme` with warnings for key contrast pairs below WCAG-oriented thresholds.
 
 8. **Adaptive motion policy**
+
    - Why: respect reduced-motion preferences automatically.
    - Implemented via `ThemeEngine.resolveEffectsForRuntime` plus `animations.reducedMotionPolicy`.
 

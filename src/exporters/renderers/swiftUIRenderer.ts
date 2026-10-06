@@ -1,5 +1,5 @@
-import { NormalizedThemeTokens } from '../ir/tokenIR';
-import { TokenRenderer } from './TokenRenderer';
+import { NormalizedThemeTokens } from "../ir/tokenIR";
+import { TokenRenderer } from "./TokenRenderer";
 
 export interface SwiftUIExport {
   colors: Record<string, string>;
@@ -14,8 +14,8 @@ function asSwiftColor(hex: string): string {
 }
 
 export class SwiftUIRenderer implements TokenRenderer<SwiftUIExport> {
-  readonly id = 'swiftui';
-  readonly name = 'SwiftUI Exporter';
+  readonly id = "swiftui";
+  readonly name = "SwiftUI Exporter";
 
   render(tokens: NormalizedThemeTokens): SwiftUIExport {
     const colors: Record<string, string> = {
@@ -26,12 +26,12 @@ export class SwiftUIRenderer implements TokenRenderer<SwiftUIExport> {
       success: tokens.color.semantic.success,
       warning: tokens.color.semantic.warning,
       info: tokens.color.semantic.info,
-      critical: tokens.color.semantic.critical
+      critical: tokens.color.semantic.critical,
     };
 
     const swiftPalette = `struct KthemePalette {\n${Object.entries(colors)
       .map(([key, value]) => `    let ${key} = ${asSwiftColor(value)}`)
-      .join('\n')}\n}`;
+      .join("\n")}\n}`;
 
     const swiftTypography = `struct KthemeTypography {\n    let fontFamily = "${tokens.typography.fontFamily}"\n    let fontSizeSmall: CGFloat = ${tokens.typography.fontSize.small}\n    let fontSizeMedium: CGFloat = ${tokens.typography.fontSize.medium}\n    let fontSizeLarge: CGFloat = ${tokens.typography.fontSize.large}\n    let fontSizeXLarge: CGFloat = ${tokens.typography.fontSize.xlarge}\n}`;
 
@@ -44,7 +44,7 @@ export class SwiftUIRenderer implements TokenRenderer<SwiftUIExport> {
       typography: tokens.typography as unknown as Record<string, unknown>,
       effects: tokens.effects as unknown as Record<string, unknown>,
       adaptation: tokens.adaptation as unknown as Record<string, unknown>,
-      swift
+      swift,
     };
   }
 }

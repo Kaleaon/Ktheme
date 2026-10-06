@@ -1,4 +1,4 @@
-import { DesktopAdaptation, MetallicVariant } from '../../core/types';
+import { DesktopAdaptation, MetallicVariant } from "../../core/types";
 
 /**
  * Normalized color tokens in canonical IR format.
@@ -56,8 +56,8 @@ export interface NormalizedColorTokens {
  * Normalized layout adaptation tokens.
  */
 export interface NormalizedLayoutTokens {
-  density: 'compact' | 'comfortable' | 'spacious';
-  cornerStyle: 'sharp' | 'rounded' | 'pill';
+  density: "compact" | "comfortable" | "spacious";
+  cornerStyle: "sharp" | "rounded" | "pill";
   spacingScale: number;
   breakpoints: {
     compact: number;
@@ -70,8 +70,8 @@ export interface NormalizedLayoutTokens {
     large: number;
     xlarge: number;
   };
-  panelStyle: 'flat' | 'elevated' | 'glass';
-  navigationStyle: 'tabs' | 'rail' | 'drawer' | 'pivot';
+  panelStyle: "flat" | "elevated" | "glass";
+  navigationStyle: "tabs" | "rail" | "drawer" | "pivot";
 }
 
 /**
@@ -129,7 +129,7 @@ export interface NormalizedEffectsTokens {
   animations: {
     enabled: boolean;
     duration: number;
-    easing: 'linear' | 'ease' | 'ease-in' | 'ease-out' | 'ease-in-out';
+    easing: "linear" | "ease" | "ease-in" | "ease-out" | "ease-in-out";
   };
   focusRing: {
     enabled: boolean;

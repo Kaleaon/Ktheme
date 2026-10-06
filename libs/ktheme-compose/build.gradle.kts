@@ -19,6 +19,11 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions { jvmTarget = "17" }
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
+    }
 }
 
 dependencies {
@@ -36,4 +41,38 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.runtime:runtime")
     implementation("androidx.compose.animation:animation")
+    testImplementation("junit:junit:4.13.2")
 }
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            artifactId = "ktheme-compose"
+            afterEvaluate {
+                from(components["release"])
+            }
+            pom {
+                name.set("Ktheme Compose")
+                description.set("Jetpack Compose UI components and theme integration for Ktheme.")
+                url.set("https://github.com/Kaleaon/Ktheme")
+                licenses {
+                    license {
+                        name.set("MIT")
+                        url.set("https://opensource.org/license/mit")
+                    }
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            name = "remoteMaven"
+            url = uri(System.getenv("MAVEN_REPO_URL") ?: "https://repo.maven.apache.org/maven2")
+            credentials {
+                username = System.getenv("MAVEN_USERNAME") ?: ""
+                password = System.getenv("MAVEN_PASSWORD") ?: ""
+            }
+        }
+    }
+}
+

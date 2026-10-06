@@ -1,1 +1,1 @@
-export * from './LinkpointUIKit';
+export * from "./LinkpointUIKit";

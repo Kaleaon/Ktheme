@@ -38,4 +38,3 @@ include(":app")
 
 includeBuild("../../libs/ktheme-core")
 includeBuild("../../libs/ktheme-compose")
-

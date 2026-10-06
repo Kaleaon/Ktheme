@@ -2,58 +2,167 @@
  * Theme adaptation helpers for layout, icons and component-level overrides.
  */
 
-import { ColorScheme, ComponentOverride, DesignTokens, Theme, ThemeAdaptation } from '../core/types';
-import { toCssColor } from '../utils/colors';
-import { resolveAccessibilitySettings, shouldAutoIncludeAccessibilityCSS } from '../accessibility/defaults';
+import {
+  ColorScheme,
+  ComponentOverride,
+  DesignTokens,
+  Theme,
+  ThemeAdaptation,
+} from "../core/types";
+import { toCssColor } from "../utils/colors";
+import {
+  resolveAccessibilitySettings,
+  shouldAutoIncludeAccessibilityCSS,
+} from "../accessibility/defaults";
 
 const ALLOWED_COMPONENT_OVERRIDE_PROPERTIES = new Set([
   // Layout and box model
-  'display', 'visibility', 'overflow', 'overflow-x', 'overflow-y',
-  'box-sizing', 'position', 'top', 'right', 'bottom', 'left', 'inset',
-  'z-index', 'float', 'clear',
-  'width', 'min-width', 'max-width', 'height', 'min-height', 'max-height',
-  'aspect-ratio',
-  'margin', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'margin-inline', 'margin-block',
-  'padding', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'padding-inline', 'padding-block',
-  'gap', 'row-gap', 'column-gap',
+  "display",
+  "visibility",
+  "overflow",
+  "overflow-x",
+  "overflow-y",
+  "box-sizing",
+  "position",
+  "top",
+  "right",
+  "bottom",
+  "left",
+  "inset",
+  "z-index",
+  "float",
+  "clear",
+  "width",
+  "min-width",
+  "max-width",
+  "height",
+  "min-height",
+  "max-height",
+  "aspect-ratio",
+  "margin",
+  "margin-top",
+  "margin-right",
+  "margin-bottom",
+  "margin-left",
+  "margin-inline",
+  "margin-block",
+  "padding",
+  "padding-top",
+  "padding-right",
+  "padding-bottom",
+  "padding-left",
+  "padding-inline",
+  "padding-block",
+  "gap",
+  "row-gap",
+  "column-gap",
   // Flex and grid
-  'flex', 'flex-grow', 'flex-shrink', 'flex-basis', 'flex-direction', 'flex-wrap', 'order',
-  'justify-content', 'justify-items', 'justify-self', 'align-content', 'align-items', 'align-self',
-  'grid-template-columns', 'grid-template-rows', 'grid-auto-columns', 'grid-auto-rows', 'grid-auto-flow',
-  'grid-column', 'grid-row', 'place-content', 'place-items', 'place-self',
+  "flex",
+  "flex-grow",
+  "flex-shrink",
+  "flex-basis",
+  "flex-direction",
+  "flex-wrap",
+  "order",
+  "justify-content",
+  "justify-items",
+  "justify-self",
+  "align-content",
+  "align-items",
+  "align-self",
+  "grid-template-columns",
+  "grid-template-rows",
+  "grid-auto-columns",
+  "grid-auto-rows",
+  "grid-auto-flow",
+  "grid-column",
+  "grid-row",
+  "place-content",
+  "place-items",
+  "place-self",
   // Typography
-  'font-family', 'font-size', 'font-weight', 'font-style', 'font-variant',
-  'line-height', 'letter-spacing', 'text-transform', 'text-align', 'text-decoration',
-  'text-overflow', 'white-space', 'word-break', 'word-spacing',
+  "font-family",
+  "font-size",
+  "font-weight",
+  "font-style",
+  "font-variant",
+  "line-height",
+  "letter-spacing",
+  "text-transform",
+  "text-align",
+  "text-decoration",
+  "text-overflow",
+  "white-space",
+  "word-break",
+  "word-spacing",
   // Color and paint
-  'color', 'background', 'background-color', 'background-image', 'background-size', 'background-position', 'background-repeat',
-  'opacity', 'filter', 'backdrop-filter',
+  "color",
+  "background",
+  "background-color",
+  "background-image",
+  "background-size",
+  "background-position",
+  "background-repeat",
+  "opacity",
+  "filter",
+  "backdrop-filter",
   // Border and outline
-  'border', 'border-top', 'border-right', 'border-bottom', 'border-left',
-  'border-color', 'border-width', 'border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width', 'border-style',
-  'border-radius', 'border-top-left-radius', 'border-top-right-radius', 'border-bottom-left-radius', 'border-bottom-right-radius',
-  'outline', 'outline-color', 'outline-width', 'outline-style', 'outline-offset',
+  "border",
+  "border-top",
+  "border-right",
+  "border-bottom",
+  "border-left",
+  "border-color",
+  "border-width",
+  "border-top-width",
+  "border-right-width",
+  "border-bottom-width",
+  "border-left-width",
+  "border-style",
+  "border-radius",
+  "border-top-left-radius",
+  "border-top-right-radius",
+  "border-bottom-left-radius",
+  "border-bottom-right-radius",
+  "outline",
+  "outline-color",
+  "outline-width",
+  "outline-style",
+  "outline-offset",
   // Effects
-  'box-shadow', 'transition', 'transition-property', 'transition-duration', 'transition-delay', 'transition-timing-function',
-  'transform', 'transform-origin'
+  "box-shadow",
+  "transition",
+  "transition-property",
+  "transition-duration",
+  "transition-delay",
+  "transition-timing-function",
+  "transform",
+  "transform-origin",
 ]);
 
 const UNSUPPORTED_PSEUDO_SELECTORS = [
-  ':has(',
-  '::part(',
-  '::slotted(',
-  ':host',
-  ':host-context'
+  ":has(",
+  "::part(",
+  "::slotted(",
+  ":host",
+  ":host-context",
 ];
 
-const SAFE_KEYWORD_PATTERN = /^(?:inherit|initial|unset|revert|none|auto|normal|bold|bolder|lighter|uppercase|lowercase|capitalize|transparent|currentcolor|solid|dashed|dotted|double|hidden|visible|relative|absolute|static|sticky|fixed|block|inline|inline-block|inline-flex|flex|grid|contents|center|left|right|start|end|stretch|space-between|space-around|space-evenly|nowrap|wrap|column|row|baseline|middle|top|bottom|inset|sans-serif|serif|monospace|system-ui|border-box|content-box|cover|contain)$/i;
+const SAFE_KEYWORD_PATTERN =
+  /^(?:inherit|initial|unset|revert|none|auto|normal|bold|bolder|lighter|uppercase|lowercase|capitalize|transparent|currentcolor|solid|dashed|dotted|double|hidden|visible|relative|absolute|static|sticky|fixed|block|inline|inline-block|inline-flex|flex|grid|contents|center|left|right|start|end|stretch|space-between|space-around|space-evenly|nowrap|wrap|column|row|baseline|middle|top|bottom|inset|sans-serif|serif|monospace|system-ui|border-box|content-box|cover|contain)$/i;
 const SAFE_NUMBER_PATTERN = /^-?\d+(\.\d+)?$/;
-const SAFE_LENGTH_PATTERN = /^-?\d+(\.\d+)?(px|em|rem|%|vh|vw|vmin|vmax|ch|ex|pt|pc|cm|mm|in|fr)$/i;
-const SAFE_HEX_PATTERN = /^#([0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
-const SAFE_FUNCTION_PATTERN = /^(rgba?|hsla?|calc|min|max|clamp|var|blur|saturate|contrast|brightness|grayscale|sepia|hue-rotate|drop-shadow|linear-gradient|radial-gradient|conic-gradient|repeating-linear-gradient|repeating-radial-gradient)\(/i;
+const SAFE_LENGTH_PATTERN =
+  /^-?\d+(\.\d+)?(px|em|rem|%|vh|vw|vmin|vmax|ch|ex|pt|pc|cm|mm|in|fr)$/i;
+const SAFE_HEX_PATTERN =
+  /^#([0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
+const SAFE_FUNCTION_PATTERN =
+  /^(rgba?|hsla?|calc|min|max|clamp|var|blur|saturate|contrast|brightness|grayscale|sepia|hue-rotate|drop-shadow|linear-gradient|radial-gradient|conic-gradient|repeating-linear-gradient|repeating-radial-gradient)\(/i;
 
 function normalizeNumericValue(key: string, value: string | number): string {
-  if (typeof value === 'number' && !['opacity', 'z-index', 'font-weight', 'line-height'].includes(key)) {
+  if (
+    typeof value === "number" &&
+    !["opacity", "z-index", "font-weight", "line-height"].includes(key)
+  ) {
     return `${value}px`;
   }
   return `${value}`;
@@ -61,7 +170,7 @@ function normalizeNumericValue(key: string, value: string | number): string {
 
 function tokenizeCssValue(raw: string): string[] {
   const tokens: string[] = [];
-  let current = '';
+  let current = "";
   let depth = 0;
   let inQuote: string | null = null;
 
@@ -74,13 +183,13 @@ function tokenizeCssValue(raw: string): string[] {
         inQuote = char;
       }
     }
-    if (char === '(' && !inQuote) depth += 1;
-    if (char === ')' && !inQuote) depth = Math.max(0, depth - 1);
+    if (char === "(" && !inQuote) depth += 1;
+    if (char === ")" && !inQuote) depth = Math.max(0, depth - 1);
 
     if (/\s/.test(char) && depth === 0 && !inQuote) {
       if (current) {
         tokens.push(current);
-        current = '';
+        current = "";
       }
       continue;
     }
@@ -93,7 +202,7 @@ function tokenizeCssValue(raw: string): string[] {
 
 function isSafeCssValueToken(rawToken: string): boolean {
   if (!rawToken) return false;
-  const token = rawToken.replace(/,$/, '');
+  const token = rawToken.replace(/,$/, "");
   if (!token) return true;
   if (/^["'].*["']$/.test(token)) return true;
   if (SAFE_KEYWORD_PATTERN.test(token)) return true;
@@ -107,12 +216,13 @@ function isSafeCssValueToken(rawToken: string): boolean {
 }
 
 function validateCssValueStrict(value: string | number): boolean {
-  if (typeof value === 'number') return Number.isFinite(value);
+  if (typeof value === "number") return Number.isFinite(value);
 
   const normalized = value.trim();
   if (!normalized) return false;
   if (/[{};]/.test(normalized)) return false;
-  if (/javascript\s*:|expression\s*\(|behavior\s*:|@import/i.test(normalized)) return false;
+  if (/javascript\s*:|expression\s*\(|behavior\s*:|@import/i.test(normalized))
+    return false;
   if (/url\s*\(/i.test(normalized)) return false;
 
   const tokens = tokenizeCssValue(normalized);
@@ -121,13 +231,15 @@ function validateCssValueStrict(value: string | number): boolean {
 }
 
 export interface ComponentOverrideValidationIssue {
-  severity: 'error' | 'warning';
+  severity: "error" | "warning";
   message: string;
-  code: 'invalid-component-override' | 'unsafe-component-override';
+  code: "invalid-component-override" | "unsafe-component-override";
   path: string;
 }
 
-export function validateComponentOverridePolicy(overrides?: ComponentOverride[]): ComponentOverrideValidationIssue[] {
+export function validateComponentOverridePolicy(
+  overrides?: ComponentOverride[],
+): ComponentOverrideValidationIssue[] {
   const issues: ComponentOverrideValidationIssue[] = [];
   if (!overrides?.length) return issues;
 
@@ -137,10 +249,10 @@ export function validateComponentOverridePolicy(overrides?: ComponentOverride[])
 
     if (!override.selector?.trim()) {
       issues.push({
-        severity: 'error',
-        code: 'invalid-component-override',
+        severity: "error",
+        code: "invalid-component-override",
         message: `Component override at index ${index} is missing selector`,
-        path: selectorPath
+        path: selectorPath,
       });
       return;
     }
@@ -148,66 +260,68 @@ export function validateComponentOverridePolicy(overrides?: ComponentOverride[])
     const selector = override.selector.trim();
     if (selector.length > 160) {
       issues.push({
-        severity: 'error',
-        code: 'invalid-component-override',
+        severity: "error",
+        code: "invalid-component-override",
         message: `Component override selector at index ${index} is too long (max 160 characters)`,
-        path: selectorPath
+        path: selectorPath,
       });
     }
 
     if (/[{};@]/.test(selector)) {
       issues.push({
-        severity: 'error',
-        code: 'unsafe-component-override',
+        severity: "error",
+        code: "unsafe-component-override",
         message: `Component override selector at index ${index} contains unsupported CSS syntax`,
-        path: selectorPath
+        path: selectorPath,
       });
     }
 
     if ((selector.match(/[>+~]/g)?.length ?? 0) > 3) {
       issues.push({
-        severity: 'error',
-        code: 'invalid-component-override',
+        severity: "error",
+        code: "invalid-component-override",
         message: `Component override selector at index ${index} is too complex (too many combinators)`,
-        path: selectorPath
+        path: selectorPath,
       });
     }
 
-    if (selector.split(',').length > 4) {
+    if (selector.split(",").length > 4) {
       issues.push({
-        severity: 'error',
-        code: 'invalid-component-override',
+        severity: "error",
+        code: "invalid-component-override",
         message: `Component override selector at index ${index} targets too many selector groups`,
-        path: selectorPath
+        path: selectorPath,
       });
     }
 
-    const unsupportedPseudo = UNSUPPORTED_PSEUDO_SELECTORS.find(pseudo => selector.includes(pseudo));
+    const unsupportedPseudo = UNSUPPORTED_PSEUDO_SELECTORS.find((pseudo) =>
+      selector.includes(pseudo),
+    );
     if (unsupportedPseudo) {
       issues.push({
-        severity: 'error',
-        code: 'invalid-component-override',
+        severity: "error",
+        code: "invalid-component-override",
         message: `Component override selector at index ${index} uses unsupported pseudo selector ${unsupportedPseudo}`,
-        path: selectorPath
+        path: selectorPath,
       });
     }
 
     if (/^\s*(\*|:root|html|body)\b/.test(selector)) {
       issues.push({
-        severity: 'warning',
-        code: 'unsafe-component-override',
+        severity: "warning",
+        code: "unsafe-component-override",
         message: `Component override selector at index ${index} is dangerously broad (${selector})`,
-        path: selectorPath
+        path: selectorPath,
       });
     }
 
     const styleEntries = Object.entries(override.styles);
     if (styleEntries.length === 0) {
       issues.push({
-        severity: 'warning',
-        code: 'invalid-component-override',
+        severity: "warning",
+        code: "invalid-component-override",
         message: `Component override at index ${index} has no style declarations`,
-        path: stylesPath
+        path: stylesPath,
       });
       return;
     }
@@ -216,19 +330,19 @@ export function validateComponentOverridePolicy(overrides?: ComponentOverride[])
       const propertyPath = `${stylesPath}.${property}`;
       if (!ALLOWED_COMPONENT_OVERRIDE_PROPERTIES.has(property)) {
         issues.push({
-          severity: 'error',
-          code: 'invalid-component-override',
+          severity: "error",
+          code: "invalid-component-override",
           message: `Component override style ${property} at index ${index} is not an allowed property`,
-          path: propertyPath
+          path: propertyPath,
         });
       }
 
       if (!validateCssValueStrict(value)) {
         issues.push({
-          severity: 'error',
-          code: 'unsafe-component-override',
+          severity: "error",
+          code: "unsafe-component-override",
           message: `Component override style ${property} at index ${index} contains an unsafe or unsupported CSS value`,
-          path: propertyPath
+          path: propertyPath,
         });
       }
     });
@@ -240,19 +354,21 @@ export function validateComponentOverridePolicy(overrides?: ComponentOverride[])
 /**
  * Generate CSS custom properties from layout adaptation tokens.
  */
-export function generateLayoutCSSVariables(adaptation?: ThemeAdaptation['layout']): string {
-  if (!adaptation) return '';
+export function generateLayoutCSSVariables(
+  adaptation?: ThemeAdaptation["layout"],
+): string {
+  if (!adaptation) return "";
 
   const radiusMap = {
     sharp: 0,
     rounded: 12,
-    pill: 999
+    pill: 999,
   } as const;
 
   const densityMap = {
     compact: 0.85,
     comfortable: 1,
-    spacious: 1.2
+    spacious: 1.2,
   } as const;
 
   return `
@@ -261,18 +377,18 @@ export function generateLayoutCSSVariables(adaptation?: ThemeAdaptation['layout'
     --kt-layout-spacing-scale: ${adaptation.spacingScale};
     --kt-layout-corner-style: ${adaptation.cornerStyle};
     --kt-layout-radius: ${radiusMap[adaptation.cornerStyle]}px;
-    --kt-layout-panel-style: ${adaptation.panelStyle ?? 'flat'};
-    --kt-layout-navigation-style: ${adaptation.navigationStyle ?? 'tabs'};
+    --kt-layout-panel-style: ${adaptation.panelStyle ?? "flat"};
+    --kt-layout-navigation-style: ${adaptation.navigationStyle ?? "tabs"};
   `;
 }
-
-
 
 /**
  * Generate CSS variables and helper hooks from the layout accessibility contract.
  */
-export function generateLayoutAccessibilityCSS(layout?: ThemeAdaptation['layout']): string {
-  if (!layout?.accessibility) return '';
+export function generateLayoutAccessibilityCSS(
+  layout?: ThemeAdaptation["layout"],
+): string {
+  if (!layout?.accessibility) return "";
 
   const profile = layout.accessibility;
 
@@ -289,13 +405,17 @@ export function generateLayoutAccessibilityCSS(layout?: ThemeAdaptation['layout'
     --kt-layout-keyboard-order: ${profile.keyboard.order};
     --kt-layout-focus-policy: ${profile.keyboard.focusPolicy};
     --kt-layout-live-region-mode: ${profile.liveRegion.mode};
-    --kt-layout-live-region-atomic: ${profile.liveRegion.atomic ? 'true' : 'false'};
+    --kt-layout-live-region-atomic: ${
+      profile.liveRegion.atomic ? "true" : "false"
+    };
     --kt-layout-live-region-relevant: ${profile.liveRegion.relevant};
   `;
 }
 
-export function generateLayoutAccessibilityHookCSS(layout?: ThemeAdaptation['layout']): string {
-  if (!layout?.accessibility) return '';
+export function generateLayoutAccessibilityHookCSS(
+  layout?: ThemeAdaptation["layout"],
+): string {
+  if (!layout?.accessibility) return "";
 
   return `
 /*
@@ -348,24 +468,25 @@ export function generateLayoutAccessibilityHookCSS(layout?: ThemeAdaptation['lay
 /**
  * Generate CSS custom properties from icon adaptation tokens.
  */
-export function generateIconCSSVariables(adaptation?: ThemeAdaptation['icons']): string {
-  if (!adaptation) return '';
+export function generateIconCSSVariables(
+  adaptation?: ThemeAdaptation["icons"],
+): string {
+  if (!adaptation) return "";
 
   return `
     --kt-icon-family: ${adaptation.family};
     --kt-icon-style: ${adaptation.style};
     --kt-icon-size-scale: ${adaptation.sizeScale};
     --kt-icon-stroke-width: ${adaptation.strokeWidth ?? 1.8};
-    --kt-icon-corner-style: ${adaptation.cornerStyle ?? 'rounded'};
+    --kt-icon-corner-style: ${adaptation.cornerStyle ?? "rounded"};
   `;
 }
-
 
 /**
  * Generate CSS custom properties from design tokens.
  */
 export function generateDesignTokenCSSVariables(tokens?: DesignTokens): string {
-  if (!tokens) return '';
+  if (!tokens) return "";
 
   return `
     --kt-density-scale: ${tokens.density?.scale ?? 1};
@@ -378,7 +499,7 @@ export function generateDesignTokenCSSVariables(tokens?: DesignTokens): string {
 }
 
 function toKebabCase(value: string): string {
-  return value.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+  return value.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
 }
 
 /**
@@ -388,7 +509,11 @@ export function generateColorSchemeCSSVariables(scheme: ColorScheme): string {
   const lines: string[] = [];
 
   Object.entries(scheme).forEach(([key, value]) => {
-    if (key === 'stateLayers' || key === 'semanticRoles' || value === undefined) {
+    if (
+      key === "stateLayers" ||
+      key === "semanticRoles" ||
+      value === undefined
+    ) {
       return;
     }
 
@@ -411,17 +536,17 @@ export function generateColorSchemeCSSVariables(scheme: ColorScheme): string {
     });
   }
 
-  return lines.join('\n');
+  return lines.join("\n");
 }
 
 /**
  * Generate accessibility CSS variables and built-in utility rules.
  */
 export function generateAccessibilityCSS(theme: Theme): string {
-  if (!shouldAutoIncludeAccessibilityCSS(theme)) return '';
+  if (!shouldAutoIncludeAccessibilityCSS(theme)) return "";
 
   const settings = resolveAccessibilitySettings(theme);
-  if (!settings.enabled) return '';
+  if (!settings.enabled) return "";
 
   const focusColor = `${theme.colorScheme.primary}`;
 
@@ -434,15 +559,17 @@ export function generateAccessibilityCSS(theme: Theme): string {
     --kt-a11y-focus-width: ${settings.focusRingWidth}px;
     --kt-a11y-focus-offset: ${settings.focusRingOffset}px;
     --kt-a11y-focus-color: ${focusColor};
-    --kt-a11y-underline-links: ${settings.underlineLinks ? 'underline' : 'none'};
+    --kt-a11y-underline-links: ${
+      settings.underlineLinks ? "underline" : "none"
+    };
   `;
 }
 
 export function generateAccessibilityUtilityCSS(theme: Theme): string {
-  if (!shouldAutoIncludeAccessibilityCSS(theme)) return '';
+  if (!shouldAutoIncludeAccessibilityCSS(theme)) return "";
 
   const settings = resolveAccessibilitySettings(theme);
-  if (!settings.enabled) return '';
+  if (!settings.enabled) return "";
 
   const reducedMotionBlock = settings.reducedMotion
     ? `
@@ -452,7 +579,7 @@ export function generateAccessibilityUtilityCSS(theme: Theme): string {
   transition-duration: 0.01ms !important;
   scroll-behavior: auto !important;
 }`
-    : '';
+    : "";
 
   return `
 [data-ktheme] {
@@ -490,30 +617,39 @@ ${reducedMotionBlock}
 /**
  * Convert component overrides into CSS blocks.
  */
-export function generateComponentOverrideCSS(overrides?: ComponentOverride[]): string {
-  if (!overrides?.length) return '';
+export function generateComponentOverrideCSS(
+  overrides?: ComponentOverride[],
+): string {
+  if (!overrides?.length) return "";
 
   const rejectedPaths = new Set(
     validateComponentOverridePolicy(overrides)
-      .filter(issue => issue.severity === 'error')
-      .map(issue => issue.path)
+      .filter((issue) => issue.severity === "error")
+      .map((issue) => issue.path),
   );
 
   return overrides
     .map((override, index) => {
       const selectorPath = `adaptation.componentOverrides[${index}].selector`;
-      if (rejectedPaths.has(selectorPath)) return '';
+      if (rejectedPaths.has(selectorPath)) return "";
 
       const body = Object.entries(override.styles)
-        .filter(([property]) => !rejectedPaths.has(`adaptation.componentOverrides[${index}].styles.${property}`))
-        .map(([key, value]) => `  ${key}: ${normalizeNumericValue(key, value)};`)
-        .join('\n');
+        .filter(
+          ([property]) =>
+            !rejectedPaths.has(
+              `adaptation.componentOverrides[${index}].styles.${property}`,
+            ),
+        )
+        .map(
+          ([key, value]) => `  ${key}: ${normalizeNumericValue(key, value)};`,
+        )
+        .join("\n");
 
-      if (!body.trim()) return '';
+      if (!body.trim()) return "";
       return `${override.selector} {\n${body}\n}`;
     })
     .filter(Boolean)
-    .join('\n\n');
+    .join("\n\n");
 }
 
 /**
@@ -523,16 +659,40 @@ export function generateThemeAdaptationCSS(theme: Theme): string {
   const adaptation = theme.adaptation;
   const colorVars = generateColorSchemeCSSVariables(theme.colorScheme);
   const layoutVars = generateLayoutCSSVariables(adaptation?.layout);
-  const layoutAccessibilityVars = generateLayoutAccessibilityCSS(adaptation?.layout);
-  const layoutAccessibilityHooks = generateLayoutAccessibilityHookCSS(adaptation?.layout);
+  const layoutAccessibilityVars = generateLayoutAccessibilityCSS(
+    adaptation?.layout,
+  );
+  const layoutAccessibilityHooks = generateLayoutAccessibilityHookCSS(
+    adaptation?.layout,
+  );
   const iconVars = generateIconCSSVariables(adaptation?.icons);
   const tokenVars = generateDesignTokenCSSVariables(theme.tokens);
   const accessibilityVars = generateAccessibilityCSS(theme);
-  const overrideCSS = generateComponentOverrideCSS(adaptation?.componentOverrides);
+  const overrideCSS = generateComponentOverrideCSS(
+    adaptation?.componentOverrides,
+  );
   const accessibilityUtilityCSS = generateAccessibilityUtilityCSS(theme);
 
-  if (!colorVars && !layoutVars && !layoutAccessibilityVars && !iconVars && !tokenVars && !overrideCSS) return '';
-  if (!layoutVars && !layoutAccessibilityVars && !iconVars && !tokenVars && !accessibilityVars && !overrideCSS && !layoutAccessibilityHooks && !accessibilityUtilityCSS) return '';
+  if (
+    !colorVars &&
+    !layoutVars &&
+    !layoutAccessibilityVars &&
+    !iconVars &&
+    !tokenVars &&
+    !overrideCSS
+  )
+    return "";
+  if (
+    !layoutVars &&
+    !layoutAccessibilityVars &&
+    !iconVars &&
+    !tokenVars &&
+    !accessibilityVars &&
+    !overrideCSS &&
+    !layoutAccessibilityHooks &&
+    !accessibilityUtilityCSS
+  )
+    return "";
 
   return `
 :root {

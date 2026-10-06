@@ -6,10 +6,7 @@
     "description": "Legacy fixture with explicit v0 schema",
     "author": "test",
     "version": "1.0.0",
-    "tags": [
-      "legacy",
-      "fixture"
-    ],
+    "tags": ["legacy", "fixture"],
     "createdAt": "2026-01-01T00:00:00.000Z",
     "updatedAt": "2026-01-01T00:00:00.000Z"
   },

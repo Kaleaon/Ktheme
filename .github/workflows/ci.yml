@@ -2,9 +2,9 @@ name: Continuous Integration
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -18,7 +18,7 @@ jobs:
   validate:
     uses: ./.github/workflows/reusable-validation.yml
     with:
-      node-version: '22'
+      node-version: "22"
 
   build-kotlin:
     name: Build & Test Kotlin Modules
@@ -37,6 +37,9 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
+          distribution: "temurin"
+          java-version: "21"
+          cache: "gradle"
 
       - name: Run Root Kotlin Unit Tests
         run: ./gradlew test
@@ -61,12 +64,12 @@ jobs:
       - name: Cache SwiftPM Packages
         uses: actions/cache@v4
         with:
-          path: libs/ktheme-swift/.build
-          key: ${{ runner.os }}-spm-${{ hashFiles('libs/ktheme-swift/Package.swift', 'libs/ktheme-swift/Package.resolved') }}
+          path: ~/Library/Caches/org.swift.swiftpm
+          key: ${{ runner.os }}-spm-${{ hashFiles('libs/ktheme-swift/Package.swift') }}-${{ github.sha }}
           restore-keys: |
+            ${{ runner.os }}-spm-${{ hashFiles('libs/ktheme-swift/Package.swift') }}-
             ${{ runner.os }}-spm-
 
       - name: Run Swift Package Tests
         run: swift test
         working-directory: libs/ktheme-swift
-

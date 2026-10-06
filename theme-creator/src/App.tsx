@@ -1,28 +1,28 @@
-import { useState } from 'react';
-import { ThemeProvider } from './state/ThemeContext.tsx';
-import { BlueskyProvider } from './state/BlueskyContext.tsx';
-import { Sidebar } from './components/layout/Sidebar.tsx';
-import { CustomizerPanel } from './components/customizer/CustomizerPanel.tsx';
-import { ThemePreview } from './components/preview/ThemePreview.tsx';
-import { AIDesigner } from './components/ai/AIDesigner.tsx';
-import { BlueskyPanel } from './components/bluesky/BlueskyPanel.tsx';
-import { PresetsPanel } from './components/presets/PresetsPanel.tsx';
-import { CatalogSyncPanel } from './components/catalog/CatalogSyncPanel.tsx';
+import { useState } from "react";
+import { ThemeProvider } from "./state/ThemeContext.tsx";
+import { BlueskyProvider } from "./state/BlueskyContext.tsx";
+import { Sidebar } from "./components/layout/Sidebar.tsx";
+import { CustomizerPanel } from "./components/customizer/CustomizerPanel.tsx";
+import { ThemePreview } from "./components/preview/ThemePreview.tsx";
+import { AIDesigner } from "./components/ai/AIDesigner.tsx";
+import { BlueskyPanel } from "./components/bluesky/BlueskyPanel.tsx";
+import { PresetsPanel } from "./components/presets/PresetsPanel.tsx";
+import { CatalogSyncPanel } from "./components/catalog/CatalogSyncPanel.tsx";
 
 function AppContent() {
-  const [activeTab, setActiveTab] = useState('customize');
+  const [activeTab, setActiveTab] = useState("customize");
 
   function renderPanel() {
     switch (activeTab) {
-      case 'customize':
+      case "customize":
         return <CustomizerPanel />;
-      case 'ai':
+      case "ai":
         return <AIDesigner />;
-      case 'bluesky':
+      case "bluesky":
         return <BlueskyPanel />;
-      case 'presets':
+      case "presets":
         return <PresetsPanel />;
-      case 'catalog':
+      case "catalog":
         return <CatalogSyncPanel />;
       default:
         return <CustomizerPanel />;

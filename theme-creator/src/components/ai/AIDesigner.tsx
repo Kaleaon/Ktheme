@@ -1,34 +1,37 @@
-import { useEffect, useId, useRef, useState } from 'react';
-import { Send, Key, Loader, Download, X } from 'lucide-react';
-import { useTheme } from '../../state/ThemeContext.tsx';
+import { useEffect, useId, useRef, useState } from "react";
+import { Send, Key, Loader, Download, X, AlertCircle } from "lucide-react";
+import { useTheme } from "../../state/ThemeContext.tsx";
 import {
   createAISession,
   revokeAISession,
   sendAIMessage,
   sendGeminiMultimodalMessage,
-  extractThemeFromResponse,
+  extractThemeResult,
   type AIMessage,
   type AIRedesignPlan,
   type AIProvider,
   type AISession,
-} from '../../services/ai.ts';
+} from "../../services/ai.ts";
 
 export function AIDesigner() {
   const { dispatch } = useTheme();
-  const [apiKey, setApiKey] = useState('');
+  const [apiKey, setApiKey] = useState("");
   const [session, setSession] = useState<AISession | null>(null);
   const [messages, setMessages] = useState<AIMessage[]>([]);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [provider, setProvider] = useState<AIProvider>('claude');
+  const [provider, setProvider] = useState<AIProvider>("claude");
   const scrollRef = useRef<HTMLDivElement>(null);
   const providerSelectId = useId();
   const promptInputId = useId();
   const apiKeyInputId = useId();
 
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
+    scrollRef.current?.scrollTo({
+      top: scrollRef.current.scrollHeight,
+      behavior: "smooth",
+    });
   }, [messages]);
 
   async function startSecureSession() {
@@ -40,9 +43,9 @@ export function AIDesigner() {
       const nextSession = await createAISession(provider, apiKey.trim());
       setSession(nextSession);
       setProvider(nextSession.provider);
-      setApiKey('');
+      setApiKey("");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unable to start session');
+      setError(err instanceof Error ? err.message : "Unable to start session");
     } finally {
       setIsLoading(false);
     }
@@ -53,38 +56,50 @@ export function AIDesigner() {
       await revokeAISession(session.sessionToken).catch(() => undefined);
     }
     setSession(null);
-    setApiKey('');
+    setApiKey("");
   }
 
   async function handleSend() {
     if (!input.trim() || isLoading) return;
 
-    const userMsg: AIMessage = { role: 'user', content: input.trim() };
+    const userMsg: AIMessage = { role: "user", content: input.trim() };
     const newMessages = [...messages, userMsg];
     setMessages(newMessages);
-    setInput('');
+    setInput("");
     setIsLoading(true);
     setError(null);
 
     try {
-      if (!session?.sessionToken) throw new Error('Secure AI session has expired. Reconnect your key.');
+      if (!session?.sessionToken)
+        throw new Error("Secure AI session has expired. Reconnect your key.");
 
-      const response = provider === 'claude'
-        ? await sendAIMessage(newMessages, session.sessionToken)
-        : await sendGeminiMultimodalMessage(newMessages[newMessages.length - 1].content, session.sessionToken);
-      const assistantMsg: AIMessage = { role: 'assistant', content: response };
+      const response =
+        provider === "claude"
+          ? await sendAIMessage(newMessages, session.sessionToken)
+          : await sendGeminiMultimodalMessage(
+              newMessages[newMessages.length - 1].content,
+              session.sessionToken,
+            );
+      const assistantMsg: AIMessage = { role: "assistant", content: response };
       setMessages([...newMessages, assistantMsg]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Request failed');
+      setError(err instanceof Error ? err.message : "Request failed");
     } finally {
       setIsLoading(false);
     }
   }
 
   function loadThemeFromMessage(content: string) {
-    const parsed = extractThemeFromResponse(content);
-    if (parsed?.theme) {
-      dispatch({ type: 'SET_THEME', payload: parsed.theme });
+    const result = extractThemeResult(content);
+    if (result.status === "SUCCESS") {
+      dispatch({ type: "SET_THEME", payload: result.response.theme });
+      setError(null);
+    } else if (result.status === "INVALID_JSON") {
+      setError(`Failed to load theme: Syntax error in JSON code block (${result.errorDetails})`);
+    } else if (result.status === "INVALID_SCHEMA") {
+      setError(`Failed to load theme: Schema validation failed (${result.errorDetails})`);
+    } else {
+      setError("Failed to load theme: No theme JSON block found in message");
     }
   }
 
@@ -92,28 +107,43 @@ export function AIDesigner() {
     return (
       <div className="panel ai-panel">
         <section className="ai-key-setup" aria-labelledby="ai-key-heading">
-          <Key size={48} className="ai-key-icon" aria-hidden="true" focusable="false" />
+          <Key
+            size={48}
+            className="ai-key-icon"
+            aria-hidden="true"
+            focusable="false"
+          />
           <h2 id="ai-key-heading">Secure AI Session Required</h2>
           <p>
-            Enter your provider key to open a short-lived server session. Your raw key is never stored in browser storage,
-            and the client only keeps an expiring session token in memory.
+            Enter your provider key to open a short-lived server session. Your
+            raw key is never stored in browser storage, and the client only
+            keeps an expiring session token in memory.
           </p>
           <div className="ai-key-input-row">
-            <label htmlFor={apiKeyInputId} className="sr-only">API key</label>
+            <label htmlFor={apiKeyInputId} className="sr-only">
+              API key
+            </label>
             <input
               id={apiKeyInputId}
               type="password"
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
               placeholder="sk-ant-..."
-              onKeyDown={(e) => e.key === 'Enter' && startSecureSession()}
+              onKeyDown={(e) => e.key === "Enter" && startSecureSession()}
             />
-            <button className="btn btn-primary" type="button" onClick={startSecureSession} disabled={isLoading}>
-              {isLoading ? 'Connecting…' : 'Start Secure Session'}
+            <button
+              className="btn btn-primary"
+              type="button"
+              onClick={startSecureSession}
+              disabled={isLoading}
+            >
+              {isLoading ? "Connecting…" : "Start Secure Session"}
             </button>
           </div>
           <div className="ai-key-input-row">
-            <label htmlFor={providerSelectId} className="sr-only">Model provider</label>
+            <label htmlFor={providerSelectId} className="sr-only">
+              Model provider
+            </label>
             <select
               id={providerSelectId}
               className="ai-provider-select"
@@ -126,7 +156,8 @@ export function AIDesigner() {
             </select>
           </div>
           <p className="ai-key-hint">
-            Session tokens expire automatically and are rate-limited server-side for safer usage.
+            Session tokens expire automatically and are rate-limited server-side
+            for safer usage.
           </p>
         </section>
       </div>
@@ -138,7 +169,9 @@ export function AIDesigner() {
       <div className="ai-header">
         <h2>AI Theme Designer</h2>
         <div className="ai-header-actions">
-          <label htmlFor={providerSelectId} className="sr-only">Model provider</label>
+          <label htmlFor={providerSelectId} className="sr-only">
+            Model provider
+          </label>
           <select
             id={providerSelectId}
             className="ai-provider-select"
@@ -159,23 +192,37 @@ export function AIDesigner() {
             aria-label="End secure session"
           >
             <Key size={16} aria-hidden="true" focusable="false" />
-            <X size={12} className="btn-icon-overlay" aria-hidden="true" focusable="false" />
+            <X
+              size={12}
+              className="btn-icon-overlay"
+              aria-hidden="true"
+              focusable="false"
+            />
           </button>
         </div>
       </div>
 
-      <div className="ai-messages" ref={scrollRef} role="log" aria-live="polite" aria-relevant="additions text">
+      <div
+        className="ai-messages"
+        ref={scrollRef}
+        role="log"
+        aria-live="polite"
+        aria-relevant="additions text"
+      >
         {messages.length === 0 && (
           <div className="ai-welcome">
-            <p>Describe the theme you want and I'll design it for you. Provider keys stay on the backend proxy.</p>
+            <p>
+              Describe the theme you want and I'll design it for you. Provider
+              keys stay on the backend proxy.
+            </p>
             <div className="ai-suggestions">
               {[
-                'Create a cyberpunk neon theme with electric blue and magenta',
-                'Design a calm forest theme with earthy greens and wood tones',
-                'Make a retro synthwave theme with purple gradients and pink accents',
-                'Create an elegant dark theme inspired by Art Deco gold and black',
-                'Art Nouveau app redesign with nature-inspired curves and refined typography',
-                'Art Deco app redesign with symmetry, geometric ornament, and premium contrast',
+                "Create a cyberpunk neon theme with electric blue and magenta",
+                "Design a calm forest theme with earthy greens and wood tones",
+                "Make a retro synthwave theme with purple gradients and pink accents",
+                "Create an elegant dark theme inspired by Art Deco gold and black",
+                "Art Nouveau app redesign with nature-inspired curves and refined typography",
+                "Art Deco app redesign with symmetry, geometric ornament, and premium contrast",
               ].map((s) => (
                 <button
                   key={s}
@@ -193,13 +240,16 @@ export function AIDesigner() {
         {messages.map((msg, i) => (
           <div key={i} className={`ai-message ${msg.role}`}>
             <div className="ai-message-header">
-              {msg.role === 'user' ? 'You' : 'Ktheme AI'}
+              {msg.role === "user" ? "You" : "Ktheme AI"}
             </div>
             <div className="ai-message-content">
-              {msg.role === 'assistant' ? (
+              {msg.role === "assistant" ? (
                 <>
                   <MessageContent text={msg.content} />
-                  <ThemeActions content={msg.content} onLoad={loadThemeFromMessage} />
+                  <ThemeActions
+                    content={msg.content}
+                    onLoad={loadThemeFromMessage}
+                  />
                 </>
               ) : (
                 <p>{msg.content}</p>
@@ -212,24 +262,35 @@ export function AIDesigner() {
           <div className="ai-message assistant">
             <div className="ai-message-header">Ktheme AI</div>
             <div className="ai-message-content ai-loading">
-              <Loader size={16} className="spin" aria-hidden="true" focusable="false" />
+              <Loader
+                size={16}
+                className="spin"
+                aria-hidden="true"
+                focusable="false"
+              />
               Designing your theme...
             </div>
           </div>
         )}
       </div>
 
-      {error && <div className="ai-error" role="alert">{error}</div>}
+      {error && (
+        <div className="ai-error" role="alert">
+          {error}
+        </div>
+      )}
 
       <div className="ai-input-row">
-        <label htmlFor={promptInputId} className="sr-only">Theme request</label>
+        <label htmlFor={promptInputId} className="sr-only">
+          Theme request
+        </label>
         <input
           id={promptInputId}
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Describe your ideal theme..."
-          onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+          onKeyDown={(e) => e.key === "Enter" && handleSend()}
           disabled={isLoading}
         />
         <button
@@ -253,13 +314,34 @@ function ThemeActions({
   content: string;
   onLoad: (content: string) => void;
 }) {
-  const parsed = extractThemeFromResponse(content);
-  if (!parsed) return null;
+  const result = extractThemeResult(content);
+
+  if (result.status === "NO_JSON_BLOCK") {
+    return null;
+  }
+
+  if (result.status === "INVALID_JSON" || result.status === "INVALID_SCHEMA") {
+    return (
+      <div className="ai-theme-error" role="alert">
+        <div className="ai-theme-error-title">
+          <AlertCircle size={16} aria-hidden="true" focusable="false" />
+          {result.status === "INVALID_JSON" ? "Malformed Theme JSON" : "Invalid Theme Schema"}
+        </div>
+        <p className="ai-theme-error-detail">{result.errorDetails}</p>
+      </div>
+    );
+  }
 
   return (
     <>
-      {parsed.redesignPlan && <RedesignPlanView redesignPlan={parsed.redesignPlan} />}
-      <button className="btn btn-primary ai-load-btn" type="button" onClick={() => onLoad(content)}>
+      {result.response.redesignPlan && (
+        <RedesignPlanView redesignPlan={result.response.redesignPlan} />
+      )}
+      <button
+        className="btn btn-primary ai-load-btn"
+        type="button"
+        onClick={() => onLoad(content)}
+      >
         <Download size={16} aria-hidden="true" focusable="false" />
         Load This Theme
       </button>
@@ -270,7 +352,9 @@ function ThemeActions({
 function RedesignPlanView({ redesignPlan }: { redesignPlan: AIRedesignPlan }) {
   return (
     <div className="ai-redesign-plan">
-      <p><strong>Redesign Plan</strong></p>
+      <p>
+        <strong>Redesign Plan</strong>
+      </p>
       <p>Layout density: {redesignPlan.layoutDensity}</p>
       <p>Corner strategy: {redesignPlan.cornerStrategy}</p>
       <p>Navigation model: {redesignPlan.navModel}</p>
@@ -290,8 +374,8 @@ function MessageContent({ text }: { text: string }) {
   return (
     <>
       {parts.map((part, i) => {
-        if (part.startsWith('```json')) {
-          const code = part.replace(/```json\s*/, '').replace(/```$/, '');
+        if (part.startsWith("```json")) {
+          const code = part.replace(/```json\s*/, "").replace(/```$/, "");
           return (
             <pre key={i} className="ai-code-block">
               <code>{code}</code>
@@ -299,7 +383,7 @@ function MessageContent({ text }: { text: string }) {
           );
         }
         return part
-          .split('\n')
+          .split("\n")
           .filter(Boolean)
           .map((line, j) => <p key={`${i}-${j}`}>{line}</p>);
       })}

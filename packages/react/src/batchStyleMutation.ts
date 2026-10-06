@@ -31,16 +31,18 @@ function flushMutations() {
  */
 export function batchSetCssVariables(
   element: HTMLElement | null | undefined,
-  styles: StyleMap
+  styles: StyleMap,
 ): void {
-  const targetEl = element || (typeof document !== 'undefined' ? document.documentElement : null);
+  const targetEl =
+    element ||
+    (typeof document !== "undefined" ? document.documentElement : null);
   if (!targetEl) return;
 
   const existing = pendingMutations.get(targetEl) || {};
   pendingMutations.set(targetEl, { ...existing, ...styles });
 
   if (rafId === null) {
-    if (typeof requestAnimationFrame === 'function') {
+    if (typeof requestAnimationFrame === "function") {
       rafId = requestAnimationFrame(flushMutations);
     } else {
       flushMutations();
@@ -53,7 +55,7 @@ export function batchSetCssVariables(
  */
 export function flushCssVariables(): void {
   if (rafId !== null) {
-    if (typeof cancelAnimationFrame === 'function') {
+    if (typeof cancelAnimationFrame === "function") {
       cancelAnimationFrame(rafId);
     }
     flushMutations();
