@@ -1,7 +1,7 @@
 plugins {
-    id("com.android.library")
-    kotlin("android")
-    id("org.jetbrains.kotlin.plugin.compose")
+    id("com.android.library") version "8.5.0"
+    kotlin("android") version "2.0.0"
+    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
     `maven-publish`
 }
 
@@ -22,7 +22,13 @@ android {
 }
 
 dependencies {
-    api(project(if (findProject(":libs:ktheme-core") != null) ":libs:ktheme-core" else ":ktheme-core"))
+    if (findProject(":libs:ktheme-core") != null) {
+        api(project(":libs:ktheme-core"))
+    } else if (findProject(":ktheme-core") != null) {
+        api(project(":ktheme-core"))
+    } else {
+        api("io.ktheme:ktheme-core:1.0.0")
+    }
     implementation(platform("androidx.compose:compose-bom:2024.09.02"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")

@@ -1,5 +1,5 @@
-// libs/ktheme-swift/Package.swift
 // swift-tools-version:5.9
+// libs/ktheme-swift/Package.swift
 //
 // Two-product Swift package:
 //   - Ktheme   — pure Swift model + parser + engine (no UI deps).
@@ -24,6 +24,6 @@ let package = Package(
             name: "KthemeUI",
             dependencies: ["Ktheme"]
         ),
-        .testTarget(name: "KthemeTests", dependencies: ["Ktheme"]),
+        .testTarget(name: "KthemeTests", dependencies: ["Ktheme", "KthemeUI"]),
     ]
 )

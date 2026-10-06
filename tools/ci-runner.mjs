@@ -346,7 +346,8 @@ async function taskA11yAudit() {
     browser = await getPlaywrightBrowser();
     const page = await browser.newPage();
     await page.goto(targetUrl, { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(1000);
+    await page.waitForSelector('#root > *', { timeout: 10000 }).catch(() => {});
+    await page.waitForTimeout(500);
 
     const auditResults = await page.evaluate(() => {
       // Helper function for relative luminance
@@ -535,7 +536,8 @@ async function taskVisualSuite() {
       log(`Capturing visual snapshots for viewport: ${vp.name} (${vp.width}x${vp.height})`, 'info');
       const page = await browser.newPage({ viewport: { width: vp.width, height: vp.height } });
       await page.goto(targetUrl, { waitUntil: 'domcontentloaded' });
-      await page.waitForTimeout(1000);
+      await page.waitForSelector('#root > *', { timeout: 10000 }).catch(() => {});
+      await page.waitForTimeout(500);
 
       // Attempt interactive panel triggers if available
       try {

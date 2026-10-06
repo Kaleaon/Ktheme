@@ -16,6 +16,10 @@ build/
 kotlin-plugin/build/
 kotlin-plugin/.gradle/
 
+# Swift SPM
+.build/
+.swiftpm/
+
 # Testing
 coverage/
 .nyc_output/

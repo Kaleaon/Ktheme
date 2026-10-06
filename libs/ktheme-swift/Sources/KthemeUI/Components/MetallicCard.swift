@@ -4,6 +4,7 @@
 // elevation. Body remains a normal surface so contrast against the
 // metal frame is preserved.
 
+#if canImport(SwiftUI)
 import SwiftUI
 import Ktheme
 
@@ -43,3 +44,4 @@ public struct MetallicCard<Content: View>: View {
                     radius: CGFloat(theme.effects.shadows.blur))
     }
 }
+#endif

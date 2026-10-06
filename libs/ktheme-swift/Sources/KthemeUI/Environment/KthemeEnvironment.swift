@@ -4,6 +4,7 @@
 // `Theme` in the environment so any view can read `@Environment(\.ktheme)`
 // without taking a dependency on `ThemeEngine`.
 
+#if canImport(SwiftUI)
 import SwiftUI
 import Ktheme
 
@@ -50,3 +51,4 @@ public struct KthemeProvider<Content: View>: View {
             .foregroundStyle(HexColor.color(cs.onBackground))
     }
 }
+#endif
