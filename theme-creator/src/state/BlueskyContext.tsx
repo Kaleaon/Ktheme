@@ -1,6 +1,12 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
-import { BskyAgent } from '@atproto/api';
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  type ReactNode,
+} from "react";
+import { BskyAgent } from "@atproto/api";
 
 interface BlueskyProfile {
   did: string;
@@ -24,7 +30,7 @@ interface BlueskyContextValue extends BlueskyState {
 
 const BlueskyContext = createContext<BlueskyContextValue | null>(null);
 
-const SESSION_KEY = 'ktheme-bsky-session';
+const SESSION_KEY = "ktheme-bsky-session";
 
 export function BlueskyProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<BlueskyState>({
@@ -37,7 +43,7 @@ export function BlueskyProvider({ children }: { children: ReactNode }) {
   const login = useCallback(async (identifier: string, password: string) => {
     setState((s) => ({ ...s, isLoading: true, error: null }));
     try {
-      const agent = new BskyAgent({ service: 'https://bsky.social' });
+      const agent = new BskyAgent({ service: "https://bsky.social" });
       const res = await agent.login({ identifier, password });
 
       const profileRes = await agent.getProfile({ actor: res.data.did });
@@ -56,7 +62,7 @@ export function BlueskyProvider({ children }: { children: ReactNode }) {
 
       setState({ agent, profile, isLoading: false, error: null });
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Login failed';
+      const msg = err instanceof Error ? err.message : "Login failed";
       setState((s) => ({ ...s, isLoading: false, error: msg }));
       throw err;
     }
@@ -74,10 +80,10 @@ export function BlueskyProvider({ children }: { children: ReactNode }) {
     setState((s) => ({ ...s, isLoading: true }));
     try {
       const session = JSON.parse(stored);
-      const agent = new BskyAgent({ service: 'https://bsky.social' });
+      const agent = new BskyAgent({ service: "https://bsky.social" });
       await agent.resumeSession(session);
 
-      if (!agent.session) throw new Error('Session resume failed');
+      if (!agent.session) throw new Error("Session resume failed");
 
       const profileRes = await agent.getProfile({ actor: agent.session.did });
       const profile: BlueskyProfile = {
@@ -106,6 +112,6 @@ export function BlueskyProvider({ children }: { children: ReactNode }) {
 
 export function useBluesky() {
   const ctx = useContext(BlueskyContext);
-  if (!ctx) throw new Error('useBluesky must be used within BlueskyProvider');
+  if (!ctx) throw new Error("useBluesky must be used within BlueskyProvider");
   return ctx;
 }

@@ -2,238 +2,239 @@
  * App-wide adaptation presets for layout and icon transformation.
  */
 
-import { DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE } from '../accessibility/defaults';
-import { ThemeAdaptation } from '../core/types';
+import { DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE } from "../accessibility/defaults";
+import { ThemeAdaptation } from "../core/types";
 
 export const FrutigerAeroAdaptation: ThemeAdaptation = {
   layout: {
-    density: 'comfortable',
-    cornerStyle: 'rounded',
+    density: "comfortable",
+    cornerStyle: "rounded",
     spacingScale: 1.1,
-    panelStyle: 'glass',
-    navigationStyle: 'tabs',
-    accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
+    panelStyle: "glass",
+    navigationStyle: "tabs",
+    accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE,
   },
   icons: {
-    family: 'custom',
-    style: 'duotone',
+    family: "custom",
+    style: "duotone",
     sizeScale: 1.1,
     strokeWidth: 1.4,
-    cornerStyle: 'rounded'
+    cornerStyle: "rounded",
   },
   componentOverrides: [
     {
-      selector: '.app-shell',
+      selector: ".app-shell",
       styles: {
-        'backdrop-filter': 'blur(12px) saturate(140%)',
-        'border-radius': 18,
-        'box-shadow': '0 10px 28px rgba(0, 0, 0, 0.22)'
-      }
+        "backdrop-filter": "blur(12px) saturate(140%)",
+        "border-radius": 18,
+        "box-shadow": "0 10px 28px rgba(0, 0, 0, 0.22)",
+      },
     },
     {
-      selector: '.app-toolbar',
+      selector: ".app-toolbar",
       styles: {
-        'min-height': 68,
-        'padding-inline': 20
-      }
-    }
-  ]
+        "min-height": 68,
+        "padding-inline": 20,
+      },
+    },
+  ],
 };
 
 export const LinkpointAdaptation: ThemeAdaptation = {
   layout: {
-    density: 'comfortable',
-    cornerStyle: 'rounded',
+    density: "comfortable",
+    cornerStyle: "rounded",
     spacingScale: 1.05,
-    panelStyle: 'elevated',
-    navigationStyle: 'rail',
-    accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
+    panelStyle: "elevated",
+    navigationStyle: "rail",
+    accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE,
   },
   icons: {
-    family: 'custom',
-    style: 'outlined',
+    family: "custom",
+    style: "outlined",
     sizeScale: 1.0,
     strokeWidth: 1.6,
-    cornerStyle: 'rounded'
+    cornerStyle: "rounded",
   },
   componentOverrides: [
     {
-      selector: '.linkpoint-hero',
+      selector: ".linkpoint-hero",
       styles: {
-        'border-radius': 12,
-        border: '1px solid rgba(212, 175, 55, 0.35)',
-        'box-shadow': '0 8px 32px rgba(0, 0, 0, 0.45)'
-      }
+        "border-radius": 12,
+        border: "1px solid rgba(212, 175, 55, 0.35)",
+        "box-shadow": "0 8px 32px rgba(0, 0, 0, 0.45)",
+      },
     },
     {
-      selector: '.linkpoint-button',
+      selector: ".linkpoint-button",
       styles: {
-        'border-radius': 8,
-        'letter-spacing': 0.3,
-        'font-weight': 600
-      }
-    }
-  ]
+        "border-radius": 8,
+        "letter-spacing": 0.3,
+        "font-weight": 600,
+      },
+    },
+  ],
 };
 
 export const WindowsPhoneMetroAdaptation: ThemeAdaptation = {
   layout: {
-    density: 'spacious',
-    cornerStyle: 'sharp',
+    density: "spacious",
+    cornerStyle: "sharp",
     spacingScale: 1.25,
-    panelStyle: 'flat',
-    navigationStyle: 'pivot',
-    accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
+    panelStyle: "flat",
+    navigationStyle: "pivot",
+    accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE,
   },
   icons: {
-    family: 'fluent',
-    style: 'line',
+    family: "fluent",
+    style: "line",
     sizeScale: 1,
     strokeWidth: 1.6,
-    cornerStyle: 'sharp'
+    cornerStyle: "sharp",
   },
   componentOverrides: [
     {
-      selector: '.tile-grid',
+      selector: ".tile-grid",
       styles: {
         gap: 14,
-        'grid-auto-rows': 92
-      }
+        "grid-auto-rows": 92,
+      },
     },
     {
-      selector: '.tile',
+      selector: ".tile",
       styles: {
-        'border-radius': 0,
-        'text-transform': 'uppercase'
-      }
-    }
-  ]
+        "border-radius": 0,
+        "text-transform": "uppercase",
+      },
+    },
+  ],
 };
 
 export const LCARSAdaptation: ThemeAdaptation = {
   layout: {
-    density: 'compact',
-    cornerStyle: 'pill',
+    density: "compact",
+    cornerStyle: "pill",
     spacingScale: 0.92,
-    panelStyle: 'flat',
-    navigationStyle: 'rail',
-    accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
+    panelStyle: "flat",
+    navigationStyle: "rail",
+    accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE,
   },
   icons: {
-    family: 'custom',
-    style: 'filled',
+    family: "custom",
+    style: "filled",
     sizeScale: 0.95,
     strokeWidth: 2,
-    cornerStyle: 'rounded'
+    cornerStyle: "rounded",
   },
   componentOverrides: [
     {
-      selector: '.lcars-bar',
+      selector: ".lcars-bar",
       styles: {
-        'border-top-left-radius': 48,
-        'border-bottom-left-radius': 48,
-        'padding-inline': 16,
-        'letter-spacing': 1.1
-      }
+        "border-top-left-radius": 48,
+        "border-bottom-left-radius": 48,
+        "padding-inline": 16,
+        "letter-spacing": 1.1,
+      },
     },
     {
-      selector: '.lcars-panel',
+      selector: ".lcars-panel",
       styles: {
-        display: 'grid',
-        'grid-template-columns': '220px 1fr',
-        gap: 10
-      }
-    }
-  ]
+        display: "grid",
+        "grid-template-columns": "220px 1fr",
+        gap: 10,
+      },
+    },
+  ],
 };
 
 export const ArtNouveauAdaptation: ThemeAdaptation = {
   layout: {
-    density: 'comfortable',
-    cornerStyle: 'pill',
+    density: "comfortable",
+    cornerStyle: "pill",
     spacingScale: 1.08,
-    panelStyle: 'glass',
-    navigationStyle: 'tabs',
-    accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
+    panelStyle: "glass",
+    navigationStyle: "tabs",
+    accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE,
   },
   icons: {
-    family: 'custom',
-    style: 'duotone',
+    family: "custom",
+    style: "duotone",
     sizeScale: 1.05,
     strokeWidth: 1.3,
-    cornerStyle: 'rounded'
+    cornerStyle: "rounded",
   },
   componentOverrides: [
     {
-      selector: '.card, .panel',
+      selector: ".card, .panel",
       styles: {
-        'border-radius': 24,
-        border: '1px solid rgba(123, 87, 55, 0.26)',
-        'box-shadow': '0 8px 22px rgba(63, 45, 30, 0.16)'
-      }
+        "border-radius": 24,
+        border: "1px solid rgba(123, 87, 55, 0.26)",
+        "box-shadow": "0 8px 22px rgba(63, 45, 30, 0.16)",
+      },
     },
     {
-      selector: '.button, .chip',
+      selector: ".button, .chip",
       styles: {
-        'border-radius': 999,
-        'letter-spacing': 0.2,
-        'padding-inline': 18
-      }
+        "border-radius": 999,
+        "letter-spacing": 0.2,
+        "padding-inline": 18,
+      },
     },
     {
-      selector: '.section-header',
+      selector: ".section-header",
       styles: {
-        'text-transform': 'none',
-        'border-bottom': '1px solid rgba(123, 87, 55, 0.35)',
-        'padding-bottom': 8
-      }
-    }
-  ]
+        "text-transform": "none",
+        "border-bottom": "1px solid rgba(123, 87, 55, 0.35)",
+        "padding-bottom": 8,
+      },
+    },
+  ],
 };
 
 export const ArtDecoAdaptation: ThemeAdaptation = {
   layout: {
-    density: 'compact',
-    cornerStyle: 'sharp',
+    density: "compact",
+    cornerStyle: "sharp",
     spacingScale: 0.94,
-    panelStyle: 'elevated',
-    navigationStyle: 'rail',
-    accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
+    panelStyle: "elevated",
+    navigationStyle: "rail",
+    accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE,
   },
   icons: {
-    family: 'material',
-    style: 'line',
+    family: "material",
+    style: "line",
     sizeScale: 0.98,
     strokeWidth: 1.9,
-    cornerStyle: 'sharp'
+    cornerStyle: "sharp",
   },
   componentOverrides: [
     {
-      selector: '.panel, .dialog',
+      selector: ".panel, .dialog",
       styles: {
-        'border-radius': 0,
-        border: '1px solid rgba(212, 175, 55, 0.45)',
-        'box-shadow': '0 0 0 1px rgba(255, 246, 224, 0.16) inset, 0 10px 26px rgba(0, 0, 0, 0.55)'
-      }
+        "border-radius": 0,
+        border: "1px solid rgba(212, 175, 55, 0.45)",
+        "box-shadow":
+          "0 0 0 1px rgba(255, 246, 224, 0.16) inset, 0 10px 26px rgba(0, 0, 0, 0.55)",
+      },
     },
     {
-      selector: '.data-grid, .timeline',
+      selector: ".data-grid, .timeline",
       styles: {
-        'row-gap': 4,
-        'column-gap': 16,
-        'border-left': '3px solid rgba(212, 175, 55, 0.55)'
-      }
+        "row-gap": 4,
+        "column-gap": 16,
+        "border-left": "3px solid rgba(212, 175, 55, 0.55)",
+      },
     },
     {
-      selector: '.top-nav, .toolbar',
+      selector: ".top-nav, .toolbar",
       styles: {
-        'border-radius': 0,
-        'min-height': 64,
-        'text-transform': 'uppercase',
-        'letter-spacing': 1.4
-      }
-    }
-  ]
+        "border-radius": 0,
+        "min-height": 64,
+        "text-transform": "uppercase",
+        "letter-spacing": 1.4,
+      },
+    },
+  ],
 };
 
 export const AdaptationPresets = {
@@ -242,5 +243,5 @@ export const AdaptationPresets = {
   windowsPhoneMetro: WindowsPhoneMetroAdaptation,
   lcars: LCARSAdaptation,
   artNouveau: ArtNouveauAdaptation,
-  artDeco: ArtDecoAdaptation
+  artDeco: ArtDecoAdaptation,
 };

@@ -8,13 +8,13 @@
  */
 export function cloneTheme<T>(obj: T): T {
   const sc =
-    typeof structuredClone === 'function'
+    typeof structuredClone === "function"
       ? structuredClone
       : (globalThis as Record<string, unknown>).structuredClone;
-  if (typeof sc === 'function') {
+  if (typeof sc === "function") {
     return sc(obj);
   }
-  if (obj === null || typeof obj !== 'object') {
+  if (obj === null || typeof obj !== "object") {
     return obj;
   }
   if (Array.isArray(obj)) {

@@ -1,7 +1,9 @@
 @import "./tokens.css";
 
 /* Base Utilities and Reset */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -17,7 +19,8 @@ body {
 
 /* Metallic Gradients Utility Classes */
 .metallic-gold {
-  background: linear-gradient(135deg,
+  background: linear-gradient(
+    135deg,
     var(--metallic-gold-shadow) 0%,
     var(--metallic-gold-base) 25%,
     var(--metallic-gold-highlight) 50%,
@@ -27,7 +30,8 @@ body {
 }
 
 .metallic-silver {
-  background: linear-gradient(135deg,
+  background: linear-gradient(
+    135deg,
     var(--metallic-silver-shadow) 0%,
     var(--metallic-silver-base) 25%,
     var(--metallic-silver-highlight) 50%,
@@ -37,7 +41,8 @@ body {
 }
 
 .metallic-rose-gold {
-  background: linear-gradient(135deg,
+  background: linear-gradient(
+    135deg,
     var(--metallic-rose-gold-shadow) 0%,
     var(--metallic-rose-gold-base) 25%,
     var(--metallic-rose-gold-highlight) 50%,
@@ -56,8 +61,12 @@ body {
 
 /* Shimmer Animation Effect */
 @keyframes shimmer-move {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 .shimmer-active {
@@ -77,7 +86,9 @@ body {
   border: 1px solid var(--ktheme-border);
   border-radius: var(--radius-md);
   padding: var(--space-4);
-  transition: border-color 0.15s ease, transform 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease;
 }
 
 .ktheme-card:hover {
@@ -96,7 +107,10 @@ body {
   border-radius: var(--radius-md);
   border: none;
   cursor: pointer;
-  transition: background-color 0.15s ease, opacity 0.15s ease, transform 0.1s ease;
+  transition:
+    background-color 0.15s ease,
+    opacity 0.15s ease,
+    transform 0.1s ease;
 }
 
 .ktheme-btn-primary {

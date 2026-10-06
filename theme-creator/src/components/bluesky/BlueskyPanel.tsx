@@ -1,19 +1,32 @@
-import { type KeyboardEvent, useId, useState, useEffect } from 'react';
-import { LogIn, LogOut, Upload, RefreshCw, Loader, Download, Package } from 'lucide-react';
-import { useBluesky } from '../../state/BlueskyContext';
-import { useTheme } from '../../state/ThemeContext';
-import { shareTheme, shareThemePack, fetchSharedThemes, fetchUserThemes } from '../../services/bluesky-themes';
-import type { KTheme } from '../../types/theme';
+import { type KeyboardEvent, useId, useState, useEffect } from "react";
+import {
+  LogIn,
+  LogOut,
+  Upload,
+  RefreshCw,
+  Loader,
+  Download,
+  Package,
+} from "lucide-react";
+import { useBluesky } from "../../state/BlueskyContext";
+import { useTheme } from "../../state/ThemeContext";
+import {
+  shareTheme,
+  shareThemePack,
+  fetchSharedThemes,
+  fetchUserThemes,
+} from "../../services/bluesky-themes";
+import type { KTheme } from "../../types/theme";
 
-type SubTab = 'community' | 'my-themes' | 'share';
+type SubTab = "community" | "my-themes" | "share";
 
 export function BlueskyPanel() {
   const bsky = useBluesky();
   const { state, dispatch } = useTheme();
 
-  const [subTab, setSubTab] = useState<SubTab>('community');
-  const [identifier, setIdentifier] = useState('');
-  const [password, setPassword] = useState('');
+  const [subTab, setSubTab] = useState<SubTab>("community");
+  const [identifier, setIdentifier] = useState("");
+  const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
@@ -38,9 +51,9 @@ export function BlueskyPanel() {
     setLoginError(null);
     try {
       await bsky.login(identifier, password);
-      setPassword('');
+      setPassword("");
     } catch (err) {
-      setLoginError(err instanceof Error ? err.message : 'Login failed');
+      setLoginError(err instanceof Error ? err.message : "Login failed");
     } finally {
       setIsLoggingIn(false);
     }
@@ -80,7 +93,7 @@ export function BlueskyPanel() {
       const uri = await shareTheme(bsky.agent, state.currentTheme);
       setShareStatus(`Shared! Post: ${uri}`);
     } catch (err) {
-      setShareStatus(`Error: ${err instanceof Error ? err.message : 'Failed'}`);
+      setShareStatus(`Error: ${err instanceof Error ? err.message : "Failed"}`);
     } finally {
       setIsSharing(false);
     }
@@ -93,37 +106,40 @@ export function BlueskyPanel() {
     try {
       const pack = {
         id: crypto.randomUUID(),
-        name: `${bsky.profile?.displayName || bsky.profile?.handle}'s Theme Pack`,
+        name: `${
+          bsky.profile?.displayName || bsky.profile?.handle
+        }'s Theme Pack`,
         description: `A collection of ${state.savedThemes.length} themes`,
-        author: bsky.profile?.handle || 'Unknown',
+        author: bsky.profile?.handle || "Unknown",
         themes: state.savedThemes,
         createdAt: new Date().toISOString(),
       };
       const uri = await shareThemePack(bsky.agent, pack);
       setShareStatus(`Pack shared! Post: ${uri}`);
     } catch (err) {
-      setShareStatus(`Error: ${err instanceof Error ? err.message : 'Failed'}`);
+      setShareStatus(`Error: ${err instanceof Error ? err.message : "Failed"}`);
     } finally {
       setIsSharing(false);
     }
   }
 
   function loadTheme(theme: KTheme) {
-    dispatch({ type: 'SET_THEME', payload: theme });
+    dispatch({ type: "SET_THEME", payload: theme });
   }
 
   function handleTabKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
-    if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+    if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
     event.preventDefault();
-    const order: SubTab[] = ['community', 'my-themes', 'share'];
+    const order: SubTab[] = ["community", "my-themes", "share"];
     const currentIndex = order.indexOf(subTab);
-    const nextIndex = event.key === 'ArrowRight'
-      ? (currentIndex + 1) % order.length
-      : (currentIndex - 1 + order.length) % order.length;
+    const nextIndex =
+      event.key === "ArrowRight"
+        ? (currentIndex + 1) % order.length
+        : (currentIndex - 1 + order.length) % order.length;
     const next = order[nextIndex];
     setSubTab(next);
-    if (next === 'community') void loadCommunityThemes();
-    if (next === 'my-themes') void loadMyThemes();
+    if (next === "community") void loadCommunityThemes();
+    if (next === "my-themes") void loadMyThemes();
   }
 
   // Not logged in
@@ -132,7 +148,13 @@ export function BlueskyPanel() {
       <div className="panel bsky-panel">
         <div className="bsky-login-card">
           <div className="bsky-logo">
-            <svg viewBox="0 0 568 501" width="48" height="48" aria-hidden="true" focusable="false">
+            <svg
+              viewBox="0 0 568 501"
+              width="48"
+              height="48"
+              aria-hidden="true"
+              focusable="false"
+            >
               <path
                 fill="currentColor"
                 d="M123.121 33.6637C188.241 82.5526 258.281 181.681 284 234.873C309.719 181.681 379.759 82.5526 444.879 33.6637C491.866 -1.61183 568 -28.9064 568 57.9464C568 75.2916 558.055 203.659 552.222 224.501C531.947 296.954 458.067 315.434 392.347 304.249C507.222 323.8 536.444 388.56 473.333 453.32C353.473 576.312 301.061 422.461 287.631 googl383.039C285.169 375.064 284.017 371.468 284 373.899C283.983 371.468 282.831 375.064 280.369 383.039C266.939 422.461 214.527 576.312 94.6667 453.32C31.5556 388.56 60.7778 323.8 175.653 304.249C109.933 315.434 36.0533 296.954 15.7778 224.501C9.94467 203.659 0 75.2916 0 57.9464C0 -28.9064 76.1345 -1.61183 123.121 33.6637Z"
@@ -140,7 +162,10 @@ export function BlueskyPanel() {
             </svg>
           </div>
           <h2>Connect to Bluesky</h2>
-          <p>Log in to share themes and discover community theme packs on Bluesky.</p>
+          <p>
+            Log in to share themes and discover community theme packs on
+            Bluesky.
+          </p>
 
           {loginError && (
             <div className="bsky-error" role="alert" aria-live="assertive">
@@ -164,14 +189,28 @@ export function BlueskyPanel() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="xxxx-xxxx-xxxx-xxxx"
-              onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
+              onKeyDown={(e) => e.key === "Enter" && handleLogin()}
             />
           </label>
           <p className="bsky-hint">
             Use an App Password from your Bluesky settings for security.
           </p>
-          <button className="btn btn-primary" type="button" onClick={handleLogin} disabled={isLoggingIn}>
-            {isLoggingIn ? <Loader size={16} className="spin" aria-hidden="true" focusable="false" /> : <LogIn size={16} aria-hidden="true" focusable="false" />}
+          <button
+            className="btn btn-primary"
+            type="button"
+            onClick={handleLogin}
+            disabled={isLoggingIn}
+          >
+            {isLoggingIn ? (
+              <Loader
+                size={16}
+                className="spin"
+                aria-hidden="true"
+                focusable="false"
+              />
+            ) : (
+              <LogIn size={16} aria-hidden="true" focusable="false" />
+            )}
             Log In
           </button>
         </div>
@@ -186,42 +225,109 @@ export function BlueskyPanel() {
       <div className="bsky-profile-bar">
         <div className="bsky-profile-info">
           {bsky.profile.avatar && (
-            <img src={bsky.profile.avatar} alt={`${bsky.profile.handle} avatar`} className="bsky-avatar" />
+            <img
+              src={bsky.profile.avatar}
+              alt={`${bsky.profile.handle} avatar`}
+              className="bsky-avatar"
+            />
           )}
           <div>
             <strong>{bsky.profile.displayName || bsky.profile.handle}</strong>
             <span className="bsky-handle">@{bsky.profile.handle}</span>
           </div>
         </div>
-        <button className="btn-icon" type="button" onClick={bsky.logout} title="Log out" aria-label="Log out">
+        <button
+          className="btn-icon"
+          type="button"
+          onClick={bsky.logout}
+          title="Log out"
+          aria-label="Log out"
+        >
           <LogOut size={16} aria-hidden="true" focusable="false" />
         </button>
       </div>
 
       {/* Sub-tabs */}
       <div className="bsky-tabs" role="tablist" aria-label="Bluesky sections">
-        <button id="bsky-tab-community" type="button" role="tab" aria-controls={communityPanelId} aria-selected={subTab === 'community'} tabIndex={subTab === 'community' ? 0 : -1} className={`bsky-tab ${subTab === 'community' ? 'active' : ''}`} onClick={() => { setSubTab('community'); loadCommunityThemes(); }} onKeyDown={handleTabKeyDown}>
+        <button
+          id="bsky-tab-community"
+          type="button"
+          role="tab"
+          aria-controls={communityPanelId}
+          aria-selected={subTab === "community"}
+          tabIndex={subTab === "community" ? 0 : -1}
+          className={`bsky-tab ${subTab === "community" ? "active" : ""}`}
+          onClick={() => {
+            setSubTab("community");
+            loadCommunityThemes();
+          }}
+          onKeyDown={handleTabKeyDown}
+        >
           Community
         </button>
-        <button id="bsky-tab-my-themes" type="button" role="tab" aria-controls={myThemesPanelId} aria-selected={subTab === 'my-themes'} tabIndex={subTab === 'my-themes' ? 0 : -1} className={`bsky-tab ${subTab === 'my-themes' ? 'active' : ''}`} onClick={() => { setSubTab('my-themes'); loadMyThemes(); }} onKeyDown={handleTabKeyDown}>
+        <button
+          id="bsky-tab-my-themes"
+          type="button"
+          role="tab"
+          aria-controls={myThemesPanelId}
+          aria-selected={subTab === "my-themes"}
+          tabIndex={subTab === "my-themes" ? 0 : -1}
+          className={`bsky-tab ${subTab === "my-themes" ? "active" : ""}`}
+          onClick={() => {
+            setSubTab("my-themes");
+            loadMyThemes();
+          }}
+          onKeyDown={handleTabKeyDown}
+        >
           My Themes
         </button>
-        <button id="bsky-tab-share" type="button" role="tab" aria-controls={sharePanelId} aria-selected={subTab === 'share'} tabIndex={subTab === 'share' ? 0 : -1} className={`bsky-tab ${subTab === 'share' ? 'active' : ''}`} onClick={() => setSubTab('share')} onKeyDown={handleTabKeyDown}>
+        <button
+          id="bsky-tab-share"
+          type="button"
+          role="tab"
+          aria-controls={sharePanelId}
+          aria-selected={subTab === "share"}
+          tabIndex={subTab === "share" ? 0 : -1}
+          className={`bsky-tab ${subTab === "share" ? "active" : ""}`}
+          onClick={() => setSubTab("share")}
+          onKeyDown={handleTabKeyDown}
+        >
           Share
         </button>
       </div>
 
       <div className="bsky-content">
-        {subTab === 'community' && (
-          <section id={communityPanelId} role="tabpanel" aria-labelledby="bsky-tab-community">
+        {subTab === "community" && (
+          <section
+            id={communityPanelId}
+            role="tabpanel"
+            aria-labelledby="bsky-tab-community"
+          >
             <div className="bsky-section-header">
               <h4>Community Themes</h4>
-              <button className="btn-icon" type="button" onClick={loadCommunityThemes} disabled={isLoadingThemes} aria-label="Refresh community themes">
-                {isLoadingThemes ? <Loader size={16} className="spin" aria-hidden="true" focusable="false" /> : <RefreshCw size={16} aria-hidden="true" focusable="false" />}
+              <button
+                className="btn-icon"
+                type="button"
+                onClick={loadCommunityThemes}
+                disabled={isLoadingThemes}
+                aria-label="Refresh community themes"
+              >
+                {isLoadingThemes ? (
+                  <Loader
+                    size={16}
+                    className="spin"
+                    aria-hidden="true"
+                    focusable="false"
+                  />
+                ) : (
+                  <RefreshCw size={16} aria-hidden="true" focusable="false" />
+                )}
               </button>
             </div>
             {communityThemes.length === 0 && !isLoadingThemes && (
-              <p className="bsky-empty">No community themes found yet. Be the first to share one!</p>
+              <p className="bsky-empty">
+                No community themes found yet. Be the first to share one!
+              </p>
             )}
             <div className="theme-grid">
               {communityThemes.map((t) => (
@@ -231,12 +337,31 @@ export function BlueskyPanel() {
           </section>
         )}
 
-        {subTab === 'my-themes' && (
-          <section id={myThemesPanelId} role="tabpanel" aria-labelledby="bsky-tab-my-themes">
+        {subTab === "my-themes" && (
+          <section
+            id={myThemesPanelId}
+            role="tabpanel"
+            aria-labelledby="bsky-tab-my-themes"
+          >
             <div className="bsky-section-header">
               <h4>My Shared Themes</h4>
-              <button className="btn-icon" type="button" onClick={loadMyThemes} disabled={isLoadingThemes} aria-label="Refresh my themes">
-                {isLoadingThemes ? <Loader size={16} className="spin" aria-hidden="true" focusable="false" /> : <RefreshCw size={16} aria-hidden="true" focusable="false" />}
+              <button
+                className="btn-icon"
+                type="button"
+                onClick={loadMyThemes}
+                disabled={isLoadingThemes}
+                aria-label="Refresh my themes"
+              >
+                {isLoadingThemes ? (
+                  <Loader
+                    size={16}
+                    className="spin"
+                    aria-hidden="true"
+                    focusable="false"
+                  />
+                ) : (
+                  <RefreshCw size={16} aria-hidden="true" focusable="false" />
+                )}
               </button>
             </div>
             {myThemes.length === 0 && !isLoadingThemes && (
@@ -250,13 +375,35 @@ export function BlueskyPanel() {
           </section>
         )}
 
-        {subTab === 'share' && (
-          <section className="bsky-share-section" id={sharePanelId} role="tabpanel" aria-labelledby="bsky-tab-share">
+        {subTab === "share" && (
+          <section
+            className="bsky-share-section"
+            id={sharePanelId}
+            role="tabpanel"
+            aria-labelledby="bsky-tab-share"
+          >
             <div className="share-card">
               <h4>Share Current Theme</h4>
-              <p>Post "{state.currentTheme.metadata.name}" to Bluesky so others can discover and use it.</p>
-              <button className="btn btn-primary" type="button" onClick={handleShareTheme} disabled={isSharing}>
-                {isSharing ? <Loader size={16} className="spin" aria-hidden="true" focusable="false" /> : <Upload size={16} aria-hidden="true" focusable="false" />}
+              <p>
+                Post "{state.currentTheme.metadata.name}" to Bluesky so others
+                can discover and use it.
+              </p>
+              <button
+                className="btn btn-primary"
+                type="button"
+                onClick={handleShareTheme}
+                disabled={isSharing}
+              >
+                {isSharing ? (
+                  <Loader
+                    size={16}
+                    className="spin"
+                    aria-hidden="true"
+                    focusable="false"
+                  />
+                ) : (
+                  <Upload size={16} aria-hidden="true" focusable="false" />
+                )}
                 Share Theme
               </button>
             </div>
@@ -264,16 +411,39 @@ export function BlueskyPanel() {
             {state.savedThemes.length > 0 && (
               <div className="share-card">
                 <h4>Share Theme Pack</h4>
-                <p>Share all {state.savedThemes.length} saved themes as a theme pack.</p>
-                <button className="btn btn-secondary" type="button" onClick={handleSharePack} disabled={isSharing}>
-                  {isSharing ? <Loader size={16} className="spin" aria-hidden="true" focusable="false" /> : <Package size={16} aria-hidden="true" focusable="false" />}
+                <p>
+                  Share all {state.savedThemes.length} saved themes as a theme
+                  pack.
+                </p>
+                <button
+                  className="btn btn-secondary"
+                  type="button"
+                  onClick={handleSharePack}
+                  disabled={isSharing}
+                >
+                  {isSharing ? (
+                    <Loader
+                      size={16}
+                      className="spin"
+                      aria-hidden="true"
+                      focusable="false"
+                    />
+                  ) : (
+                    <Package size={16} aria-hidden="true" focusable="false" />
+                  )}
                   Share Pack ({state.savedThemes.length} themes)
                 </button>
               </div>
             )}
 
             {shareStatus && (
-              <div className={`bsky-status ${shareStatus.startsWith('Error') ? 'error' : 'success'}`} role="status" aria-live="polite">
+              <div
+                className={`bsky-status ${
+                  shareStatus.startsWith("Error") ? "error" : "success"
+                }`}
+                role="status"
+                aria-live="polite"
+              >
                 {shareStatus}
               </div>
             )}
@@ -284,7 +454,13 @@ export function BlueskyPanel() {
   );
 }
 
-function ThemeCard({ theme, onLoad }: { theme: KTheme; onLoad: (t: KTheme) => void }) {
+function ThemeCard({
+  theme,
+  onLoad,
+}: {
+  theme: KTheme;
+  onLoad: (t: KTheme) => void;
+}) {
   const c = theme.colorScheme;
   return (
     <div className="theme-card">
@@ -298,9 +474,15 @@ function ThemeCard({ theme, onLoad }: { theme: KTheme; onLoad: (t: KTheme) => vo
       </div>
       <div className="theme-card-info">
         <strong>{theme.metadata.name}</strong>
-        <span className="theme-card-author">by {theme.metadata.author || 'Unknown'}</span>
+        <span className="theme-card-author">
+          by {theme.metadata.author || "Unknown"}
+        </span>
       </div>
-      <button className="btn btn-sm" type="button" onClick={() => onLoad(theme)}>
+      <button
+        className="btn btn-sm"
+        type="button"
+        onClick={() => onLoad(theme)}
+      >
         <Download size={14} aria-hidden="true" focusable="false" /> Load
       </button>
     </div>

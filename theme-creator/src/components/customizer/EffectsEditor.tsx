@@ -1,8 +1,8 @@
-import { useId, type ReactNode } from 'react';
-import { useTheme } from '../../state/ThemeContext.tsx';
-import { METALLIC_PRESETS } from '../../utils/theme-defaults.ts';
-import type { MetallicVariant, VisualEffects } from '../../types/theme.ts';
-import { DEFAULT_EFFECTS } from '../../utils/theme-defaults.ts';
+import { useId, type ReactNode } from "react";
+import { useTheme } from "../../state/ThemeContext.tsx";
+import { METALLIC_PRESETS } from "../../utils/theme-defaults.ts";
+import type { MetallicVariant, VisualEffects } from "../../types/theme.ts";
+import { DEFAULT_EFFECTS } from "../../utils/theme-defaults.ts";
 
 export function EffectsEditor() {
   const { state, dispatch } = useTheme();
@@ -30,12 +30,12 @@ export function EffectsEditor() {
   const transitionsPropertiesId = useId();
 
   function updateEffects(patch: Partial<VisualEffects>) {
-    dispatch({ type: 'UPDATE_EFFECTS', payload: patch });
+    dispatch({ type: "UPDATE_EFFECTS", payload: patch });
   }
 
   const metallic = effects.metallic || {
     enabled: false,
-    variant: 'GOLD' as MetallicVariant,
+    variant: "GOLD" as MetallicVariant,
     gradient: METALLIC_PRESETS.GOLD,
     intensity: 0.6,
   };
@@ -44,7 +44,7 @@ export function EffectsEditor() {
     enabled: true,
     elevation: 4,
     blur: 8,
-    color: '#00000040',
+    color: "#00000040",
   };
 
   const shimmer = effects.shimmer || {
@@ -74,7 +74,9 @@ export function EffectsEditor() {
             type="checkbox"
             checked={metallic.enabled}
             onChange={(e) =>
-              updateEffects({ metallic: { ...metallic, enabled: e.target.checked } })
+              updateEffects({
+                metallic: { ...metallic, enabled: e.target.checked },
+              })
             }
           />
           <span className="toggle-label">Metallic Effect</span>
@@ -96,13 +98,15 @@ export function EffectsEditor() {
               >
                 {Object.keys(METALLIC_PRESETS).map((v) => (
                   <option key={v} value={v}>
-                    {v.replace(/_/g, ' ')}
+                    {v.replace(/_/g, " ")}
                   </option>
                 ))}
               </select>
             </label>
             <label className="form-field" htmlFor={metallicIntensityId}>
-              <span className="field-label">Intensity: {metallic.intensity}</span>
+              <span className="field-label">
+                Intensity: {metallic.intensity}
+              </span>
               <input
                 id={metallicIntensityId}
                 type="range"
@@ -112,7 +116,10 @@ export function EffectsEditor() {
                 value={metallic.intensity}
                 onChange={(e) =>
                   updateEffects({
-                    metallic: { ...metallic, intensity: parseFloat(e.target.value) },
+                    metallic: {
+                      ...metallic,
+                      intensity: parseFloat(e.target.value),
+                    },
                   })
                 }
               />
@@ -121,7 +128,11 @@ export function EffectsEditor() {
               {Object.entries(metallic.gradient).map(([key, val]) => {
                 const pickerId = `${metallicGradientBaseId}-${key}`;
                 return (
-                  <label key={key} className="color-picker mini" htmlFor={pickerId}>
+                  <label
+                    key={key}
+                    className="color-picker mini"
+                    htmlFor={pickerId}
+                  >
                     <input
                       id={pickerId}
                       type="color"
@@ -130,7 +141,10 @@ export function EffectsEditor() {
                         updateEffects({
                           metallic: {
                             ...metallic,
-                            gradient: { ...metallic.gradient, [key]: e.target.value },
+                            gradient: {
+                              ...metallic.gradient,
+                              [key]: e.target.value,
+                            },
                           },
                         })
                       }
@@ -152,7 +166,9 @@ export function EffectsEditor() {
             type="checkbox"
             checked={shadows.enabled}
             onChange={(e) =>
-              updateEffects({ shadows: { ...shadows, enabled: e.target.checked } })
+              updateEffects({
+                shadows: { ...shadows, enabled: e.target.checked },
+              })
             }
           />
           <span className="toggle-label">Shadows</span>
@@ -160,7 +176,9 @@ export function EffectsEditor() {
         {shadows.enabled && (
           <div className="effect-controls">
             <label className="form-field" htmlFor={shadowsElevationId}>
-              <span className="field-label">Elevation: {shadows.elevation}</span>
+              <span className="field-label">
+                Elevation: {shadows.elevation}
+              </span>
               <input
                 id={shadowsElevationId}
                 type="range"
@@ -170,7 +188,10 @@ export function EffectsEditor() {
                 value={shadows.elevation}
                 onChange={(e) =>
                   updateEffects({
-                    shadows: { ...shadows, elevation: parseInt(e.target.value) },
+                    shadows: {
+                      ...shadows,
+                      elevation: parseInt(e.target.value),
+                    },
                   })
                 }
               />
@@ -203,7 +224,9 @@ export function EffectsEditor() {
             type="checkbox"
             checked={shimmer.enabled}
             onChange={(e) =>
-              updateEffects({ shimmer: { ...shimmer, enabled: e.target.checked } })
+              updateEffects({
+                shimmer: { ...shimmer, enabled: e.target.checked },
+              })
             }
           />
           <span className="toggle-label">Shimmer</span>
@@ -227,7 +250,9 @@ export function EffectsEditor() {
               />
             </label>
             <label className="form-field" htmlFor={shimmerIntensityId}>
-              <span className="field-label">Intensity: {shimmer.intensity}</span>
+              <span className="field-label">
+                Intensity: {shimmer.intensity}
+              </span>
               <input
                 id={shimmerIntensityId}
                 type="range"
@@ -237,7 +262,10 @@ export function EffectsEditor() {
                 value={shimmer.intensity}
                 onChange={(e) =>
                   updateEffects({
-                    shimmer: { ...shimmer, intensity: parseFloat(e.target.value) },
+                    shimmer: {
+                      ...shimmer,
+                      intensity: parseFloat(e.target.value),
+                    },
                   })
                 }
               />
@@ -262,91 +290,351 @@ export function EffectsEditor() {
         )}
       </div>
 
-      <EffectToggle label="Surface Gradient" enabled={gradients.enabled} onToggle={(enabled) => updateEffects({ gradients: { ...gradients, enabled } })}>
-        <Range label="Angle" value={gradients.angle} min={0} max={360} step={5} suffix="deg" onChange={(angle) => updateEffects({ gradients: { ...gradients, angle } })} />
+      <EffectToggle
+        label="Surface Gradient"
+        enabled={gradients.enabled}
+        onToggle={(enabled) =>
+          updateEffects({ gradients: { ...gradients, enabled } })
+        }
+      >
+        <Range
+          label="Angle"
+          value={gradients.angle}
+          min={0}
+          max={360}
+          step={5}
+          suffix="deg"
+          onChange={(angle) =>
+            updateEffects({ gradients: { ...gradients, angle } })
+          }
+        />
         {gradients.stops.map((stop, index) => {
           const stopColorId = `${gradientStopsBaseId}-${index}`;
           return (
             <div className="gradient-stop" key={index}>
               <label className="color-picker" htmlFor={stopColorId}>
-                <input id={stopColorId} type="color" value={stop.color} onChange={(e) => updateEffects({ gradients: { ...gradients, stops: gradients.stops.map((item, i) => i === index ? { ...item, color: e.target.value } : item) } })} />
+                <input
+                  id={stopColorId}
+                  type="color"
+                  value={stop.color}
+                  onChange={(e) =>
+                    updateEffects({
+                      gradients: {
+                        ...gradients,
+                        stops: gradients.stops.map((item, i) =>
+                          i === index
+                            ? { ...item, color: e.target.value }
+                            : item,
+                        ),
+                      },
+                    })
+                  }
+                />
                 <span className="color-label">Stop {index + 1}</span>
               </label>
-              <Range label="Position" value={Math.round(stop.offset * 100)} min={0} max={100} suffix="%" onChange={(offset) => updateEffects({ gradients: { ...gradients, stops: gradients.stops.map((item, i) => i === index ? { ...item, offset: offset / 100 } : item) } })} />
+              <Range
+                label="Position"
+                value={Math.round(stop.offset * 100)}
+                min={0}
+                max={100}
+                suffix="%"
+                onChange={(offset) =>
+                  updateEffects({
+                    gradients: {
+                      ...gradients,
+                      stops: gradients.stops.map((item, i) =>
+                        i === index ? { ...item, offset: offset / 100 } : item,
+                      ),
+                    },
+                  })
+                }
+              />
             </div>
           );
         })}
       </EffectToggle>
 
-      <EffectToggle label="Backdrop Blur" enabled={blur.enabled} onToggle={(enabled) => updateEffects({ blur: { ...blur, enabled } })}>
-        <Range label="Radius" value={blur.radius} min={0} max={40} suffix="px" onChange={(radius) => updateEffects({ blur: { ...blur, radius } })} />
+      <EffectToggle
+        label="Backdrop Blur"
+        enabled={blur.enabled}
+        onToggle={(enabled) => updateEffects({ blur: { ...blur, enabled } })}
+      >
+        <Range
+          label="Radius"
+          value={blur.radius}
+          min={0}
+          max={40}
+          suffix="px"
+          onChange={(radius) => updateEffects({ blur: { ...blur, radius } })}
+        />
       </EffectToggle>
 
-      <EffectToggle label="Color Overlay" enabled={overlays.enabled} onToggle={(enabled) => updateEffects({ overlays: { ...overlays, enabled } })}>
+      <EffectToggle
+        label="Color Overlay"
+        enabled={overlays.enabled}
+        onToggle={(enabled) =>
+          updateEffects({ overlays: { ...overlays, enabled } })
+        }
+      >
         <label className="color-picker" htmlFor={overlayColorId}>
-          <input id={overlayColorId} type="color" value={overlays.color} onChange={(e) => updateEffects({ overlays: { ...overlays, color: e.target.value } })} />
+          <input
+            id={overlayColorId}
+            type="color"
+            value={overlays.color}
+            onChange={(e) =>
+              updateEffects({
+                overlays: { ...overlays, color: e.target.value },
+              })
+            }
+          />
           <span className="color-label">Overlay color</span>
         </label>
-        <Range label="Opacity" value={overlays.opacity} min={0} max={1} step={0.01} onChange={(opacity) => updateEffects({ overlays: { ...overlays, opacity } })} />
+        <Range
+          label="Opacity"
+          value={overlays.opacity}
+          min={0}
+          max={1}
+          step={0.01}
+          onChange={(opacity) =>
+            updateEffects({ overlays: { ...overlays, opacity } })
+          }
+        />
         <label className="form-field" htmlFor={overlayBlendModeId}>
           <span className="field-label">Blend mode</span>
-          <select id={overlayBlendModeId} value={overlays.blendMode} onChange={(e) => updateEffects({ overlays: { ...overlays, blendMode: e.target.value as typeof overlays.blendMode } })}>
-            {['normal', 'multiply', 'screen', 'overlay', 'soft-light', 'hard-light'].map((mode) => <option key={mode}>{mode}</option>)}
+          <select
+            id={overlayBlendModeId}
+            value={overlays.blendMode}
+            onChange={(e) =>
+              updateEffects({
+                overlays: {
+                  ...overlays,
+                  blendMode: e.target.value as typeof overlays.blendMode,
+                },
+              })
+            }
+          >
+            {[
+              "normal",
+              "multiply",
+              "screen",
+              "overlay",
+              "soft-light",
+              "hard-light",
+            ].map((mode) => (
+              <option key={mode}>{mode}</option>
+            ))}
           </select>
         </label>
       </EffectToggle>
 
-      <EffectToggle label="Noise Texture" enabled={noise.enabled} onToggle={(enabled) => updateEffects({ noise: { ...noise, enabled } })}>
-        <Range label="Opacity" value={noise.opacity} min={0} max={0.3} step={0.01} onChange={(opacity) => updateEffects({ noise: { ...noise, opacity } })} />
-        <Range label="Scale" value={noise.scale} min={2} max={16} suffix="px" onChange={(scale) => updateEffects({ noise: { ...noise, scale } })} />
+      <EffectToggle
+        label="Noise Texture"
+        enabled={noise.enabled}
+        onToggle={(enabled) => updateEffects({ noise: { ...noise, enabled } })}
+      >
+        <Range
+          label="Opacity"
+          value={noise.opacity}
+          min={0}
+          max={0.3}
+          step={0.01}
+          onChange={(opacity) =>
+            updateEffects({ noise: { ...noise, opacity } })
+          }
+        />
+        <Range
+          label="Scale"
+          value={noise.scale}
+          min={2}
+          max={16}
+          suffix="px"
+          onChange={(scale) => updateEffects({ noise: { ...noise, scale } })}
+        />
       </EffectToggle>
 
-      <EffectToggle label="Focus Ring" enabled={focusRing.enabled} onToggle={(enabled) => updateEffects({ focusRing: { ...focusRing, enabled } })}>
+      <EffectToggle
+        label="Focus Ring"
+        enabled={focusRing.enabled}
+        onToggle={(enabled) =>
+          updateEffects({ focusRing: { ...focusRing, enabled } })
+        }
+      >
         <label className="color-picker" htmlFor={focusRingColorId}>
-          <input id={focusRingColorId} type="color" value={focusRing.color} onChange={(e) => updateEffects({ focusRing: { ...focusRing, color: e.target.value } })} />
+          <input
+            id={focusRingColorId}
+            type="color"
+            value={focusRing.color}
+            onChange={(e) =>
+              updateEffects({
+                focusRing: { ...focusRing, color: e.target.value },
+              })
+            }
+          />
           <span className="color-label">Ring color</span>
         </label>
-        <Range label="Width" value={focusRing.width} min={1} max={8} suffix="px" onChange={(width) => updateEffects({ focusRing: { ...focusRing, width } })} />
-        <Range label="Offset" value={focusRing.offset} min={0} max={8} suffix="px" onChange={(offset) => updateEffects({ focusRing: { ...focusRing, offset } })} />
+        <Range
+          label="Width"
+          value={focusRing.width}
+          min={1}
+          max={8}
+          suffix="px"
+          onChange={(width) =>
+            updateEffects({ focusRing: { ...focusRing, width } })
+          }
+        />
+        <Range
+          label="Offset"
+          value={focusRing.offset}
+          min={0}
+          max={8}
+          suffix="px"
+          onChange={(offset) =>
+            updateEffects({ focusRing: { ...focusRing, offset } })
+          }
+        />
       </EffectToggle>
 
-      <EffectToggle label="Animations" enabled={animations.enabled} onToggle={(enabled) => updateEffects({ animations: { ...animations, enabled } })}>
-        <Range label="Duration" value={animations.duration} min={50} max={2000} step={50} suffix="ms" onChange={(duration) => updateEffects({ animations: { ...animations, duration } })} />
+      <EffectToggle
+        label="Animations"
+        enabled={animations.enabled}
+        onToggle={(enabled) =>
+          updateEffects({ animations: { ...animations, enabled } })
+        }
+      >
+        <Range
+          label="Duration"
+          value={animations.duration}
+          min={50}
+          max={2000}
+          step={50}
+          suffix="ms"
+          onChange={(duration) =>
+            updateEffects({ animations: { ...animations, duration } })
+          }
+        />
         <label className="form-field" htmlFor={animationsEasingId}>
           <span className="field-label">Easing</span>
-          <select id={animationsEasingId} value={animations.easing} onChange={(e) => updateEffects({ animations: { ...animations, easing: e.target.value as typeof animations.easing } })}>
-            {['linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out'].map((value) => <option key={value}>{value}</option>)}
+          <select
+            id={animationsEasingId}
+            value={animations.easing}
+            onChange={(e) =>
+              updateEffects({
+                animations: {
+                  ...animations,
+                  easing: e.target.value as typeof animations.easing,
+                },
+              })
+            }
+          >
+            {["linear", "ease", "ease-in", "ease-out", "ease-in-out"].map(
+              (value) => (
+                <option key={value}>{value}</option>
+              ),
+            )}
           </select>
         </label>
       </EffectToggle>
 
-      <EffectToggle label="Transitions" enabled={transitions.enabled} onToggle={(enabled) => updateEffects({ transitions: { ...transitions, enabled } })}>
-        <Range label="Duration" value={transitions.duration} min={0} max={1000} step={25} suffix="ms" onChange={(duration) => updateEffects({ transitions: { ...transitions, duration } })} />
+      <EffectToggle
+        label="Transitions"
+        enabled={transitions.enabled}
+        onToggle={(enabled) =>
+          updateEffects({ transitions: { ...transitions, enabled } })
+        }
+      >
+        <Range
+          label="Duration"
+          value={transitions.duration}
+          min={0}
+          max={1000}
+          step={25}
+          suffix="ms"
+          onChange={(duration) =>
+            updateEffects({ transitions: { ...transitions, duration } })
+          }
+        />
         <label className="form-field" htmlFor={transitionsPropertiesId}>
           <span className="field-label">CSS properties</span>
-          <input id={transitionsPropertiesId} type="text" value={transitions.properties.join(', ')} onChange={(e) => updateEffects({ transitions: { ...transitions, properties: e.target.value.split(',').map((value) => value.trim()).filter(Boolean) } })} />
+          <input
+            id={transitionsPropertiesId}
+            type="text"
+            value={transitions.properties.join(", ")}
+            onChange={(e) =>
+              updateEffects({
+                transitions: {
+                  ...transitions,
+                  properties: e.target.value
+                    .split(",")
+                    .map((value) => value.trim())
+                    .filter(Boolean),
+                },
+              })
+            }
+          />
         </label>
       </EffectToggle>
     </section>
   );
 }
 
-function Range({ label, value, min, max, step = 1, suffix = '', onChange }: { label: string; value: number; min: number; max: number; step?: number; suffix?: string; onChange: (value: number) => void }) {
+function Range({
+  label,
+  value,
+  min,
+  max,
+  step = 1,
+  suffix = "",
+  onChange,
+}: {
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  step?: number;
+  suffix?: string;
+  onChange: (value: number) => void;
+}) {
   const id = useId();
   return (
     <label className="form-field" htmlFor={id}>
-      <span className="field-label">{label}: {value}{suffix}</span>
-      <input id={id} type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} />
+      <span className="field-label">
+        {label}: {value}
+        {suffix}
+      </span>
+      <input
+        id={id}
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+      />
     </label>
   );
 }
 
-function EffectToggle({ label, enabled, onToggle, children }: { label: string; enabled: boolean; onToggle: (enabled: boolean) => void; children: ReactNode }) {
+function EffectToggle({
+  label,
+  enabled,
+  onToggle,
+  children,
+}: {
+  label: string;
+  enabled: boolean;
+  onToggle: (enabled: boolean) => void;
+  children: ReactNode;
+}) {
   const id = useId();
   return (
     <div className="effect-block">
       <label className="toggle-row" htmlFor={id}>
-        <input id={id} type="checkbox" checked={enabled} onChange={(e) => onToggle(e.target.checked)} />
+        <input
+          id={id}
+          type="checkbox"
+          checked={enabled}
+          onChange={(e) => onToggle(e.target.checked)}
+        />
         <span className="toggle-label">{label}</span>
       </label>
       {enabled && <div className="effect-controls">{children}</div>}

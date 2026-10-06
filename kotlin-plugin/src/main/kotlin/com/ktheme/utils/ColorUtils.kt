@@ -8,21 +8,21 @@ import com.ktheme.models.RGBAColor
  * Provides color conversion, manipulation, and validation
  */
 object ColorUtils {
-    
+
     /**
      * Convert hex color to RGB
      */
     fun hexToRgb(hex: String): RGBColor {
         val cleanHex = hex.removePrefix("#")
         require(cleanHex.length == 6) { "Invalid hex color: $hex" }
-        
+
         return RGBColor(
             r = cleanHex.substring(0, 2).toInt(16),
             g = cleanHex.substring(2, 4).toInt(16),
             b = cleanHex.substring(4, 6).toInt(16)
         )
     }
-    
+
     /**
      * Convert RGB to hex
      */
@@ -31,7 +31,7 @@ object ColorUtils {
                "${rgb.g.toString(16).padStart(2, '0')}" +
                "${rgb.b.toString(16).padStart(2, '0')}"
     }
-    
+
     /**
      * Convert hex color to RGBA
      */
@@ -39,7 +39,7 @@ object ColorUtils {
         val rgb = hexToRgb(hex)
         return RGBAColor(rgb.r, rgb.g, rgb.b, alpha)
     }
-    
+
     /**
      * Convert RGBA to hex (with alpha)
      */
@@ -47,7 +47,7 @@ object ColorUtils {
         val alphaHex = (rgba.a * 255).toInt().toString(16).padStart(2, '0')
         return rgbToHex(RGBColor(rgba.r, rgba.g, rgba.b)) + alphaHex
     }
-    
+
     /**
      * Darken a color by a percentage
      */
@@ -62,7 +62,7 @@ object ColorUtils {
             )
         )
     }
-    
+
     /**
      * Lighten a color by a percentage
      */
@@ -77,14 +77,14 @@ object ColorUtils {
             )
         )
     }
-    
+
     /**
      * Mix two colors
      */
     fun mix(color1: String, color2: String, weight: Float = 0.5f): String {
         val rgb1 = hexToRgb(color1)
         val rgb2 = hexToRgb(color2)
-        
+
         return rgbToHex(
             RGBColor(
                 r = (rgb1.r * (1 - weight) + rgb2.r * weight).toInt(),
@@ -93,7 +93,7 @@ object ColorUtils {
             )
         )
     }
-    
+
     /**
      * Get contrast color (black or white) for a background
      */
@@ -103,7 +103,7 @@ object ColorUtils {
         val luminance = (0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b) / 255
         return if (luminance > 0.5) "#000000" else "#FFFFFF"
     }
-    
+
     /**
      * Validate if a string is a valid hex color
      */
@@ -111,14 +111,14 @@ object ColorUtils {
         val cleanHex = hex.removePrefix("#")
         return cleanHex.matches(Regex("^[a-fA-F0-9]{3}$|^[a-fA-F0-9]{6}$|^[a-fA-F0-9]{8}$"))
     }
-    
+
     /**
      * Parse Android color int to hex
      */
     fun colorIntToHex(color: Int): String {
         return String.format("#%06X", 0xFFFFFF and color)
     }
-    
+
     /**
      * Parse hex to Android color int
      */

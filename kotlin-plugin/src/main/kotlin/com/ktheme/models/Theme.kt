@@ -59,32 +59,32 @@ data class ColorScheme(
     val onPrimary: String,
     val primaryContainer: String,
     val onPrimaryContainer: String,
-    
+
     val secondary: String,
     val onSecondary: String,
     val secondaryContainer: String,
     val onSecondaryContainer: String,
-    
+
     val tertiary: String,
     val onTertiary: String,
     val tertiaryContainer: String,
     val onTertiaryContainer: String,
-    
+
     val error: String,
     val onError: String,
     val errorContainer: String,
     val onErrorContainer: String,
-    
+
     val background: String,
     val onBackground: String,
     val surface: String,
     val onSurface: String,
     val surfaceVariant: String,
     val onSurfaceVariant: String,
-    
+
     val outline: String,
     val outlineVariant: String,
-    
+
     val scrim: String,
     val inverseSurface: String,
     val inverseOnSurface: String,

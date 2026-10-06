@@ -1,6 +1,9 @@
-import { Theme } from '../core/types';
-import { extractThemeTokens } from './ir/extractIR';
-import { designTokensRenderer, DesignTokensJsonExport } from './renderers/designTokensRenderer';
+import { Theme } from "../core/types";
+import { extractThemeTokens } from "./ir/extractIR";
+import {
+  designTokensRenderer,
+  DesignTokensJsonExport,
+} from "./renderers/designTokensRenderer";
 
 export type { DesignTokensJsonExport };
 

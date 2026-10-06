@@ -1,7 +1,7 @@
-import { useId } from 'react';
-import { useTheme } from '../../state/ThemeContext.tsx';
-import type { Typography } from '../../types/theme.ts';
-import { DEFAULT_TYPOGRAPHY } from '../../utils/theme-defaults.ts';
+import { useId } from "react";
+import { useTheme } from "../../state/ThemeContext.tsx";
+import type { Typography } from "../../types/theme.ts";
+import { DEFAULT_TYPOGRAPHY } from "../../utils/theme-defaults.ts";
 
 const FONT_STACKS = [
   "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
@@ -23,7 +23,7 @@ export function TypographyEditor() {
   const fontWeightBaseId = useId();
 
   function update(patch: Partial<Typography>) {
-    dispatch({ type: 'UPDATE_TYPOGRAPHY', payload: { ...typo, ...patch } });
+    dispatch({ type: "UPDATE_TYPOGRAPHY", payload: { ...typo, ...patch } });
   }
 
   return (
@@ -39,7 +39,7 @@ export function TypographyEditor() {
         >
           {FONT_STACKS.map((f) => (
             <option key={f} value={f}>
-              {f.split(',')[0].replace(/'/g, '')}
+              {f.split(",")[0].replace(/'/g, "")}
             </option>
           ))}
         </select>
@@ -59,7 +59,9 @@ export function TypographyEditor() {
           />
         </label>
         <label className="form-field" htmlFor={letterSpacingId}>
-          <span className="field-label">Letter Spacing: {typo.letterSpacing}px</span>
+          <span className="field-label">
+            Letter Spacing: {typo.letterSpacing}px
+          </span>
           <input
             id={letterSpacingId}
             type="range"
@@ -67,14 +69,18 @@ export function TypographyEditor() {
             max="5"
             step="0.25"
             value={typo.letterSpacing}
-            onChange={(e) => update({ letterSpacing: parseFloat(e.target.value) })}
+            onChange={(e) =>
+              update({ letterSpacing: parseFloat(e.target.value) })
+            }
           />
         </label>
       </div>
 
       <h4 className="group-label">Font Sizes</h4>
       <div className="form-grid">
-        {(Object.keys(typo.fontSize) as Array<keyof Typography['fontSize']>).map((size) => {
+        {(
+          Object.keys(typo.fontSize) as Array<keyof Typography["fontSize"]>
+        ).map((size) => {
           const inputId = `${fontSizeBaseId}-${size}`;
           return (
             <label key={size} className="form-field" htmlFor={inputId}>
@@ -90,7 +96,10 @@ export function TypographyEditor() {
                 value={typo.fontSize[size]}
                 onChange={(e) =>
                   update({
-                    fontSize: { ...typo.fontSize, [size]: parseInt(e.target.value) },
+                    fontSize: {
+                      ...typo.fontSize,
+                      [size]: parseInt(e.target.value),
+                    },
                   })
                 }
               />
@@ -100,11 +109,15 @@ export function TypographyEditor() {
       </div>
       <h4 className="group-label">Font Weights</h4>
       <div className="form-grid">
-        {(Object.keys(typo.fontWeight) as Array<keyof Typography['fontWeight']>).map((weight) => {
+        {(
+          Object.keys(typo.fontWeight) as Array<keyof Typography["fontWeight"]>
+        ).map((weight) => {
           const inputId = `${fontWeightBaseId}-${weight}`;
           return (
             <label key={weight} className="form-field" htmlFor={inputId}>
-              <span className="field-label">{weight}: {typo.fontWeight[weight]}</span>
+              <span className="field-label">
+                {weight}: {typo.fontWeight[weight]}
+              </span>
               <input
                 id={inputId}
                 type="range"
@@ -112,7 +125,14 @@ export function TypographyEditor() {
                 max="900"
                 step="100"
                 value={typo.fontWeight[weight]}
-                onChange={(e) => update({ fontWeight: { ...typo.fontWeight, [weight]: Number(e.target.value) } })}
+                onChange={(e) =>
+                  update({
+                    fontWeight: {
+                      ...typo.fontWeight,
+                      [weight]: Number(e.target.value),
+                    },
+                  })
+                }
               />
             </label>
           );

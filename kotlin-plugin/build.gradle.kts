@@ -11,10 +11,10 @@ version = "1.0.0"
 dependencies {
     // Kotlin
     implementation(kotlin("stdlib"))
-    
+
     // JSON serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
-    
+
     // Compose Material 3 adapter support
     implementation("org.jetbrains.compose.material3:material3:1.6.11")
     implementation("org.jetbrains.compose.ui:ui-graphics:1.6.11")
@@ -40,7 +40,7 @@ tasks.jar {
     manifest {
         attributes["Main-Class"] = "com.ktheme.examples.AdvancedThemeStudioKt"
     }
-    
+
     // Create fat JAR with all dependencies
     from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
@@ -52,7 +52,7 @@ publishing {
             groupId = "com.ktheme"
             artifactId = "ktheme-kotlin"
             version = "1.0.0"
-            
+
             from(components["java"])
         }
     }

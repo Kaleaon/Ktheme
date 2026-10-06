@@ -1,5 +1,5 @@
-import { useId } from 'react';
-import { useTheme } from '../../state/ThemeContext.tsx';
+import { useId } from "react";
+import { useTheme } from "../../state/ThemeContext.tsx";
 
 export function MetadataEditor() {
   const { state, dispatch } = useTheme();
@@ -11,7 +11,7 @@ export function MetadataEditor() {
   const tagsId = useId();
 
   function update(field: string, value: string | string[]) {
-    dispatch({ type: 'UPDATE_METADATA', payload: { [field]: value } });
+    dispatch({ type: "UPDATE_METADATA", payload: { [field]: value } });
   }
 
   return (
@@ -24,7 +24,7 @@ export function MetadataEditor() {
             id={nameId}
             type="text"
             value={meta.name}
-            onChange={(e) => update('name', e.target.value)}
+            onChange={(e) => update("name", e.target.value)}
             placeholder="Theme Name"
           />
         </label>
@@ -34,7 +34,7 @@ export function MetadataEditor() {
             id={authorId}
             type="text"
             value={meta.author}
-            onChange={(e) => update('author', e.target.value)}
+            onChange={(e) => update("author", e.target.value)}
             placeholder="Author Name"
           />
         </label>
@@ -43,7 +43,7 @@ export function MetadataEditor() {
           <textarea
             id={descriptionId}
             value={meta.description}
-            onChange={(e) => update('description', e.target.value)}
+            onChange={(e) => update("description", e.target.value)}
             placeholder="Describe your theme..."
             rows={2}
           />
@@ -53,14 +53,14 @@ export function MetadataEditor() {
           <input
             id={tagsId}
             type="text"
-            value={meta.tags.join(', ')}
+            value={meta.tags.join(", ")}
             onChange={(e) =>
               update(
-                'tags',
+                "tags",
                 e.target.value
-                  .split(',')
+                  .split(",")
                   .map((t) => t.trim())
-                  .filter(Boolean)
+                  .filter(Boolean),
               )
             }
             placeholder="dark, metallic, elegant"

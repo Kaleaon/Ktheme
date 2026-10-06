@@ -5,10 +5,7 @@
     "description": "Legacy fixture without schema version",
     "author": "test",
     "version": "1.0.0",
-    "tags": [
-      "legacy",
-      "fixture"
-    ],
+    "tags": ["legacy", "fixture"],
     "createdAt": "2026-01-01T00:00:00.000Z",
     "updatedAt": "2026-01-01T00:00:00.000Z"
   },

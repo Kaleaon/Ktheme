@@ -1,11 +1,18 @@
-import { Theme } from '../core/types';
-import { VectorTransformer, VectorIRNode } from '../core/VectorTransformer';
-import { extractThemeTokens } from './ir/extractIR';
-import { androidComposeRenderer, AndroidComposeExport, AndroidComposeOptions } from './renderers/androidComposeRenderer';
+import { Theme } from "../core/types";
+import { VectorTransformer, VectorIRNode } from "../core/VectorTransformer";
+import { extractThemeTokens } from "./ir/extractIR";
+import {
+  androidComposeRenderer,
+  AndroidComposeExport,
+  AndroidComposeOptions,
+} from "./renderers/androidComposeRenderer";
 
 export type { AndroidComposeExport, AndroidComposeOptions };
 
-export function toAndroidCompose(theme: Theme, options?: AndroidComposeOptions): AndroidComposeExport {
+export function toAndroidCompose(
+  theme: Theme,
+  options?: AndroidComposeOptions,
+): AndroidComposeExport {
   const ir = extractThemeTokens(theme);
 
   const vectorIcons: VectorIRNode[] = [...(options?.vectorIcons || [])];
@@ -17,7 +24,7 @@ export function toAndroidCompose(theme: Theme, options?: AndroidComposeOptions):
 
   const mergedOptions: AndroidComposeOptions = {
     ...options,
-    vectorIcons: vectorIcons.length > 0 ? vectorIcons : undefined
+    vectorIcons: vectorIcons.length > 0 ? vectorIcons : undefined,
   };
 
   return androidComposeRenderer.render(ir, mergedOptions);

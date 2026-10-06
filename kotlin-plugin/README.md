@@ -64,7 +64,6 @@ java -jar build/libs/ktheme-kotlin-1.0.0.jar
 - **Export JSON themes** - Save generated themes for versioning and distribution
 - **Compatibility** - Shared themes can be consumed by any app using the Ktheme Kotlin API
 
-
 ### Theme ID Normalization & Collision Policy
 
 Theme IDs are normalized automatically anywhere themes are registered/imported/shared/saved:
@@ -111,7 +110,7 @@ activeTheme?.let { theme ->
     // Use the theme colors
     val backgroundColor = theme.colorScheme.background
     val primaryColor = theme.colorScheme.primary
-    
+
     println("Background: $backgroundColor")
     println("Primary: $primaryColor")
 }
@@ -348,11 +347,11 @@ KthemeAPI.onThemeChanged(object : ThemeChangeListener {
     override fun onThemeAdded(theme: Theme) {
         println("New theme: ${theme.metadata.name}")
     }
-    
+
     override fun onThemeRemoved(themeId: String) {
         println("Theme removed: $themeId")
     }
-    
+
     override fun onThemeUpdated(theme: Theme) {
         println("Theme updated: ${theme.metadata.name}")
     }
@@ -371,11 +370,13 @@ Any application can read from the shared directory to access themes made availab
 ### Integration Example
 
 See `com.ktheme.examples.ExampleApp` for a complete example of:
+
 - Browsing shared themes
 - Applying themes to your app
 - Subscribing to theme updates
 
 Run the example:
+
 ```bash
 ./gradlew run --args="example"
 ```
@@ -472,7 +473,6 @@ Apache License 2.0 - see the [LICENSE](../LICENSE) file for details.
 - [Main Ktheme Repository](https://github.com/Kaleaon/Ktheme)
 - [CleverFerret](https://github.com/Kaleaon/CleverFerret)
 
-
 ### Launching specific apps
 
 ```bash
@@ -500,6 +500,7 @@ The Kotlin UI layer now applies consistent accessibility defaults to interactive
   7. Import Theme
 
 Implementation details:
+
 - Shared helper: `com.ktheme.utils.AccessibilityUtils`
 - Main window accessibility wiring: `ThemeLibraryWindow`
 - Preview and list announcements: `ThemePreviewPanel`, `ThemeScrollWheel`
