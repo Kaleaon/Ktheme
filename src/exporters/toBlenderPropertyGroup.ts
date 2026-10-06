@@ -126,12 +126,35 @@ ${colorPropLines}
     )
 
 
+_ktheme_icon_previews = None
+
+def register_ktheme_icons():
+    global _ktheme_icon_previews
+    if _ktheme_icon_previews is None:
+        _ktheme_icon_previews = bpy.utils.previews.new()
+
+
+def unregister_ktheme_icons():
+    global _ktheme_icon_previews
+    if _ktheme_icon_previews is not None:
+        bpy.utils.previews.remove(_ktheme_icon_previews)
+        _ktheme_icon_previews = None
+
+
+def get_ktheme_icon_id(key):
+    if _ktheme_icon_previews and key in _ktheme_icon_previews:
+        return _ktheme_icon_previews[key].icon_id
+    return 0
+
+
 def register_ktheme_properties():
     bpy.utils.register_class(KthemePropertyGroup)
     bpy.types.WindowManager.ktheme = bpy.props.PointerProperty(type=KthemePropertyGroup, options={'SKIP_SAVE'})
+    register_ktheme_icons()
 
 
 def unregister_ktheme_properties():
+    unregister_ktheme_icons()
     if hasattr(bpy.types.WindowManager, "ktheme"):
         del bpy.types.WindowManager.ktheme
     bpy.utils.unregister_class(KthemePropertyGroup)

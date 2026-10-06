@@ -2,14 +2,16 @@ import { NormalizedThemeTokens } from '../ir/tokenIR';
 import { TokenRenderer } from './TokenRenderer';
 
 export interface TailwindConfigExport {
-  darkMode: 'class' | 'media';
+  darkMode?: 'class' | 'media';
   theme: {
     extend: {
       colors: Record<string, string>;
       typography?: Record<string, unknown>;
       effects?: Record<string, unknown>;
       adaptation?: Record<string, unknown>;
-      fontFamily?: Record<string, string[]>;
+      fontFamily?: Record<string, any>;
+      fontSize?: Record<string, string>;
+      boxShadow?: Record<string, string>;
       borderRadius?: Record<string, string>;
     };
   };
