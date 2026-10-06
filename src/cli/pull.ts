@@ -1,6 +1,6 @@
-import fs from 'node:fs';
-import path from 'node:path';
-import { httpFetch } from './http';
+import fs from "node:fs";
+import path from "node:path";
+import { httpFetch } from "./http";
 
 export interface PullOptions {
   endpoint?: string;
@@ -17,34 +17,37 @@ export interface TokenSyncResult {
 
 export const DEFAULT_TOKENS = {
   light: {
-    primary: '0xFF1E3A8A',
-    onPrimary: '0xFFFFFFFF',
-    primaryContainer: '0xFFDBEAFE',
-    onPrimaryContainer: '0xFF1E40AF',
-    secondary: '0xFFD97706',
-    onSecondary: '0xFFFFFFFF',
-    background: '0xFFF8FAFC',
-    onBackground: '0xFF0F172A',
-    surface: '0xFFFFFFFF',
-    onSurface: '0xFF0F172A',
+    primary: "0xFF1E3A8A",
+    onPrimary: "0xFFFFFFFF",
+    primaryContainer: "0xFFDBEAFE",
+    onPrimaryContainer: "0xFF1E40AF",
+    secondary: "0xFFD97706",
+    onSecondary: "0xFFFFFFFF",
+    background: "0xFFF8FAFC",
+    onBackground: "0xFF0F172A",
+    surface: "0xFFFFFFFF",
+    onSurface: "0xFF0F172A",
   },
   dark: {
-    primary: '0xFF60A5FA',
-    onPrimary: '0xFF1E3A8A',
-    primaryContainer: '0xFF1E40AF',
-    onPrimaryContainer: '0xFFDBEAFE',
-    secondary: '0xFFFBBF24',
-    onSecondary: '0xFF78350F',
-    background: '0xFF0F172A',
-    onBackground: '0xFFF8FAFC',
-    surface: '0xFF1E293B',
-    onSurface: '0xFFF8FAFC',
+    primary: "0xFF60A5FA",
+    onPrimary: "0xFF1E3A8A",
+    primaryContainer: "0xFF1E40AF",
+    onPrimaryContainer: "0xFFDBEAFE",
+    secondary: "0xFFFBBF24",
+    onSecondary: "0xFF78350F",
+    background: "0xFF0F172A",
+    onBackground: "0xFFF8FAFC",
+    surface: "0xFF1E293B",
+    onSurface: "0xFFF8FAFC",
   },
 };
 
-export async function pullTokens(options: PullOptions): Promise<TokenSyncResult> {
-  const endpoint = options.endpoint || 'http://localhost:8787/api/sync/token-downstream';
-  const themeId = options.themeId || 'navy-gold';
+export async function pullTokens(
+  options: PullOptions,
+): Promise<TokenSyncResult> {
+  const endpoint =
+    options.endpoint || "http://localhost:8787/api/sync/token-downstream";
+  const themeId = options.themeId || "navy-gold";
 
   let tokens = DEFAULT_TOKENS;
   let usedFallback = false;
@@ -60,11 +63,17 @@ export async function pullTokens(options: PullOptions): Promise<TokenSyncResult>
       }
     } else {
       usedFallback = true;
-      console.warn(`[Ktheme] Downstream sync returned status ${response.status}. Using default fallback tokens.`);
+      console.warn(
+        `[Ktheme] Downstream sync returned status ${response.status}. Using default fallback tokens.`,
+      );
     }
   } catch (err) {
     usedFallback = true;
-    console.warn(`[Ktheme] Downstream token sync endpoint unreachable (${err instanceof Error ? err.message : String(err)}). Using fallback tokens.`);
+    console.warn(
+      `[Ktheme] Downstream token sync endpoint unreachable (${
+        err instanceof Error ? err.message : String(err)
+      }). Using fallback tokens.`,
+    );
   }
 
   // Update Kotlin Theme file if path specified
@@ -84,7 +93,9 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.Composable
 
-// Ktheme Dynamic Sync Tokens (${usedFallback ? 'Fallback' : 'Synced from Ktheme'})
+// Ktheme Dynamic Sync Tokens (${
+      usedFallback ? "Fallback" : "Synced from Ktheme"
+    })
 private val LightColors = lightColorScheme(
     primary = Color(${tokens.light.primary}),
     onPrimary = Color(${tokens.light.onPrimary}),
@@ -124,7 +135,7 @@ fun CharMorphTheme(
     )
 }
 `;
-    fs.writeFileSync(kotlinPath, kotlinContent, 'utf-8');
+    fs.writeFileSync(kotlinPath, kotlinContent, "utf-8");
   }
 
   return {

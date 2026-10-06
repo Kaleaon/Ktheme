@@ -1,5 +1,5 @@
-import http from 'node:http';
-import https from 'node:https';
+import http from "node:http";
+import https from "node:https";
 
 export interface HttpResponse {
   ok: boolean;
@@ -10,18 +10,28 @@ export interface HttpResponse {
 
 export async function httpFetch(
   url: string,
-  options: { method?: string; headers?: Record<string, string>; body?: string; timeoutMs?: number } = {}
+  options: {
+    method?: string;
+    headers?: Record<string, string>;
+    body?: string;
+    timeoutMs?: number;
+  } = {},
 ): Promise<HttpResponse> {
-  if (typeof globalThis.fetch === 'function') {
+  if (typeof globalThis.fetch === "function") {
     try {
       const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), options.timeoutMs || 5000);
-      const res = await globalThis.fetch(url, {
-        method: options.method || 'GET',
-        headers: options.headers,
-        body: options.body,
-        signal: controller.signal,
-      }).finally(() => clearTimeout(timer));
+      const timer = setTimeout(
+        () => controller.abort(),
+        options.timeoutMs || 5000,
+      );
+      const res = await globalThis
+        .fetch(url, {
+          method: options.method || "GET",
+          headers: options.headers,
+          body: options.body,
+          signal: controller.signal,
+        })
+        .finally(() => clearTimeout(timer));
 
       return {
         ok: res.ok,
@@ -36,21 +46,23 @@ export async function httpFetch(
 
   return new Promise((resolve, reject) => {
     const parsedUrl = new URL(url);
-    const client = parsedUrl.protocol === 'https:' ? https : http;
+    const client = parsedUrl.protocol === "https:" ? https : http;
 
     const reqOptions = {
       hostname: parsedUrl.hostname,
-      port: parsedUrl.port || (parsedUrl.protocol === 'https:' ? 443 : 80),
+      port: parsedUrl.port || (parsedUrl.protocol === "https:" ? 443 : 80),
       path: `${parsedUrl.pathname}${parsedUrl.search}`,
-      method: options.method || 'GET',
+      method: options.method || "GET",
       headers: options.headers || {},
     };
 
     const req = client.request(reqOptions, (res) => {
-      let body = '';
-      res.setEncoding('utf-8');
-      res.on('data', (chunk) => { body += chunk; });
-      res.on('end', () => {
+      let body = "";
+      res.setEncoding("utf-8");
+      res.on("data", (chunk) => {
+        body += chunk;
+      });
+      res.on("end", () => {
         resolve({
           ok: (res.statusCode || 500) >= 200 && (res.statusCode || 500) < 300,
           status: res.statusCode || 500,
@@ -60,10 +72,10 @@ export async function httpFetch(
       });
     });
 
-    req.on('error', reject);
+    req.on("error", reject);
     if (options.timeoutMs) {
       req.setTimeout(options.timeoutMs, () => {
-        req.destroy(new Error('Request timeout'));
+        req.destroy(new Error("Request timeout"));
       });
     }
 

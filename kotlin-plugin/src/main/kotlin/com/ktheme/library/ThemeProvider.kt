@@ -20,7 +20,7 @@ import kotlin.concurrent.thread
 
 /**
  * Theme Provider - API for applications to integrate with Ktheme Library
- * 
+ *
  * This interface allows any application to:
  * - Access shared themes
  * - Subscribe to theme changes
@@ -31,12 +31,12 @@ interface ThemeProvider {
      * Get all available shared themes
      */
     fun getSharedThemes(): List<Theme>
-    
+
     /**
      * Get a specific theme by ID from shared storage
      */
     fun getSharedTheme(id: String): Theme?
-    
+
     /**
      * Publish a theme to shared storage
      */
@@ -50,12 +50,12 @@ interface ThemeProvider {
         theme: Theme,
         collisionPolicy: ThemeIdCollisionPolicy
     ): Boolean = publishTheme(theme, null, collisionPolicy)
-    
+
     /**
      * Subscribe to theme changes
      */
     fun subscribeToChanges(listener: ThemeChangeListener)
-    
+
     /**
      * Unsubscribe from theme changes
      */
@@ -284,17 +284,17 @@ class FileBasedThemeProvider(
  */
 object KthemeAPI {
     private val provider: ThemeProvider = FileBasedThemeProvider()
-    
+
     /**
      * Get all shared themes available system-wide
      */
     fun getAvailableThemes(): List<Theme> = provider.getSharedThemes()
-    
+
     /**
      * Get a specific theme
      */
     fun getTheme(id: String): Theme? = provider.getSharedTheme(ThemeIdUtils.normalize(id))
-    
+
     /**
      * Share a theme with other applications
      */
@@ -302,14 +302,14 @@ object KthemeAPI {
         theme: Theme,
         collisionPolicy: ThemeIdCollisionPolicy = ThemeIdCollisionPolicy.SUFFIX
     ): Boolean = provider.publishTheme(theme, null, collisionPolicy)
-    
+
     /**
      * Subscribe to theme updates
      */
     fun onThemeChanged(listener: ThemeChangeListener) {
         provider.subscribeToChanges(listener)
     }
-    
+
     /**
      * Get the shared themes directory
      */

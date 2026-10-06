@@ -1,12 +1,12 @@
-import { Color } from '../core/types';
+import { Color } from "../core/types";
 import {
   compositeOver,
   contrastRatio,
   getContrastColor,
   normalizeColor,
   opacity,
-  relativeLuminance
-} from '../utils/colors';
+  relativeLuminance,
+} from "../utils/colors";
 
 export interface QuickAccessCardAlphaTokens {
   borderBase: number;
@@ -33,8 +33,8 @@ export const MediaColors = {
     minBorderContrast: 1.2,
     minChipContrast: 1.35,
     maxAlpha: 0.5,
-    alphaStep: 0.01
-  } satisfies QuickAccessCardAlphaTokens
+    alphaStep: 0.01,
+  } satisfies QuickAccessCardAlphaTokens,
 };
 
 const clampAlpha = (value: number): number => Math.max(0, Math.min(1, value));
@@ -44,7 +44,7 @@ const ensureMinimumContrast = (
   surfaceColor: Color,
   initialAlpha: number,
   minContrast: number,
-  tokens: QuickAccessCardAlphaTokens
+  tokens: QuickAccessCardAlphaTokens,
 ): number => {
   let alpha = clampAlpha(initialAlpha);
   let composite = compositeOver(opacity(overlayColor, alpha), surfaceColor);
@@ -69,23 +69,22 @@ export function getQuickAccessCardAlphas(params: {
 }): QuickAccessCardAlphaValues {
   const tokens = {
     ...MediaColors.QuickAccessCardAlphas,
-    ...params.tokens
+    ...params.tokens,
   };
 
   const surface = normalizeColor(params.surface);
   const surfaceLuminance = relativeLuminance(surface);
   const overlayColor = params.overlay ?? getContrastColor(surface);
 
-  const luminanceBoost = surfaceLuminance < 0.5
-    ? tokens.darkSurfaceBoost
-    : tokens.lightSurfaceBoost;
+  const luminanceBoost =
+    surfaceLuminance < 0.5 ? tokens.darkSurfaceBoost : tokens.lightSurfaceBoost;
 
   const border = ensureMinimumContrast(
     overlayColor,
     surface,
     tokens.borderBase + luminanceBoost,
     tokens.minBorderContrast,
-    tokens
+    tokens,
   );
 
   const chip = ensureMinimumContrast(
@@ -93,7 +92,7 @@ export function getQuickAccessCardAlphas(params: {
     surface,
     tokens.chipBase + luminanceBoost,
     tokens.minChipContrast,
-    tokens
+    tokens,
   );
 
   return { border, chip };

@@ -15,14 +15,14 @@ import javax.swing.border.EmptyBorder
 class ThemeScrollWheel(private val themes: List<Theme>) : JPanel() {
     private val themeList: JList<Theme>
     private val listeners = mutableListOf<(Theme) -> Unit>()
-    
+
     init {
         layout = BorderLayout()
-        
+
         // Create list model
         val listModel = DefaultListModel<Theme>()
         themes.forEach { listModel.addElement(it) }
-        
+
         // Create JList with custom renderer
         themeList = JList(listModel).apply {
             cellRenderer = ThemeCellRenderer()
@@ -37,7 +37,7 @@ class ThemeScrollWheel(private val themes: List<Theme>) : JPanel() {
                 "Browse available themes. Use up and down arrows to move, then press Enter to apply actions.",
                 "Arrow keys move selection"
             )
-            
+
             // Add selection listener
             addListSelectionListener { event ->
                 if (!event.valueIsAdjusting && selectedValue != null) {
@@ -48,7 +48,7 @@ class ThemeScrollWheel(private val themes: List<Theme>) : JPanel() {
                     notifyThemeSelected(selectedValue)
                 }
             }
-            
+
             // Add mouse listener for hover effect
             addMouseMotionListener(object : MouseAdapter() {
                 override fun mouseMoved(e: MouseEvent) {
@@ -59,7 +59,7 @@ class ThemeScrollWheel(private val themes: List<Theme>) : JPanel() {
                 }
             })
         }
-        
+
         // Add to scroll pane
         val scrollPane = JScrollPane(themeList).apply {
             verticalScrollBarPolicy = JScrollPane.VERTICAL_SCROLLBAR_ALWAYS
@@ -72,17 +72,17 @@ class ThemeScrollWheel(private val themes: List<Theme>) : JPanel() {
                 "Mouse wheel or Page Up/Page Down"
             )
         }
-        
+
         add(scrollPane, BorderLayout.CENTER)
     }
-    
+
     /**
      * Get currently selected theme
      */
     fun getSelectedTheme(): Theme? = themeList.selectedValue
 
     fun getThemeListComponent(): JList<Theme> = themeList
-    
+
     /**
      * Set selected theme by ID
      */
@@ -93,18 +93,18 @@ class ThemeScrollWheel(private val themes: List<Theme>) : JPanel() {
             themeList.ensureIndexIsVisible(index)
         }
     }
-    
+
     /**
      * Add selection listener
      */
     fun addSelectionListener(listener: (Theme) -> Unit) {
         listeners.add(listener)
     }
-    
+
     private fun notifyThemeSelected(theme: Theme) {
         listeners.forEach { it(theme) }
     }
-    
+
     /**
      * Custom cell renderer for theme items
      */
@@ -119,7 +119,7 @@ class ThemeScrollWheel(private val themes: List<Theme>) : JPanel() {
             return ThemeCell(theme, isSelected)
         }
     }
-    
+
     /**
      * Visual representation of a theme in the list
      */
@@ -127,41 +127,41 @@ class ThemeScrollWheel(private val themes: List<Theme>) : JPanel() {
         init {
             layout = BorderLayout(10, 5)
             border = EmptyBorder(5, 10, 5, 10)
-            
+
             // Background color based on selection
             background = if (isSelected) {
                 Color(230, 240, 255)
             } else {
                 Color(255, 255, 255)
             }
-            
+
             // Left side: Color preview
             val colorPanel = createColorPreview()
             add(colorPanel, BorderLayout.WEST)
-            
+
             // Center: Theme info
             val infoPanel = createInfoPanel()
             add(infoPanel, BorderLayout.CENTER)
-            
+
             // Right side: Mode indicator
             val modeLabel = JLabel(if (theme.darkMode) "🌙" else "☀️").apply {
                 font = Font(Font.SANS_SERIF, Font.PLAIN, 24)
             }
             add(modeLabel, BorderLayout.EAST)
         }
-        
+
         private fun createColorPreview(): JPanel {
             return object : JPanel() {
                 init {
                     preferredSize = Dimension(60, 60)
                     border = BorderFactory.createLineBorder(Color.GRAY, 1)
                 }
-                
+
                 override fun paintComponent(g: Graphics) {
                     super.paintComponent(g)
                     val g2d = g as Graphics2D
                     g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
-                    
+
                     // Draw color swatches
                     val colors = listOf(
                         theme.colorScheme.primary,
@@ -169,10 +169,10 @@ class ThemeScrollWheel(private val themes: List<Theme>) : JPanel() {
                         theme.colorScheme.background,
                         theme.colorScheme.surface
                     )
-                    
+
                     val swatchWidth = width / 2
                     val swatchHeight = height / 2
-                    
+
                     colors.forEachIndexed { index, colorHex ->
                         try {
                             val color = Color(ColorUtils.hexToColorInt(colorHex))
@@ -187,18 +187,18 @@ class ThemeScrollWheel(private val themes: List<Theme>) : JPanel() {
                 }
             }
         }
-        
+
         private fun createInfoPanel(): JPanel {
             return JPanel().apply {
                 layout = BoxLayout(this, BoxLayout.Y_AXIS)
                 isOpaque = false
-                
+
                 // Theme name
                 add(JLabel(theme.metadata.name).apply {
                     font = Font(Font.SANS_SERIF, Font.BOLD, 14)
                     alignmentX = Component.LEFT_ALIGNMENT
                 })
-                
+
                 // Description
                 add(Box.createVerticalStrut(3))
                 add(JLabel("<html>${truncate(theme.metadata.description, 50)}</html>").apply {
@@ -206,7 +206,7 @@ class ThemeScrollWheel(private val themes: List<Theme>) : JPanel() {
                     foreground = Color.DARK_GRAY
                     alignmentX = Component.LEFT_ALIGNMENT
                 })
-                
+
                 // Tags
                 if (theme.metadata.tags.isNotEmpty()) {
                     add(Box.createVerticalStrut(3))
@@ -219,7 +219,7 @@ class ThemeScrollWheel(private val themes: List<Theme>) : JPanel() {
                 }
             }
         }
-        
+
         private fun truncate(text: String, maxLength: Int): String {
             return if (text.length > maxLength) {
                 text.substring(0, maxLength) + "..."

@@ -21,16 +21,19 @@ Welcome to the **Ktheme** open-source repository (`Kaleaon/Ktheme`). This docume
 ## 🚀 Development Workflow
 
 1. **Install Dependencies:**
+
    ```bash
    npm install
    ```
 
 2. **Run Tests:**
+
    ```bash
    npm test
    ```
 
 3. **Build Engine & Components:**
+
    ```bash
    npm run build
    ```

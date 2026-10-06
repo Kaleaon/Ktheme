@@ -17,12 +17,12 @@ Use Iconic Activation Packs when you want one-click theming that combines:
 ## Quick usage
 
 ```ts
-import { applyIconicPack } from '@ktheme/engine';
+import { applyIconicPack } from "@ktheme/engine";
 
-const theme = applyIconicPack('windows-activation-pack', {
-  variant: 'dark',
-  appArchetype: 'dashboard',
-  expansionPacks: ['platform-pack', 'motion-pack']
+const theme = applyIconicPack("windows-activation-pack", {
+  variant: "dark",
+  appArchetype: "dashboard",
+  expansionPacks: ["platform-pack", "motion-pack"],
 });
 ```
 
@@ -31,48 +31,48 @@ const theme = applyIconicPack('windows-activation-pack', {
 ### Dashboard apps
 
 ```ts
-const dashboardTheme = applyIconicPack('lcars-activation-pack', {
-  variant: 'high-contrast',
-  appArchetype: 'dashboard',
-  expansionPacks: ['data-viz-pack', 'accessibility-pack']
+const dashboardTheme = applyIconicPack("lcars-activation-pack", {
+  variant: "high-contrast",
+  appArchetype: "dashboard",
+  expansionPacks: ["data-viz-pack", "accessibility-pack"],
 });
 ```
 
 ### Consumer apps
 
 ```ts
-const consumerTheme = applyIconicPack('art-nouveau-pack', {
-  variant: 'light',
-  appArchetype: 'consumer',
-  expansionPacks: ['seasonal-pack', 'motion-pack']
+const consumerTheme = applyIconicPack("art-nouveau-pack", {
+  variant: "light",
+  appArchetype: "consumer",
+  expansionPacks: ["seasonal-pack", "motion-pack"],
 });
 ```
 
 ### Developer tools
 
 ```ts
-const developerTheme = applyIconicPack('lcars-activation-pack', {
-  variant: 'dark',
-  appArchetype: 'developer',
-  expansionPacks: ['ai-ui-pack', 'platform-pack']
+const developerTheme = applyIconicPack("lcars-activation-pack", {
+  variant: "dark",
+  appArchetype: "developer",
+  expansionPacks: ["ai-ui-pack", "platform-pack"],
 });
 ```
 
 ### Content / docs products
 
 ```ts
-const contentTheme = applyIconicPack('art-deco-pack', {
-  variant: 'light',
-  appArchetype: 'content',
-  expansionPacks: ['email-docs-pack'] // filtered out if not allowed by the selected pack
+const contentTheme = applyIconicPack("art-deco-pack", {
+  variant: "light",
+  appArchetype: "content",
+  expansionPacks: ["email-docs-pack"], // filtered out if not allowed by the selected pack
 });
 ```
 
 ## Discovery APIs
 
 ```ts
-import { getIconicPacks, getIconicPackById } from '@ktheme/engine';
+import { getIconicPacks, getIconicPackById } from "@ktheme/engine";
 
 const packs = getIconicPacks();
-const artDeco = getIconicPackById('art-deco-pack');
+const artDeco = getIconicPackById("art-deco-pack");
 ```
