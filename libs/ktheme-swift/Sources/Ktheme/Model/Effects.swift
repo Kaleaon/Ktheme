@@ -77,10 +77,16 @@ public struct MetallicGradient: Codable, Hashable, Sendable {
 
     public static func forVariant(_ v: MetallicVariant) -> MetallicGradient {
         switch v {
-        case .GOLD: .gold; case .SILVER: .silver; case .ROSE_GOLD: .roseGold
-        case .BRONZE: .bronze; case .COPPER: .copper; case .PLATINUM: .platinum
-        case .TITANIUM: .titanium; case .CHROME: .chrome; case .COBALT: .cobalt
-        case .GOLD_ROYAL_BLUE: .goldRoyalBlue
+        case .GOLD: return .gold
+        case .SILVER: return .silver
+        case .ROSE_GOLD: return .roseGold
+        case .BRONZE: return .bronze
+        case .COPPER: return .copper
+        case .PLATINUM: return .platinum
+        case .TITANIUM: return .titanium
+        case .CHROME: return .chrome
+        case .COBALT: return .cobalt
+        case .GOLD_ROYAL_BLUE: return .goldRoyalBlue
         }
     }
 }

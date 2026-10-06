@@ -7,7 +7,7 @@ export type { CssVarsExport, CssVarsOptions };
 
 export function toCssVars(theme: Theme, options?: CssVarsOptions): CssVarsExport {
   const ir = extractThemeTokens(theme);
-  const base = cssVarsRenderer.render(ir);
+  const base = cssVarsRenderer.render(ir, options);
   const vars: Record<string, string> = { ...base.vars };
 
   if (options?.includeEffects === false) {
@@ -55,5 +55,3 @@ export function toCssVars(theme: Theme, options?: CssVarsOptions): CssVarsExport
     cssText: `:root {\n${cssBody}\n}`
   };
 }
-
-

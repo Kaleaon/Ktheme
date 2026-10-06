@@ -124,14 +124,22 @@ public struct LayoutAdaptation: Codable, Hashable, Sendable {
 public enum Density: String, Codable, Hashable, Sendable {
     case compact, comfortable, spacious
     public var scale: Double {
-        switch self { case .compact: 0.92; case .comfortable: 1.0; case .spacious: 1.25 }
+        switch self {
+        case .compact: return 0.92
+        case .comfortable: return 1.0
+        case .spacious: return 1.25
+        }
     }
 }
 
 public enum CornerStyle: String, Codable, Hashable, Sendable {
     case sharp, rounded, pill
     public var radius: CGFloat {
-        switch self { case .sharp: 0; case .rounded: 12; case .pill: 24 }
+        switch self {
+        case .sharp: return 0
+        case .rounded: return 12
+        case .pill: return 24
+        }
     }
 }
 
@@ -184,6 +192,12 @@ public enum StyleValue: Codable, Hashable, Sendable {
         case .number(let d): try c.encode(d)
         }
     }
-    public var stringValue: String? { if case .string(let s) = self { s } else { nil } }
-    public var numberValue: Double? { if case .number(let d) = self { d } else { nil } }
+    public var stringValue: String? {
+        if case .string(let s) = self { return s }
+        return nil
+    }
+    public var numberValue: Double? {
+        if case .number(let d) = self { return d }
+        return nil
+    }
 }
