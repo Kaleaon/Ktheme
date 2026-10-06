@@ -205,7 +205,7 @@ export class VectorTransformer {
     resolvedRole = resolvedRole.replace(/^theme\.colorScheme\./, "");
 
     if (theme && theme.colorScheme) {
-      const cs = theme.colorScheme as unknown as Record<string, Color>;
+      const cs = theme.colorScheme as unknown as Record<string, unknown>;
       if (cs[resolvedRole] !== undefined) {
         return toHexColor(cs[resolvedRole] as Parameters<typeof toHexColor>[0]);
       }
