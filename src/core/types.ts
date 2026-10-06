@@ -59,16 +59,16 @@ export interface MetallicGradient {
  * Metallic theme variants
  */
 export enum MetallicVariant {
-  SILVER = 'SILVER',
-  GOLD = 'GOLD',
-  GOLD_ROYAL_BLUE = 'GOLD_ROYAL_BLUE',
-  BRONZE = 'BRONZE',
-  COPPER = 'COPPER',
-  PLATINUM = 'PLATINUM',
-  ROSE_GOLD = 'ROSE_GOLD',
-  TITANIUM = 'TITANIUM',
-  CHROME = 'CHROME',
-  COBALT = 'COBALT'
+  SILVER = "SILVER",
+  GOLD = "GOLD",
+  GOLD_ROYAL_BLUE = "GOLD_ROYAL_BLUE",
+  BRONZE = "BRONZE",
+  COPPER = "COPPER",
+  PLATINUM = "PLATINUM",
+  ROSE_GOLD = "ROSE_GOLD",
+  TITANIUM = "TITANIUM",
+  CHROME = "CHROME",
+  COBALT = "COBALT",
 }
 
 /**
@@ -79,32 +79,32 @@ export interface ColorScheme {
   onPrimary: Color;
   primaryContainer: Color;
   onPrimaryContainer: Color;
-  
+
   secondary: Color;
   onSecondary: Color;
   secondaryContainer: Color;
   onSecondaryContainer: Color;
-  
+
   tertiary: Color;
   onTertiary: Color;
   tertiaryContainer: Color;
   onTertiaryContainer: Color;
-  
+
   error: Color;
   onError: Color;
   errorContainer: Color;
   onErrorContainer: Color;
-  
+
   background: Color;
   onBackground: Color;
   surface: Color;
   onSurface: Color;
   surfaceVariant: Color;
   onSurfaceVariant: Color;
-  
+
   outline: Color;
   outlineVariant: Color;
-  
+
   // Additional colors
   scrim: Color;
   inverseSurface: Color;
@@ -149,7 +149,7 @@ export interface VisualEffects {
     gradient: MetallicGradient;
     intensity: number; // 0-1
   };
-  
+
   // Shadow effects
   shadows?: {
     enabled: boolean;
@@ -157,14 +157,14 @@ export interface VisualEffects {
     blur: number;
     color: Color;
   };
-  
+
   // Gradient effects
   gradients?: {
     enabled: boolean;
     angle: number; // degrees
     stops: Array<{ offset: number; color: Color }>;
   };
-  
+
   // Shimmer/shine effects
   shimmer?: {
     enabled: boolean;
@@ -172,21 +172,21 @@ export interface VisualEffects {
     intensity: number;
     angle: number;
   };
-  
+
   // Blur effects
   blur?: {
     enabled: boolean;
     radius: number;
   };
-  
+
   // Animation effects
   animations?: {
     enabled: boolean;
     duration: number; // milliseconds
-    easing: 'linear' | 'ease' | 'ease-in' | 'ease-out' | 'ease-in-out';
-    reducedMotionPolicy?: 'none' | 'reduce' | 'disable';
+    easing: "linear" | "ease" | "ease-in" | "ease-out" | "ease-in-out";
+    reducedMotionPolicy?: "none" | "reduce" | "disable";
   };
-  
+
   // Transition effects
   transitions?: {
     enabled: boolean;
@@ -200,12 +200,12 @@ export interface VisualEffects {
     color: Color;
     opacity: number; // 0-1
     blendMode?:
-      | 'normal'
-      | 'multiply'
-      | 'screen'
-      | 'overlay'
-      | 'soft-light'
-      | 'hard-light';
+      | "normal"
+      | "multiply"
+      | "screen"
+      | "overlay"
+      | "soft-light"
+      | "hard-light";
   };
 
   // Accessibility-focused focus ring
@@ -247,7 +247,6 @@ export interface Typography {
   letterSpacing: number;
 }
 
-
 /**
  * Responsive layout breakpoint thresholds (in dp / pixels).
  */
@@ -269,11 +268,11 @@ export interface MultiPaneSpecs {
  * Layout adaptation tokens for reshaping app structure per theme.
  */
 export interface LayoutAdaptation {
-  density: 'compact' | 'comfortable' | 'spacious';
-  cornerStyle: 'sharp' | 'rounded' | 'pill';
+  density: "compact" | "comfortable" | "spacious";
+  cornerStyle: "sharp" | "rounded" | "pill";
   spacingScale: number;
-  panelStyle?: 'flat' | 'elevated' | 'glass';
-  navigationStyle?: 'tabs' | 'rail' | 'drawer' | 'pivot';
+  panelStyle?: "flat" | "elevated" | "glass";
+  navigationStyle?: "tabs" | "rail" | "drawer" | "pivot";
   accessibility?: LayoutAccessibilityProfile;
   breakpoints?: LayoutBreakpoints;
   multiPane?: MultiPaneSpecs;
@@ -290,21 +289,21 @@ export interface LayoutAccessibilityProfile {
     footer: string;
   };
   naming: {
-    strategy: 'aria-label' | 'aria-labelledby' | 'native';
+    strategy: "aria-label" | "aria-labelledby" | "native";
     main: string;
     nav: string;
     header: string;
     footer: string;
   };
   keyboard: {
-    order: 'document' | 'landmarks-first' | 'custom';
-    focusPolicy: 'native' | 'managed' | 'roving-tabindex';
+    order: "document" | "landmarks-first" | "custom";
+    focusPolicy: "native" | "managed" | "roving-tabindex";
     trapFocusWithinModals: boolean;
   };
   liveRegion: {
-    mode: 'off' | 'polite' | 'assertive';
+    mode: "off" | "polite" | "assertive";
     atomic: boolean;
-    relevant: 'additions' | 'text' | 'all';
+    relevant: "additions" | "text" | "all";
   };
 }
 
@@ -312,11 +311,11 @@ export interface LayoutAccessibilityProfile {
  * Icon adaptation tokens for icon pack/weight/size control.
  */
 export interface IconAdaptation {
-  family: 'material' | 'fluent' | 'sf-symbols' | 'custom';
-  style: 'outlined' | 'filled' | 'duotone' | 'line';
+  family: "material" | "fluent" | "sf-symbols" | "custom";
+  style: "outlined" | "filled" | "duotone" | "line";
   sizeScale: number;
   strokeWidth?: number;
-  cornerStyle?: 'sharp' | 'rounded';
+  cornerStyle?: "sharp" | "rounded";
 }
 
 /**
@@ -332,8 +331,8 @@ export interface ComponentOverride {
  */
 export interface WindowChromeSpec {
   titleBarHeight?: number;
-  headerStyle?: 'standard' | 'embedded' | 'compact' | 'tabs' | 'none' | string;
-  cornerStyle?: 'sharp' | 'rounded' | 'pill' | string;
+  headerStyle?: "standard" | "embedded" | "compact" | "tabs" | "none" | string;
+  cornerStyle?: "sharp" | "rounded" | "pill" | string;
   panelRadius?: number;
   controlRadius?: number;
   borderWidth?: number;
@@ -348,7 +347,7 @@ export interface MenuBarSpec {
   height?: number;
   fontSize?: number;
   letterSpacing?: string;
-  textTransform?: 'uppercase' | 'lowercase' | 'capitalize' | 'none' | string;
+  textTransform?: "uppercase" | "lowercase" | "capitalize" | "none" | string;
   dropdownRadius?: number;
   dropdownShadow?: string;
 }
@@ -359,7 +358,7 @@ export interface MenuBarSpec {
 export interface TaskbarSpec {
   height?: number;
   buttonRadius?: number;
-  dockAlignment?: 'left' | 'center' | 'right' | string;
+  dockAlignment?: "left" | "center" | "right" | string;
   quickChatBorderRadius?: number;
 }
 
@@ -399,10 +398,10 @@ export interface DesktopAdaptation {
 export interface LayoutSpec {
   id: string;
   name?: string;
-  navModel?: 'TILES' | 'SWEEP' | 'TABS' | 'RAIL' | string;
-  cornerProfile?: 'SHARP' | 'PILLED' | 'ROUNDED' | string;
-  densityProfile?: 'COMFORTABLE' | 'COMPACT' | 'STANDARD' | string;
-  motionProfile?: 'STANDARD' | 'EXPRESSIVE' | string;
+  navModel?: "TILES" | "SWEEP" | "TABS" | "RAIL" | string;
+  cornerProfile?: "SHARP" | "PILLED" | "ROUNDED" | string;
+  densityProfile?: "COMFORTABLE" | "COMPACT" | "STANDARD" | string;
+  motionProfile?: "STANDARD" | "EXPRESSIVE" | string;
   font?: string;
   displayFont?: string;
   cardLook?: string;
@@ -517,9 +516,9 @@ export interface VectorPath {
   fill?: Color;
   stroke?: Color;
   strokeWidth?: number;
-  strokeLinecap?: 'butt' | 'round' | 'square';
-  strokeLinejoin?: 'miter' | 'round' | 'bevel';
-  fillRule?: 'nonzero' | 'evenodd';
+  strokeLinecap?: "butt" | "round" | "square";
+  strokeLinejoin?: "miter" | "round" | "bevel";
+  fillRule?: "nonzero" | "evenodd";
   opacity?: number;
 }
 
@@ -587,24 +586,24 @@ export interface ThemeValidationResult {
   issues: ThemeValidationIssue[];
 }
 
-export type ThemeValidationSeverity = 'error' | 'warning';
+export type ThemeValidationSeverity = "error" | "warning";
 
 export interface ThemeValidationIssue {
   severity: ThemeValidationSeverity;
   message: string;
   code:
-    | 'missing-schema'
-    | 'invalid-schema'
-    | 'missing-metadata'
-    | 'missing-color'
-    | 'invalid-effects'
-    | 'invalid-adaptation'
-    | 'invalid-component-override'
-    | 'unsafe-component-override'
-    | 'low-contrast'
-    | 'incomplete-semantic-role'
-    | 'invalid-token'
-    | 'invalid-accessibility'
-    | 'unknown-property';
+    | "missing-schema"
+    | "invalid-schema"
+    | "missing-metadata"
+    | "missing-color"
+    | "invalid-effects"
+    | "invalid-adaptation"
+    | "invalid-component-override"
+    | "unsafe-component-override"
+    | "low-contrast"
+    | "incomplete-semantic-role"
+    | "invalid-token"
+    | "invalid-accessibility"
+    | "unknown-property";
   path?: string;
 }

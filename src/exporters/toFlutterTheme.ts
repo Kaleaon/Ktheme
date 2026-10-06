@@ -1,6 +1,9 @@
-import { Theme } from '../core/types';
-import { extractThemeTokens } from './ir/extractIR';
-import { flutterRenderer, FlutterThemeExport } from './renderers/flutterRenderer';
+import { Theme } from "../core/types";
+import { extractThemeTokens } from "./ir/extractIR";
+import {
+  flutterRenderer,
+  FlutterThemeExport,
+} from "./renderers/flutterRenderer";
 
 export type { FlutterThemeExport };
 

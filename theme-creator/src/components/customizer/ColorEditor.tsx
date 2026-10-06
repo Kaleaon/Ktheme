@@ -1,56 +1,56 @@
-import { useId } from 'react';
-import { useTheme } from '../../state/ThemeContext.tsx';
-import { contrastRatio } from '../../utils/colors.ts';
+import { useId } from "react";
+import { useTheme } from "../../state/ThemeContext.tsx";
+import { contrastRatio } from "../../utils/colors.ts";
 
 const COLOR_GROUPS = [
   {
-    label: 'Primary',
+    label: "Primary",
     pairs: [
-      ['primary', 'onPrimary'],
-      ['primaryContainer', 'onPrimaryContainer'],
+      ["primary", "onPrimary"],
+      ["primaryContainer", "onPrimaryContainer"],
     ],
   },
   {
-    label: 'Secondary',
+    label: "Secondary",
     pairs: [
-      ['secondary', 'onSecondary'],
-      ['secondaryContainer', 'onSecondaryContainer'],
+      ["secondary", "onSecondary"],
+      ["secondaryContainer", "onSecondaryContainer"],
     ],
   },
   {
-    label: 'Tertiary',
+    label: "Tertiary",
     pairs: [
-      ['tertiary', 'onTertiary'],
-      ['tertiaryContainer', 'onTertiaryContainer'],
+      ["tertiary", "onTertiary"],
+      ["tertiaryContainer", "onTertiaryContainer"],
     ],
   },
   {
-    label: 'Error',
+    label: "Error",
     pairs: [
-      ['error', 'onError'],
-      ['errorContainer', 'onErrorContainer'],
+      ["error", "onError"],
+      ["errorContainer", "onErrorContainer"],
     ],
   },
   {
-    label: 'Surfaces',
+    label: "Surfaces",
     pairs: [
-      ['background', 'onBackground'],
-      ['surface', 'onSurface'],
-      ['surfaceVariant', 'onSurfaceVariant'],
+      ["background", "onBackground"],
+      ["surface", "onSurface"],
+      ["surfaceVariant", "onSurfaceVariant"],
     ],
   },
   {
-    label: 'Other',
+    label: "Other",
     pairs: [
-      ['outline', 'outlineVariant'],
-      ['inverseSurface', 'inverseOnSurface'],
-      ['inversePrimary', 'scrim'],
+      ["outline", "outlineVariant"],
+      ["inverseSurface", "inverseOnSurface"],
+      ["inversePrimary", "scrim"],
     ],
   },
 ];
 
 function formatLabel(key: string): string {
-  return key.replace(/([A-Z])/g, ' $1').replace(/^./, (s) => s.toUpperCase());
+  return key.replace(/([A-Z])/g, " $1").replace(/^./, (s) => s.toUpperCase());
 }
 
 export function ColorEditor() {
@@ -61,7 +61,7 @@ export function ColorEditor() {
   const semanticBaseId = useId();
 
   function setColor(key: string, value: string) {
-    dispatch({ type: 'UPDATE_COLOR', payload: { key, value } });
+    dispatch({ type: "UPDATE_COLOR", payload: { key, value } });
   }
 
   return (
@@ -71,8 +71,10 @@ export function ColorEditor() {
         <div key={group.label} className="color-group">
           <h4 className="group-label">{group.label}</h4>
           {group.pairs.map(([bg, fg]) => {
-            const bgVal = (colors as unknown as Record<string, string>)[bg] || '#000000';
-            const fgVal = (colors as unknown as Record<string, string>)[fg] || '#FFFFFF';
+            const bgVal =
+              (colors as unknown as Record<string, string>)[bg] || "#000000";
+            const fgVal =
+              (colors as unknown as Record<string, string>)[fg] || "#FFFFFF";
             const cr = contrastRatio(bgVal, fgVal);
             const crOk = cr >= 4.5;
             const bgId = `${colorBaseId}-${bg}`;
@@ -101,8 +103,8 @@ export function ColorEditor() {
                     <span className="color-hex">{fgVal}</span>
                   </label>
                 </div>
-                <div className={`contrast-badge ${crOk ? 'ok' : 'warn'}`}>
-                  {cr.toFixed(1)}:1 {crOk ? 'AA' : '!'}
+                <div className={`contrast-badge ${crOk ? "ok" : "warn"}`}>
+                  {cr.toFixed(1)}:1 {crOk ? "AA" : "!"}
                 </div>
                 <div
                   className="color-swatch-preview"
@@ -118,9 +120,16 @@ export function ColorEditor() {
       {colors.semanticRoles && (
         <div className="color-group">
           <h4 className="group-label">Semantic roles</h4>
-          {([['success', 'onSuccess'], ['warning', 'onWarning'], ['info', 'onInfo'], ['critical', 'onCritical']] as const).map(([bg, fg]) => {
-            const bgVal = colors.semanticRoles?.[bg] || '#000000';
-            const fgVal = colors.semanticRoles?.[fg] || '#FFFFFF';
+          {(
+            [
+              ["success", "onSuccess"],
+              ["warning", "onWarning"],
+              ["info", "onInfo"],
+              ["critical", "onCritical"],
+            ] as const
+          ).map(([bg, fg]) => {
+            const bgVal = colors.semanticRoles?.[bg] || "#000000";
+            const fgVal = colors.semanticRoles?.[fg] || "#FFFFFF";
             return (
               <div className="color-pair" key={bg}>
                 <div className="color-picker-row">
@@ -134,11 +143,14 @@ export function ColorEditor() {
                           value={key === bg ? bgVal : fgVal}
                           onChange={(e) =>
                             dispatch({
-                              type: 'UPDATE_THEME',
+                              type: "UPDATE_THEME",
                               payload: {
                                 colorScheme: {
                                   ...colors,
-                                  semanticRoles: { ...colors.semanticRoles!, [key]: e.target.value },
+                                  semanticRoles: {
+                                    ...colors.semanticRoles!,
+                                    [key]: e.target.value,
+                                  },
                                 },
                               },
                             })
@@ -149,7 +161,10 @@ export function ColorEditor() {
                     );
                   })}
                 </div>
-                <div className="color-swatch-preview" style={{ background: bgVal, color: fgVal }}>
+                <div
+                  className="color-swatch-preview"
+                  style={{ background: bgVal, color: fgVal }}
+                >
                   Semantic status
                 </div>
               </div>

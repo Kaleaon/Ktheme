@@ -1,67 +1,76 @@
 /**
  * Ktheme - Advanced Theming and Design API
- * 
+ *
  * An open-source theme engine for creating and managing application themes
  * Based on the theming system from CleverFerret
- * 
+ *
  * @packageDocumentation
  */
 
 // Core exports
-export { ThemeEngine } from './core/ThemeEngine';
-export { VectorTransformer, VectorIRNode, VectorIRPath } from './core/VectorTransformer';
-export * from './core/types';
+export { ThemeEngine } from "./core/ThemeEngine";
+export {
+  VectorTransformer,
+  VectorIRNode,
+  VectorIRPath,
+} from "./core/VectorTransformer";
+export * from "./core/types";
 
 // Effects exports
-export * from './effects/metallic';
-export * from './effects/advanced';
-export * from './adaptation/apply';
-export * from './accessibility/defaults';
+export * from "./effects/metallic";
+export * from "./effects/advanced";
+export * from "./adaptation/apply";
+export * from "./accessibility/defaults";
 
 // Utility exports
-export * from './utils/colors';
-export * from './utils/clone';
+export * from "./utils/colors";
+export * from "./utils/clone";
 
 // Theme exports
-export * from './themes/presets';
-export * from './themes/sets';
-export * from './themes/adaptationPresets';
-export * from './themes/strategy';
-export * from './themes/expansion';
-export * from './themes/iconicPacks';
-export * from './themes/shared-preset-themes';
-export * from './themes/data/shared-presets-data';
-export * from './redesign/autoRedesign';
+export * from "./themes/presets";
+export * from "./themes/sets";
+export * from "./themes/adaptationPresets";
+export * from "./themes/strategy";
+export * from "./themes/expansion";
+export * from "./themes/iconicPacks";
+export * from "./themes/shared-preset-themes";
+export * from "./themes/data/shared-presets-data";
+export * from "./redesign/autoRedesign";
 
 // Component library & Linkpoint UI Kit exports
-export * from './components';
-export * from './linkpoint';
+export * from "./components";
+export * from "./linkpoint";
 
 // Media design tokens exports
-export * from './media/quickAccess';
-export * from './exporters';
-export * as cli from './cli';
+export * from "./media/quickAccess";
+export * from "./exporters";
+export * as cli from "./cli";
 
 // Re-export for convenience
-import { ThemeEngine } from './core/ThemeEngine';
-import { PresetThemes } from './themes/presets';
-import { ThemeSets } from './themes/sets';
-import { AdaptationPresets } from './themes/adaptationPresets';
-import { ExpansionPackImplementations } from './themes/expansion';
-import { BestPracticeStandards, ExpansionPackPlans, RecognizableUIDesigns, ThemeFamilyPlans } from './themes/strategy';
+import { ThemeEngine } from "./core/ThemeEngine";
+import { PresetThemes } from "./themes/presets";
+import { ThemeSets } from "./themes/sets";
+import { AdaptationPresets } from "./themes/adaptationPresets";
+import { ExpansionPackImplementations } from "./themes/expansion";
+import {
+  BestPracticeStandards,
+  ExpansionPackPlans,
+  RecognizableUIDesigns,
+  ThemeFamilyPlans,
+} from "./themes/strategy";
 
 /**
  * Create a new theme engine instance with preset themes
  */
 export function createThemeEngine(includePresets: boolean = true): ThemeEngine {
   const engine = new ThemeEngine();
-  
+
   if (includePresets) {
-    Object.values(PresetThemes).forEach(theme => {
+    Object.values(PresetThemes).forEach((theme) => {
       engine.registerTheme(theme);
     });
   }
-  
+
   return engine;
 }
 
@@ -78,5 +87,5 @@ export default {
   ExpansionPackPlans,
   ExpansionPackImplementations,
   BestPracticeStandards,
-  RecognizableUIDesigns
+  RecognizableUIDesigns,
 };

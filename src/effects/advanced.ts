@@ -3,8 +3,8 @@
  * Additional effects from CleverFerret's theming system
  */
 
-import { Color } from '../core/types';
-import { toCssColor } from '../utils/colors';
+import { Color } from "../core/types";
+import { toCssColor } from "../utils/colors";
 
 /**
  * Generate CSS for blur effect
@@ -21,10 +21,10 @@ export function generateBlurCSS(radius: number): string {
  */
 export function generateTransitionCSS(
   duration: number,
-  properties: string[] = ['all'],
-  easing: string = 'ease'
+  properties: string[] = ["all"],
+  easing: string = "ease",
 ): string {
-  const props = properties.join(', ');
+  const props = properties.join(", ");
   return `
     transition: ${props} ${duration}ms ${easing};
     -webkit-transition: ${props} ${duration}ms ${easing};
@@ -37,8 +37,8 @@ export function generateTransitionCSS(
 export function generateAnimationCSS(
   name: string,
   duration: number,
-  easing: string = 'ease',
-  iterationCount: string | number = '1'
+  easing: string = "ease",
+  iterationCount: string | number = "1",
 ): string {
   return `
     animation: ${name} ${duration}ms ${easing} ${iterationCount};
@@ -49,7 +49,7 @@ export function generateAnimationCSS(
 /**
  * Generate keyframes for fade in animation
  */
-export function generateFadeInKeyframes(name: string = 'fadeIn'): string {
+export function generateFadeInKeyframes(name: string = "fadeIn"): string {
   return `
     @keyframes ${name} {
       from { opacity: 0; }
@@ -66,16 +66,16 @@ export function generateFadeInKeyframes(name: string = 'fadeIn'): string {
  * Generate keyframes for slide in animation
  */
 export function generateSlideInKeyframes(
-  name: string = 'slideIn',
-  from: 'top' | 'right' | 'bottom' | 'left' = 'bottom'
+  name: string = "slideIn",
+  from: "top" | "right" | "bottom" | "left" = "bottom",
 ): string {
   const transforms: Record<string, { from: string; to: string }> = {
-    top: { from: 'translateY(-100%)', to: 'translateY(0)' },
-    right: { from: 'translateX(100%)', to: 'translateX(0)' },
-    bottom: { from: 'translateY(100%)', to: 'translateY(0)' },
-    left: { from: 'translateX(-100%)', to: 'translateX(0)' }
+    top: { from: "translateY(-100%)", to: "translateY(0)" },
+    right: { from: "translateX(100%)", to: "translateX(0)" },
+    bottom: { from: "translateY(100%)", to: "translateY(0)" },
+    left: { from: "translateX(-100%)", to: "translateX(0)" },
   };
-  
+
   return `
     @keyframes ${name} {
       from { transform: ${transforms[from].from}; }
@@ -93,19 +93,19 @@ export function generateSlideInKeyframes(
  */
 export function generateElevationCSS(
   elevation: number,
-  color: Color = '#000000'
+  color: Color = "#000000",
 ): string {
   const shadows = [];
   const baseBlur = elevation * 2;
   const cssColor = toCssColor(color);
-  
+
   // Ambient shadow
   shadows.push(`0 ${elevation}px ${baseBlur}px rgba(0,0,0,0.12)`);
-  
+
   // Direct shadow
   shadows.push(`0 ${elevation * 0.5}px ${baseBlur * 1.5}px ${cssColor}`);
-  
-  return `box-shadow: ${shadows.join(', ')};`;
+
+  return `box-shadow: ${shadows.join(", ")};`;
 }
 
 /**
@@ -114,7 +114,7 @@ export function generateElevationCSS(
 export function generateGlassmorphismCSS(
   background: Color,
   blur: number = 10,
-  opacity: number = 0.8
+  opacity: number = 0.8,
 ): string {
   const cssColor = toCssColor(background);
   return `
@@ -128,16 +128,13 @@ export function generateGlassmorphismCSS(
 /**
  * Generate CSS for glow effect
  */
-export function generateGlowCSS(
-  color: Color,
-  intensity: number = 1
-): string {
+export function generateGlowCSS(color: Color, intensity: number = 1): string {
   const cssColor = toCssColor(color);
   const blur = 10 * intensity;
   const spread = 5 * intensity;
-  
+
   return `
-    box-shadow: 
+    box-shadow:
       0 0 ${blur}px ${spread}px ${cssColor},
       0 0 ${blur * 1.5}px ${cssColor} inset;
   `;
@@ -147,8 +144,8 @@ export function generateGlowCSS(
  * Generate CSS for pulse animation
  */
 export function generatePulseKeyframes(
-  name: string = 'pulse',
-  color: Color
+  name: string = "pulse",
+  color: Color,
 ): string {
   const cssColor = toCssColor(color);
   return `
@@ -166,14 +163,14 @@ export function generatePulseKeyframes(
 export function generateGradientBorderCSS(
   colors: Color[],
   angle: number = 45,
-  borderWidth: number = 2
+  borderWidth: number = 2,
 ): string {
-  const cssColors = colors.map(c => toCssColor(c)).join(', ');
+  const cssColors = colors.map((c) => toCssColor(c)).join(", ");
   return `
     border: ${borderWidth}px solid transparent;
     background: linear-gradient(${angle}deg, ${cssColors}) border-box;
-    -webkit-mask: 
-      linear-gradient(#fff 0 0) padding-box, 
+    -webkit-mask:
+      linear-gradient(#fff 0 0) padding-box,
       linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
@@ -183,7 +180,7 @@ export function generateGradientBorderCSS(
 /**
  * Generate CSS for ripple effect
  */
-export function generateRippleKeyframes(name: string = 'ripple'): string {
+export function generateRippleKeyframes(name: string = "ripple"): string {
   return `
     @keyframes ${name} {
       0% {
@@ -198,7 +195,6 @@ export function generateRippleKeyframes(name: string = 'ripple'): string {
   `;
 }
 
-
 /**
  * Generate CSS for tinted surface overlays
  */
@@ -206,12 +202,12 @@ export function generateOverlayCSS(
   color: Color,
   opacity: number = 0.08,
   blendMode:
-    | 'normal'
-    | 'multiply'
-    | 'screen'
-    | 'overlay'
-    | 'soft-light'
-    | 'hard-light' = 'normal'
+    | "normal"
+    | "multiply"
+    | "screen"
+    | "overlay"
+    | "soft-light"
+    | "hard-light" = "normal",
 ): string {
   const cssColor = toCssColor(color);
   return `
@@ -227,7 +223,7 @@ export function generateOverlayCSS(
 export function generateFocusRingCSS(
   color: Color,
   width: number = 2,
-  offset: number = 2
+  offset: number = 2,
 ): string {
   const cssColor = toCssColor(color);
   return `
@@ -241,7 +237,7 @@ export function generateFocusRingCSS(
  */
 export function generateNoiseTextureCSS(
   opacity: number = 0.06,
-  scale: number = 100
+  scale: number = 100,
 ): string {
   return `
     background-image: radial-gradient(rgba(255,255,255,${opacity}) 1px, transparent 1px);
@@ -253,13 +249,13 @@ export function generateNoiseTextureCSS(
  * Advanced effect presets
  */
 export const AdvancedEffectPresets = {
-  smoothTransition: generateTransitionCSS(300, ['all'], 'ease-in-out'),
-  fadeIn: generateFadeInKeyframes() + generateAnimationCSS('fadeIn', 300),
-  slideIn: generateSlideInKeyframes() + generateAnimationCSS('slideIn', 400),
+  smoothTransition: generateTransitionCSS(300, ["all"], "ease-in-out"),
+  fadeIn: generateFadeInKeyframes() + generateAnimationCSS("fadeIn", 300),
+  slideIn: generateSlideInKeyframes() + generateAnimationCSS("slideIn", 400),
   glassmorphism: (bg: Color) => generateGlassmorphismCSS(bg, 10, 0.8),
   elevation: (level: number) => generateElevationCSS(level),
   glow: (color: Color) => generateGlowCSS(color, 1),
-  overlay: (color: Color) => generateOverlayCSS(color, 0.08, 'soft-light'),
+  overlay: (color: Color) => generateOverlayCSS(color, 0.08, "soft-light"),
   focusRing: (color: Color) => generateFocusRingCSS(color, 2, 2),
-  noiseTexture: generateNoiseTextureCSS(0.05, 120)
+  noiseTexture: generateNoiseTextureCSS(0.05, 120),
 };

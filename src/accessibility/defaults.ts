@@ -3,14 +3,16 @@ import {
   AccessibilitySettings,
   LayoutAccessibilityProfile,
   ResolvedAccessibilitySettings,
-  Theme
-} from '../core/types';
+  Theme,
+} from "../core/types";
 
-const DEFAULT_ACCESSIBILITY_CONTROLS: Required<NonNullable<AccessibilitySettings['controls']>> = {
+const DEFAULT_ACCESSIBILITY_CONTROLS: Required<
+  NonNullable<AccessibilitySettings["controls"]>
+> = {
   allowContrastToggle: true,
   allowMotionToggle: true,
   allowFontScaleControl: true,
-  allowFocusRingToggle: true
+  allowFocusRingToggle: true,
 };
 
 const DEFAULT_ACCESSIBILITY: ResolvedAccessibilitySettings = {
@@ -28,43 +30,47 @@ const DEFAULT_ACCESSIBILITY: ResolvedAccessibilitySettings = {
   underlineLinks: true,
   disableParallax: true,
   disableShimmer: true,
-  controls: DEFAULT_ACCESSIBILITY_CONTROLS
+  controls: DEFAULT_ACCESSIBILITY_CONTROLS,
 };
 
-export const DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE: LayoutAccessibilityProfile = {
-  landmarks: {
-    main: 'main',
-    nav: 'navigation',
-    header: 'banner',
-    footer: 'contentinfo'
-  },
-  naming: {
-    strategy: 'aria-label',
-    main: 'Main content',
-    nav: 'Primary navigation',
-    header: 'Page header',
-    footer: 'Page footer'
-  },
-  keyboard: {
-    order: 'document',
-    focusPolicy: 'native',
-    trapFocusWithinModals: true
-  },
-  liveRegion: {
-    mode: 'polite',
-    atomic: false,
-    relevant: 'additions'
-  }
-};
+export const DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE: LayoutAccessibilityProfile =
+  {
+    landmarks: {
+      main: "main",
+      nav: "navigation",
+      header: "banner",
+      footer: "contentinfo",
+    },
+    naming: {
+      strategy: "aria-label",
+      main: "Main content",
+      nav: "Primary navigation",
+      header: "Page header",
+      footer: "Page footer",
+    },
+    keyboard: {
+      order: "document",
+      focusPolicy: "native",
+      trapFocusWithinModals: true,
+    },
+    liveRegion: {
+      mode: "polite",
+      atomic: false,
+      relevant: "additions",
+    },
+  };
 
 export function resolveAccessibilitySettings(
   theme: Theme,
-  preferences?: AccessibilityRuntimePreferences
+  preferences?: AccessibilityRuntimePreferences,
 ): ResolvedAccessibilitySettings {
   const settings = theme.accessibility;
-  const reduceMotionByDefault = settings?.motion?.reduceMotionByDefault ?? false;
+  const reduceMotionByDefault =
+    settings?.motion?.reduceMotionByDefault ?? false;
 
-  const reducedMotion = Boolean(preferences?.prefersReducedMotion ?? reduceMotionByDefault);
+  const reducedMotion = Boolean(
+    preferences?.prefersReducedMotion ?? reduceMotionByDefault,
+  );
   const highContrast = Boolean(preferences?.prefersHighContrast ?? false);
   const forcedColors = Boolean(preferences?.prefersForcedColors ?? false);
 
@@ -74,22 +80,51 @@ export function resolveAccessibilitySettings(
     highContrast,
     reducedMotion,
     forcedColors,
-    minimumContrastRatio: settings?.minimumContrastRatio ?? DEFAULT_ACCESSIBILITY.minimumContrastRatio,
-    fontScale: Math.max(0.8, preferences?.userFontScale ?? settings?.typography?.fontScale ?? DEFAULT_ACCESSIBILITY.fontScale),
-    lineHeight: settings?.typography?.lineHeight ?? DEFAULT_ACCESSIBILITY.lineHeight,
-    letterSpacing: settings?.typography?.letterSpacing ?? DEFAULT_ACCESSIBILITY.letterSpacing,
-    minimumTargetSize: settings?.interaction?.minimumTargetSize ?? DEFAULT_ACCESSIBILITY.minimumTargetSize,
-    focusRingWidth: settings?.interaction?.focusRingWidth ?? DEFAULT_ACCESSIBILITY.focusRingWidth,
-    focusRingOffset: settings?.interaction?.focusRingOffset ?? DEFAULT_ACCESSIBILITY.focusRingOffset,
-    underlineLinks: settings?.interaction?.underlineLinks ?? DEFAULT_ACCESSIBILITY.underlineLinks,
-    disableParallax: settings?.motion?.disableParallax ?? DEFAULT_ACCESSIBILITY.disableParallax,
-    disableShimmer: settings?.motion?.disableShimmer ?? DEFAULT_ACCESSIBILITY.disableShimmer,
+    minimumContrastRatio:
+      settings?.minimumContrastRatio ??
+      DEFAULT_ACCESSIBILITY.minimumContrastRatio,
+    fontScale: Math.max(
+      0.8,
+      preferences?.userFontScale ??
+        settings?.typography?.fontScale ??
+        DEFAULT_ACCESSIBILITY.fontScale,
+    ),
+    lineHeight:
+      settings?.typography?.lineHeight ?? DEFAULT_ACCESSIBILITY.lineHeight,
+    letterSpacing:
+      settings?.typography?.letterSpacing ??
+      DEFAULT_ACCESSIBILITY.letterSpacing,
+    minimumTargetSize:
+      settings?.interaction?.minimumTargetSize ??
+      DEFAULT_ACCESSIBILITY.minimumTargetSize,
+    focusRingWidth:
+      settings?.interaction?.focusRingWidth ??
+      DEFAULT_ACCESSIBILITY.focusRingWidth,
+    focusRingOffset:
+      settings?.interaction?.focusRingOffset ??
+      DEFAULT_ACCESSIBILITY.focusRingOffset,
+    underlineLinks:
+      settings?.interaction?.underlineLinks ??
+      DEFAULT_ACCESSIBILITY.underlineLinks,
+    disableParallax:
+      settings?.motion?.disableParallax ??
+      DEFAULT_ACCESSIBILITY.disableParallax,
+    disableShimmer:
+      settings?.motion?.disableShimmer ?? DEFAULT_ACCESSIBILITY.disableShimmer,
     controls: {
-      allowContrastToggle: settings?.controls?.allowContrastToggle ?? DEFAULT_ACCESSIBILITY_CONTROLS.allowContrastToggle,
-      allowMotionToggle: settings?.controls?.allowMotionToggle ?? DEFAULT_ACCESSIBILITY_CONTROLS.allowMotionToggle,
-      allowFontScaleControl: settings?.controls?.allowFontScaleControl ?? DEFAULT_ACCESSIBILITY_CONTROLS.allowFontScaleControl,
-      allowFocusRingToggle: settings?.controls?.allowFocusRingToggle ?? DEFAULT_ACCESSIBILITY_CONTROLS.allowFocusRingToggle
-    }
+      allowContrastToggle:
+        settings?.controls?.allowContrastToggle ??
+        DEFAULT_ACCESSIBILITY_CONTROLS.allowContrastToggle,
+      allowMotionToggle:
+        settings?.controls?.allowMotionToggle ??
+        DEFAULT_ACCESSIBILITY_CONTROLS.allowMotionToggle,
+      allowFontScaleControl:
+        settings?.controls?.allowFontScaleControl ??
+        DEFAULT_ACCESSIBILITY_CONTROLS.allowFontScaleControl,
+      allowFocusRingToggle:
+        settings?.controls?.allowFocusRingToggle ??
+        DEFAULT_ACCESSIBILITY_CONTROLS.allowFocusRingToggle,
+    },
   };
 }
 

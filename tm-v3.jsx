@@ -1,7 +1,7 @@
 // ThemeMakerV3.jsx — Consolidated to consume unified @ktheme/react/studio.
-import React from 'react';
-import { ThemeStudio } from './packages/react/src/studio/ThemeStudio';
-import { KthemeProvider } from './packages/react/src/KthemeProvider';
+import React from "react";
+import { ThemeStudio } from "./packages/react/src/studio/ThemeStudio";
+import { KthemeProvider } from "./packages/react/src/KthemeProvider";
 
 export function ThemeMakerV3({ themeKey = "navy-gold" }) {
   return (
@@ -11,7 +11,7 @@ export function ThemeMakerV3({ themeKey = "navy-gold" }) {
   );
 }
 
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   window.ThemeMakerV3 = ThemeMakerV3;
 }
 

@@ -1,22 +1,22 @@
-import type { KTheme } from '../types/theme.ts';
+import type { KTheme } from "../types/theme.ts";
 
-const AI_API_BASE = '/api/ai';
+const AI_API_BASE = "/api/ai";
 const HEX_COLOR_REGEX = /^#[0-9A-F]{6}$/i;
 const METALLIC_VARIANTS = new Set([
-  'SILVER',
-  'GOLD',
-  'GOLD_ROYAL_BLUE',
-  'BRONZE',
-  'COPPER',
-  'PLATINUM',
-  'ROSE_GOLD',
-  'TITANIUM',
-  'CHROME',
-  'COBALT',
+  "SILVER",
+  "GOLD",
+  "GOLD_ROYAL_BLUE",
+  "BRONZE",
+  "COPPER",
+  "PLATINUM",
+  "ROSE_GOLD",
+  "TITANIUM",
+  "CHROME",
+  "COBALT",
 ]);
 
 export interface AIMessage {
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   content: string;
 }
 
@@ -44,19 +44,23 @@ export interface AISession {
   provider: AIProvider;
 }
 
-export type AIProvider = 'claude' | 'gemini';
+export type AIProvider = "claude" | "gemini";
 
-async function postJson<T>(path: string, payload: Record<string, unknown>): Promise<T> {
+async function postJson<T>(
+  path: string,
+  payload: Record<string, unknown>,
+): Promise<T> {
   const response = await fetch(`${AI_API_BASE}${path}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
     const err = await response.json().catch(() => ({}));
     throw new Error(
-      (err as { error?: string })?.error ?? `AI request failed: ${response.status}`
+      (err as { error?: string })?.error ??
+        `AI request failed: ${response.status}`,
     );
   }
 
@@ -65,33 +69,39 @@ async function postJson<T>(path: string, payload: Record<string, unknown>): Prom
 
 export async function createAISession(
   provider: AIProvider,
-  apiKey: string
+  apiKey: string,
 ): Promise<AISession> {
-  const data = await postJson<{ sessionToken: string; expiresAt: string }>('/session', {
-    provider,
-    apiKey,
-  });
+  const data = await postJson<{ sessionToken: string; expiresAt: string }>(
+    "/session",
+    {
+      provider,
+      apiKey,
+    },
+  );
   return { ...data, provider };
 }
 
 export async function revokeAISession(sessionToken: string): Promise<void> {
-  await postJson('/session/revoke', { sessionToken });
+  await postJson("/session/revoke", { sessionToken });
 }
 
 export async function sendAIMessage(
   messages: AIMessage[],
-  sessionToken: string
+  sessionToken: string,
 ): Promise<string> {
-  const data = await postJson<{ text: string }>('/chat', { sessionToken, messages });
+  const data = await postJson<{ text: string }>("/chat", {
+    sessionToken,
+    messages,
+  });
   return data.text;
 }
 
 export async function sendGeminiMultimodalMessage(
   prompt: string,
   sessionToken: string,
-  screenshots: AIScreenshotInput[] = []
+  screenshots: AIScreenshotInput[] = [],
 ): Promise<string> {
-  const data = await postJson<{ text: string }>('/chat', {
+  const data = await postJson<{ text: string }>("/chat", {
     sessionToken,
     prompt,
     screenshots,
@@ -100,25 +110,27 @@ export async function sendGeminiMultimodalMessage(
 }
 
 function isStringArray(value: unknown): value is string[] {
-  return Array.isArray(value) && value.every((item) => typeof item === 'string');
+  return (
+    Array.isArray(value) && value.every((item) => typeof item === "string")
+  );
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null;
+  return typeof value === "object" && value !== null;
 }
 
 function isHexColor(value: unknown): value is string {
-  return typeof value === 'string' && HEX_COLOR_REGEX.test(value);
+  return typeof value === "string" && HEX_COLOR_REGEX.test(value);
 }
 
 function parseRedesignPlan(value: unknown): AIRedesignPlan | undefined {
   if (!isRecord(value)) return undefined;
 
   if (
-    typeof value.layoutDensity !== 'string' ||
-    typeof value.cornerStrategy !== 'string' ||
-    typeof value.navModel !== 'string' ||
-    typeof value.iconStyle !== 'string' ||
+    typeof value.layoutDensity !== "string" ||
+    typeof value.cornerStrategy !== "string" ||
+    typeof value.navModel !== "string" ||
+    typeof value.iconStyle !== "string" ||
     !isStringArray(value.componentOverrides)
   ) {
     return undefined;
@@ -139,36 +151,71 @@ function validateThemeSchema(theme: unknown): theme is KTheme {
   const colorScheme = theme.colorScheme;
   if (!isRecord(metadata) || !isRecord(colorScheme)) return false;
 
-  const metadataFields = ['id', 'name', 'description', 'author', 'version', 'createdAt', 'updatedAt'];
-  const validMetadata = metadataFields.every((field) => typeof metadata[field] === 'string');
+  const metadataFields = [
+    "id",
+    "name",
+    "description",
+    "author",
+    "version",
+    "createdAt",
+    "updatedAt",
+  ];
+  const validMetadata = metadataFields.every(
+    (field) => typeof metadata[field] === "string",
+  );
   if (!validMetadata || !isStringArray(metadata.tags)) return false;
 
-  if (typeof theme.darkMode !== 'boolean') return false;
+  if (typeof theme.darkMode !== "boolean") return false;
 
   const requiredColorKeys = [
-    'primary', 'onPrimary', 'primaryContainer', 'onPrimaryContainer', 'secondary', 'onSecondary',
-    'secondaryContainer', 'onSecondaryContainer', 'tertiary', 'onTertiary', 'tertiaryContainer',
-    'onTertiaryContainer', 'error', 'onError', 'errorContainer', 'onErrorContainer', 'background',
-    'onBackground', 'surface', 'onSurface', 'surfaceVariant', 'onSurfaceVariant', 'outline',
-    'outlineVariant', 'scrim', 'inverseSurface', 'inverseOnSurface', 'inversePrimary',
+    "primary",
+    "onPrimary",
+    "primaryContainer",
+    "onPrimaryContainer",
+    "secondary",
+    "onSecondary",
+    "secondaryContainer",
+    "onSecondaryContainer",
+    "tertiary",
+    "onTertiary",
+    "tertiaryContainer",
+    "onTertiaryContainer",
+    "error",
+    "onError",
+    "errorContainer",
+    "onErrorContainer",
+    "background",
+    "onBackground",
+    "surface",
+    "onSurface",
+    "surfaceVariant",
+    "onSurfaceVariant",
+    "outline",
+    "outlineVariant",
+    "scrim",
+    "inverseSurface",
+    "inverseOnSurface",
+    "inversePrimary",
   ];
 
-  if (!requiredColorKeys.every((key) => isHexColor(colorScheme[key]))) return false;
+  if (!requiredColorKeys.every((key) => isHexColor(colorScheme[key])))
+    return false;
 
   if (!isRecord(theme.effects) || !isRecord(theme.typography)) return true;
 
   if (isRecord(theme.effects.metallic)) {
     const metallic = theme.effects.metallic;
     if (
-      typeof metallic.enabled !== 'boolean' ||
-      typeof metallic.intensity !== 'number' ||
+      typeof metallic.enabled !== "boolean" ||
+      typeof metallic.intensity !== "number" ||
       !METALLIC_VARIANTS.has(String(metallic.variant)) ||
       !isRecord(metallic.gradient) ||
       !isHexColor(metallic.gradient.base) ||
       !isHexColor(metallic.gradient.highlight) ||
       !isHexColor(metallic.gradient.shadow) ||
       !isHexColor(metallic.gradient.shimmer)
-    ) return false;
+    )
+      return false;
   }
 
   return true;

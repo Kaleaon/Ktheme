@@ -1,12 +1,15 @@
 #!/usr/bin/env node
 
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { validateComponentCatalog } from '../dist/cli/validator.js';
-import { extractComposeComponents, extractBlenderPanels } from '../dist/cli/extract.js';
-import { pushComponents } from '../dist/cli/push.js';
-import { pullTokens } from '../dist/cli/pull.js';
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { validateComponentCatalog } from "../dist/cli/validator.js";
+import {
+  extractComposeComponents,
+  extractBlenderPanels,
+} from "../dist/cli/extract.js";
+import { pushComponents } from "../dist/cli/push.js";
+import { pullTokens } from "../dist/cli/pull.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,7 +26,7 @@ function getArgValue(flag) {
 }
 
 async function main() {
-  if (!command || command === '--help' || command === '-h') {
+  if (!command || command === "--help" || command === "-h") {
     console.log(`
 @ktheme/cli - Ktheme Component Catalog & Token Sync CLI
 
@@ -36,11 +39,13 @@ Usage:
     process.exit(0);
   }
 
-  if (command === 'validate') {
-    const schemaPath = getArgValue('--schema');
-    const inputPath = args.find(a => !a.startsWith('-') && a !== 'validate');
+  if (command === "validate") {
+    const schemaPath = getArgValue("--schema");
+    const inputPath = args.find((a) => !a.startsWith("-") && a !== "validate");
     if (!inputPath) {
-      console.error('Error: Catalog JSON path or directory is required for validate.');
+      console.error(
+        "Error: Catalog JSON path or directory is required for validate.",
+      );
       process.exit(1);
     }
     const fullPath = path.resolve(inputPath);
@@ -52,21 +57,21 @@ Usage:
     let data;
     const stat = fs.statSync(fullPath);
     if (stat.isDirectory()) {
-      const files = fs.readdirSync(fullPath).filter(f => f.endsWith('.json'));
+      const files = fs.readdirSync(fullPath).filter((f) => f.endsWith(".json"));
       data = [];
       for (const f of files) {
-        data.push(JSON.parse(fs.readFileSync(path.join(fullPath, f), 'utf-8')));
+        data.push(JSON.parse(fs.readFileSync(path.join(fullPath, f), "utf-8")));
       }
     } else {
-      data = JSON.parse(fs.readFileSync(fullPath, 'utf-8'));
+      data = JSON.parse(fs.readFileSync(fullPath, "utf-8"));
     }
 
     const result = validateComponentCatalog(data, schemaPath);
     if (result.valid) {
-      console.log('✓ Catalog schema validation PASSED.');
+      console.log("✓ Catalog schema validation PASSED.");
       process.exit(0);
     } else {
-      console.error('✗ Catalog schema validation FAILED:');
+      console.error("✗ Catalog schema validation FAILED:");
       for (const err of result.errors) {
         console.error(`  - ${err}`);
       }
@@ -74,13 +79,13 @@ Usage:
     }
   }
 
-  if (command === 'extract') {
-    const framework = getArgValue('--framework') || 'compose';
-    const src = getArgValue('--src');
-    const outDir = getArgValue('--out') || '.';
+  if (command === "extract") {
+    const framework = getArgValue("--framework") || "compose";
+    const src = getArgValue("--src");
+    const outDir = getArgValue("--out") || ".";
 
     if (!src) {
-      console.error('Error: --src path is required for extract.');
+      console.error("Error: --src path is required for extract.");
       process.exit(1);
     }
 
@@ -88,24 +93,30 @@ Usage:
       fs.mkdirSync(outDir, { recursive: true });
     }
 
-    if (framework === 'compose') {
+    if (framework === "compose") {
       const items = extractComposeComponents(src);
-      const outFile = path.join(outDir, 'compose-components-catalog.json');
-      fs.writeFileSync(outFile, JSON.stringify(items, null, 2), 'utf-8');
-      console.log(`✓ Extracted ${items.length} Compose components to ${outFile}`);
-    } else if (framework === 'blender') {
+      const outFile = path.join(outDir, "compose-components-catalog.json");
+      fs.writeFileSync(outFile, JSON.stringify(items, null, 2), "utf-8");
+      console.log(
+        `✓ Extracted ${items.length} Compose components to ${outFile}`,
+      );
+    } else if (framework === "blender") {
       const items = extractBlenderPanels(src, outDir);
-      console.log(`✓ Extracted ${items.length} Blender panels to catalog in ${outDir}`);
+      console.log(
+        `✓ Extracted ${items.length} Blender panels to catalog in ${outDir}`,
+      );
     } else {
-      console.error(`Error: Unsupported framework "${framework}". Use "compose" or "blender".`);
+      console.error(
+        `Error: Unsupported framework "${framework}". Use "compose" or "blender".`,
+      );
       process.exit(1);
     }
     process.exit(0);
   }
 
-  if (command === 'push') {
-    const input = getArgValue('--input') || getArgValue('-i') || '.';
-    const endpoint = getArgValue('--endpoint');
+  if (command === "push") {
+    const input = getArgValue("--input") || getArgValue("-i") || ".";
+    const endpoint = getArgValue("--endpoint");
     const result = await pushComponents({ input, endpoint });
     if (result.success) {
       console.log(`✓ ${result.message}`);
@@ -116,11 +127,11 @@ Usage:
     }
   }
 
-  if (command === 'pull') {
-    const endpoint = getArgValue('--endpoint');
-    const themeId = getArgValue('--theme-id');
-    const outKotlin = getArgValue('--out-kotlin');
-    const outCss = getArgValue('--out-css');
+  if (command === "pull") {
+    const endpoint = getArgValue("--endpoint");
+    const themeId = getArgValue("--theme-id");
+    const outKotlin = getArgValue("--out-kotlin");
+    const outCss = getArgValue("--out-css");
 
     const result = await pullTokens({ endpoint, themeId, outKotlin, outCss });
     console.log(`✓ ${result.message}`);
@@ -131,7 +142,7 @@ Usage:
   process.exit(1);
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error(err);
   process.exit(1);
 });

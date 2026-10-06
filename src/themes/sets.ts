@@ -2,7 +2,7 @@
  * Curated theme sets for quick discovery and onboarding.
  */
 
-import { Theme } from '../core/types';
+import { Theme } from "../core/types";
 import {
   AuroraGlassNightTheme,
   BurgundyRoseGoldTheme,
@@ -25,8 +25,8 @@ import {
   SolarpunkCivicTheme,
   SlateCyanTheme,
   SlateGunmetalTheme,
-  WindowsPhoneMetroTheme
-} from './presets';
+  WindowsPhoneMetroTheme,
+} from "./presets";
 
 /**
  * A named group of themes designed for a specific style or use-case.
@@ -40,76 +40,87 @@ export interface ThemeSet {
 
 export const ThemeSets: Record<string, ThemeSet> = {
   starter: {
-    id: 'starter',
-    name: 'Starter Collection',
-    description: 'Balanced themes for first-time adopters of Ktheme.',
-    themes: [NavyGoldTheme, SlateCyanTheme, PaperInkTheme]
+    id: "starter",
+    name: "Starter Collection",
+    description: "Balanced themes for first-time adopters of Ktheme.",
+    themes: [NavyGoldTheme, SlateCyanTheme, PaperInkTheme],
   },
   metallicShowcase: {
-    id: 'metallic-showcase',
-    name: 'Metallic Showcase',
-    description: 'Best themes for metallic gradients and premium UI accents.',
+    id: "metallic-showcase",
+    name: "Metallic Showcase",
+    description: "Best themes for metallic gradients and premium UI accents.",
     themes: [
       NavyGoldTheme,
       EmeraldSilverTheme,
       RoseGoldTheme,
       RoyalBronzeTheme,
-      DeepPurplePlatinumTheme
-    ]
+      DeepPurplePlatinumTheme,
+    ],
   },
   executiveDark: {
-    id: 'executive-dark',
-    name: 'Executive Dark',
-    description: 'High-contrast dark themes for dashboards and enterprise tools.',
+    id: "executive-dark",
+    name: "Executive Dark",
+    description:
+      "High-contrast dark themes for dashboards and enterprise tools.",
     themes: [
       ObsidianCrimsonTheme,
       CharcoalChampagneTheme,
       SlateGunmetalTheme,
-      MidnightAmberTheme
-    ]
+      MidnightAmberTheme,
+    ],
   },
   creativeStudio: {
-    id: 'creative-studio',
-    name: 'Creative Studio',
-    description: 'Expressive palettes for branding, creative tooling, and media apps.',
+    id: "creative-studio",
+    name: "Creative Studio",
+    description:
+      "Expressive palettes for branding, creative tooling, and media apps.",
     themes: [
       BurgundyRoseGoldTheme,
       RoyalSilverTheme,
       ForestCopperTheme,
       RoseGoldTheme,
-      FrutigerAeroTheme
-    ]
+      FrutigerAeroTheme,
+    ],
   },
   readability: {
-    id: 'readability',
-    name: 'Readability First',
-    description: 'Themes optimized for long-form reading and low-fatigue interfaces.',
-    themes: [PaperInkTheme, CharcoalChampagneTheme, SlateCyanTheme]
+    id: "readability",
+    name: "Readability First",
+    description:
+      "Themes optimized for long-form reading and low-fatigue interfaces.",
+    themes: [PaperInkTheme, CharcoalChampagneTheme, SlateCyanTheme],
   },
   iconicInterfaces: {
-    id: 'iconic-interfaces',
-    name: 'Iconic Interfaces',
-    description: 'Distinctive UI languages for sci-fi dashboards and tile-first products.',
-    themes: [LCARSTheme, WindowsPhoneMetroTheme, RoyalSilverTheme]
+    id: "iconic-interfaces",
+    name: "Iconic Interfaces",
+    description:
+      "Distinctive UI languages for sci-fi dashboards and tile-first products.",
+    themes: [LCARSTheme, WindowsPhoneMetroTheme, RoyalSilverTheme],
   },
   nextWave: {
-    id: 'next-wave',
-    name: 'Next Wave Concepts',
-    description: 'Forward-looking presets focused on product intent and clear visual governance rules.',
+    id: "next-wave",
+    name: "Next Wave Concepts",
+    description:
+      "Forward-looking presets focused on product intent and clear visual governance rules.",
     themes: [
       SolarpunkCivicTheme,
       NeoNoirNeonTheme,
       CalmClinicalTheme,
       InkTerminalModernTheme,
-      AuroraGlassNightTheme
-    ]
+      AuroraGlassNightTheme,
+    ],
   },
   iconicActivation: {
-    id: 'iconic-activation',
-    name: 'Iconic Activation',
-    description: 'Activation-ready iconic presets spanning Metro, LCARS, Art Nouveau, and Art Deco directions.',
-    themes: [WindowsPhoneMetroTheme, LCARSTheme, FrutigerAeroTheme, NeoNoirNeonTheme]
-  }
+    id: "iconic-activation",
+    name: "Iconic Activation",
+    description:
+      "Activation-ready iconic presets spanning Metro, LCARS, Art Nouveau, and Art Deco directions.",
+    themes: [
+      WindowsPhoneMetroTheme,
+      LCARSTheme,
+      FrutigerAeroTheme,
+      NeoNoirNeonTheme,
+    ],
+  },
 };
 
 /**
@@ -123,5 +134,5 @@ export function getThemeSets(): ThemeSet[] {
  * Retrieve a theme set by either map key or set id.
  */
 export function getThemeSet(id: string): ThemeSet | undefined {
-  return Object.values(ThemeSets).find(set => set.id === id) ?? ThemeSets[id];
+  return Object.values(ThemeSets).find((set) => set.id === id) ?? ThemeSets[id];
 }

@@ -1,9 +1,9 @@
-import { Theme } from '../../core/types';
-import { TypographyVarsExport, WebExporterOptions } from './types';
+import { Theme } from "../../core/types";
+import { TypographyVarsExport, WebExporterOptions } from "./types";
 
 export function exportTypographyVars(
   theme: Theme,
-  options?: WebExporterOptions
+  options?: WebExporterOptions,
 ): TypographyVarsExport {
   if (options?.includeTypography === false) {
     return { vars: {}, tailwind: {} };
@@ -11,7 +11,8 @@ export function exportTypographyVars(
 
   const vars: Record<string, string> = {};
 
-  const fontFamily = theme.typography?.fontFamily ?? 'system-ui, -apple-system, sans-serif';
+  const fontFamily =
+    theme.typography?.fontFamily ?? "system-ui, -apple-system, sans-serif";
   const smallSize = theme.typography?.fontSize?.small ?? 12;
   const mediumSize = theme.typography?.fontSize?.medium ?? 14;
   const largeSize = theme.typography?.fontSize?.large ?? 18;
@@ -25,44 +26,44 @@ export function exportTypographyVars(
   const lineHeight = theme.typography?.lineHeight ?? 1.5;
   const letterSpacing = theme.typography?.letterSpacing ?? 0;
 
-  vars['--ktheme-font-family'] = fontFamily;
-  vars['--ktheme-font-size-small'] = `${smallSize}px`;
-  vars['--ktheme-font-size-medium'] = `${mediumSize}px`;
-  vars['--ktheme-font-size-large'] = `${largeSize}px`;
-  vars['--ktheme-font-size-xlarge'] = `${xlargeSize}px`;
+  vars["--ktheme-font-family"] = fontFamily;
+  vars["--ktheme-font-size-small"] = `${smallSize}px`;
+  vars["--ktheme-font-size-medium"] = `${mediumSize}px`;
+  vars["--ktheme-font-size-large"] = `${largeSize}px`;
+  vars["--ktheme-font-size-xlarge"] = `${xlargeSize}px`;
 
-  vars['--ktheme-font-weight-light'] = String(lightWeight);
-  vars['--ktheme-font-weight-regular'] = String(regularWeight);
-  vars['--ktheme-font-weight-medium'] = String(mediumWeight);
-  vars['--ktheme-font-weight-bold'] = String(boldWeight);
+  vars["--ktheme-font-weight-light"] = String(lightWeight);
+  vars["--ktheme-font-weight-regular"] = String(regularWeight);
+  vars["--ktheme-font-weight-medium"] = String(mediumWeight);
+  vars["--ktheme-font-weight-bold"] = String(boldWeight);
 
-  vars['--ktheme-line-height'] = String(lineHeight);
-  vars['--ktheme-letter-spacing'] = `${letterSpacing}em`;
+  vars["--ktheme-line-height"] = String(lineHeight);
+  vars["--ktheme-letter-spacing"] = `${letterSpacing}em`;
 
   return {
     vars,
     tailwind: {
       fontFamily: {
-        primary: [fontFamily]
+        primary: [fontFamily],
       },
       fontSize: {
         small: `${smallSize}px`,
         medium: `${mediumSize}px`,
         large: `${largeSize}px`,
-        xlarge: `${xlargeSize}px`
+        xlarge: `${xlargeSize}px`,
       },
       fontWeight: {
         light: String(lightWeight),
         regular: String(regularWeight),
         medium: String(mediumWeight),
-        bold: String(boldWeight)
+        bold: String(boldWeight),
       },
       lineHeight: {
-        normal: String(lineHeight)
+        normal: String(lineHeight),
       },
       letterSpacing: {
-        normal: `${letterSpacing}em`
-      }
-    }
+        normal: `${letterSpacing}em`,
+      },
+    },
   };
 }

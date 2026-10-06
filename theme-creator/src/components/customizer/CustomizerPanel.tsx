@@ -1,8 +1,8 @@
-import { MetadataEditor } from './MetadataEditor.tsx';
-import { ColorEditor } from './ColorEditor.tsx';
-import { EffectsEditor } from './EffectsEditor.tsx';
-import { TypographyEditor } from './TypographyEditor.tsx';
-import { ExportImport } from './ExportImport.tsx';
+import { MetadataEditor } from "./MetadataEditor.tsx";
+import { ColorEditor } from "./ColorEditor.tsx";
+import { EffectsEditor } from "./EffectsEditor.tsx";
+import { TypographyEditor } from "./TypographyEditor.tsx";
+import { ExportImport } from "./ExportImport.tsx";
 
 export function CustomizerPanel() {
   return (
