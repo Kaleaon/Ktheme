@@ -32,7 +32,7 @@ public struct MetallicButton: View {
     }
 
     public var body: some View {
-        let r = theme.adaptation?.layout.cornerStyle.radius ?? 12
+        let r = theme.adaptation?.layout?.cornerStyle.radius ?? 12
         Button(action: action) {
             Text(title)
                 .font(.system(size: 16, weight: .semibold))

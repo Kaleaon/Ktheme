@@ -10,6 +10,7 @@ export interface TailwindConfigExport {
       boxShadow?: Record<string, string>;
       backgroundImage?: Record<string, string>;
       backdropBlur?: Record<string, string>;
+      animation?: Record<string, string>;
       fontFamily?: Record<string, string | string[]>;
       fontSize?: Record<string, string>;
       fontWeight?: Record<string, string>;

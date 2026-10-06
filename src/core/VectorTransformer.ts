@@ -1,5 +1,5 @@
-import { IconAdaptation, IconToken, Theme, VectorPath } from "./types";
-import { toHexColor } from "../exporters/utils";
+import { Color, IconAdaptation, IconToken, Theme, VectorPath } from './types';
+import { toHexColor } from '../exporters/utils';
 
 export interface VectorIRPath {
   d: string;
@@ -83,13 +83,9 @@ export class VectorTransformer {
       rawPaths = VectorTransformer.parseSvgPaths(token.svg);
     }
 
-    const irPaths: VectorIRPath[] = rawPaths.map((p) => {
-      let fill = p.fill
-        ? VectorTransformer.resolveColor(p.fill, token.colorBindings, theme)
-        : undefined;
-      const stroke = p.stroke
-        ? VectorTransformer.resolveColor(p.stroke, token.colorBindings, theme)
-        : undefined;
+    const irPaths: VectorIRPath[] = rawPaths.map(p => {
+      let fill = p.fill ? VectorTransformer.resolveColor(p.fill, token.colorBindings, theme) : undefined;
+      const stroke = p.stroke ? VectorTransformer.resolveColor(p.stroke, token.colorBindings, theme) : undefined;
 
       // Default fill to primary or onSurface if neither fill nor stroke is set
       if (!fill && !stroke) {
@@ -209,7 +205,7 @@ export class VectorTransformer {
     resolvedRole = resolvedRole.replace(/^theme\.colorScheme\./, "");
 
     if (theme && theme.colorScheme) {
-      const cs = theme.colorScheme as unknown as Record<string, unknown>;
+      const cs = theme.colorScheme as unknown as Record<string, Color>;
       if (cs[resolvedRole] !== undefined) {
         return toHexColor(cs[resolvedRole] as Parameters<typeof toHexColor>[0]);
       }
