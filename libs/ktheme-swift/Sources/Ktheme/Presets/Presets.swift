@@ -27,7 +27,7 @@ public enum Presets {
         if let cached = cache[id] { return cached }
         guard let url = Bundle.module.url(
             forResource: id, withExtension: "json", subdirectory: "themes"
-        ) else { preconditionFailure("Preset '\(id)' not bundled.") }
+        ) ?? Bundle.module.url(forResource: id, withExtension: "json") else { preconditionFailure("Preset '\(id)' not bundled.") }
         do {
             let data = try Data(contentsOf: url)
             let theme = try ThemeParser.decode(data)

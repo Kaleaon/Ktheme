@@ -705,8 +705,8 @@ describe('exporter parity & IR pipeline', () => {
 
   describe('web exporters options and sub-modules', () => {
     it('exports all domains by default for toCssVars and toTailwindConfig', () => {
-      const cssVars = toCssVars(fixtureTheme);
-      const tailwind = toTailwindConfig(fixtureTheme);
+      const cssVars = toCssVars(fixtureTheme, {});
+      const tailwind = toTailwindConfig(fixtureTheme, {});
 
       // CSS Vars checks
       expect(cssVars.vars['--ktheme-primary']).toBe('#111111');
@@ -720,7 +720,7 @@ describe('exporter parity & IR pipeline', () => {
       // Tailwind checks
       expect(tailwind.theme.extend.colors.primary).toBe('#111111');
       expect(tailwind.theme.extend.colors['metallic-base']).toBeDefined();
-      expect(tailwind.theme.extend.fontFamily?.primary).toEqual(['Inter, sans-serif']);
+      expect(tailwind.theme.extend.fontFamily?.primary).toEqual('Inter, sans-serif');
       expect(tailwind.theme.extend.borderRadius?.small).toBe('6px');
     });
 
