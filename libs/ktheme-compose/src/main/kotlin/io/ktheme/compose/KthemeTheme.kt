@@ -19,10 +19,12 @@
 
 package io.ktheme.compose
 
+import android.animation.ValueAnimator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -35,16 +37,24 @@ import io.ktheme.presets.Presets
 public val LocalKtheme: androidx.compose.runtime.ProvidableCompositionLocal<Theme> =
     staticCompositionLocalOf { error("No KthemeTheme provided. Wrap your UI in KthemeTheme { … }.") }
 
+/** Composition local to check if reduced motion is enabled across theme components. */
+public val LocalReduceMotion: androidx.compose.runtime.ProvidableCompositionLocal<Boolean> =
+    compositionLocalOf { !ValueAnimator.areAnimatorsEnabled() }
+
 @Composable
 public fun KthemeTheme(
     theme: Theme,
+    reduceMotion: Boolean = !ValueAnimator.areAnimatorsEnabled(),
     content: @Composable () -> Unit,
 ) {
     val colorScheme = theme.toComposeColorScheme()
     val shapes = theme.toComposeShapes()
     val typography = theme.toComposeTypography()
 
-    CompositionLocalProvider(LocalKtheme provides theme) {
+    CompositionLocalProvider(
+        LocalKtheme provides theme,
+        LocalReduceMotion provides reduceMotion,
+    ) {
         MaterialTheme(
             colorScheme = colorScheme,
             shapes = shapes,
@@ -58,9 +68,10 @@ public fun KthemeTheme(
 @Composable
 public fun KthemeTheme(
     presetId: String,
+    reduceMotion: Boolean = !ValueAnimator.areAnimatorsEnabled(),
     content: @Composable () -> Unit,
 ) {
-    KthemeTheme(theme = Presets.load(presetId), content = content)
+    KthemeTheme(theme = Presets.load(presetId), reduceMotion = reduceMotion, content = content)
 }
 
 private fun Theme.toComposeTypography(): Typography {
