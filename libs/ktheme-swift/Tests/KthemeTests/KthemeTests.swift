@@ -2,16 +2,15 @@ import XCTest
 @testable import Ktheme
 
 final class KthemeTests: XCTestCase {
-    func testEngineInitializationAndActiveThemeSwitching() throws {
-        MainActor.assumeIsolated {
-            let engine = ThemeEngine.makeDefault(activeId: "navy-gold")
-            XCTAssertEqual(engine.activeId, "navy-gold")
-            XCTAssertEqual(engine.active.metadata.id, "navy-gold")
+    @MainActor
+    func testEngineInitializationAndActiveThemeSwitching() async throws {
+        let engine = ThemeEngine.makeDefault(activeId: "navy-gold")
+        XCTAssertEqual(engine.activeId, "navy-gold")
+        XCTAssertEqual(engine.active.metadata.id, "navy-gold")
 
-            engine.setActive("charcoal-champagne")
-            XCTAssertEqual(engine.activeId, "charcoal-champagne")
-            XCTAssertEqual(engine.active.metadata.id, "charcoal-champagne")
-        }
+        engine.setActive("charcoal-champagne")
+        XCTAssertEqual(engine.activeId, "charcoal-champagne")
+        XCTAssertEqual(engine.active.metadata.id, "charcoal-champagne")
     }
 
     func testPresetsLoading() throws {

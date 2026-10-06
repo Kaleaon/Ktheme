@@ -24,6 +24,6 @@ let package = Package(
             name: "KthemeUI",
             dependencies: ["Ktheme"]
         ),
-        .testTarget(name: "KthemeTests", dependencies: ["Ktheme"]),
+        .testTarget(name: "KthemeTests", dependencies: ["Ktheme", "KthemeUI"]),
     ]
 )
