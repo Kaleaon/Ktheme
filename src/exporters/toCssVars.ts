@@ -13,7 +13,14 @@ export function toCssVars(theme: Theme, options?: CssVarsOptions): CssVarsExport
 
   if (options?.includeEffects === false) {
     for (const key of Object.keys(vars)) {
-      if (key.startsWith('--ktheme-effect-') || key.startsWith('--ktheme-effects-')) {
+      if (
+        key.startsWith('--ktheme-effect-') ||
+        key.startsWith('--ktheme-effects-') ||
+        key.startsWith('--ktheme-glass-') ||
+        key.startsWith('--ktheme-metallic-') ||
+        key.startsWith('--ktheme-glow-') ||
+        key.startsWith('--ktheme-shimmer-')
+      ) {
         delete vars[key];
       }
     }
