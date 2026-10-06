@@ -1,4 +1,4 @@
-import { ColorScheme, IconAdaptation, IconToken, Theme, VectorPath } from './types';
+import { Color, IconAdaptation, IconToken, Theme, VectorPath } from './types';
 import { toHexColor } from '../exporters/utils';
 
 export interface VectorIRPath {
@@ -71,7 +71,7 @@ export class VectorTransformer {
 
     const irPaths: VectorIRPath[] = rawPaths.map(p => {
       let fill = p.fill ? VectorTransformer.resolveColor(p.fill, token.colorBindings, theme) : undefined;
-      let stroke = p.stroke ? VectorTransformer.resolveColor(p.stroke, token.colorBindings, theme) : undefined;
+      const stroke = p.stroke ? VectorTransformer.resolveColor(p.stroke, token.colorBindings, theme) : undefined;
 
       // Default fill to primary or onSurface if neither fill nor stroke is set
       if (!fill && !stroke) {
@@ -160,9 +160,9 @@ export class VectorTransformer {
   /**
    * Resolves color references / bindings to explicit Hex colors using Theme ColorScheme
    */
-  static resolveColor(colorVal: any, bindings?: Record<string, string>, theme?: Theme): string {
+  static resolveColor(colorVal: unknown, bindings?: Record<string, string>, theme?: Theme): string {
     if (typeof colorVal !== 'string') {
-      return toHexColor(colorVal);
+      return toHexColor(colorVal as Color);
     }
 
     if (colorVal === 'none' || colorVal === 'transparent') {
@@ -179,12 +179,12 @@ export class VectorTransformer {
     resolvedRole = resolvedRole.replace(/^theme\.colorScheme\./, '');
 
     if (theme && theme.colorScheme) {
-      const cs = theme.colorScheme as any;
+      const cs = theme.colorScheme as unknown as Record<string, Color>;
       if (cs[resolvedRole] !== undefined) {
         return toHexColor(cs[resolvedRole]);
       }
-      if (cs.semanticRoles && cs.semanticRoles[resolvedRole] !== undefined) {
-        return toHexColor(cs.semanticRoles[resolvedRole]);
+      if (cs.semanticRoles && (cs.semanticRoles as unknown as Record<string, Color>)[resolvedRole] !== undefined) {
+        return toHexColor((cs.semanticRoles as unknown as Record<string, Color>)[resolvedRole]);
       }
     }
 

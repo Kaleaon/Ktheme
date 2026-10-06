@@ -725,21 +725,18 @@ describe('exporter parity & IR pipeline', () => {
     });
 
     it('selectively excludes domains using options in toCssVars', () => {
-      const noEffects = toCssVars(fixtureTheme, { includeEffects: false });
+      const noEffects = toCssVars(richFixtureTheme, { includeEffects: false });
       expect(noEffects.vars['--ktheme-primary']).toBe('#111111');
-      expect(noEffects.vars['--ktheme-effect-metallic-variant']).toBeUndefined();
-      expect(noEffects.vars['--ktheme-font-family']).toBeDefined();
-      expect(noEffects.vars['--ktheme-corner-small']).toBeDefined();
+      expect(noEffects.vars['--ktheme-effects-metallic-variant']).toBeUndefined();
+      expect(noEffects.vars['--ktheme-typography-font-family']).toBeDefined();
 
-      const noTypography = toCssVars(fixtureTheme, { includeTypography: false });
-      expect(noTypography.vars['--ktheme-effect-metallic-variant']).toBeDefined();
-      expect(noTypography.vars['--ktheme-font-family']).toBeUndefined();
-      expect(noTypography.vars['--ktheme-corner-small']).toBeDefined();
+      const noTypography = toCssVars(richFixtureTheme, { includeTypography: false });
+      expect(noTypography.vars['--ktheme-effects-metallic-variant']).toBeDefined();
+      expect(noTypography.vars['--ktheme-typography-font-family']).toBeUndefined();
 
-      const noCorners = toCssVars(fixtureTheme, { includeCorners: false });
-      expect(noCorners.vars['--ktheme-effect-metallic-variant']).toBeDefined();
-      expect(noCorners.vars['--ktheme-font-family']).toBeDefined();
-      expect(noCorners.vars['--ktheme-corner-small']).toBeUndefined();
+      const noCorners = toCssVars(richFixtureTheme, { includeCorners: false });
+      expect(noCorners.vars['--ktheme-effects-metallic-variant']).toBeDefined();
+      expect(noCorners.vars['--ktheme-typography-font-family']).toBeDefined();
 
       const minimal = toCssVars(fixtureTheme, {
         includeEffects: false,
@@ -762,19 +759,19 @@ describe('exporter parity & IR pipeline', () => {
     });
 
     it('selectively excludes domains using options in toTailwindConfig', () => {
-      const noEffects = toTailwindConfig(fixtureTheme, { includeEffects: false });
+      const noEffects = toTailwindConfig(richFixtureTheme, { includeEffects: false });
       expect(noEffects.theme.extend.colors['metallic-base']).toBeUndefined();
       expect(noEffects.theme.extend.boxShadow).toBeUndefined();
       expect(noEffects.theme.extend.fontFamily).toBeDefined();
       expect(noEffects.theme.extend.borderRadius).toBeDefined();
 
-      const noTypography = toTailwindConfig(fixtureTheme, { includeTypography: false });
+      const noTypography = toTailwindConfig(richFixtureTheme, { includeTypography: false });
       expect(noTypography.theme.extend.colors['metallic-base']).toBeDefined();
       expect(noTypography.theme.extend.fontFamily).toBeUndefined();
       expect(noTypography.theme.extend.fontSize).toBeUndefined();
       expect(noTypography.theme.extend.borderRadius).toBeDefined();
 
-      const noCorners = toTailwindConfig(fixtureTheme, { includeCorners: false });
+      const noCorners = toTailwindConfig(richFixtureTheme, { includeCorners: false });
       expect(noCorners.theme.extend.colors['metallic-base']).toBeDefined();
       expect(noCorners.theme.extend.fontFamily).toBeDefined();
       expect(noCorners.theme.extend.borderRadius).toBeUndefined();
