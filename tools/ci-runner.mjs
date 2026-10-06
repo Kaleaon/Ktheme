@@ -280,7 +280,6 @@ async function getPlaywrightBrowser() {
 
   let executablePath = possiblePaths.find((p) => fs.existsSync(p));
 
-  const playwright = await import('playwright');
   const launchOpts = {
     headless: true,
     args: [

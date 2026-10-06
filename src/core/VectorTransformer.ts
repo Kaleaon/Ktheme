@@ -192,8 +192,6 @@ export class VectorTransformer {
     theme?: Theme,
   ): string {
     if (typeof colorVal !== "string") {
-  static resolveColor(colorVal: unknown, bindings?: Record<string, string>, theme?: Theme): string {
-    if (typeof colorVal !== 'string') {
       return toHexColor(colorVal as Parameters<typeof toHexColor>[0]);
     }
 
@@ -213,20 +211,13 @@ export class VectorTransformer {
     if (theme && theme.colorScheme) {
       const cs = theme.colorScheme as unknown as Record<string, unknown>;
       if (cs[resolvedRole] !== undefined) {
-        return toHexColor(cs[resolvedRole]);
+        return toHexColor(cs[resolvedRole] as Parameters<typeof toHexColor>[0]);
       }
       const semanticRoles = cs.semanticRoles as
         | Record<string, unknown>
         | undefined;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const cs = theme.colorScheme as Record<string, any>;
-      if (cs[resolvedRole] !== undefined) {
-        return toHexColor(cs[resolvedRole]);
-      }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const semanticRoles = cs.semanticRoles as Record<string, any> | undefined;
       if (semanticRoles && semanticRoles[resolvedRole] !== undefined) {
-        return toHexColor(semanticRoles[resolvedRole]);
+        return toHexColor(semanticRoles[resolvedRole] as Parameters<typeof toHexColor>[0]);
       }
     }
 
