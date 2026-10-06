@@ -59,9 +59,10 @@ jobs:
       - name: Cache SwiftPM Packages
         uses: actions/cache@v4
         with:
-          path: libs/ktheme-swift/.build
-          key: ${{ runner.os }}-spm-${{ hashFiles('libs/ktheme-swift/Package.swift', 'libs/ktheme-swift/Package.resolved') }}
+          path: ~/Library/Caches/org.swift.swiftpm
+          key: ${{ runner.os }}-spm-${{ hashFiles('libs/ktheme-swift/Package.swift') }}-${{ github.sha }}
           restore-keys: |
+            ${{ runner.os }}-spm-${{ hashFiles('libs/ktheme-swift/Package.swift') }}-
             ${{ runner.os }}-spm-
 
       - name: Run Swift Package Tests
