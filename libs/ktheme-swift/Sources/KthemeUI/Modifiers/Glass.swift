@@ -4,6 +4,7 @@
 // .ultraThinMaterial backdrop. Falls back to a solid translucent
 // fill on platforms / states where Material isn't available.
 
+#if canImport(SwiftUI)
 import SwiftUI
 import Ktheme
 
@@ -38,3 +39,4 @@ private struct GlassModifier: ViewModifier {
             .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
     }
 }
+#endif

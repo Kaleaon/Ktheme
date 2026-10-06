@@ -4,6 +4,7 @@
 // metallic gradient + shimmer modifiers pre-wired, plus a tappable
 // hit area meeting Apple's 44pt minimum.
 
+#if canImport(SwiftUI)
 import SwiftUI
 import Ktheme
 
@@ -47,3 +48,4 @@ public struct MetallicButton: View {
         .clipShape(RoundedRectangle(cornerRadius: r, style: .continuous))
     }
 }
+#endif

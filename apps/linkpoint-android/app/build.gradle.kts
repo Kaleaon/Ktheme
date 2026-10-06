@@ -70,6 +70,10 @@ dependencies {
 
     implementation(libs.datastore.preferences)
 
+    // Testing
+    testImplementation("junit:junit:4.13.2")
+    testImplementation(kotlin("test"))
+
     // The whole point.
     implementation(libs.ktheme.core)
     implementation(libs.ktheme.compose)

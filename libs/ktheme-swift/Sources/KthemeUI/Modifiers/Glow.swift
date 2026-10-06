@@ -4,6 +4,7 @@
 // increasing radii — matching the engine's CSS technique
 // (0 0 10·I 5·I color + 0 0 15·I color inset).
 
+#if canImport(SwiftUI)
 import SwiftUI
 import Ktheme
 
@@ -36,3 +37,4 @@ private struct GlowModifier: ViewModifier {
             .shadow(color: c.opacity(i * 0.3), radius: base * 1.6)
     }
 }
+#endif

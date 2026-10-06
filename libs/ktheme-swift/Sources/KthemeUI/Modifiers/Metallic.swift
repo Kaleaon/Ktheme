@@ -5,6 +5,7 @@
 // as the receiver's background. Reads variant + intensity from the
 // surrounding theme by default.
 
+#if canImport(SwiftUI)
 import SwiftUI
 import Ktheme
 
@@ -86,3 +87,4 @@ private extension Color {
         ).opacity(1) // placeholder — see note in README about platform color math
     }
 }
+#endif
