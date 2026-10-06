@@ -1,6 +1,13 @@
-import { Color, MetallicVariant, Theme } from "../core/types";
+import { Color, DesktopAdaptation, MetallicVariant, Theme } from "../core/types";
 import { getMetallicGradient } from "../effects/metallic";
 import { normalizeColor, rgbToHex } from "../utils/colors";
+import {
+  NormalizedAdaptationTokens,
+  NormalizedColorTokens,
+  NormalizedEffectsTokens,
+  NormalizedLayoutTokens,
+  NormalizedTypographyTokens,
+} from "./ir/tokenIR";
 
 export function toHexColor(color: Color): string {
   if (typeof color === "string") {
@@ -10,31 +17,156 @@ export function toHexColor(color: Color): string {
   return rgbToHex(normalizeColor(color)).toUpperCase();
 }
 
-export function normalizeSemanticRoles(theme: Theme): {
+export interface NormalizedSemanticRoles {
   success: string;
+  onSuccess: string;
   warning: string;
+  onWarning: string;
   info: string;
+  onInfo: string;
   critical: string;
-} {
-  const roles = theme.colorScheme.semanticRoles;
+  onCritical: string;
+}
+
+export function normalizeSemanticRoles(theme: Theme): NormalizedSemanticRoles {
+  const cs = theme.colorScheme;
+  const roles = cs?.semanticRoles;
+
+  const secondary = toHexColor(cs?.secondary ?? "#666666");
+  const onSecondary = toHexColor(cs?.onSecondary ?? "#FFFFFF");
+  const tertiary = toHexColor(cs?.tertiary ?? "#888888");
+  const onTertiary = toHexColor(cs?.onTertiary ?? "#FFFFFF");
+  const primary = toHexColor(cs?.primary ?? "#000000");
+  const onPrimary = toHexColor(cs?.onPrimary ?? "#FFFFFF");
+  const primaryContainer = toHexColor(cs?.primaryContainer ?? primary);
+  const onPrimaryContainer = toHexColor(cs?.onPrimaryContainer ?? onPrimary);
+  const error = toHexColor(cs?.error ?? "#D32F2F");
+  const onError = toHexColor(cs?.onError ?? "#FFFFFF");
 
   return {
-    success: toHexColor(roles?.success ?? theme.colorScheme.secondary),
-    warning: toHexColor(roles?.warning ?? theme.colorScheme.tertiary),
-    info: toHexColor(roles?.info ?? theme.colorScheme.primaryContainer),
-    critical: toHexColor(roles?.critical ?? theme.colorScheme.error),
+    success: roles?.success ? toHexColor(roles.success) : secondary,
+    onSuccess: roles?.onSuccess ? toHexColor(roles.onSuccess) : onSecondary,
+    warning: roles?.warning ? toHexColor(roles.warning) : tertiary,
+    onWarning: roles?.onWarning ? toHexColor(roles.onWarning) : onTertiary,
+    info: roles?.info ? toHexColor(roles.info) : primaryContainer,
+    onInfo: roles?.onInfo ? toHexColor(roles.onInfo) : onPrimaryContainer,
+    critical: roles?.critical ? toHexColor(roles.critical) : error,
+    onCritical: roles?.onCritical ? toHexColor(roles.onCritical) : onError,
   };
 }
 
-export interface NormalizedTypography {
-  fontFamily: string;
-  fontSize: { small: number; medium: number; large: number; xlarge: number };
-  fontWeight: { light: number; regular: number; medium: number; bold: number };
-  lineHeight: number;
-  letterSpacing: number;
+export function normalizeColorTokens(theme: Theme): NormalizedColorTokens {
+  const cs = theme.colorScheme;
+
+  const primary = toHexColor(cs?.primary ?? "#000000");
+  const onPrimary = toHexColor(cs?.onPrimary ?? "#FFFFFF");
+  const primaryContainer = toHexColor(cs?.primaryContainer ?? primary);
+  const onPrimaryContainer = toHexColor(cs?.onPrimaryContainer ?? onPrimary);
+
+  const secondary = toHexColor(cs?.secondary ?? "#666666");
+  const onSecondary = toHexColor(cs?.onSecondary ?? "#FFFFFF");
+  const secondaryContainer = toHexColor(cs?.secondaryContainer ?? secondary);
+  const onSecondaryContainer = toHexColor(
+    cs?.onSecondaryContainer ?? onSecondary,
+  );
+
+  const tertiary = toHexColor(cs?.tertiary ?? "#888888");
+  const onTertiary = toHexColor(cs?.onTertiary ?? "#FFFFFF");
+  const tertiaryContainer = toHexColor(cs?.tertiaryContainer ?? tertiary);
+  const onTertiaryContainer = toHexColor(cs?.onTertiaryContainer ?? onTertiary);
+
+  const error = toHexColor(cs?.error ?? "#D32F2F");
+  const onError = toHexColor(cs?.onError ?? "#FFFFFF");
+  const errorContainer = toHexColor(cs?.errorContainer ?? error);
+  const onErrorContainer = toHexColor(cs?.onErrorContainer ?? onError);
+
+  const background = toHexColor(cs?.background ?? "#121212");
+  const onBackground = toHexColor(cs?.onBackground ?? "#FFFFFF");
+  const surface = toHexColor(cs?.surface ?? "#1E1E1E");
+  const onSurface = toHexColor(cs?.onSurface ?? "#FFFFFF");
+  const surfaceVariant = toHexColor(cs?.surfaceVariant ?? surface);
+  const onSurfaceVariant = toHexColor(cs?.onSurfaceVariant ?? onSurface);
+
+  const outline = toHexColor(cs?.outline ?? "#777777");
+  const outlineVariant = toHexColor(cs?.outlineVariant ?? outline);
+
+  const scrim = toHexColor(cs?.scrim ?? "#000000");
+  const inverseSurface = toHexColor(cs?.inverseSurface ?? onSurface);
+  const inverseOnSurface = toHexColor(cs?.inverseOnSurface ?? surface);
+  const inversePrimary = toHexColor(cs?.inversePrimary ?? primary);
+
+  const semantic = normalizeSemanticRoles(theme);
+
+  return {
+    primary,
+    onPrimary,
+    primaryContainer,
+    onPrimaryContainer,
+    secondary,
+    onSecondary,
+    secondaryContainer,
+    onSecondaryContainer,
+    tertiary,
+    onTertiary,
+    tertiaryContainer,
+    onTertiaryContainer,
+    error,
+    onError,
+    errorContainer,
+    onErrorContainer,
+    background,
+    onBackground,
+    surface,
+    onSurface,
+    surfaceVariant,
+    onSurfaceVariant,
+    outline,
+    outlineVariant,
+    scrim,
+    inverseSurface,
+    inverseOnSurface,
+    inversePrimary,
+    semantic,
+  };
 }
 
-export function normalizeTypography(theme: Theme): NormalizedTypography {
+export interface NormalizedCorners {
+  small: number;
+  medium: number;
+  large: number;
+  xlarge: number;
+}
+
+export function normalizeCorners(theme: Theme): NormalizedCorners {
+  const corners = theme.tokens?.corners;
+  return {
+    small: corners?.small ?? 4,
+    medium: corners?.medium ?? 8,
+    large: corners?.large ?? 12,
+    xlarge: corners?.xlarge ?? 16,
+  };
+}
+
+export function normalizeLayout(theme: Theme): NormalizedLayoutTokens {
+  const layoutAdaptation = theme.adaptation?.layout;
+  return {
+    density: layoutAdaptation?.density ?? "comfortable",
+    cornerStyle: layoutAdaptation?.cornerStyle ?? "rounded",
+    spacingScale: layoutAdaptation?.spacingScale ?? 1.0,
+    breakpoints: {
+      compact: layoutAdaptation?.breakpoints?.compact ?? 600,
+      medium: layoutAdaptation?.breakpoints?.medium ?? 840,
+      expanded: layoutAdaptation?.breakpoints?.expanded ?? 1200,
+    },
+    corners: normalizeCorners(theme),
+    panelStyle: layoutAdaptation?.panelStyle ?? "flat",
+    navigationStyle: layoutAdaptation?.navigationStyle ?? "tabs",
+  };
+}
+
+export type NormalizedTypography = NormalizedTypographyTokens;
+
+export function normalizeTypography(theme: Theme): NormalizedTypographyTokens {
   const typo = theme.typography;
   return {
     fontFamily: typo?.fontFamily ?? "system-ui, -apple-system, sans-serif",
@@ -55,97 +187,6 @@ export function normalizeTypography(theme: Theme): NormalizedTypography {
   };
 }
 
-export function normalizeEffects(theme: Theme): Record<string, unknown> {
-  const eff = theme.effects || {};
-  const result: Record<string, unknown> = {};
-
-  if (eff.metallic) {
-    result.metallic = {
-      enabled: eff.metallic.enabled,
-      variant: eff.metallic.variant,
-      intensity: eff.metallic.intensity,
-      gradient: {
-        base: toHexColor(eff.metallic.gradient.base),
-        highlight: toHexColor(eff.metallic.gradient.highlight),
-        shadow: toHexColor(eff.metallic.gradient.shadow),
-        shimmer: toHexColor(eff.metallic.gradient.shimmer),
-      },
-    };
-  } else {
-    result.metallic = { enabled: false };
-  }
-
-  if (eff.shadows) {
-    result.shadows = {
-      enabled: eff.shadows.enabled,
-      elevation: eff.shadows.elevation,
-      blur: eff.shadows.blur,
-      color: toHexColor(eff.shadows.color),
-    };
-  } else {
-    result.shadows = { enabled: false };
-  }
-
-  if (eff.shimmer) {
-    result.shimmer = {
-      enabled: eff.shimmer.enabled,
-      speed: eff.shimmer.speed,
-      intensity: eff.shimmer.intensity,
-      angle: eff.shimmer.angle,
-    };
-  } else {
-    result.shimmer = { enabled: false };
-  }
-
-  if (eff.blur) {
-    result.blur = {
-      enabled: eff.blur.enabled,
-      radius: eff.blur.radius,
-    };
-  } else {
-    result.blur = { enabled: false };
-  }
-
-  if (eff.focusRing) {
-    result.focusRing = {
-      enabled: eff.focusRing.enabled,
-      color: toHexColor(eff.focusRing.color),
-      width: eff.focusRing.width,
-      offset: eff.focusRing.offset,
-    };
-  } else {
-    result.focusRing = { enabled: false };
-  }
-
-  return result;
-}
-
-export function normalizeAdaptation(theme: Theme): Record<string, unknown> {
-  const adapt = theme.adaptation || {};
-  const result: Record<string, unknown> = {
-    layout: {
-      density: adapt.layout?.density ?? "comfortable",
-      cornerStyle: adapt.layout?.cornerStyle ?? "rounded",
-      spacingScale: adapt.layout?.spacingScale ?? 1.0,
-      panelStyle: adapt.layout?.panelStyle ?? "elevated",
-      navigationStyle: adapt.layout?.navigationStyle ?? "tabs",
-    },
-    icons: {
-      family: adapt.icons?.family ?? "material",
-      style: adapt.icons?.style ?? "outlined",
-      sizeScale: adapt.icons?.sizeScale ?? 1.0,
-      strokeWidth: adapt.icons?.strokeWidth ?? 2,
-      cornerStyle: adapt.icons?.cornerStyle ?? "rounded",
-    },
-  };
-
-  if (adapt.desktopAdaptation) {
-    result.desktopAdaptation = adapt.desktopAdaptation;
-  }
-
-  return result;
-}
-
 export interface NormalizedBlur {
   enabled: boolean;
   radius: number;
@@ -155,39 +196,54 @@ export function normalizeBlur(theme: Theme): NormalizedBlur {
   const blur = theme.effects?.blur;
   return {
     enabled: blur?.enabled ?? false,
-    radius: blur?.radius ?? 0,
+    radius: blur?.radius ?? 8,
   };
 }
 
 export interface NormalizedMetallic {
   enabled: boolean;
-  variant: string;
+  variant: MetallicVariant | string;
   intensity: number;
-  base: string;
-  highlight: string;
-  shadow: string;
-  shimmer: string;
+  gradient: {
+    base: string;
+    highlight: string;
+    shadow: string;
+    shimmer: string;
+  };
 }
 
 export function normalizeMetallic(theme: Theme): NormalizedMetallic {
   const metallic = theme.effects?.metallic;
-  const defaultVariant = MetallicVariant.SILVER;
-  const defaultGradient = getMetallicGradient(defaultVariant);
-
-  const variant = metallic?.variant ?? defaultVariant;
-  const gradient =
-    metallic?.gradient ??
+  const variant = metallic?.variant ?? MetallicVariant.SILVER;
+  const defaultGradient =
     getMetallicGradient(variant as MetallicVariant) ??
-    defaultGradient;
+    getMetallicGradient(MetallicVariant.SILVER) ?? {
+      base: "#C0C0C0",
+      highlight: "#FFFFFF",
+      shadow: "#808080",
+      shimmer: "#E0E0E0",
+    };
+
+  const gradientInput = metallic?.gradient;
 
   return {
     enabled: metallic?.enabled ?? false,
-    variant: String(variant),
-    intensity: metallic?.intensity ?? 0,
-    base: toHexColor(gradient.base),
-    highlight: toHexColor(gradient.highlight),
-    shadow: toHexColor(gradient.shadow),
-    shimmer: toHexColor(gradient.shimmer),
+    variant,
+    intensity: metallic?.intensity ?? 0.5,
+    gradient: {
+      base: gradientInput?.base
+        ? toHexColor(gradientInput.base)
+        : toHexColor(defaultGradient.base),
+      highlight: gradientInput?.highlight
+        ? toHexColor(gradientInput.highlight)
+        : toHexColor(defaultGradient.highlight),
+      shadow: gradientInput?.shadow
+        ? toHexColor(gradientInput.shadow)
+        : toHexColor(defaultGradient.shadow),
+      shimmer: gradientInput?.shimmer
+        ? toHexColor(gradientInput.shimmer)
+        : toHexColor(defaultGradient.shimmer),
+    },
   };
 }
 
@@ -202,9 +258,9 @@ export function normalizeShadows(theme: Theme): NormalizedShadows {
   const shadows = theme.effects?.shadows;
   return {
     enabled: shadows?.enabled ?? false,
-    elevation: shadows?.elevation ?? 0,
-    blur: shadows?.blur ?? 0,
-    color: toHexColor(shadows?.color ?? "#000000"),
+    elevation: shadows?.elevation ?? 2,
+    blur: shadows?.blur ?? 4,
+    color: shadows?.color ? toHexColor(shadows.color) : "#000000",
   };
 }
 
@@ -219,25 +275,88 @@ export function normalizeShimmer(theme: Theme): NormalizedShimmer {
   const shimmer = theme.effects?.shimmer;
   return {
     enabled: shimmer?.enabled ?? false,
-    speed: shimmer?.speed ?? 0,
-    intensity: shimmer?.intensity ?? 0,
-    angle: shimmer?.angle ?? 0,
+    speed: shimmer?.speed ?? 2000,
+    intensity: shimmer?.intensity ?? 0.5,
+    angle: shimmer?.angle ?? 45,
   };
 }
 
-export interface NormalizedCorners {
-  small: number;
-  medium: number;
-  large: number;
-  xlarge: number;
+export interface NormalizedAnimations {
+  enabled: boolean;
+  duration: number;
+  easing: "linear" | "ease" | "ease-in" | "ease-out" | "ease-in-out";
 }
 
-export function normalizeCorners(theme: Theme): NormalizedCorners {
-  const corners = theme.tokens?.corners;
+export function normalizeAnimations(theme: Theme): NormalizedAnimations {
+  const anim = theme.effects?.animations;
   return {
-    small: corners?.small ?? 4,
-    medium: corners?.medium ?? 8,
-    large: corners?.large ?? 12,
-    xlarge: corners?.xlarge ?? 16,
+    enabled: anim?.enabled ?? true,
+    duration: anim?.duration ?? 300,
+    easing: anim?.easing ?? "ease-in-out",
+  };
+}
+
+export interface NormalizedFocusRing {
+  enabled: boolean;
+  color: string;
+  width: number;
+  offset: number;
+}
+
+export function normalizeFocusRing(
+  theme: Theme,
+  defaultColor?: string,
+): NormalizedFocusRing {
+  const focusRing = theme.effects?.focusRing;
+  const primaryColor = theme.colorScheme?.primary
+    ? toHexColor(theme.colorScheme.primary)
+    : "#000000";
+  return {
+    enabled: focusRing?.enabled ?? true,
+    color: focusRing?.color
+      ? toHexColor(focusRing.color)
+      : defaultColor ?? primaryColor,
+    width: focusRing?.width ?? 2,
+    offset: focusRing?.offset ?? 2,
+  };
+}
+
+export function normalizeEffects(theme: Theme): NormalizedEffectsTokens {
+  return {
+    metallic: normalizeMetallic(theme),
+    shadows: normalizeShadows(theme),
+    shimmer: normalizeShimmer(theme),
+    blur: normalizeBlur(theme),
+    animations: normalizeAnimations(theme),
+    focusRing: normalizeFocusRing(theme),
+  };
+}
+
+export function normalizeAdaptation(theme: Theme): NormalizedAdaptationTokens {
+  const adapt = theme.adaptation || {};
+  const density = adapt.layout?.density ?? "comfortable";
+  const cornerStyle = adapt.layout?.cornerStyle ?? "rounded";
+  const spacingScale = adapt.layout?.spacingScale ?? 1.0;
+  const panelStyle = adapt.layout?.panelStyle ?? "flat";
+  const navigationStyle = adapt.layout?.navigationStyle ?? "tabs";
+
+  return {
+    layout: {
+      density,
+      cornerStyle,
+      spacingScale,
+      panelStyle,
+      navigationStyle,
+    },
+    icons: {
+      family: adapt.icons?.family ?? "material",
+      style: adapt.icons?.style ?? "outlined",
+      sizeScale: adapt.icons?.sizeScale ?? 1.0,
+      strokeWidth: adapt.icons?.strokeWidth ?? 2,
+      cornerStyle: adapt.icons?.cornerStyle ?? "rounded",
+    },
+    ...(adapt.desktopAdaptation
+      ? { desktopAdaptation: adapt.desktopAdaptation }
+      : {}),
   };
 }

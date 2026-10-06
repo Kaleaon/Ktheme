@@ -15,7 +15,6 @@ Ktheme is **not a single product UI** — it's a _theming substrate_ that other 
 - **Preset catalog:** `src/themes/presets.ts`, `themes/examples/*.json` (24 JSON files)
 
 <!-- GENERATED_PRESET_LIST_START -->
-
 Ktheme includes **26 preset themes** defined in the shared catalog:
 
 1. **Navy Gold** (navy-gold) — Category: cleverferret core; Status: stable
