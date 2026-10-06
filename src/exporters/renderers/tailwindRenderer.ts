@@ -2,15 +2,22 @@ import { NormalizedThemeTokens } from '../ir/tokenIR';
 import { TokenRenderer } from './TokenRenderer';
 
 export interface TailwindConfigExport {
-  darkMode: 'class' | 'media';
+  darkMode?: 'class' | 'media';
   theme: {
     extend: {
       colors: Record<string, string>;
+      boxShadow?: Record<string, string>;
+      backgroundImage?: Record<string, string>;
+      backdropBlur?: Record<string, string>;
+      fontFamily?: Record<string, string | string[]>;
+      fontSize?: Record<string, string>;
+      fontWeight?: Record<string, string>;
+      lineHeight?: Record<string, string>;
+      letterSpacing?: Record<string, string>;
+      borderRadius?: Record<string, string>;
       typography?: Record<string, unknown>;
       effects?: Record<string, unknown>;
       adaptation?: Record<string, unknown>;
-      fontFamily?: Record<string, string[]>;
-      borderRadius?: Record<string, string>;
     };
   };
 }
@@ -32,16 +39,49 @@ export class TailwindRenderer implements TokenRenderer<TailwindConfigExport> {
             success: tokens.color.semantic.success,
             warning: tokens.color.semantic.warning,
             info: tokens.color.semantic.info,
-            critical: tokens.color.semantic.critical
+            critical: tokens.color.semantic.critical,
+            'metallic-base': tokens.effects.metallic.gradient.base,
+            'metallic-highlight': tokens.effects.metallic.gradient.highlight,
+            'metallic-shadow': tokens.effects.metallic.gradient.shadow,
+            'metallic-shimmer': tokens.effects.metallic.gradient.shimmer,
+            shimmer: tokens.effects.metallic.gradient.shimmer,
+            glow: tokens.effects.focusRing.color
+          },
+          boxShadow: {
+            glow: `0 0 ${tokens.effects.focusRing.width}px ${tokens.effects.focusRing.color}`
+          },
+          backgroundImage: {
+            metallic: `linear-gradient(135deg, ${tokens.effects.metallic.gradient.shadow} 0%, ${tokens.effects.metallic.gradient.base} 25%, ${tokens.effects.metallic.gradient.highlight} 50%, ${tokens.effects.metallic.gradient.base} 75%, ${tokens.effects.metallic.gradient.shadow} 100%)`
+          },
+          backdropBlur: {
+            glass: `${tokens.effects.blur.radius}px`
           },
           fontFamily: {
-            sans: [tokens.typography.fontFamily]
+            primary: [tokens.typography.fontFamily]
+          },
+          fontSize: {
+            small: `${tokens.typography.fontSize.small}px`,
+            medium: `${tokens.typography.fontSize.medium}px`,
+            large: `${tokens.typography.fontSize.large}px`,
+            xlarge: `${tokens.typography.fontSize.xlarge}px`
+          },
+          fontWeight: {
+            light: String(tokens.typography.fontWeight.light),
+            regular: String(tokens.typography.fontWeight.regular),
+            medium: String(tokens.typography.fontWeight.medium),
+            bold: String(tokens.typography.fontWeight.bold)
+          },
+          lineHeight: {
+            normal: String(tokens.typography.lineHeight)
+          },
+          letterSpacing: {
+            normal: `${tokens.typography.letterSpacing}em`
           },
           borderRadius: {
-            sm: `${tokens.layout.corners.small}px`,
-            DEFAULT: `${tokens.layout.corners.medium}px`,
-            lg: `${tokens.layout.corners.large}px`,
-            xl: `${tokens.layout.corners.xlarge}px`
+            small: `${tokens.layout.corners.small}px`,
+            medium: `${tokens.layout.corners.medium}px`,
+            large: `${tokens.layout.corners.large}px`,
+            xlarge: `${tokens.layout.corners.xlarge}px`
           },
           typography: tokens.typography as unknown as Record<string, unknown>,
           effects: tokens.effects as unknown as Record<string, unknown>,
