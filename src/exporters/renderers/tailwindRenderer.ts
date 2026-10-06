@@ -81,7 +81,7 @@ export class TailwindRenderer implements TokenRenderer<TailwindConfigExport> {
     if (resolvedOptions.includeTypography) {
       extend.fontFamily = {
         sans: tokens.typography.fontFamily,
-        primary: tokens.typography.fontFamily === 'Inter, sans-serif' ? ['Inter, sans-serif'] : tokens.typography.fontFamily
+        primary: tokens.typography.fontFamily
       };
       extend.fontSize = {
         small: `${tokens.typography.fontSize.small}px`,
