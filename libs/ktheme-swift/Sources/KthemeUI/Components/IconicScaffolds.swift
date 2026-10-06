@@ -58,10 +58,10 @@ private struct LeftRoundedRectangle: Shape {
         path.move(to: CGPoint(x: rect.maxX, y: rect.minY))
         path.addLine(to: CGPoint(x: rect.minX + r, y: rect.minY))
         path.addArc(center: CGPoint(x: rect.minX + r, y: rect.minY + r),
-                    radius: r, startAngle: .degrees(-90), endAngle: .degrees(180), clockwise: true)
+                    radius: r, startAngle: .degrees(-90), endAngle: .degrees(180), clockwise: false)
         path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY - r))
         path.addArc(center: CGPoint(x: rect.minX + r, y: rect.maxY - r),
-                    radius: r, startAngle: .degrees(180), endAngle: .degrees(90), clockwise: true)
+                    radius: r, startAngle: .degrees(180), endAngle: .degrees(90), clockwise: false)
         path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
         path.closeSubpath()
         return path

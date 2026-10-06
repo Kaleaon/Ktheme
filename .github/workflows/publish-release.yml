@@ -12,6 +12,8 @@ jobs:
     permissions:
       contents: read
       packages: write
+      id-token: write
+      attestations: write
 
     steps:
       - name: Checkout Repository
@@ -22,12 +24,14 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+          cache: gradle
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           registry-url: 'https://registry.npmjs.org'
+          cache: npm
 
       - name: Install Node Dependencies
         run: npm ci
@@ -48,3 +52,25 @@ jobs:
           npm pack
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Compute Cryptographic SHA-256 Checksums
+        run: |
+          mkdir -p dist/checksums
+          find . ~/.m2/repository -maxdepth 10 \( -name "*.tgz" -o -name "*.jar" -o -name "*.aar" -o -name "*.pom" \) -type f | while read -r artifact; do
+            if [ -f "$artifact" ]; then
+              sha256sum "$artifact" > "${artifact}.sha256"
+              filename=$(basename "$artifact")
+              sha256sum "$artifact" | awk -v name="$filename" '{print $1 "  " name}' >> dist/checksums/SHA256SUMS.txt
+            fi
+          done
+          echo "Generated SHA-256 Checksums:"
+          cat dist/checksums/SHA256SUMS.txt
+
+      - name: Attest SLSA Build Provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: |
+            *.tgz
+            libs/*/build/libs/*.jar
+            libs/*/build/libs/*.aar
+            dist/checksums/*.txt

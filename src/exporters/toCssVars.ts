@@ -4,7 +4,6 @@ import { extractThemeTokens } from './ir/extractIR';
 import { cssVarsRenderer, CssVarsExport } from './renderers/cssVarsRenderer';
 import { exportEffectVars, exportTypographyVars, exportCornerVars, WebExporterOptions } from './web';
 import { CssVarsOptions } from './web/types';
-import { WebExporterOptions } from './web/types';
 
 export type { CssVarsExport, CssVarsOptions };
 
@@ -39,12 +38,19 @@ export function toCssVars(theme: Theme, options?: WebExporterOptions): CssVarsEx
     Object.assign(vars, exportCornerVars(theme, options).vars);
 export function toCssVars(theme: Theme, options?: CssVarsOptions): CssVarsExport {
   const ir = extractThemeTokens(theme);
-  const base = cssVarsRenderer.render(ir);
+  const base = cssVarsRenderer.render(ir, options);
   const vars: Record<string, string> = { ...base.vars };
 
   if (options?.includeEffects === false) {
     for (const key of Object.keys(vars)) {
-      if (key.startsWith('--ktheme-effect-') || key.startsWith('--ktheme-effects-')) {
+      if (
+        key.startsWith('--ktheme-effect-') ||
+        key.startsWith('--ktheme-effects-') ||
+        key.startsWith('--ktheme-glass-') ||
+        key.startsWith('--ktheme-metallic-') ||
+        key.startsWith('--ktheme-glow-') ||
+        key.startsWith('--ktheme-shimmer-')
+      ) {
         delete vars[key];
       }
     }
