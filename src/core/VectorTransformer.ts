@@ -21,7 +21,35 @@ export interface VectorIRNode {
   paths: VectorIRPath[];
 }
 
+// Top-level regular expression constants
+const SCRIPT_REGEX = /<script[\s\S]*?>[\s\S]*?<\/script>/gi;
+const FOREIGN_OBJECT_REGEX = /<foreignObject[\s\S]*?>[\s\S]*?<\/foreignObject>/gi;
+const IMAGE_REGEX = /<image[\s\S]*?>/gi;
+const ON_EVENT_QUOTED_REGEX = /\s+on[a-z]+\s*=\s*(['"]).*?\1/gi;
+const ON_EVENT_UNQUOTED_REGEX = /\s+on[a-z]+\s*=\s*[^\s>]+/gi;
+const JAVASCRIPT_URL_REGEX = /(href|xlink:href)\s*=\s*(['"])javascript:.*?\2/gi;
+
+const PATH_REGEX = /<path[^>]*\sd\s*=\s*(['"])(.*?)\1[^>]*\/?>/gi;
+const FILL_ATTR_REGEX = /fill\s*=\s*(['"])(.*?)\1/i;
+const STROKE_ATTR_REGEX = /stroke\s*=\s*(['"])(.*?)\1/i;
+const STROKE_WIDTH_ATTR_REGEX = /stroke-width\s*=\s*(['"])(.*?)\1/i;
+const RECT_REGEX = /<rect[^>]*\sx\s*=\s*(['"])(.*?)\1[^>]*\sy\s*=\s*(['"])(.*?)\1[^>]*\swidth\s*=\s*(['"])(.*?)\1[^>]*\sheight\s*=\s*(['"])(.*?)\1[^>]*\/?>/gi;
+const CIRCLE_REGEX = /<circle[^>]*\scx\s*=\s*(['"])(.*?)\1[^>]*\scy\s*=\s*(['"])(.*?)\1[^>]*\sr\s*=\s*(['"])(.*?)\1[^>]*\/?>/gi;
+
+const THEME_PREFIX_REGEX = /^theme\.colorScheme\./;
+
+// Bounded LRU cache for SVG parsing results (500 capacity)
+const SVG_PATH_CACHE_CAPACITY = 500;
+const svgPathCache = new Map<string, VectorPath[]>();
+
 export class VectorTransformer {
+  /**
+   * Resets the memoized SVG path cache. Useful for test suites and memory cleanup.
+   */
+  static clearCache(): void {
+    svgPathCache.clear();
+  }
+
   /**
    * Sanitizes an SVG string to remove unsafe elements and attributes:
    * script tags, inline event handlers (on*), external image references (<image>, <foreignObject>),
@@ -29,23 +57,18 @@ export class VectorTransformer {
    */
   static sanitizeSvg(svg: string): string {
     let sanitized = svg;
-    // Remove <script>...</script>
-    sanitized = sanitized.replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "");
-    // Remove <foreignObject>...</foreignObject>
-    sanitized = sanitized.replace(
-      /<foreignObject[\s\S]*?>[\s\S]*?<\/foreignObject>/gi,
-      "",
-    );
-    // Remove <image ... />
-    sanitized = sanitized.replace(/<image[\s\S]*?>/gi, "");
-    // Remove inline event handlers (on*)
-    sanitized = sanitized.replace(/\s+on[a-z]+\s*=\s*(['"]).*?\1/gi, "");
-    sanitized = sanitized.replace(/\s+on[a-z]+\s*=\s*[^\s>]+/gi, "");
-    // Remove javascript: URLs in href/xlink:href
-    sanitized = sanitized.replace(
-      /(href|xlink:href)\s*=\s*(['"])javascript:.*?\2/gi,
-      "",
-    );
+    SCRIPT_REGEX.lastIndex = 0;
+    sanitized = sanitized.replace(SCRIPT_REGEX, "");
+    FOREIGN_OBJECT_REGEX.lastIndex = 0;
+    sanitized = sanitized.replace(FOREIGN_OBJECT_REGEX, "");
+    IMAGE_REGEX.lastIndex = 0;
+    sanitized = sanitized.replace(IMAGE_REGEX, "");
+    ON_EVENT_QUOTED_REGEX.lastIndex = 0;
+    sanitized = sanitized.replace(ON_EVENT_QUOTED_REGEX, "");
+    ON_EVENT_UNQUOTED_REGEX.lastIndex = 0;
+    sanitized = sanitized.replace(ON_EVENT_UNQUOTED_REGEX, "");
+    JAVASCRIPT_URL_REGEX.lastIndex = 0;
+    sanitized = sanitized.replace(JAVASCRIPT_URL_REGEX, "");
     return sanitized;
   }
 
@@ -122,24 +145,31 @@ export class VectorTransformer {
   }
 
   /**
-   * Helper to parse SVG path elements from a raw SVG string
+   * Helper to parse SVG path elements from a raw SVG string.
+   * Memoized via a bounded 500-entry LRU cache. Returns a shallow clone of path elements.
    */
   static parseSvgPaths(svgString: string): VectorPath[] {
+    const cached = svgPathCache.get(svgString);
+    if (cached) {
+      // Move key to end to mark as most recently used
+      svgPathCache.delete(svgString);
+      svgPathCache.set(svgString, cached);
+      return cached.map(p => ({ ...p }));
+    }
+
     const cleanSvg = VectorTransformer.sanitizeSvg(svgString);
     const paths: VectorPath[] = [];
 
     // Match path d="..."
-    const pathRegex = /<path[^>]*\sd\s*=\s*(['"])(.*?)\1[^>]*\/?>/gi;
+    PATH_REGEX.lastIndex = 0;
     let match: RegExpExecArray | null;
-    while ((match = pathRegex.exec(cleanSvg)) !== null) {
+    while ((match = PATH_REGEX.exec(cleanSvg)) !== null) {
       const fullElement = match[0];
       const d = match[2];
 
-      const fillMatch = /fill\s*=\s*(['"])(.*?)\1/i.exec(fullElement);
-      const strokeMatch = /stroke\s*=\s*(['"])(.*?)\1/i.exec(fullElement);
-      const strokeWidthMatch = /stroke-width\s*=\s*(['"])(.*?)\1/i.exec(
-        fullElement,
-      );
+      const fillMatch = FILL_ATTR_REGEX.exec(fullElement);
+      const strokeMatch = STROKE_ATTR_REGEX.exec(fullElement);
+      const strokeWidthMatch = STROKE_WIDTH_ATTR_REGEX.exec(fullElement);
 
       paths.push({
         d,
@@ -152,9 +182,8 @@ export class VectorTransformer {
     }
 
     // Match rect x="..." y="..." width="..." height="..."
-    const rectRegex =
-      /<rect[^>]*\sx\s*=\s*(['"])(.*?)\1[^>]*\sy\s*=\s*(['"])(.*?)\1[^>]*\swidth\s*=\s*(['"])(.*?)\1[^>]*\sheight\s*=\s*(['"])(.*?)\1[^>]*\/?>/gi;
-    while ((match = rectRegex.exec(cleanSvg)) !== null) {
+    RECT_REGEX.lastIndex = 0;
+    while ((match = RECT_REGEX.exec(cleanSvg)) !== null) {
       const x = parseFloat(match[2]);
       const y = parseFloat(match[4]);
       const w = parseFloat(match[6]);
@@ -164,9 +193,8 @@ export class VectorTransformer {
     }
 
     // Match circle cx="..." cy="..." r="..."
-    const circleRegex =
-      /<circle[^>]*\scx\s*=\s*(['"])(.*?)\1[^>]*\scy\s*=\s*(['"])(.*?)\1[^>]*\sr\s*=\s*(['"])(.*?)\1[^>]*\/?>/gi;
-    while ((match = circleRegex.exec(cleanSvg)) !== null) {
+    CIRCLE_REGEX.lastIndex = 0;
+    while ((match = CIRCLE_REGEX.exec(cleanSvg)) !== null) {
       const cx = parseFloat(match[2]);
       const cy = parseFloat(match[4]);
       const r = parseFloat(match[6]);
@@ -176,7 +204,16 @@ export class VectorTransformer {
       paths.push({ d });
     }
 
-    return paths;
+    // Evict oldest entry if capacity reached
+    if (svgPathCache.size >= SVG_PATH_CACHE_CAPACITY) {
+      const oldestKey = svgPathCache.keys().next().value;
+      if (oldestKey !== undefined) {
+        svgPathCache.delete(oldestKey);
+      }
+    }
+    svgPathCache.set(svgString, paths);
+
+    return paths.map(p => ({ ...p }));
   }
 
   /**
@@ -202,14 +239,15 @@ export class VectorTransformer {
     }
 
     // Strip theme prefix if present (e.g. "theme.colorScheme.primary" -> "primary")
-    resolvedRole = resolvedRole.replace(/^theme\.colorScheme\./, "");
+    resolvedRole = resolvedRole.replace(THEME_PREFIX_REGEX, "");
 
     if (theme && theme.colorScheme) {
       const cs = theme.colorScheme as unknown as Record<string, Color>;
       if (cs[resolvedRole] !== undefined) {
         return toHexColor(cs[resolvedRole] as Parameters<typeof toHexColor>[0]);
       }
-      const semanticRoles = cs.semanticRoles as unknown as
+      const rawColorScheme = theme.colorScheme as unknown as Record<string, unknown>;
+      const semanticRoles = rawColorScheme.semanticRoles as unknown as
         | Record<string, unknown>
         | undefined;
       if (semanticRoles && semanticRoles[resolvedRole] !== undefined) {
