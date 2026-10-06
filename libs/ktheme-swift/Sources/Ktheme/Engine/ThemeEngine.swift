@@ -5,6 +5,7 @@
 // io.ktheme.engine.ThemeEngine.
 
 import Foundation
+#if canImport(Combine)
 import Combine
 
 @MainActor
@@ -53,3 +54,48 @@ public final class ThemeEngine: ObservableObject {
     public func get(_ id: String) -> Theme? { registry[id] }
     public var all: [Theme] { Array(registry.values) }
 }
+#else
+@MainActor
+public final class ThemeEngine {
+
+    public private(set) var registry: [String: Theme] = [:]
+    public private(set) var activeId: String
+    public private(set) var active: Theme
+
+    public init(themes: [Theme], activeId: String) {
+        var map: [String: Theme] = [:]
+        for t in themes { map[t.metadata.id] = t }
+        guard let t = map[activeId] else {
+            preconditionFailure("Active id '\(activeId)' not in registry")
+        }
+        self.registry = map
+        self.activeId = activeId
+        self.active = t
+    }
+
+    public static func makeDefault(activeId: String = "navy-gold") -> ThemeEngine {
+        ThemeEngine(themes: Presets.all(), activeId: activeId)
+    }
+
+    public func register(_ theme: Theme) {
+        registry[theme.metadata.id] = theme
+        if theme.metadata.id == activeId { active = theme }
+    }
+
+    public func registerAll(_ themes: [Theme]) {
+        for t in themes { registry[t.metadata.id] = t }
+        if let t = registry[activeId] { active = t }
+    }
+
+    public func setActive(_ id: String) {
+        guard let t = registry[id] else {
+            preconditionFailure("Theme '\(id)' is not registered. Known: \(registry.keys.sorted())")
+        }
+        activeId = id
+        active = t
+    }
+
+    public func get(_ id: String) -> Theme? { registry[id] }
+    public var all: [Theme] { Array(registry.values) }
+}
+#endif

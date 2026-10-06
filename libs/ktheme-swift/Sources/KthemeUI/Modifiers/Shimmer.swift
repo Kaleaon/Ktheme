@@ -4,6 +4,7 @@
 // receiver. Honors `reduceMotion` accessibility — disabled when the
 // user has Reduce Motion on.
 
+#if canImport(SwiftUI)
 import SwiftUI
 import Ktheme
 
@@ -70,3 +71,4 @@ private struct ShimmerOverlay: ViewModifier {
         .clipped()
     }
 }
+#endif

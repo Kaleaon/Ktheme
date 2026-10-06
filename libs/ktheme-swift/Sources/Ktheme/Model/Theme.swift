@@ -28,6 +28,16 @@ public struct Theme: Codable, Hashable, Sendable {
         self.typography = typography
         self.adaptation = adaptation
     }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.metadata = try container.decode(ThemeMetadata.self, forKey: .metadata)
+        self.darkMode = try container.decodeIfPresent(Bool.self, forKey: .darkMode) ?? true
+        self.colorScheme = try container.decode(ColorScheme.self, forKey: .colorScheme)
+        self.effects = try container.decodeIfPresent(Effects.self, forKey: .effects) ?? Effects()
+        self.typography = try container.decodeIfPresent(Typography.self, forKey: .typography)
+        self.adaptation = try container.decodeIfPresent(Adaptation.self, forKey: .adaptation)
+    }
 }
 
 public struct ThemeMetadata: Codable, Hashable, Sendable {

@@ -18,6 +18,18 @@ public struct Effects: Codable, Hashable, Sendable {
     public var noise: NoiseEffect?
 
     public init() {}
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.metallic = try container.decodeIfPresent(MetallicEffect.self, forKey: .metallic) ?? MetallicEffect()
+        self.shadows = try container.decodeIfPresent(ShadowEffect.self, forKey: .shadows) ?? ShadowEffect()
+        self.shimmer = try container.decodeIfPresent(ShimmerEffect.self, forKey: .shimmer)
+        self.blur = try container.decodeIfPresent(BlurEffect.self, forKey: .blur)
+        self.overlays = try container.decodeIfPresent(OverlayEffect.self, forKey: .overlays)
+        self.gradients = try container.decodeIfPresent(GradientEffect.self, forKey: .gradients)
+        self.glow = try container.decodeIfPresent(GlowEffect.self, forKey: .glow)
+        self.noise = try container.decodeIfPresent(NoiseEffect.self, forKey: .noise)
+    }
 }
 
 public struct MetallicEffect: Codable, Hashable, Sendable {
@@ -27,6 +39,14 @@ public struct MetallicEffect: Codable, Hashable, Sendable {
     /// 0–1. Multiplied into highlight saturation and shimmer alpha.
     public var intensity: Double = 0
     public init() {}
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.enabled = try container.decodeIfPresent(Bool.self, forKey: .enabled) ?? false
+        self.variant = try container.decodeIfPresent(MetallicVariant.self, forKey: .variant) ?? .silver
+        self.gradient = try container.decodeIfPresent(MetallicGradient.self, forKey: .gradient) ?? .silver
+        self.intensity = try container.decodeIfPresent(Double.self, forKey: .intensity) ?? 0
+    }
 }
 
 public enum MetallicVariant: String, Codable, Hashable, Sendable {
@@ -71,6 +91,14 @@ public struct ShadowEffect: Codable, Hashable, Sendable {
     public var blur: Int = 4
     public var color: String = "#00000044"
     public init() {}
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.enabled = try container.decodeIfPresent(Bool.self, forKey: .enabled) ?? true
+        self.elevation = try container.decodeIfPresent(Int.self, forKey: .elevation) ?? 2
+        self.blur = try container.decodeIfPresent(Int.self, forKey: .blur) ?? 4
+        self.color = try container.decodeIfPresent(String.self, forKey: .color) ?? "#00000044"
+    }
 }
 
 public struct ShimmerEffect: Codable, Hashable, Sendable {

@@ -4,6 +4,7 @@
 // Bake in the iconic-rule geometry so apps can opt into the look
 // without re-deriving it.
 
+#if canImport(SwiftUI)
 import SwiftUI
 import Ktheme
 
@@ -84,3 +85,4 @@ public struct AeroGlassPanel<Content: View>: View {
         content().padding(20).glass(opacity: 0.45)
     }
 }
+#endif
