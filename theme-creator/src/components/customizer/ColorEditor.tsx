@@ -1,6 +1,6 @@
 import { useId } from "react";
-import { useTheme } from "../../state/ThemeContext.tsx";
-import { contrastRatio } from "../../utils/colors.ts";
+import { useTheme } from "../../state/ThemeContext";
+import { contrastRatio } from "../../../../src/utils/colors";
 
 const COLOR_GROUPS = [
   {
