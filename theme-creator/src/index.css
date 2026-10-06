@@ -899,6 +899,31 @@ input[type="range"]::-webkit-slider-thumb {
   margin-bottom: 8px;
 }
 
+.ai-theme-error {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--danger);
+  border-radius: var(--radius-sm);
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--danger);
+  font-size: 12px;
+}
+
+.ai-theme-error-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.ai-theme-error-detail {
+  margin: 0;
+  opacity: 0.9;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
 .ai-input-row {
   display: flex;
   gap: 8px;
