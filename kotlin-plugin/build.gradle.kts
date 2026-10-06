@@ -56,4 +56,14 @@ publishing {
             from(components["java"])
         }
     }
+    repositories {
+        maven {
+            name = "remoteMaven"
+            url = uri(System.getenv("MAVEN_REPO_URL") ?: "https://repo.maven.apache.org/maven2")
+            credentials {
+                username = System.getenv("MAVEN_USERNAME") ?: ""
+                password = System.getenv("MAVEN_PASSWORD") ?: ""
+            }
+        }
+    }
 }

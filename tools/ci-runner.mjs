@@ -280,6 +280,7 @@ async function getPlaywrightBrowser() {
 
   let executablePath = possiblePaths.find((p) => fs.existsSync(p));
 
+  const playwright = await import('playwright');
   const launchOpts = {
     headless: true,
     args: [
@@ -290,11 +291,26 @@ async function getPlaywrightBrowser() {
     ],
   };
 
-  if (executablePath) {
-    launchOpts.executablePath = executablePath;
+  if (process.env.CHROMIUM_PATH && fs.existsSync(process.env.CHROMIUM_PATH)) {
+    return await playwright.chromium.launch({ ...launchOpts, executablePath: process.env.CHROMIUM_PATH });
   }
 
-  return await playwright.chromium.launch(launchOpts);
+  try {
+    return await playwright.chromium.launch(launchOpts);
+  } catch (err) {
+    const possiblePaths = [
+      '/bin/google-chrome',
+      '/usr/bin/google-chrome',
+      '/usr/bin/chromium-browser',
+      '/usr/bin/chromium'
+    ].filter(Boolean);
+
+    let executablePath = possiblePaths.find(p => fs.existsSync(p));
+    if (executablePath) {
+      return await playwright.chromium.launch({ ...launchOpts, executablePath });
+    }
+    throw err;
+  }
 }
 
 // TASK 1: Unit Tests
