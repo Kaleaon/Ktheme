@@ -19,6 +19,7 @@ export function toTailwindConfig(theme: Theme, options?: TailwindConfigOptions):
   let lineHeight: Record<string, string> | undefined = base.theme.extend.lineHeight ? { ...base.theme.extend.lineHeight } : undefined;
   let letterSpacing: Record<string, string> | undefined = base.theme.extend.letterSpacing ? { ...base.theme.extend.letterSpacing } : undefined;
   let borderRadius: Record<string, string> | undefined = base.theme.extend.borderRadius ? { ...base.theme.extend.borderRadius } : undefined;
+  let animation: Record<string, string> | undefined = base.theme.extend.animation ? { ...base.theme.extend.animation } : undefined;
 
   if (options?.includeEffects === false) {
     delete colors['metallic-base'];
@@ -30,6 +31,7 @@ export function toTailwindConfig(theme: Theme, options?: TailwindConfigOptions):
     boxShadow = undefined;
     backgroundImage = undefined;
     backdropBlur = undefined;
+    animation = undefined;
   }
 
   if (options?.includeTypography === false) {
@@ -58,6 +60,7 @@ export function toTailwindConfig(theme: Theme, options?: TailwindConfigOptions):
         ...(lineHeight ? { lineHeight } : {}),
         ...(letterSpacing ? { letterSpacing } : {}),
         ...(borderRadius ? { borderRadius } : {}),
+        ...(animation ? { animation } : {}),
         ...(base.theme.extend.typography ? { typography: base.theme.extend.typography } : {}),
         ...(base.theme.extend.effects ? { effects: base.theme.extend.effects } : {}),
         ...(base.theme.extend.adaptation ? { adaptation: base.theme.extend.adaptation } : {})
