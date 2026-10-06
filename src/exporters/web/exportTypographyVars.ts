@@ -11,7 +11,7 @@ export function exportTypographyVars(
 
   const vars: Record<string, string> = {};
 
-  const fontFamily = theme.typography?.fontFamily ?? 'system-ui, sans-serif';
+  const fontFamily = theme.typography?.fontFamily ?? 'system-ui, -apple-system, sans-serif';
   const smallSize = theme.typography?.fontSize?.small ?? 12;
   const mediumSize = theme.typography?.fontSize?.medium ?? 14;
   const largeSize = theme.typography?.fontSize?.large ?? 18;

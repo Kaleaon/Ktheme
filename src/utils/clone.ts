@@ -7,7 +7,10 @@
  * @returns A deep copy of the theme with isolated references
  */
 export function cloneTheme<T>(obj: T): T {
-  const sc = typeof structuredClone === 'function' ? structuredClone : (globalThis as Record<string, unknown>).structuredClone;
+  const sc =
+    typeof structuredClone === 'function'
+      ? structuredClone
+      : (globalThis as Record<string, unknown>).structuredClone;
   if (typeof sc === 'function') {
     return sc(obj);
   }
