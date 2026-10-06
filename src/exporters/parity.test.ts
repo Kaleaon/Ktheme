@@ -701,6 +701,8 @@ describe('exporter parity & IR pipeline', () => {
     expect(blenderExport.pythonScript).toContain('def register_ktheme_properties():');
     expect(blenderExport.pythonScript).toContain('def unregister_ktheme_properties():');
     expect(blenderExport.pythonScript).toContain('bpy.types.WindowManager.ktheme = bpy.props.PointerProperty(');
+  });
+
   describe('web exporters options and sub-modules', () => {
     it('exports all domains by default for toCssVars and toTailwindConfig', () => {
       const cssVars = toCssVars(fixtureTheme);
@@ -718,7 +720,7 @@ describe('exporter parity & IR pipeline', () => {
       // Tailwind checks
       expect(tailwind.theme.extend.colors.primary).toBe('#111111');
       expect(tailwind.theme.extend.colors['metallic-base']).toBeDefined();
-      expect(tailwind.theme.extend.fontFamily?.primary).toEqual(['Inter, sans-serif']);
+      expect(tailwind.theme.extend.fontFamily?.primary).toBe('Inter, sans-serif');
       expect(tailwind.theme.extend.borderRadius?.small).toBe('6px');
     });
 
