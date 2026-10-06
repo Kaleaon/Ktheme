@@ -15,13 +15,13 @@ This directory contains themes contributed by the Ktheme community.
 
 ### Example Theme Format
 
-**Theme Name**: Your Theme Name  
-**Author**: Your Name  
-**Description**: A brief description of your theme  
-**Tags**: tag1, tag2, tag3  
-**File**: `your-theme-name.json`  
+**Theme Name**: Your Theme Name
+**Author**: Your Name
+**Description**: A brief description of your theme
+**Tags**: tag1, tag2, tag3
+**File**: `your-theme-name.json`
 **Screenshot**: ![Preview](screenshots/your-theme-name.png)
 
 ---
 
-*Be the first to contribute a theme!*
+_Be the first to contribute a theme!_

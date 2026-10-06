@@ -1,4 +1,4 @@
-import { SHARED_PRESETS_DATA } from './data/shared-presets-data';
+import { SHARED_PRESETS_DATA } from "./data/shared-presets-data";
 
 export interface SharedColorScheme {
   primary: string;
@@ -48,16 +48,16 @@ export interface SharedPresetTheme {
     metallic?: {
       enabled: boolean;
       variant:
-        | 'SILVER'
-        | 'GOLD'
-        | 'GOLD_ROYAL_BLUE'
-        | 'BRONZE'
-        | 'COPPER'
-        | 'PLATINUM'
-        | 'ROSE_GOLD'
-        | 'TITANIUM'
-        | 'CHROME'
-        | 'COBALT';
+        | "SILVER"
+        | "GOLD"
+        | "GOLD_ROYAL_BLUE"
+        | "BRONZE"
+        | "COPPER"
+        | "PLATINUM"
+        | "ROSE_GOLD"
+        | "TITANIUM"
+        | "CHROME"
+        | "COBALT";
       gradient: {
         base: string;
         highlight: string;
@@ -98,16 +98,19 @@ export interface SharedPresetTheme {
   };
 }
 
-const SHARED_THEME_CREATED_AT = '2026-02-15T00:00:00.000Z';
-const SHARED_THEME_UPDATED_AT = '2026-02-15T00:00:00.000Z';
+const SHARED_THEME_CREATED_AT = "2026-02-15T00:00:00.000Z";
+const SHARED_THEME_UPDATED_AT = "2026-02-15T00:00:00.000Z";
 
-export const SHARED_PRESET_THEMES: SharedPresetTheme[] = SHARED_PRESETS_DATA.map((themeData) => ({
-  ...themeData,
-  metadata: {
-    ...themeData.metadata,
-    createdAt: SHARED_THEME_CREATED_AT,
-    updatedAt: SHARED_THEME_UPDATED_AT,
-  },
-}));
+export const SHARED_PRESET_THEMES: SharedPresetTheme[] =
+  SHARED_PRESETS_DATA.map((themeData) => ({
+    ...themeData,
+    metadata: {
+      ...themeData.metadata,
+      createdAt: SHARED_THEME_CREATED_AT,
+      updatedAt: SHARED_THEME_UPDATED_AT,
+    },
+  }));
 
-export const SHARED_PRESET_THEME_IDS = SHARED_PRESET_THEMES.map((theme) => theme.metadata.id);
+export const SHARED_PRESET_THEME_IDS = SHARED_PRESET_THEMES.map(
+  (theme) => theme.metadata.id,
+);

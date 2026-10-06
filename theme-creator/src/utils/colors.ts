@@ -1,5 +1,5 @@
 export function hexToRgb(hex: string): { r: number; g: number; b: number } {
-  const clean = hex.replace('#', '');
+  const clean = hex.replace("#", "");
   return {
     r: parseInt(clean.substring(0, 2), 16),
     g: parseInt(clean.substring(2, 4), 16),
@@ -9,10 +9,14 @@ export function hexToRgb(hex: string): { r: number; g: number; b: number } {
 
 export function rgbToHex(r: number, g: number, b: number): string {
   return (
-    '#' +
+    "#" +
     [r, g, b]
-      .map((c) => Math.max(0, Math.min(255, Math.round(c))).toString(16).padStart(2, '0'))
-      .join('')
+      .map((c) =>
+        Math.max(0, Math.min(255, Math.round(c)))
+          .toString(16)
+          .padStart(2, "0"),
+      )
+      .join("")
   );
 }
 
@@ -45,6 +49,6 @@ export function mixColors(hex1: string, hex2: string, weight: number): string {
   return rgbToHex(
     Math.round(c1.r * (1 - w) + c2.r * w),
     Math.round(c1.g * (1 - w) + c2.g * w),
-    Math.round(c1.b * (1 - w) + c2.b * w)
+    Math.round(c1.b * (1 - w) + c2.b * w),
   );
 }

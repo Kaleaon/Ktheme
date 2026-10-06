@@ -1,17 +1,20 @@
-import { spawn } from 'node:child_process';
-import { mkdir } from 'node:fs/promises';
-import path from 'node:path';
-import process from 'node:process';
+import { spawn } from "node:child_process";
+import { mkdir } from "node:fs/promises";
+import path from "node:path";
+import process from "node:process";
 
 const PORT = Number(process.env.SCREENSHOT_PORT ?? 4173);
 const BASE_URL = process.env.SCREENSHOT_BASE_URL ?? `http://127.0.0.1:${PORT}`;
-const outputDir = path.resolve(process.cwd(), process.env.SCREENSHOT_OUTPUT_DIR ?? 'artifacts/screenshots');
+const outputDir = path.resolve(
+  process.cwd(),
+  process.env.SCREENSHOT_OUTPUT_DIR ?? "artifacts/screenshots",
+);
 
 const pages = [
-  { name: 'customize', tabLabel: 'Customize' },
-  { name: 'ai-designer', tabLabel: 'AI Designer' },
-  { name: 'bluesky', tabLabel: 'Bluesky' },
-  { name: 'presets', tabLabel: 'Presets' },
+  { name: "customize", tabLabel: "Customize" },
+  { name: "ai-designer", tabLabel: "AI Designer" },
+  { name: "bluesky", tabLabel: "Bluesky" },
+  { name: "presets", tabLabel: "Presets" },
 ];
 
 async function waitForServer(url, attempts = 30) {
@@ -29,10 +32,12 @@ async function waitForServer(url, attempts = 30) {
 
 async function loadPlaywright() {
   try {
-    const playwright = await import('playwright');
+    const playwright = await import("playwright");
     return playwright.chromium;
   } catch {
-    console.warn('Playwright is not installed. Install it with `npm --prefix theme-creator i -D playwright` to enable automated screenshots.');
+    console.warn(
+      "Playwright is not installed. Install it with `npm --prefix theme-creator i -D playwright` to enable automated screenshots.",
+    );
     return null;
   }
 }
@@ -43,22 +48,28 @@ async function captureScreenshots() {
 
   await mkdir(outputDir, { recursive: true });
 
-  const preview = spawn('npm', ['run', 'preview', '--', '--host', '0.0.0.0', '--port', String(PORT)], {
-    stdio: 'inherit',
-    cwd: process.cwd(),
-    shell: true,
-  });
+  const preview = spawn(
+    "npm",
+    ["run", "preview", "--", "--host", "0.0.0.0", "--port", String(PORT)],
+    {
+      stdio: "inherit",
+      cwd: process.cwd(),
+      shell: true,
+    },
+  );
 
   try {
     await waitForServer(BASE_URL);
 
     const browser = await chromium.launch();
-    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+    const page = await browser.newPage({
+      viewport: { width: 1440, height: 900 },
+    });
 
-    await page.goto(BASE_URL, { waitUntil: 'networkidle' });
+    await page.goto(BASE_URL, { waitUntil: "networkidle" });
 
     for (const appPage of pages) {
-      await page.getByRole('button', { name: appPage.tabLabel }).click();
+      await page.getByRole("button", { name: appPage.tabLabel }).click();
       await page.waitForTimeout(250);
       const destination = path.join(outputDir, `${appPage.name}.png`);
       await page.screenshot({ path: destination, fullPage: true });
@@ -67,7 +78,7 @@ async function captureScreenshots() {
 
     await browser.close();
   } finally {
-    preview.kill('SIGTERM');
+    preview.kill("SIGTERM");
   }
 }
 

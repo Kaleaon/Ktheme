@@ -1,9 +1,9 @@
-import { Theme } from '../../core/types';
-import { CornerVarsExport, WebExporterOptions } from './types';
+import { Theme } from "../../core/types";
+import { CornerVarsExport, WebExporterOptions } from "./types";
 
 export function exportCornerVars(
   theme: Theme,
-  options?: WebExporterOptions
+  options?: WebExporterOptions,
 ): CornerVarsExport {
   if (options?.includeCorners === false) {
     return { vars: {}, tailwind: {} };
@@ -16,10 +16,10 @@ export function exportCornerVars(
   const largeCorner = theme.tokens?.corners?.large ?? 12;
   const xlargeCorner = theme.tokens?.corners?.xlarge ?? 16;
 
-  vars['--ktheme-corner-small'] = `${smallCorner}px`;
-  vars['--ktheme-corner-medium'] = `${mediumCorner}px`;
-  vars['--ktheme-corner-large'] = `${largeCorner}px`;
-  vars['--ktheme-corner-xlarge'] = `${xlargeCorner}px`;
+  vars["--ktheme-corner-small"] = `${smallCorner}px`;
+  vars["--ktheme-corner-medium"] = `${mediumCorner}px`;
+  vars["--ktheme-corner-large"] = `${largeCorner}px`;
+  vars["--ktheme-corner-xlarge"] = `${xlargeCorner}px`;
 
   return {
     vars,
@@ -28,8 +28,8 @@ export function exportCornerVars(
         small: `${smallCorner}px`,
         medium: `${mediumCorner}px`,
         large: `${largeCorner}px`,
-        xlarge: `${xlargeCorner}px`
-      }
-    }
+        xlarge: `${xlargeCorner}px`,
+      },
+    },
   };
 }

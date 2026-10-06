@@ -17,43 +17,43 @@ class ThemePreviewPanel : JPanel() {
     private val tagsLabel: JLabel
     private val colorPalettePanel: JPanel
     private val previewPanel: JPanel
-    
+
     init {
         layout = BorderLayout(10, 10)
         border = EmptyBorder(15, 15, 15, 15)
         background = Color.WHITE
-        
+
         // Header section
         val headerPanel = JPanel().apply {
             layout = BoxLayout(this, BoxLayout.Y_AXIS)
             isOpaque = false
-            
+
             titleLabel = JLabel("Select a theme").apply {
                 font = Font(Font.SANS_SERIF, Font.BOLD, 24)
                 alignmentX = Component.LEFT_ALIGNMENT
             }
             add(titleLabel)
-            
+
             add(Box.createVerticalStrut(5))
-            
+
             descriptionLabel = JLabel().apply {
                 font = Font(Font.SANS_SERIF, Font.PLAIN, 14)
                 foreground = Color.DARK_GRAY
                 alignmentX = Component.LEFT_ALIGNMENT
             }
             add(descriptionLabel)
-            
+
             add(Box.createVerticalStrut(5))
-            
+
             authorLabel = JLabel().apply {
                 font = Font(Font.SANS_SERIF, Font.ITALIC, 12)
                 foreground = Color.GRAY
                 alignmentX = Component.LEFT_ALIGNMENT
             }
             add(authorLabel)
-            
+
             add(Box.createVerticalStrut(5))
-            
+
             tagsLabel = JLabel().apply {
                 font = Font(Font.SANS_SERIF, Font.PLAIN, 11)
                 foreground = Color.GRAY
@@ -61,9 +61,9 @@ class ThemePreviewPanel : JPanel() {
             }
             add(tagsLabel)
         }
-        
+
         add(headerPanel, BorderLayout.NORTH)
-        
+
         // Color palette section
         colorPalettePanel = JPanel().apply {
             layout = GridLayout(0, 4, 10, 10)
@@ -71,7 +71,7 @@ class ThemePreviewPanel : JPanel() {
             background = Color.WHITE
         }
         add(colorPalettePanel, BorderLayout.CENTER)
-        
+
         // Visual preview section
         previewPanel = JPanel().apply {
             layout = BorderLayout()
@@ -88,7 +88,7 @@ class ThemePreviewPanel : JPanel() {
             "Displays details and sample controls for the currently selected theme."
         )
     }
-    
+
     /**
      * Update preview with a theme
      */
@@ -97,7 +97,7 @@ class ThemePreviewPanel : JPanel() {
             clearPreview()
             return
         }
-        
+
         // Update header
         titleLabel.text = theme.metadata.name
         descriptionLabel.text = "<html>${theme.metadata.description}</html>"
@@ -107,14 +107,14 @@ class ThemePreviewPanel : JPanel() {
             this,
             "Preview updated to ${theme.metadata.name} theme by ${theme.metadata.author}"
         )
-        
+
         // Update color palette
         updateColorPalette(theme)
-        
+
         // Update visual preview
         updateVisualPreview(theme)
     }
-    
+
     private fun clearPreview() {
         titleLabel.text = "Select a theme"
         descriptionLabel.text = ""
@@ -125,10 +125,10 @@ class ThemePreviewPanel : JPanel() {
         revalidate()
         repaint()
     }
-    
+
     private fun updateColorPalette(theme: Theme) {
         colorPalettePanel.removeAll()
-        
+
         val colors = mapOf(
             "Primary" to theme.colorScheme.primary,
             "Secondary" to theme.colorScheme.secondary,
@@ -139,21 +139,21 @@ class ThemePreviewPanel : JPanel() {
             "On Background" to theme.colorScheme.onBackground,
             "On Surface" to theme.colorScheme.onSurface
         )
-        
+
         colors.forEach { (name, colorHex) ->
             colorPalettePanel.add(createColorSwatch(name, colorHex))
         }
-        
+
         colorPalettePanel.revalidate()
         colorPalettePanel.repaint()
     }
-    
+
     private fun createColorSwatch(name: String, colorHex: String): JPanel {
         return JPanel().apply {
             layout = BorderLayout(5, 5)
             border = BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1)
             background = Color.WHITE
-            
+
             // Color box
             val colorBox = object : JPanel() {
                 init {
@@ -172,7 +172,7 @@ class ThemePreviewPanel : JPanel() {
                 "$name color value $colorHex"
             )
             add(colorBox, BorderLayout.CENTER)
-            
+
             // Label
             val label = JLabel("<html><center>$name<br><small>$colorHex</small></center></html>").apply {
                 font = Font(Font.SANS_SERIF, Font.PLAIN, 10)
@@ -181,23 +181,23 @@ class ThemePreviewPanel : JPanel() {
             add(label, BorderLayout.SOUTH)
         }
     }
-    
+
     private fun updateVisualPreview(theme: Theme) {
         previewPanel.removeAll()
-        
+
         val preview = object : JPanel() {
             init {
                 layout = BorderLayout(10, 10)
                 border = EmptyBorder(10, 10, 10, 10)
-                
+
                 try {
                     background = Color(ColorUtils.hexToColorInt(theme.colorScheme.background))
-                    
+
                     // Sample UI elements
                     val contentPanel = JPanel().apply {
                         layout = BoxLayout(this, BoxLayout.Y_AXIS)
                         isOpaque = false
-                        
+
                         // Sample button
                         add(JButton("Sample Button").apply {
                             background = Color(ColorUtils.hexToColorInt(theme.colorScheme.primary))
@@ -211,39 +211,39 @@ class ThemePreviewPanel : JPanel() {
                                 "Demonstrates primary and on-primary colors for ${theme.metadata.name}."
                             )
                         })
-                        
+
                         add(Box.createVerticalStrut(10))
-                        
+
                         // Sample text
                         add(JLabel("Sample text in this theme").apply {
                             foreground = Color(ColorUtils.hexToColorInt(theme.colorScheme.onBackground))
                             alignmentX = Component.LEFT_ALIGNMENT
                         })
-                        
+
                         add(Box.createVerticalStrut(10))
-                        
+
                         // Sample panel
                         add(JPanel().apply {
                             layout = FlowLayout(FlowLayout.LEFT)
                             background = Color(ColorUtils.hexToColorInt(theme.colorScheme.surface))
                             border = EmptyBorder(10, 10, 10, 10)
-                            
+
                             add(JLabel("Surface element").apply {
                                 foreground = Color(ColorUtils.hexToColorInt(theme.colorScheme.onSurface))
                             })
-                            
+
                             alignmentX = Component.LEFT_ALIGNMENT
                         })
                     }
-                    
+
                     add(contentPanel, BorderLayout.CENTER)
-                    
+
                 } catch (e: Exception) {
                     add(JLabel("Preview not available"), BorderLayout.CENTER)
                 }
             }
         }
-        
+
         previewPanel.add(preview, BorderLayout.CENTER)
         previewPanel.revalidate()
         previewPanel.repaint()

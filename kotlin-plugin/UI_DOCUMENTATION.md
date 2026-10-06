@@ -50,6 +50,7 @@
 ### 1. Theme Scroll Wheel (Left Panel)
 
 **Features:**
+
 - Visual scroll list showing all available themes
 - Each theme card displays:
   - 2x2 color grid preview (Primary, Secondary, Background, Surface)
@@ -61,6 +62,7 @@
 - Click to select and preview
 
 **Example Theme Card:**
+
 ```
 ┌────────────────────────────────────┐
 │ ┌────┬────┐                        │
@@ -74,12 +76,14 @@
 ### 2. Theme Preview Panel (Right Panel)
 
 **Header Section:**
+
 - Large theme name
 - Full description
 - Author attribution
 - Complete tag list
 
 **Color Palette Section:**
+
 - Grid of 8 color swatches
 - Each swatch shows:
   - Color preview box
@@ -87,6 +91,7 @@
   - Hex value
 
 **Visual Preview Section:**
+
 - Live preview showing:
   - Sample button with primary color
   - Sample text with theme colors
@@ -95,6 +100,7 @@
 - Text uses theme text colors
 
 **Action Buttons:**
+
 - **Apply Theme** - Apply to current app (demo)
 - **Share Theme** - Copy to shared directory (~/.ktheme/shared)
 - **Export Theme** - Save to custom location
@@ -103,17 +109,20 @@
 ### 3. Menu Bar
 
 **File Menu:**
+
 - Import Theme...
 - Export Theme...
 - Reload Themes
 - Exit
 
 **View Menu:**
+
 - Show All Themes
 - Show Dark Themes
 - Show Light Themes
 
 **Help Menu:**
+
 - About
 - Theme Directory (shows paths)
 
@@ -122,11 +131,13 @@
 ### Shared Theme Directory
 
 All themes shared via the "Share Theme" button are copied to:
+
 ```
 ~/.ktheme/shared/
 ```
 
 Other applications can:
+
 1. Read themes from this directory
 2. Monitor for new themes
 3. Add their own themes
@@ -151,6 +162,7 @@ applyThemeToUI(theme)
 ### Example Integration
 
 The `ExampleApp.kt` demonstrates a complete integration showing:
+
 - Browsing available shared themes
 - Applying themes to Swing components
 - Subscribing to theme changes
@@ -159,24 +171,28 @@ The `ExampleApp.kt` demonstrates a complete integration showing:
 ## User Workflow
 
 ### Browsing Themes
+
 1. Launch Ktheme Library application
 2. Scroll through theme list on the left
 3. Click any theme to see full preview
 4. View color palette and visual preview
 
 ### Sharing Themes
+
 1. Select desired theme
 2. Click "Share Theme" button
 3. Theme is copied to `~/.ktheme/shared/`
 4. Other apps can now access it
 
 ### Importing Custom Themes
+
 1. Click "Import Theme" button
 2. Select JSON theme file
 3. Theme appears in library
 4. Can be shared or exported
 
 ### Using in Other Apps
+
 1. Run Ktheme Library and share themes
 2. Run your application
 3. Use KthemeAPI to get shared themes
@@ -185,24 +201,28 @@ The `ExampleApp.kt` demonstrates a complete integration showing:
 ## Technical Details
 
 ### Theme Card Rendering
+
 - Custom JList cell renderer
 - Painted color swatches using Graphics2D
 - Hover effect for selection
 - Fixed cell height for consistent scrolling
 
 ### Theme Preview
+
 - Dynamic color application
 - Real-time UI component updates
 - Material Design color mapping
 - Sample UI elements for preview
 
 ### Cross-App Communication
+
 - File-based sharing (simple, reliable)
 - JSON format for portability
 - No IPC complexity
 - Works across different JVM processes
 
 ### Performance
+
 - Lazy loading of themes
 - Efficient list rendering
 - Minimal memory footprint
@@ -215,16 +235,19 @@ Ktheme's Swing-based Kotlin plugin uses accessibility defaults designed for Talk
 ### Control metadata defaults
 
 All key interactive controls include:
+
 - **Explicit content descriptions** (`accessibleName`, `accessibleDescription`).
 - **Role/type hints** embedded in labels/descriptions (for example: button, list, status).
 - **Action hints** where relevant (for example: arrow keys for list movement).
 
 These defaults are centralized in:
+
 - `src/main/kotlin/com/ktheme/utils/AccessibilityUtils.kt`
 
 ### State announcements
 
 The UI emits explicit state announcements on:
+
 - Theme selection changes in the theme list.
 - Theme preview updates.
 - Apply/share/import/export/search/filter actions.
@@ -234,6 +257,7 @@ Announcements are routed through the status label and `ACCESSIBLE_VISIBLE_DATA_P
 ### Focus order policy
 
 Focus traversal is deterministic and matches visual order:
+
 1. Search field
 2. Search button
 3. Theme list
@@ -247,6 +271,7 @@ This is enforced with a custom ordered `FocusTraversalPolicy` from `Accessibilit
 ### Verification flow
 
 For a manual validation run with screen readers/TalkBack-style navigation, run:
+
 - `com.ktheme.examples.AccessibilityVerificationFlow`
 
 The flow prints a checklist and launches `ThemeLibraryWindow` for step-by-step validation.

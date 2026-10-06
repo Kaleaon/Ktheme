@@ -1,4 +1,4 @@
-import { ThemeEngine } from '../core/ThemeEngine';
+import { ThemeEngine } from "../core/ThemeEngine";
 import {
   AuroraGlassNightTheme,
   CalmClinicalTheme,
@@ -8,23 +8,29 @@ import {
   NeoNoirNeonTheme,
   PresetThemes,
   SolarpunkCivicTheme,
-  WindowsPhoneMetroTheme
-} from './presets';
-import { ThemeSets } from './sets';
+  WindowsPhoneMetroTheme,
+} from "./presets";
+import { ThemeSets } from "./sets";
 
-describe('preset themes coverage', () => {
-  it('includes iconic and next-wave presets in exported map', () => {
-    expect(PresetThemes.LCARS.metadata.id).toBe('lcars');
-    expect(PresetThemes.WindowsPhoneMetro.metadata.id).toBe('windows-phone-metro');
-    expect(PresetThemes.FrutigerAero.metadata.id).toBe('frutiger-aero');
-    expect(PresetThemes.SolarpunkCivic.metadata.id).toBe('solarpunk-civic');
-    expect(PresetThemes.NeoNoirNeon.metadata.id).toBe('neo-noir-neon');
-    expect(PresetThemes.CalmClinical.metadata.id).toBe('calm-clinical');
-    expect(PresetThemes.InkTerminalModern.metadata.id).toBe('ink-terminal-modern');
-    expect(PresetThemes.AuroraGlassNight.metadata.id).toBe('aurora-glass-night');
+describe("preset themes coverage", () => {
+  it("includes iconic and next-wave presets in exported map", () => {
+    expect(PresetThemes.LCARS.metadata.id).toBe("lcars");
+    expect(PresetThemes.WindowsPhoneMetro.metadata.id).toBe(
+      "windows-phone-metro",
+    );
+    expect(PresetThemes.FrutigerAero.metadata.id).toBe("frutiger-aero");
+    expect(PresetThemes.SolarpunkCivic.metadata.id).toBe("solarpunk-civic");
+    expect(PresetThemes.NeoNoirNeon.metadata.id).toBe("neo-noir-neon");
+    expect(PresetThemes.CalmClinical.metadata.id).toBe("calm-clinical");
+    expect(PresetThemes.InkTerminalModern.metadata.id).toBe(
+      "ink-terminal-modern",
+    );
+    expect(PresetThemes.AuroraGlassNight.metadata.id).toBe(
+      "aurora-glass-night",
+    );
   });
 
-  it('keeps iconic and next-wave themes operational for runtime validation', () => {
+  it("keeps iconic and next-wave themes operational for runtime validation", () => {
     const engine = new ThemeEngine();
 
     expect(engine.validateTheme(LCARSTheme).valid).toBe(true);
@@ -35,43 +41,54 @@ describe('preset themes coverage', () => {
     expect(engine.validateTheme(CalmClinicalTheme).valid).toBe(true);
     expect(engine.validateTheme(InkTerminalModernTheme).valid).toBe(true);
     expect(engine.validateTheme(AuroraGlassNightTheme).valid).toBe(true);
-    expect(LCARSTheme.adaptation?.layout?.navigationStyle).toBe('rail');
-    expect(WindowsPhoneMetroTheme.adaptation?.layout?.navigationStyle).toBe('pivot');
-    expect(FrutigerAeroTheme.adaptation?.layout?.panelStyle).toBe('glass');
-    expect(InkTerminalModernTheme.typography?.fontFamily.toLowerCase()).toContain('mono');
+    expect(LCARSTheme.adaptation?.layout?.navigationStyle).toBe("rail");
+    expect(WindowsPhoneMetroTheme.adaptation?.layout?.navigationStyle).toBe(
+      "pivot",
+    );
+    expect(FrutigerAeroTheme.adaptation?.layout?.panelStyle).toBe("glass");
+    expect(
+      InkTerminalModernTheme.typography?.fontFamily.toLowerCase(),
+    ).toContain("mono");
   });
 
-  it('exposes iconic and next-wave themes in curated sets for use-case coverage', () => {
+  it("exposes iconic and next-wave themes in curated sets for use-case coverage", () => {
     const iconic = ThemeSets.iconicInterfaces;
     const iconicActivation = ThemeSets.iconicActivation;
     const creative = ThemeSets.creativeStudio;
     const nextWave = ThemeSets.nextWave;
 
-    expect(iconic.themes.map(theme => theme.metadata.id)).toEqual(
-      expect.arrayContaining(['lcars', 'windows-phone-metro'])
+    expect(iconic.themes.map((theme) => theme.metadata.id)).toEqual(
+      expect.arrayContaining(["lcars", "windows-phone-metro"]),
     );
 
-    expect(iconicActivation.themes.map(theme => theme.metadata.id)).toEqual(
-      expect.arrayContaining(['windows-phone-metro', 'lcars', 'frutiger-aero', 'neo-noir-neon'])
-    );
-    expect(creative.themes.map(theme => theme.metadata.id)).toContain('frutiger-aero');
-    expect(nextWave.themes.map(theme => theme.metadata.id)).toEqual(
+    expect(iconicActivation.themes.map((theme) => theme.metadata.id)).toEqual(
       expect.arrayContaining([
-        'solarpunk-civic',
-        'neo-noir-neon',
-        'calm-clinical',
-        'ink-terminal-modern',
-        'aurora-glass-night'
-      ])
+        "windows-phone-metro",
+        "lcars",
+        "frutiger-aero",
+        "neo-noir-neon",
+      ]),
+    );
+    expect(creative.themes.map((theme) => theme.metadata.id)).toContain(
+      "frutiger-aero",
+    );
+    expect(nextWave.themes.map((theme) => theme.metadata.id)).toEqual(
+      expect.arrayContaining([
+        "solarpunk-civic",
+        "neo-noir-neon",
+        "calm-clinical",
+        "ink-terminal-modern",
+        "aurora-glass-night",
+      ]),
     );
   });
 
-  it('locks preset metadata timestamps to stable release values', () => {
+  it("locks preset metadata timestamps to stable release values", () => {
     const metadata = Object.values(PresetThemes)
-      .map(theme => ({
+      .map((theme) => ({
         id: theme.metadata.id,
         createdAt: theme.metadata.createdAt,
-        updatedAt: theme.metadata.updatedAt
+        updatedAt: theme.metadata.updatedAt,
       }))
       .sort((a, b) => a.id.localeCompare(b.id));
 
@@ -210,5 +227,4 @@ describe('preset themes coverage', () => {
 ]
 `);
   });
-
 });

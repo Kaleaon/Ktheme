@@ -1,4 +1,4 @@
-import { NormalizedThemeTokens } from '../ir/tokenIR';
+import { NormalizedThemeTokens } from "../ir/tokenIR";
 
 /**
  * Interface for declarative platform renderers consuming the canonical IR.

@@ -7,6 +7,7 @@ Thank you for your interest in contributing to Ktheme! This document provides gu
 ### Reporting Bugs
 
 If you find a bug, please create an issue with:
+
 - A clear title and description
 - Steps to reproduce the issue
 - Expected vs actual behavior
@@ -15,6 +16,7 @@ If you find a bug, please create an issue with:
 ### Suggesting Features
 
 We welcome feature suggestions! Please create an issue with:
+
 - A clear description of the feature
 - Use cases and benefits
 - Any implementation ideas you have
@@ -43,12 +45,12 @@ We encourage everyone to share their custom themes! To contribute a theme:
 #### Theme Submission Guidelines
 
 Your theme should:
+
 - Have a unique, descriptive name
 - Include proper metadata (name, description, author, tags)
 - Be properly validated (all required colors defined)
 - Include a screenshot showing the theme in action
 - Be appropriate and respectful (no offensive content)
-
 
 ## Preset Theme Publishing Workflow
 

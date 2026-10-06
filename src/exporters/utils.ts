@@ -1,9 +1,9 @@
-import { Color, MetallicVariant, Theme } from '../core/types';
-import { getMetallicGradient } from '../effects/metallic';
-import { normalizeColor, rgbToHex } from '../utils/colors';
+import { Color, MetallicVariant, Theme } from "../core/types";
+import { getMetallicGradient } from "../effects/metallic";
+import { normalizeColor, rgbToHex } from "../utils/colors";
 
 export function toHexColor(color: Color): string {
-  if (typeof color === 'string') {
+  if (typeof color === "string") {
     return color.toUpperCase();
   }
 
@@ -22,7 +22,7 @@ export function normalizeSemanticRoles(theme: Theme): {
     success: toHexColor(roles?.success ?? theme.colorScheme.secondary),
     warning: toHexColor(roles?.warning ?? theme.colorScheme.tertiary),
     info: toHexColor(roles?.info ?? theme.colorScheme.primaryContainer),
-    critical: toHexColor(roles?.critical ?? theme.colorScheme.error)
+    critical: toHexColor(roles?.critical ?? theme.colorScheme.error),
   };
 }
 
@@ -37,21 +37,21 @@ export interface NormalizedTypography {
 export function normalizeTypography(theme: Theme): NormalizedTypography {
   const typo = theme.typography;
   return {
-    fontFamily: typo?.fontFamily ?? 'system-ui, -apple-system, sans-serif',
+    fontFamily: typo?.fontFamily ?? "system-ui, -apple-system, sans-serif",
     fontSize: {
       small: typo?.fontSize?.small ?? 12,
       medium: typo?.fontSize?.medium ?? 16,
       large: typo?.fontSize?.large ?? 20,
-      xlarge: typo?.fontSize?.xlarge ?? 28
+      xlarge: typo?.fontSize?.xlarge ?? 28,
     },
     fontWeight: {
       light: typo?.fontWeight?.light ?? 300,
       regular: typo?.fontWeight?.regular ?? 400,
       medium: typo?.fontWeight?.medium ?? 500,
-      bold: typo?.fontWeight?.bold ?? 700
+      bold: typo?.fontWeight?.bold ?? 700,
     },
     lineHeight: typo?.lineHeight ?? 1.5,
-    letterSpacing: typo?.letterSpacing ?? 0
+    letterSpacing: typo?.letterSpacing ?? 0,
   };
 }
 
@@ -68,8 +68,8 @@ export function normalizeEffects(theme: Theme): Record<string, unknown> {
         base: toHexColor(eff.metallic.gradient.base),
         highlight: toHexColor(eff.metallic.gradient.highlight),
         shadow: toHexColor(eff.metallic.gradient.shadow),
-        shimmer: toHexColor(eff.metallic.gradient.shimmer)
-      }
+        shimmer: toHexColor(eff.metallic.gradient.shimmer),
+      },
     };
   } else {
     result.metallic = { enabled: false };
@@ -80,7 +80,7 @@ export function normalizeEffects(theme: Theme): Record<string, unknown> {
       enabled: eff.shadows.enabled,
       elevation: eff.shadows.elevation,
       blur: eff.shadows.blur,
-      color: toHexColor(eff.shadows.color)
+      color: toHexColor(eff.shadows.color),
     };
   } else {
     result.shadows = { enabled: false };
@@ -91,7 +91,7 @@ export function normalizeEffects(theme: Theme): Record<string, unknown> {
       enabled: eff.shimmer.enabled,
       speed: eff.shimmer.speed,
       intensity: eff.shimmer.intensity,
-      angle: eff.shimmer.angle
+      angle: eff.shimmer.angle,
     };
   } else {
     result.shimmer = { enabled: false };
@@ -100,7 +100,7 @@ export function normalizeEffects(theme: Theme): Record<string, unknown> {
   if (eff.blur) {
     result.blur = {
       enabled: eff.blur.enabled,
-      radius: eff.blur.radius
+      radius: eff.blur.radius,
     };
   } else {
     result.blur = { enabled: false };
@@ -111,7 +111,7 @@ export function normalizeEffects(theme: Theme): Record<string, unknown> {
       enabled: eff.focusRing.enabled,
       color: toHexColor(eff.focusRing.color),
       width: eff.focusRing.width,
-      offset: eff.focusRing.offset
+      offset: eff.focusRing.offset,
     };
   } else {
     result.focusRing = { enabled: false };
@@ -124,19 +124,19 @@ export function normalizeAdaptation(theme: Theme): Record<string, unknown> {
   const adapt = theme.adaptation || {};
   const result: Record<string, unknown> = {
     layout: {
-      density: adapt.layout?.density ?? 'comfortable',
-      cornerStyle: adapt.layout?.cornerStyle ?? 'rounded',
+      density: adapt.layout?.density ?? "comfortable",
+      cornerStyle: adapt.layout?.cornerStyle ?? "rounded",
       spacingScale: adapt.layout?.spacingScale ?? 1.0,
-      panelStyle: adapt.layout?.panelStyle ?? 'elevated',
-      navigationStyle: adapt.layout?.navigationStyle ?? 'tabs'
+      panelStyle: adapt.layout?.panelStyle ?? "elevated",
+      navigationStyle: adapt.layout?.navigationStyle ?? "tabs",
     },
     icons: {
-      family: adapt.icons?.family ?? 'material',
-      style: adapt.icons?.style ?? 'outlined',
+      family: adapt.icons?.family ?? "material",
+      style: adapt.icons?.style ?? "outlined",
       sizeScale: adapt.icons?.sizeScale ?? 1.0,
       strokeWidth: adapt.icons?.strokeWidth ?? 2,
-      cornerStyle: adapt.icons?.cornerStyle ?? 'rounded'
-    }
+      cornerStyle: adapt.icons?.cornerStyle ?? "rounded",
+    },
   };
 
   if (adapt.desktopAdaptation) {
@@ -155,7 +155,7 @@ export function normalizeBlur(theme: Theme): NormalizedBlur {
   const blur = theme.effects?.blur;
   return {
     enabled: blur?.enabled ?? false,
-    radius: blur?.radius ?? 0
+    radius: blur?.radius ?? 0,
   };
 }
 
@@ -175,7 +175,10 @@ export function normalizeMetallic(theme: Theme): NormalizedMetallic {
   const defaultGradient = getMetallicGradient(defaultVariant);
 
   const variant = metallic?.variant ?? defaultVariant;
-  const gradient = metallic?.gradient ?? getMetallicGradient(variant as MetallicVariant) ?? defaultGradient;
+  const gradient =
+    metallic?.gradient ??
+    getMetallicGradient(variant as MetallicVariant) ??
+    defaultGradient;
 
   return {
     enabled: metallic?.enabled ?? false,
@@ -184,7 +187,7 @@ export function normalizeMetallic(theme: Theme): NormalizedMetallic {
     base: toHexColor(gradient.base),
     highlight: toHexColor(gradient.highlight),
     shadow: toHexColor(gradient.shadow),
-    shimmer: toHexColor(gradient.shimmer)
+    shimmer: toHexColor(gradient.shimmer),
   };
 }
 
@@ -201,7 +204,7 @@ export function normalizeShadows(theme: Theme): NormalizedShadows {
     enabled: shadows?.enabled ?? false,
     elevation: shadows?.elevation ?? 0,
     blur: shadows?.blur ?? 0,
-    color: toHexColor(shadows?.color ?? '#000000')
+    color: toHexColor(shadows?.color ?? "#000000"),
   };
 }
 
@@ -218,7 +221,7 @@ export function normalizeShimmer(theme: Theme): NormalizedShimmer {
     enabled: shimmer?.enabled ?? false,
     speed: shimmer?.speed ?? 0,
     intensity: shimmer?.intensity ?? 0,
-    angle: shimmer?.angle ?? 0
+    angle: shimmer?.angle ?? 0,
   };
 }
 
@@ -235,6 +238,6 @@ export function normalizeCorners(theme: Theme): NormalizedCorners {
     small: corners?.small ?? 4,
     medium: corners?.medium ?? 8,
     large: corners?.large ?? 12,
-    xlarge: corners?.xlarge ?? 16
+    xlarge: corners?.xlarge ?? 16,
   };
 }

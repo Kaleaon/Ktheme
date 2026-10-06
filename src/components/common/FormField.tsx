@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useId } from 'react';
+import React, { createContext, useContext, useId } from "react";
 
 export interface FormFieldContextValue {
   id: string;
@@ -8,7 +8,9 @@ export interface FormFieldContextValue {
   ariaInvalid?: boolean;
 }
 
-export const FormFieldContext = createContext<FormFieldContextValue | null>(null);
+export const FormFieldContext = createContext<FormFieldContextValue | null>(
+  null,
+);
 
 export function useFormFieldContext() {
   return useContext(FormFieldContext);
@@ -32,7 +34,7 @@ export const FormField: React.FC<FormFieldProps> = ({
   helperText,
   fullWidth = false,
   hideLabel = false,
-  className = '',
+  className = "",
   children,
   id: explicitId,
   style,
@@ -40,7 +42,7 @@ export const FormField: React.FC<FormFieldProps> = ({
   ...props
 }) => {
   const generatedId = useId();
-  const inputId = explicitId || `field-${generatedId.replace(/:/g, '')}`;
+  const inputId = explicitId || `field-${generatedId.replace(/:/g, "")}`;
 
   const helperTextId = helperText ? `${inputId}-helper` : undefined;
   const errorId = error ? `${inputId}-error` : undefined;
@@ -48,7 +50,8 @@ export const FormField: React.FC<FormFieldProps> = ({
   const describedByParts: string[] = [];
   if (helperTextId) describedByParts.push(helperTextId);
   if (errorId) describedByParts.push(errorId);
-  const ariaDescribedBy = describedByParts.length > 0 ? describedByParts.join(' ') : undefined;
+  const ariaDescribedBy =
+    describedByParts.length > 0 ? describedByParts.join(" ") : undefined;
 
   const contextValue: FormFieldContextValue = {
     id: inputId,
@@ -62,26 +65,32 @@ export const FormField: React.FC<FormFieldProps> = ({
     if (!React.isValidElement(child)) return child;
     const element = child as React.ReactElement<{
       id?: string;
-      'aria-describedby'?: string;
-      'aria-invalid'?: boolean | 'grammar' | 'spelling';
-      'aria-errormessage'?: string;
+      "aria-describedby"?: string;
+      "aria-invalid"?: boolean | "grammar" | "spelling";
+      "aria-errormessage"?: string;
     }>;
-    const existingDescribedBy = element.props['aria-describedby'];
-    const combinedDescribedBy = [existingDescribedBy, ariaDescribedBy].filter(Boolean).join(' ') || undefined;
+    const existingDescribedBy = element.props["aria-describedby"];
+    const combinedDescribedBy =
+      [existingDescribedBy, ariaDescribedBy].filter(Boolean).join(" ") ||
+      undefined;
 
     return React.cloneElement(element, {
       id: element.props.id || inputId,
-      'aria-describedby': combinedDescribedBy,
-      'aria-invalid': element.props['aria-invalid'] !== undefined ? element.props['aria-invalid'] : (error ? true : undefined),
-      'aria-errormessage': element.props['aria-errormessage'] || (error ? errorId : undefined),
+      "aria-describedby": combinedDescribedBy,
+      "aria-invalid":
+        element.props["aria-invalid"] !== undefined
+          ? element.props["aria-invalid"]
+          : error
+            ? true
+            : undefined,
+      "aria-errormessage":
+        element.props["aria-errormessage"] || (error ? errorId : undefined),
     });
   });
 
-  const wrapperClass = [
-    'form-field',
-    fullWidth ? 'full-width' : '',
-    className,
-  ].filter(Boolean).join(' ');
+  const wrapperClass = ["form-field", fullWidth ? "full-width" : "", className]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <FormFieldContext.Provider value={contextValue}>
@@ -89,7 +98,7 @@ export const FormField: React.FC<FormFieldProps> = ({
         {label && (
           <label
             htmlFor={inputId}
-            className={hideLabel ? 'sr-only' : 'field-label'}
+            className={hideLabel ? "sr-only" : "field-label"}
             style={labelStyle}
           >
             {label}

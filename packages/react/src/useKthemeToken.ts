@@ -1,11 +1,14 @@
-import { useKtheme } from './useKtheme';
-import { KthemeTokens } from './KthemeContext';
+import { useKtheme } from "./useKtheme";
+import { KthemeTokens } from "./KthemeContext";
 
 export function useKthemeToken(): KthemeTokens;
-export function useKthemeToken(tokenName: keyof KthemeTokens | string, fallback?: string): string;
+export function useKthemeToken(
+  tokenName: keyof KthemeTokens | string,
+  fallback?: string,
+): string;
 export function useKthemeToken(
   tokenName?: keyof KthemeTokens | string,
-  fallback?: string
+  fallback?: string,
 ): KthemeTokens | string {
   const { tokens } = useKtheme();
 
@@ -18,7 +21,12 @@ export function useKthemeToken(
     return value;
   }
 
-  return fallback || `var(--md-sys-color-${String(tokenName)}, var(--ktheme-${String(tokenName)}))`;
+  return (
+    fallback ||
+    `var(--md-sys-color-${String(tokenName)}, var(--ktheme-${String(
+      tokenName,
+    )}))`
+  );
 }
 
 /**
@@ -26,7 +34,9 @@ export function useKthemeToken(
  * e.g. getKthemeCssVar('primary') -> 'var(--md-sys-color-primary)'
  */
 export function getKthemeCssVar(tokenName: string, fallback?: string): string {
-  const md3Name = `--md-sys-color-${tokenName.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
+  const md3Name = `--md-sys-color-${tokenName
+    .replace(/([A-Z])/g, "-$1")
+    .toLowerCase()}`;
   if (fallback) {
     return `var(${md3Name}, var(--ktheme-${tokenName}, ${fallback}))`;
   }
