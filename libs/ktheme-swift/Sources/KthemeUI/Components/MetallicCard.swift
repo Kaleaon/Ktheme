@@ -26,7 +26,7 @@ public struct MetallicCard<Content: View>: View {
     }
 
     public var body: some View {
-        let r = theme.adaptation?.layout.cornerStyle.radius ?? 12
+        let r = theme.adaptation?.layout?.cornerStyle.radius ?? 12
         let v = variant ?? theme.effects.metallic.variant
         let i = max(0, min(1, intensity ?? theme.effects.metallic.intensity))
         let g = MetallicGradient.forVariant(v)
