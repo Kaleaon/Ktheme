@@ -182,9 +182,13 @@ export class VectorTransformer {
   /**
    * Resolves color references / bindings to explicit Hex colors using Theme ColorScheme
    */
-  static resolveColor(colorVal: unknown, bindings?: Record<string, string>, theme?: Theme): string {
-    if (typeof colorVal !== 'string') {
-      return toHexColor(colorVal as Color);
+  static resolveColor(
+    colorVal: unknown,
+    bindings?: Record<string, string>,
+    theme?: Theme,
+  ): string {
+    if (typeof colorVal !== "string") {
+      return toHexColor(colorVal as Parameters<typeof toHexColor>[0]);
     }
 
     if (colorVal === "none" || colorVal === "transparent") {
@@ -203,10 +207,13 @@ export class VectorTransformer {
     if (theme && theme.colorScheme) {
       const cs = theme.colorScheme as unknown as Record<string, Color>;
       if (cs[resolvedRole] !== undefined) {
-        return toHexColor(cs[resolvedRole]);
+        return toHexColor(cs[resolvedRole] as Parameters<typeof toHexColor>[0]);
       }
-      if (cs.semanticRoles && (cs.semanticRoles as unknown as Record<string, Color>)[resolvedRole] !== undefined) {
-        return toHexColor((cs.semanticRoles as unknown as Record<string, Color>)[resolvedRole]);
+      const semanticRoles = cs.semanticRoles as
+        | Record<string, unknown>
+        | undefined;
+      if (semanticRoles && semanticRoles[resolvedRole] !== undefined) {
+        return toHexColor(semanticRoles[resolvedRole] as Parameters<typeof toHexColor>[0]);
       }
     }
 
