@@ -70,9 +70,39 @@ public enum class LayoutStructure(
 }
 
 @Serializable
+public data class LayoutBreakpoints(
+    public val compact: Int = 600,
+    public val medium: Int = 840,
+    public val expanded: Int = 1200
+)
+
+@Serializable
+public data class MultiPaneSpecs(
+    public val splitRatio: Float = 0.44f,
+    public val minPaneWidth: Int = 320
+)
+
+@Serializable
+public data class LayoutAdaptation(
+    public val density: String = "comfortable",
+    public val cornerStyle: String = "rounded",
+    public val spacingScale: Float = 1.0f,
+    public val panelStyle: String = "flat",
+    public val navigationStyle: String = "tabs",
+    public val breakpoints: LayoutBreakpoints? = null,
+    public val multiPane: MultiPaneSpecs? = null
+)
+
+@Serializable
+public data class Adaptation(
+    public val layout: LayoutAdaptation? = null
+)
+
+@Serializable
 public data class Theme(
     public val metadata: ThemeMetadata,
     public val darkMode: Boolean = true,
     public val colorScheme: ColorScheme,
-    public val layoutStructure: LayoutStructure = LayoutStructure.MATERIAL3
+    public val layoutStructure: LayoutStructure = LayoutStructure.MATERIAL3,
+    public val adaptation: Adaptation? = null
 )
