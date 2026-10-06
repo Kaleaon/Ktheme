@@ -32,7 +32,7 @@ repos:
     rev: v8.56.0
     hooks:
       - id: eslint
-        files: \.(js|jsx|ts|tsx)$
+        files: ^(src/|packages/).*\.(js|jsx|ts|tsx)$
         types: [file]
         exclude: ^(dist/|node_modules/|build/)
         additional_dependencies:
@@ -50,3 +50,12 @@ repos:
         files: ^(themes/examples/[^/]+\.json|themes/community/[^/]+\.json|docs/[^/]+\.json)$
         types: [json]
         args: ["--schemafile", "schemas/theme.schema.json"]
+
+  - repo: local
+    hooks:
+      - id: ktheme-style-lint
+        name: ktheme-style-lint
+        entry: python3 scripts/ktheme-style-lint.py
+        language: python
+        types_or: [javascript, jsx, ts, tsx]
+        exclude: ^(dist/|node_modules/|build/|schemas/|tests/|theme-creator/|tokens\.css|styles\.css|design-canvas\.jsx|src/themes/|src/core/|src/utils/|src/exporters/|src/redesign/|src/media/|src/cli/|src/adaptation/|src/effects/|src/linkpoint/|packages/react/src/(?!components/)|.*\.test\.(js|jsx|ts|tsx)$|__tests__/|tm-v.*\.jsx|preview-surface\.jsx|android-frame\.jsx|ds-docs\.jsx|tweaks-panel\.jsx)

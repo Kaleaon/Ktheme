@@ -1,14 +1,14 @@
-import { IconAdaptation, IconToken, Theme, VectorPath } from './types';
-import { toHexColor } from '../exporters/utils';
+import { IconAdaptation, IconToken, Theme, VectorPath } from "./types";
+import { toHexColor } from "../exporters/utils";
 
 export interface VectorIRPath {
   d: string;
   fill?: string;
   stroke?: string;
   strokeWidth?: number;
-  strokeLinecap?: 'butt' | 'round' | 'square';
-  strokeLinejoin?: 'miter' | 'round' | 'bevel';
-  fillRule?: 'nonzero' | 'evenodd';
+  strokeLinecap?: "butt" | "round" | "square";
+  strokeLinejoin?: "miter" | "round" | "bevel";
+  fillRule?: "nonzero" | "evenodd";
   opacity?: number;
 }
 
@@ -30,16 +30,22 @@ export class VectorTransformer {
   static sanitizeSvg(svg: string): string {
     let sanitized = svg;
     // Remove <script>...</script>
-    sanitized = sanitized.replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '');
+    sanitized = sanitized.replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "");
     // Remove <foreignObject>...</foreignObject>
-    sanitized = sanitized.replace(/<foreignObject[\s\S]*?>[\s\S]*?<\/foreignObject>/gi, '');
+    sanitized = sanitized.replace(
+      /<foreignObject[\s\S]*?>[\s\S]*?<\/foreignObject>/gi,
+      "",
+    );
     // Remove <image ... />
-    sanitized = sanitized.replace(/<image[\s\S]*?>/gi, '');
+    sanitized = sanitized.replace(/<image[\s\S]*?>/gi, "");
     // Remove inline event handlers (on*)
-    sanitized = sanitized.replace(/\s+on[a-z]+\s*=\s*(['"]).*?\1/gi, '');
-    sanitized = sanitized.replace(/\s+on[a-z]+\s*=\s*[^\s>]+/gi, '');
+    sanitized = sanitized.replace(/\s+on[a-z]+\s*=\s*(['"]).*?\1/gi, "");
+    sanitized = sanitized.replace(/\s+on[a-z]+\s*=\s*[^\s>]+/gi, "");
     // Remove javascript: URLs in href/xlink:href
-    sanitized = sanitized.replace(/(href|xlink:href)\s*=\s*(['"])javascript:.*?\2/gi, '');
+    sanitized = sanitized.replace(
+      /(href|xlink:href)\s*=\s*(['"])javascript:.*?\2/gi,
+      "",
+    );
     return sanitized;
   }
 
@@ -49,9 +55,17 @@ export class VectorTransformer {
   static transformIcon(token: IconToken, theme?: Theme): VectorIRNode {
     let viewBox = { x: 0, y: 0, width: 24, height: 24 };
     if (token.viewBox) {
-      const parts = token.viewBox.trim().split(/[\s,]+/).map(Number);
-      if (parts.length === 4 && parts.every(p => !isNaN(p))) {
-        viewBox = { x: parts[0], y: parts[1], width: parts[2], height: parts[3] };
+      const parts = token.viewBox
+        .trim()
+        .split(/[\s,]+/)
+        .map(Number);
+      if (parts.length === 4 && parts.every((p) => !isNaN(p))) {
+        viewBox = {
+          x: parts[0],
+          y: parts[1],
+          width: parts[2],
+          height: parts[3],
+        };
       }
     }
 
@@ -69,13 +83,17 @@ export class VectorTransformer {
       rawPaths = VectorTransformer.parseSvgPaths(token.svg);
     }
 
-    const irPaths: VectorIRPath[] = rawPaths.map(p => {
-      let fill = p.fill ? VectorTransformer.resolveColor(p.fill, token.colorBindings, theme) : undefined;
-      const stroke = p.stroke ? VectorTransformer.resolveColor(p.stroke, token.colorBindings, theme) : undefined;
+    const irPaths: VectorIRPath[] = rawPaths.map((p) => {
+      let fill = p.fill
+        ? VectorTransformer.resolveColor(p.fill, token.colorBindings, theme)
+        : undefined;
+      const stroke = p.stroke
+        ? VectorTransformer.resolveColor(p.stroke, token.colorBindings, theme)
+        : undefined;
 
       // Default fill to primary or onSurface if neither fill nor stroke is set
       if (!fill && !stroke) {
-        fill = theme ? toHexColor(theme.colorScheme.primary) : '#000000';
+        fill = theme ? toHexColor(theme.colorScheme.primary) : "#000000";
       }
 
       let strokeWidth = p.strokeWidth;
@@ -93,7 +111,7 @@ export class VectorTransformer {
         strokeLinecap: p.strokeLinecap,
         strokeLinejoin: p.strokeLinejoin,
         fillRule: p.fillRule,
-        opacity: p.opacity
+        opacity: p.opacity,
       };
     });
 
@@ -103,7 +121,7 @@ export class VectorTransformer {
       width,
       height,
       viewBox,
-      paths: irPaths
+      paths: irPaths,
     };
   }
 
@@ -123,18 +141,23 @@ export class VectorTransformer {
 
       const fillMatch = /fill\s*=\s*(['"])(.*?)\1/i.exec(fullElement);
       const strokeMatch = /stroke\s*=\s*(['"])(.*?)\1/i.exec(fullElement);
-      const strokeWidthMatch = /stroke-width\s*=\s*(['"])(.*?)\1/i.exec(fullElement);
+      const strokeWidthMatch = /stroke-width\s*=\s*(['"])(.*?)\1/i.exec(
+        fullElement,
+      );
 
       paths.push({
         d,
         fill: fillMatch ? fillMatch[2] : undefined,
         stroke: strokeMatch ? strokeMatch[2] : undefined,
-        strokeWidth: strokeWidthMatch ? parseFloat(strokeWidthMatch[2]) : undefined
+        strokeWidth: strokeWidthMatch
+          ? parseFloat(strokeWidthMatch[2])
+          : undefined,
       });
     }
 
     // Match rect x="..." y="..." width="..." height="..."
-    const rectRegex = /<rect[^>]*\sx\s*=\s*(['"])(.*?)\1[^>]*\sy\s*=\s*(['"])(.*?)\1[^>]*\swidth\s*=\s*(['"])(.*?)\1[^>]*\sheight\s*=\s*(['"])(.*?)\1[^>]*\/?>/gi;
+    const rectRegex =
+      /<rect[^>]*\sx\s*=\s*(['"])(.*?)\1[^>]*\sy\s*=\s*(['"])(.*?)\1[^>]*\swidth\s*=\s*(['"])(.*?)\1[^>]*\sheight\s*=\s*(['"])(.*?)\1[^>]*\/?>/gi;
     while ((match = rectRegex.exec(cleanSvg)) !== null) {
       const x = parseFloat(match[2]);
       const y = parseFloat(match[4]);
@@ -145,12 +168,15 @@ export class VectorTransformer {
     }
 
     // Match circle cx="..." cy="..." r="..."
-    const circleRegex = /<circle[^>]*\scx\s*=\s*(['"])(.*?)\1[^>]*\scy\s*=\s*(['"])(.*?)\1[^>]*\sr\s*=\s*(['"])(.*?)\1[^>]*\/?>/gi;
+    const circleRegex =
+      /<circle[^>]*\scx\s*=\s*(['"])(.*?)\1[^>]*\scy\s*=\s*(['"])(.*?)\1[^>]*\sr\s*=\s*(['"])(.*?)\1[^>]*\/?>/gi;
     while ((match = circleRegex.exec(cleanSvg)) !== null) {
       const cx = parseFloat(match[2]);
       const cy = parseFloat(match[4]);
       const r = parseFloat(match[6]);
-      const d = `M ${cx - r} ${cy} a ${r} ${r} 0 1 0 ${2 * r} 0 a ${r} ${r} 0 1 0 ${-2 * r} 0`;
+      const d = `M ${cx - r} ${cy} a ${r} ${r} 0 1 0 ${
+        2 * r
+      } 0 a ${r} ${r} 0 1 0 ${-2 * r} 0`;
       paths.push({ d });
     }
 
@@ -160,12 +186,16 @@ export class VectorTransformer {
   /**
    * Resolves color references / bindings to explicit Hex colors using Theme ColorScheme
    */
-  static resolveColor(colorVal: unknown, bindings?: Record<string, string>, theme?: Theme): string {
-    if (typeof colorVal !== 'string') {
+  static resolveColor(
+    colorVal: unknown,
+    bindings?: Record<string, string>,
+    theme?: Theme,
+  ): string {
+    if (typeof colorVal !== "string") {
       return toHexColor(colorVal as Parameters<typeof toHexColor>[0]);
     }
 
-    if (colorVal === 'none' || colorVal === 'transparent') {
+    if (colorVal === "none" || colorVal === "transparent") {
       return colorVal;
     }
 
@@ -176,22 +206,24 @@ export class VectorTransformer {
     }
 
     // Strip theme prefix if present (e.g. "theme.colorScheme.primary" -> "primary")
-    resolvedRole = resolvedRole.replace(/^theme\.colorScheme\./, '');
+    resolvedRole = resolvedRole.replace(/^theme\.colorScheme\./, "");
 
     if (theme && theme.colorScheme) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const cs = theme.colorScheme as Record<string, any>;
+      const cs = theme.colorScheme as unknown as Record<string, unknown>;
       if (cs[resolvedRole] !== undefined) {
-        return toHexColor(cs[resolvedRole]);
+        return toHexColor(cs[resolvedRole] as Parameters<typeof toHexColor>[0]);
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const semanticRoles = cs.semanticRoles as Record<string, any> | undefined;
+      const semanticRoles = cs.semanticRoles as
+        | Record<string, unknown>
+        | undefined;
       if (semanticRoles && semanticRoles[resolvedRole] !== undefined) {
-        return toHexColor(semanticRoles[resolvedRole]);
+        return toHexColor(
+          semanticRoles[resolvedRole] as Parameters<typeof toHexColor>[0],
+        );
       }
     }
 
-    if (colorVal.startsWith('#')) {
+    if (colorVal.startsWith("#")) {
       return colorVal;
     }
 

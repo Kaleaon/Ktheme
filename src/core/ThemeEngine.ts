@@ -1,6 +1,6 @@
 /**
  * Ktheme Engine - Core theme management system
- * 
+ *
  * Provides functionality to register, validate, export, and import themes
  */
 
@@ -13,12 +13,12 @@ import {
   ThemeValidationIssue,
   ThemeValidationResult,
   ThemeValidationSeverity,
-  VisualEffects
-} from './types';
-import { contrastRatio, normalizeColor } from '../utils/colors';
-import { resolveAccessibilitySettings } from '../accessibility/defaults';
-import { validateComponentOverridePolicy } from '../adaptation/apply';
-import { SCHEMA_VERSION, migrateTheme } from './migrations';
+  VisualEffects,
+} from "./types";
+import { contrastRatio, normalizeColor } from "../utils/colors";
+import { resolveAccessibilitySettings } from "../accessibility/defaults";
+import { validateComponentOverridePolicy } from "../adaptation/apply";
+import { SCHEMA_VERSION, migrateTheme } from "./migrations";
 
 export class ThemeEngine {
   private themes: Map<string, Theme> = new Map();
@@ -30,9 +30,9 @@ export class ThemeEngine {
   registerTheme(theme: Theme): void {
     const validation = this.validateTheme(theme);
     if (!validation.valid) {
-      throw new Error(`Invalid theme: ${validation.errors.join(', ')}`);
+      throw new Error(`Invalid theme: ${validation.errors.join(", ")}`);
     }
-    
+
     this.themes.set(theme.metadata.id, theme);
   }
 
@@ -78,11 +78,14 @@ export class ThemeEngine {
     return this.themes.delete(id);
   }
 
-
   /**
    * Create a derived theme with a specific adaptation profile.
    */
-  createAdaptedTheme(baseThemeId: string, adaptation: ThemeAdaptation, newThemeId?: string): Theme {
+  createAdaptedTheme(
+    baseThemeId: string,
+    adaptation: ThemeAdaptation,
+    newThemeId?: string,
+  ): Theme {
     const base = this.getTheme(baseThemeId);
     if (!base) {
       throw new Error(`Theme not found: ${baseThemeId}`);
@@ -95,20 +98,22 @@ export class ThemeEngine {
         ...base.metadata,
         id: newThemeId ?? `${base.metadata.id}-adapted`,
         name: `${base.metadata.name} Adapted`,
-        updatedAt: now
+        updatedAt: now,
       },
-      adaptation
+      adaptation,
     };
 
     this.registerTheme(derivedTheme);
     return derivedTheme;
   }
 
-
   /**
    * Resolve effects for runtime conditions such as reduced motion preferences.
    */
-  resolveEffectsForRuntime(theme: Theme, options?: { prefersReducedMotion?: boolean }): VisualEffects | undefined {
+  resolveEffectsForRuntime(
+    theme: Theme,
+    options?: { prefersReducedMotion?: boolean },
+  ): VisualEffects | undefined {
     if (!theme.effects) return undefined;
 
     const prefersReducedMotion = options?.prefersReducedMotion ?? false;
@@ -116,16 +121,22 @@ export class ThemeEngine {
 
     if (prefersReducedMotion) {
       if (resolved.animations?.enabled) {
-        const policy = resolved.animations.reducedMotionPolicy ?? 'reduce';
-        if (policy === 'disable') {
+        const policy = resolved.animations.reducedMotionPolicy ?? "reduce";
+        if (policy === "disable") {
           resolved.animations.enabled = false;
-        } else if (policy === 'reduce') {
-          resolved.animations.duration = Math.max(80, Math.round(resolved.animations.duration * 0.35));
+        } else if (policy === "reduce") {
+          resolved.animations.duration = Math.max(
+            80,
+            Math.round(resolved.animations.duration * 0.35),
+          );
         }
       }
 
       if (resolved.transitions?.enabled) {
-        resolved.transitions.duration = Math.max(80, Math.round(resolved.transitions.duration * 0.4));
+        resolved.transitions.duration = Math.max(
+          80,
+          Math.round(resolved.transitions.duration * 0.4),
+        );
       }
 
       if (resolved.shimmer?.enabled) {
@@ -141,7 +152,7 @@ export class ThemeEngine {
    */
   resolveAccessibilityForRuntime(
     theme: Theme,
-    preferences?: AccessibilityRuntimePreferences
+    preferences?: AccessibilityRuntimePreferences,
   ): ResolvedAccessibilitySettings {
     return resolveAccessibilitySettings(theme, preferences);
   }
@@ -156,46 +167,56 @@ export class ThemeEngine {
     };
     const addError = (
       message: string,
-      code: ThemeValidationIssue['code'],
-      path?: string
-    ): void => addIssue({ severity: 'error', message, code, path });
+      code: ThemeValidationIssue["code"],
+      path?: string,
+    ): void => addIssue({ severity: "error", message, code, path });
     const addWarning = (
       message: string,
-      code: ThemeValidationIssue['code'],
-      path?: string
-    ): void => addIssue({ severity: 'warning', message, code, path });
+      code: ThemeValidationIssue["code"],
+      path?: string,
+    ): void => addIssue({ severity: "warning", message, code, path });
     const validateColorField = (color: unknown, path: string): void => {
       try {
-        normalizeColor(color as Theme['colorScheme']['primary']);
+        normalizeColor(color as Theme["colorScheme"]["primary"]);
       } catch (error) {
         addError(
           `Invalid color at ${path}: ${(error as Error).message}`,
-          'invalid-token',
-          path
+          "invalid-token",
+          path,
         );
       }
     };
     const validateRange = (
       value: number | undefined,
       path: string,
-      options: { min?: number; max?: number; minExclusive?: number; maxExclusive?: number; message: string }
+      options: {
+        min?: number;
+        max?: number;
+        minExclusive?: number;
+        maxExclusive?: number;
+        message: string;
+      },
     ): void => {
       if (value === undefined) return;
       if (!Number.isFinite(value)) {
-        addError(`${options.message} (must be a finite number)`, 'invalid-effects', path);
+        addError(
+          `${options.message} (must be a finite number)`,
+          "invalid-effects",
+          path,
+        );
         return;
       }
       if (options.min !== undefined && value < options.min) {
-        addError(options.message, 'invalid-effects', path);
+        addError(options.message, "invalid-effects", path);
       }
       if (options.max !== undefined && value > options.max) {
-        addError(options.message, 'invalid-effects', path);
+        addError(options.message, "invalid-effects", path);
       }
       if (options.minExclusive !== undefined && value <= options.minExclusive) {
-        addError(options.message, 'invalid-effects', path);
+        addError(options.message, "invalid-effects", path);
       }
       if (options.maxExclusive !== undefined && value >= options.maxExclusive) {
-        addError(options.message, 'invalid-effects', path);
+        addError(options.message, "invalid-effects", path);
       }
     };
 
@@ -203,105 +224,205 @@ export class ThemeEngine {
       obj: unknown,
       allowed: string[],
       path: string,
-      code: ThemeValidationIssue['code'] = 'unknown-property',
-      severity: ThemeValidationSeverity = 'warning'
+      code: ThemeValidationIssue["code"] = "unknown-property",
+      severity: ThemeValidationSeverity = "warning",
     ): void => {
-      if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return;
+      if (!obj || typeof obj !== "object" || Array.isArray(obj)) return;
       const allowedSet = new Set(allowed);
       for (const key of Object.keys(obj as object)) {
         if (!allowedSet.has(key)) {
           addIssue({
             severity,
-            message: `Unrecognized or unmapped property '${key}' at ${path ? path + '.' + key : key}`,
+            message: `Unrecognized or unmapped property '${key}' at ${
+              path ? path + "." + key : key
+            }`,
             code,
-            path: path ? `${path}.${key}` : key
+            path: path ? `${path}.${key}` : key,
           });
         }
       }
     };
 
     // Strict validation for top-level keys
-    checkAllowedKeys(theme, [
-      'schemaVersion',
-      '$schema',
-      'metadata',
-      'darkMode',
-      'colorScheme',
-      'effects',
-      'typography',
-      'tokens',
-      'adaptation',
-      'accessibility',
-      'layouts'
-    ], '');
+    checkAllowedKeys(
+      theme,
+      [
+        "schemaVersion",
+        "$schema",
+        "metadata",
+        "darkMode",
+        "colorScheme",
+        "effects",
+        "typography",
+        "tokens",
+        "adaptation",
+        "accessibility",
+        "layouts",
+      ],
+      "",
+    );
 
     // Validate schema version
     if (theme.schemaVersion === undefined) {
-      addError('Schema version is required', 'missing-schema', 'schemaVersion');
+      addError("Schema version is required", "missing-schema", "schemaVersion");
     } else if (theme.schemaVersion !== SCHEMA_VERSION) {
-      addError(`Unsupported schema version: ${theme.schemaVersion}`, 'invalid-schema', 'schemaVersion');
+      addError(
+        `Unsupported schema version: ${theme.schemaVersion}`,
+        "invalid-schema",
+        "schemaVersion",
+      );
     }
 
     // Validate metadata
     if (!theme.metadata) {
-      addError('Theme metadata is required', 'missing-metadata', 'metadata');
+      addError("Theme metadata is required", "missing-metadata", "metadata");
     } else {
-      checkAllowedKeys(theme.metadata, [
-        'id', 'name', 'description', 'author', 'version', 'tags', 'createdAt', 'updatedAt'
-      ], 'metadata');
-      if (!theme.metadata.id) addError('Theme ID is required', 'missing-metadata', 'metadata.id');
-      if (!theme.metadata.name) addError('Theme name is required', 'missing-metadata', 'metadata.name');
-      if (!theme.metadata.description) addError('Theme description is required', 'missing-metadata', 'metadata.description');
-      if (!theme.metadata.author) addError('Theme author is required', 'missing-metadata', 'metadata.author');
-      if (!theme.metadata.version) addError('Theme version is required', 'missing-metadata', 'metadata.version');
+      checkAllowedKeys(
+        theme.metadata,
+        [
+          "id",
+          "name",
+          "description",
+          "author",
+          "version",
+          "tags",
+          "createdAt",
+          "updatedAt",
+        ],
+        "metadata",
+      );
+      if (!theme.metadata.id)
+        addError("Theme ID is required", "missing-metadata", "metadata.id");
+      if (!theme.metadata.name)
+        addError("Theme name is required", "missing-metadata", "metadata.name");
+      if (!theme.metadata.description)
+        addError(
+          "Theme description is required",
+          "missing-metadata",
+          "metadata.description",
+        );
+      if (!theme.metadata.author)
+        addError(
+          "Theme author is required",
+          "missing-metadata",
+          "metadata.author",
+        );
+      if (!theme.metadata.version)
+        addError(
+          "Theme version is required",
+          "missing-metadata",
+          "metadata.version",
+        );
       if (!Array.isArray(theme.metadata.tags)) {
-        addError('Theme tags must be an array of strings', 'missing-metadata', 'metadata.tags');
-      } else if (theme.metadata.tags.some(tag => typeof tag !== 'string')) {
-        addError('Theme tags must be an array of strings', 'missing-metadata', 'metadata.tags');
+        addError(
+          "Theme tags must be an array of strings",
+          "missing-metadata",
+          "metadata.tags",
+        );
+      } else if (theme.metadata.tags.some((tag) => typeof tag !== "string")) {
+        addError(
+          "Theme tags must be an array of strings",
+          "missing-metadata",
+          "metadata.tags",
+        );
       }
     }
 
     // Validate color scheme
     if (!theme.colorScheme) {
-      addError('Color scheme is required', 'missing-color', 'colorScheme');
+      addError("Color scheme is required", "missing-color", "colorScheme");
     } else {
-      checkAllowedKeys(theme.colorScheme, [
-        'primary', 'onPrimary', 'primaryContainer', 'onPrimaryContainer',
-        'secondary', 'onSecondary', 'secondaryContainer', 'onSecondaryContainer',
-        'tertiary', 'onTertiary', 'tertiaryContainer', 'onTertiaryContainer',
-        'error', 'onError', 'errorContainer', 'onErrorContainer',
-        'background', 'onBackground', 'surface', 'onSurface', 'surfaceVariant', 'onSurfaceVariant',
-        'outline', 'outlineVariant', 'scrim', 'inverseSurface', 'inverseOnSurface', 'inversePrimary',
-        'stateLayers', 'semanticRoles'
-      ], 'colorScheme');
+      checkAllowedKeys(
+        theme.colorScheme,
+        [
+          "primary",
+          "onPrimary",
+          "primaryContainer",
+          "onPrimaryContainer",
+          "secondary",
+          "onSecondary",
+          "secondaryContainer",
+          "onSecondaryContainer",
+          "tertiary",
+          "onTertiary",
+          "tertiaryContainer",
+          "onTertiaryContainer",
+          "error",
+          "onError",
+          "errorContainer",
+          "onErrorContainer",
+          "background",
+          "onBackground",
+          "surface",
+          "onSurface",
+          "surfaceVariant",
+          "onSurfaceVariant",
+          "outline",
+          "outlineVariant",
+          "scrim",
+          "inverseSurface",
+          "inverseOnSurface",
+          "inversePrimary",
+          "stateLayers",
+          "semanticRoles",
+        ],
+        "colorScheme",
+      );
 
       const requiredColors = [
-        'primary', 'onPrimary', 'background', 'onBackground',
-        'surface', 'onSurface', 'error', 'onError'
+        "primary",
+        "onPrimary",
+        "background",
+        "onBackground",
+        "surface",
+        "onSurface",
+        "error",
+        "onError",
       ];
-      
+
       for (const color of requiredColors) {
         if (!(color in theme.colorScheme)) {
-          addError(`Missing required color: ${color}`, 'missing-color', `colorScheme.${color}`);
+          addError(
+            `Missing required color: ${color}`,
+            "missing-color",
+            `colorScheme.${color}`,
+          );
         } else {
-          validateColorField(theme.colorScheme[color as keyof typeof theme.colorScheme], `colorScheme.${color}`);
+          validateColorField(
+            theme.colorScheme[color as keyof typeof theme.colorScheme],
+            `colorScheme.${color}`,
+          );
         }
       }
 
       Object.entries(theme.colorScheme).forEach(([key, value]) => {
-        if (key === 'semanticRoles' || key === 'stateLayers') return;
+        if (key === "semanticRoles" || key === "stateLayers") return;
         validateColorField(value, `colorScheme.${key}`);
       });
     }
 
     const roles = theme.colorScheme?.semanticRoles;
     if (roles) {
-      checkAllowedKeys(roles, [
-        'success', 'onSuccess', 'successContainer', 'onSuccessContainer',
-        'warning', 'onWarning', 'warningContainer', 'onWarningContainer',
-        'info', 'onInfo', 'infoContainer', 'onInfoContainer',
-        'critical', 'onCritical'
-      ], 'colorScheme.semanticRoles');
+      checkAllowedKeys(
+        roles,
+        [
+          "success",
+          "onSuccess",
+          "successContainer",
+          "onSuccessContainer",
+          "warning",
+          "onWarning",
+          "warningContainer",
+          "onWarningContainer",
+          "info",
+          "onInfo",
+          "infoContainer",
+          "onInfoContainer",
+          "critical",
+          "onCritical",
+        ],
+        "colorScheme.semanticRoles",
+      );
       Object.entries(roles).forEach(([key, value]) => {
         if (value !== undefined) {
           validateColorField(value, `colorScheme.semanticRoles.${key}`);
@@ -311,7 +432,11 @@ export class ThemeEngine {
 
     const layers = theme.colorScheme?.stateLayers;
     if (layers) {
-      checkAllowedKeys(layers, ['hover', 'pressed', 'focused', 'dragged'], 'colorScheme.stateLayers');
+      checkAllowedKeys(
+        layers,
+        ["hover", "pressed", "focused", "dragged"],
+        "colorScheme.stateLayers",
+      );
       Object.entries(layers).forEach(([key, value]) => {
         if (value !== undefined) {
           validateColorField(value, `colorScheme.stateLayers.${key}`);
@@ -320,110 +445,249 @@ export class ThemeEngine {
     }
 
     if (theme.effects) {
-      checkAllowedKeys(theme.effects, [
-        'metallic', 'shadows', 'gradients', 'shimmer', 'blur',
-        'animations', 'transitions', 'overlays', 'focusRing', 'noise'
-      ], 'effects');
+      checkAllowedKeys(
+        theme.effects,
+        [
+          "metallic",
+          "shadows",
+          "gradients",
+          "shimmer",
+          "blur",
+          "animations",
+          "transitions",
+          "overlays",
+          "focusRing",
+          "noise",
+        ],
+        "effects",
+      );
     }
 
     if (theme.typography) {
-      checkAllowedKeys(theme.typography, [
-        'fontFamily', 'displayFontFamily', 'displayFont', 'fontSize', 'fontWeight', 'lineHeight', 'letterSpacing'
-      ], 'typography');
+      checkAllowedKeys(
+        theme.typography,
+        [
+          "fontFamily",
+          "displayFontFamily",
+          "displayFont",
+          "fontSize",
+          "fontWeight",
+          "lineHeight",
+          "letterSpacing",
+        ],
+        "typography",
+      );
       if (theme.typography.fontSize) {
-        checkAllowedKeys(theme.typography.fontSize, ['small', 'medium', 'large', 'xlarge'], 'typography.fontSize');
+        checkAllowedKeys(
+          theme.typography.fontSize,
+          ["small", "medium", "large", "xlarge"],
+          "typography.fontSize",
+        );
       }
       if (theme.typography.fontWeight) {
-        checkAllowedKeys(theme.typography.fontWeight, ['light', 'regular', 'medium', 'bold'], 'typography.fontWeight');
+        checkAllowedKeys(
+          theme.typography.fontWeight,
+          ["light", "regular", "medium", "bold"],
+          "typography.fontWeight",
+        );
       }
     }
 
     if (theme.tokens) {
-      checkAllowedKeys(theme.tokens, ['density', 'corners'], 'tokens');
+      checkAllowedKeys(theme.tokens, ["density", "corners"], "tokens");
       if (theme.tokens.density) {
-        checkAllowedKeys(theme.tokens.density, ['scale', 'baseSpacing'], 'tokens.density');
+        checkAllowedKeys(
+          theme.tokens.density,
+          ["scale", "baseSpacing"],
+          "tokens.density",
+        );
       }
       if (theme.tokens.corners) {
-        checkAllowedKeys(theme.tokens.corners, ['small', 'medium', 'large', 'xlarge'], 'tokens.corners');
+        checkAllowedKeys(
+          theme.tokens.corners,
+          ["small", "medium", "large", "xlarge"],
+          "tokens.corners",
+        );
       }
     }
 
     if (theme.adaptation) {
-      checkAllowedKeys(theme.adaptation, [
-        'layout', 'icons', 'desktopAdaptation', 'componentOverrides', 'assets'
-      ], 'adaptation');
+      checkAllowedKeys(
+        theme.adaptation,
+        [
+          "layout",
+          "icons",
+          "desktopAdaptation",
+          "componentOverrides",
+          "assets",
+        ],
+        "adaptation",
+      );
 
       if (theme.adaptation.assets) {
-        checkAllowedKeys(theme.adaptation.assets, ['wallpaper', 'iconSprite', 'fontFamilyOverride'], 'adaptation.assets');
+        checkAllowedKeys(
+          theme.adaptation.assets,
+          ["wallpaper", "iconSprite", "fontFamilyOverride"],
+          "adaptation.assets",
+        );
       }
 
       if (theme.adaptation.desktopAdaptation) {
         const da = theme.adaptation.desktopAdaptation;
-        checkAllowedKeys(da, ['windowChrome', 'menuBar', 'taskbar', 'cameraHud', 'sweep'], 'adaptation.desktopAdaptation');
+        checkAllowedKeys(
+          da,
+          ["windowChrome", "menuBar", "taskbar", "cameraHud", "sweep"],
+          "adaptation.desktopAdaptation",
+        );
 
         if (da.windowChrome) {
-          checkAllowedKeys(da.windowChrome, [
-            'titleBarHeight', 'headerStyle', 'cornerStyle', 'panelRadius', 'controlRadius', 'borderWidth', 'backdropBlur', 'shadow'
-          ], 'adaptation.desktopAdaptation.windowChrome');
+          checkAllowedKeys(
+            da.windowChrome,
+            [
+              "titleBarHeight",
+              "headerStyle",
+              "cornerStyle",
+              "panelRadius",
+              "controlRadius",
+              "borderWidth",
+              "backdropBlur",
+              "shadow",
+            ],
+            "adaptation.desktopAdaptation.windowChrome",
+          );
 
-          const numFields: Array<keyof typeof da.windowChrome> = ['titleBarHeight', 'panelRadius', 'controlRadius', 'borderWidth', 'backdropBlur'];
-          numFields.forEach(field => {
+          const numFields: Array<keyof typeof da.windowChrome> = [
+            "titleBarHeight",
+            "panelRadius",
+            "controlRadius",
+            "borderWidth",
+            "backdropBlur",
+          ];
+          numFields.forEach((field) => {
             const val = da.windowChrome![field];
-            if (val !== undefined && (typeof val !== 'number' || !Number.isFinite(val) || val < 0)) {
-              addError(`windowChrome.${field} must be a non-negative number`, 'invalid-adaptation', `adaptation.desktopAdaptation.windowChrome.${field}`);
+            if (
+              val !== undefined &&
+              (typeof val !== "number" || !Number.isFinite(val) || val < 0)
+            ) {
+              addError(
+                `windowChrome.${field} must be a non-negative number`,
+                "invalid-adaptation",
+                `adaptation.desktopAdaptation.windowChrome.${field}`,
+              );
             }
           });
         }
 
         if (da.menuBar) {
-          checkAllowedKeys(da.menuBar, [
-            'height', 'fontSize', 'letterSpacing', 'textTransform', 'dropdownRadius', 'dropdownShadow'
-          ], 'adaptation.desktopAdaptation.menuBar');
+          checkAllowedKeys(
+            da.menuBar,
+            [
+              "height",
+              "fontSize",
+              "letterSpacing",
+              "textTransform",
+              "dropdownRadius",
+              "dropdownShadow",
+            ],
+            "adaptation.desktopAdaptation.menuBar",
+          );
 
-          const numFields: Array<keyof typeof da.menuBar> = ['height', 'fontSize', 'dropdownRadius'];
-          numFields.forEach(field => {
+          const numFields: Array<keyof typeof da.menuBar> = [
+            "height",
+            "fontSize",
+            "dropdownRadius",
+          ];
+          numFields.forEach((field) => {
             const val = da.menuBar![field];
-            if (val !== undefined && (typeof val !== 'number' || !Number.isFinite(val) || val < 0)) {
-              addError(`menuBar.${field} must be a non-negative number`, 'invalid-adaptation', `adaptation.desktopAdaptation.menuBar.${field}`);
+            if (
+              val !== undefined &&
+              (typeof val !== "number" || !Number.isFinite(val) || val < 0)
+            ) {
+              addError(
+                `menuBar.${field} must be a non-negative number`,
+                "invalid-adaptation",
+                `adaptation.desktopAdaptation.menuBar.${field}`,
+              );
             }
           });
         }
 
         if (da.taskbar) {
-          checkAllowedKeys(da.taskbar, [
-            'height', 'buttonRadius', 'dockAlignment', 'quickChatBorderRadius'
-          ], 'adaptation.desktopAdaptation.taskbar');
+          checkAllowedKeys(
+            da.taskbar,
+            [
+              "height",
+              "buttonRadius",
+              "dockAlignment",
+              "quickChatBorderRadius",
+            ],
+            "adaptation.desktopAdaptation.taskbar",
+          );
 
-          const numFields: Array<keyof typeof da.taskbar> = ['height', 'buttonRadius', 'quickChatBorderRadius'];
-          numFields.forEach(field => {
+          const numFields: Array<keyof typeof da.taskbar> = [
+            "height",
+            "buttonRadius",
+            "quickChatBorderRadius",
+          ];
+          numFields.forEach((field) => {
             const val = da.taskbar![field];
-            if (val !== undefined && (typeof val !== 'number' || !Number.isFinite(val) || val < 0)) {
-              addError(`taskbar.${field} must be a non-negative number`, 'invalid-adaptation', `adaptation.desktopAdaptation.taskbar.${field}`);
+            if (
+              val !== undefined &&
+              (typeof val !== "number" || !Number.isFinite(val) || val < 0)
+            ) {
+              addError(
+                `taskbar.${field} must be a non-negative number`,
+                "invalid-adaptation",
+                `adaptation.desktopAdaptation.taskbar.${field}`,
+              );
             }
           });
         }
 
         if (da.cameraHud) {
-          checkAllowedKeys(da.cameraHud, [
-            'panelRadius', 'buttonRadius', 'shadow'
-          ], 'adaptation.desktopAdaptation.cameraHud');
+          checkAllowedKeys(
+            da.cameraHud,
+            ["panelRadius", "buttonRadius", "shadow"],
+            "adaptation.desktopAdaptation.cameraHud",
+          );
 
-          const numFields: Array<keyof typeof da.cameraHud> = ['panelRadius', 'buttonRadius'];
-          numFields.forEach(field => {
+          const numFields: Array<keyof typeof da.cameraHud> = [
+            "panelRadius",
+            "buttonRadius",
+          ];
+          numFields.forEach((field) => {
             const val = da.cameraHud![field];
-            if (val !== undefined && (typeof val !== 'number' || !Number.isFinite(val) || val < 0)) {
-              addError(`cameraHud.${field} must be a non-negative number`, 'invalid-adaptation', `adaptation.desktopAdaptation.cameraHud.${field}`);
+            if (
+              val !== undefined &&
+              (typeof val !== "number" || !Number.isFinite(val) || val < 0)
+            ) {
+              addError(
+                `cameraHud.${field} must be a non-negative number`,
+                "invalid-adaptation",
+                `adaptation.desktopAdaptation.cameraHud.${field}`,
+              );
             }
           });
         }
 
         if (da.sweep) {
-          checkAllowedKeys(da.sweep, [
-            'elbowWidth', 'titleCapRadius', 'accentBand', 'showElbowBar'
-          ], 'adaptation.desktopAdaptation.sweep');
+          checkAllowedKeys(
+            da.sweep,
+            ["elbowWidth", "titleCapRadius", "accentBand", "showElbowBar"],
+            "adaptation.desktopAdaptation.sweep",
+          );
 
-          if (da.sweep.elbowWidth !== undefined && (typeof da.sweep.elbowWidth !== 'number' || !Number.isFinite(da.sweep.elbowWidth) || da.sweep.elbowWidth < 0)) {
-            addError('sweep.elbowWidth must be a non-negative number', 'invalid-adaptation', 'adaptation.desktopAdaptation.sweep.elbowWidth');
+          if (
+            da.sweep.elbowWidth !== undefined &&
+            (typeof da.sweep.elbowWidth !== "number" ||
+              !Number.isFinite(da.sweep.elbowWidth) ||
+              da.sweep.elbowWidth < 0)
+          ) {
+            addError(
+              "sweep.elbowWidth must be a non-negative number",
+              "invalid-adaptation",
+              "adaptation.desktopAdaptation.sweep.elbowWidth",
+            );
           }
         }
       }
@@ -431,39 +695,77 @@ export class ThemeEngine {
 
     if (Array.isArray(theme.layouts)) {
       theme.layouts.forEach((layout, index) => {
-        checkAllowedKeys(layout, [
-          'id', 'name', 'navModel', 'cornerProfile', 'densityProfile', 'motionProfile',
-          'font', 'displayFont', 'cardLook', 'headLook', 'segLook', 'description'
-        ], `layouts[${index}]`);
+        checkAllowedKeys(
+          layout,
+          [
+            "id",
+            "name",
+            "navModel",
+            "cornerProfile",
+            "densityProfile",
+            "motionProfile",
+            "font",
+            "displayFont",
+            "cardLook",
+            "headLook",
+            "segLook",
+            "description",
+          ],
+          `layouts[${index}]`,
+        );
         if (!layout.id) {
-          addError('Layout spec id is required', 'invalid-adaptation', `layouts[${index}].id`);
+          addError(
+            "Layout spec id is required",
+            "invalid-adaptation",
+            `layouts[${index}].id`,
+          );
         }
       });
     }
 
     if (theme.effects?.metallic) {
-      validateRange(theme.effects.metallic.intensity, 'effects.metallic.intensity', {
-        min: 0,
-        max: 1,
-        message: 'Metallic intensity must be between 0 and 1'
-      });
+      validateRange(
+        theme.effects.metallic.intensity,
+        "effects.metallic.intensity",
+        {
+          min: 0,
+          max: 1,
+          message: "Metallic intensity must be between 0 and 1",
+        },
+      );
 
-      validateColorField(theme.effects.metallic.gradient.base, 'effects.metallic.gradient.base');
-      validateColorField(theme.effects.metallic.gradient.highlight, 'effects.metallic.gradient.highlight');
-      validateColorField(theme.effects.metallic.gradient.shadow, 'effects.metallic.gradient.shadow');
-      validateColorField(theme.effects.metallic.gradient.shimmer, 'effects.metallic.gradient.shimmer');
+      validateColorField(
+        theme.effects.metallic.gradient.base,
+        "effects.metallic.gradient.base",
+      );
+      validateColorField(
+        theme.effects.metallic.gradient.highlight,
+        "effects.metallic.gradient.highlight",
+      );
+      validateColorField(
+        theme.effects.metallic.gradient.shadow,
+        "effects.metallic.gradient.shadow",
+      );
+      validateColorField(
+        theme.effects.metallic.gradient.shimmer,
+        "effects.metallic.gradient.shimmer",
+      );
     }
 
     if (theme.effects?.shadows) {
-      validateRange(theme.effects.shadows.elevation, 'effects.shadows.elevation', {
+      validateRange(
+        theme.effects.shadows.elevation,
+        "effects.shadows.elevation",
+        {
+          min: 0,
+          message: "Shadow elevation must be greater than or equal to 0",
+        },
+      );
+      validateRange(theme.effects.shadows.blur, "effects.shadows.blur", {
         min: 0,
-        message: 'Shadow elevation must be greater than or equal to 0'
+        message: "Shadow blur must be greater than or equal to 0",
       });
-      validateRange(theme.effects.shadows.blur, 'effects.shadows.blur', {
-        min: 0,
-        message: 'Shadow blur must be greater than or equal to 0'
-      });
-      validateColorField(theme.effects.shadows.color, 'effects.shadows.color');
+      validateColorField(theme.effects.shadows.color, "effects.shadows.color");
     }
 
     if (theme.effects?.gradients) {
@@ -471,163 +773,257 @@ export class ThemeEngine {
         validateRange(stop.offset, `effects.gradients.stops[${index}].offset`, {
           min: 0,
           max: 1,
-          message: 'Gradient stop offset must be between 0 and 1'
+          message: "Gradient stop offset must be between 0 and 1",
         });
-        validateColorField(stop.color, `effects.gradients.stops[${index}].color`);
+        validateColorField(
+          stop.color,
+          `effects.gradients.stops[${index}].color`,
+        );
       });
     }
 
     if (theme.effects?.overlays) {
-      validateColorField(theme.effects.overlays.color, 'effects.overlays.color');
-      validateRange(theme.effects.overlays.opacity, 'effects.overlays.opacity', {
-        min: 0,
-        max: 1,
-        message: 'Overlay opacity must be between 0 and 1'
-      });
+      validateColorField(
+        theme.effects.overlays.color,
+        "effects.overlays.color",
+      );
+      validateRange(
+        theme.effects.overlays.opacity,
+        "effects.overlays.opacity",
+        {
+          min: 0,
+          max: 1,
+          message: "Overlay opacity must be between 0 and 1",
+        },
+      );
     }
 
     if (theme.effects?.focusRing) {
-      validateColorField(theme.effects.focusRing.color, 'effects.focusRing.color');
+      validateColorField(
+        theme.effects.focusRing.color,
+        "effects.focusRing.color",
+      );
     }
 
     if (theme.effects?.noise) {
-      validateRange(theme.effects.noise.opacity, 'effects.noise.opacity', {
+      validateRange(theme.effects.noise.opacity, "effects.noise.opacity", {
         min: 0,
         max: 1,
-        message: 'Noise opacity must be between 0 and 1'
+        message: "Noise opacity must be between 0 and 1",
       });
     }
 
     if (theme.effects?.blur) {
-      validateRange(theme.effects.blur.radius, 'effects.blur.radius', {
+      validateRange(theme.effects.blur.radius, "effects.blur.radius", {
         min: 0,
-        message: 'Blur radius must be greater than or equal to 0'
+        message: "Blur radius must be greater than or equal to 0",
       });
     }
 
     if (theme.effects?.animations) {
-      validateRange(theme.effects.animations.duration, 'effects.animations.duration', {
-        minExclusive: 0,
-        message: 'Animation duration must be greater than 0'
-      });
+      validateRange(
+        theme.effects.animations.duration,
+        "effects.animations.duration",
+        {
+          minExclusive: 0,
+          message: "Animation duration must be greater than 0",
+        },
+      );
     }
 
     if (theme.effects?.transitions) {
-      validateRange(theme.effects.transitions.duration, 'effects.transitions.duration', {
-        minExclusive: 0,
-        message: 'Transition duration must be greater than 0'
-      });
+      validateRange(
+        theme.effects.transitions.duration,
+        "effects.transitions.duration",
+        {
+          minExclusive: 0,
+          message: "Transition duration must be greater than 0",
+        },
+      );
     }
 
     if (theme.effects?.shimmer?.enabled) {
-      validateRange(theme.effects.shimmer.speed, 'effects.shimmer.speed', {
+      validateRange(theme.effects.shimmer.speed, "effects.shimmer.speed", {
         minExclusive: 0,
-        message: 'Shimmer speed must be greater than 0'
+        message: "Shimmer speed must be greater than 0",
       });
-      validateRange(theme.effects.shimmer.intensity, 'effects.shimmer.intensity', {
-        min: 0,
-        max: 1,
-        message: 'Shimmer intensity must be between 0 and 1'
-      });
+      validateRange(
+        theme.effects.shimmer.intensity,
+        "effects.shimmer.intensity",
+        {
+          min: 0,
+          max: 1,
+          message: "Shimmer intensity must be between 0 and 1",
+        },
+      );
     }
 
-    if (theme.adaptation?.layout?.spacingScale !== undefined && theme.adaptation.layout.spacingScale <= 0) {
-      addError('Layout spacingScale must be greater than 0', 'invalid-adaptation', 'adaptation.layout.spacingScale');
+    if (
+      theme.adaptation?.layout?.spacingScale !== undefined &&
+      theme.adaptation.layout.spacingScale <= 0
+    ) {
+      addError(
+        "Layout spacingScale must be greater than 0",
+        "invalid-adaptation",
+        "adaptation.layout.spacingScale",
+      );
     }
 
     if (theme.adaptation?.layout) {
       const { accessibility } = theme.adaptation.layout;
       if (!accessibility) {
-        addError('Layout accessibility profile is required when adaptation.layout is provided', 'invalid-adaptation', 'adaptation.layout.accessibility');
+        addError(
+          "Layout accessibility profile is required when adaptation.layout is provided",
+          "invalid-adaptation",
+          "adaptation.layout.accessibility",
+        );
       } else {
-        const requiredLandmarks: Array<keyof typeof accessibility.landmarks> = ['main', 'nav', 'header', 'footer'];
-        requiredLandmarks.forEach(key => {
+        const requiredLandmarks: Array<keyof typeof accessibility.landmarks> = [
+          "main",
+          "nav",
+          "header",
+          "footer",
+        ];
+        requiredLandmarks.forEach((key) => {
           if (!accessibility.landmarks?.[key]) {
-            addError(`Layout accessibility landmark ${key} is required`, 'invalid-adaptation', `adaptation.layout.accessibility.landmarks.${key}`);
+            addError(
+              `Layout accessibility landmark ${key} is required`,
+              "invalid-adaptation",
+              `adaptation.layout.accessibility.landmarks.${key}`,
+            );
           }
           if (!accessibility.naming?.[key]) {
-            addError(`Layout accessibility naming label ${key} is required`, 'invalid-adaptation', `adaptation.layout.accessibility.naming.${key}`);
+            addError(
+              `Layout accessibility naming label ${key} is required`,
+              "invalid-adaptation",
+              `adaptation.layout.accessibility.naming.${key}`,
+            );
           }
         });
 
         if (!accessibility.naming?.strategy) {
-          addError('Layout accessibility naming strategy is required', 'invalid-adaptation', 'adaptation.layout.accessibility.naming.strategy');
+          addError(
+            "Layout accessibility naming strategy is required",
+            "invalid-adaptation",
+            "adaptation.layout.accessibility.naming.strategy",
+          );
         }
 
         if (!accessibility.keyboard?.order) {
-          addError('Layout accessibility keyboard order is required', 'invalid-adaptation', 'adaptation.layout.accessibility.keyboard.order');
+          addError(
+            "Layout accessibility keyboard order is required",
+            "invalid-adaptation",
+            "adaptation.layout.accessibility.keyboard.order",
+          );
         }
 
         if (!accessibility.keyboard?.focusPolicy) {
-          addError('Layout accessibility focus policy is required', 'invalid-adaptation', 'adaptation.layout.accessibility.keyboard.focusPolicy');
+          addError(
+            "Layout accessibility focus policy is required",
+            "invalid-adaptation",
+            "adaptation.layout.accessibility.keyboard.focusPolicy",
+          );
         }
 
         if (accessibility.keyboard?.trapFocusWithinModals === undefined) {
-          addError('Layout accessibility trapFocusWithinModals is required', 'invalid-adaptation', 'adaptation.layout.accessibility.keyboard.trapFocusWithinModals');
+          addError(
+            "Layout accessibility trapFocusWithinModals is required",
+            "invalid-adaptation",
+            "adaptation.layout.accessibility.keyboard.trapFocusWithinModals",
+          );
         }
 
         if (!accessibility.liveRegion?.mode) {
-          addError('Layout accessibility live-region mode is required', 'invalid-adaptation', 'adaptation.layout.accessibility.liveRegion.mode');
+          addError(
+            "Layout accessibility live-region mode is required",
+            "invalid-adaptation",
+            "adaptation.layout.accessibility.liveRegion.mode",
+          );
         }
 
         if (accessibility.liveRegion?.atomic === undefined) {
-          addError('Layout accessibility live-region atomic is required', 'invalid-adaptation', 'adaptation.layout.accessibility.liveRegion.atomic');
+          addError(
+            "Layout accessibility live-region atomic is required",
+            "invalid-adaptation",
+            "adaptation.layout.accessibility.liveRegion.atomic",
+          );
         }
 
         if (!accessibility.liveRegion?.relevant) {
-          addError('Layout accessibility live-region relevant policy is required', 'invalid-adaptation', 'adaptation.layout.accessibility.liveRegion.relevant');
+          addError(
+            "Layout accessibility live-region relevant policy is required",
+            "invalid-adaptation",
+            "adaptation.layout.accessibility.liveRegion.relevant",
+          );
         }
       }
     }
 
-    if (theme.adaptation?.icons?.sizeScale !== undefined && theme.adaptation.icons.sizeScale <= 0) {
-      addError('Icon sizeScale must be greater than 0', 'invalid-adaptation', 'adaptation.icons.sizeScale');
+    if (
+      theme.adaptation?.icons?.sizeScale !== undefined &&
+      theme.adaptation.icons.sizeScale <= 0
+    ) {
+      addError(
+        "Icon sizeScale must be greater than 0",
+        "invalid-adaptation",
+        "adaptation.icons.sizeScale",
+      );
     }
 
     if (
-      theme.adaptation?.layout?.density === 'spacious' &&
+      theme.adaptation?.layout?.density === "spacious" &&
       theme.adaptation.layout.spacingScale !== undefined &&
       theme.adaptation.layout.spacingScale < 0.85
     ) {
       addWarning(
-        'Tiny spacingScale is likely incompatible with spacious density',
-        'invalid-adaptation',
-        'adaptation.layout.spacingScale'
+        "Tiny spacingScale is likely incompatible with spacious density",
+        "invalid-adaptation",
+        "adaptation.layout.spacingScale",
       );
     }
 
     if (theme.adaptation?.icons) {
       const { style, sizeScale, strokeWidth } = theme.adaptation.icons;
 
-      if ((style === 'outlined' || style === 'line') && sizeScale < 0.75) {
+      if ((style === "outlined" || style === "line") && sizeScale < 0.75) {
         addError(
           `Icon style ${style} requires sizeScale >= 0.75 for legibility`,
-          'invalid-adaptation',
-          'adaptation.icons.sizeScale'
+          "invalid-adaptation",
+          "adaptation.icons.sizeScale",
         );
       }
 
-      if ((style === 'outlined' || style === 'line') && strokeWidth !== undefined && (strokeWidth < 1 || strokeWidth > 3)) {
+      if (
+        (style === "outlined" || style === "line") &&
+        strokeWidth !== undefined &&
+        (strokeWidth < 1 || strokeWidth > 3)
+      ) {
         addError(
           `Icon style ${style} requires strokeWidth between 1 and 3`,
-          'invalid-adaptation',
-          'adaptation.icons.strokeWidth'
+          "invalid-adaptation",
+          "adaptation.icons.strokeWidth",
         );
       }
 
-      if (style === 'filled' && strokeWidth !== undefined && strokeWidth > 0.5) {
+      if (
+        style === "filled" &&
+        strokeWidth !== undefined &&
+        strokeWidth > 0.5
+      ) {
         addWarning(
-          'Filled icon style typically does not use visible strokeWidth values',
-          'invalid-adaptation',
-          'adaptation.icons.strokeWidth'
+          "Filled icon style typically does not use visible strokeWidth values",
+          "invalid-adaptation",
+          "adaptation.icons.strokeWidth",
         );
       }
     }
 
     if (theme.adaptation?.componentOverrides) {
-      const overrideIssues = validateComponentOverridePolicy(theme.adaptation.componentOverrides);
-      overrideIssues.forEach(issue => {
-        if (issue.severity === 'error') {
+      const overrideIssues = validateComponentOverridePolicy(
+        theme.adaptation.componentOverrides,
+      );
+      overrideIssues.forEach((issue) => {
+        if (issue.severity === "error") {
           addError(issue.message, issue.code, issue.path);
         } else {
           addWarning(issue.message, issue.code, issue.path);
@@ -635,21 +1031,42 @@ export class ThemeEngine {
       });
     }
 
-    const contrastPairs: Array<[
-      'primary' | 'secondary' | 'tertiary' | 'background' | 'surface' | 'surfaceVariant' | 'error',
-      'onPrimary' | 'onSecondary' | 'onTertiary' | 'onBackground' | 'onSurface' | 'onSurfaceVariant' | 'onError',
-      string
-    ]> = [
-      ['primary', 'onPrimary', 'primary/onPrimary'],
-      ['secondary', 'onSecondary', 'secondary/onSecondary'],
-      ['tertiary', 'onTertiary', 'tertiary/onTertiary'],
-      ['background', 'onBackground', 'background/onBackground'],
-      ['surface', 'onSurface', 'surface/onSurface'],
-      ['surfaceVariant', 'onSurfaceVariant', 'surfaceVariant/onSurfaceVariant'],
-      ['error', 'onError', 'error/onError']
+    const contrastPairs: Array<
+      [
+        (
+          | "primary"
+          | "secondary"
+          | "tertiary"
+          | "background"
+          | "surface"
+          | "surfaceVariant"
+          | "error"
+        ),
+        (
+          | "onPrimary"
+          | "onSecondary"
+          | "onTertiary"
+          | "onBackground"
+          | "onSurface"
+          | "onSurfaceVariant"
+          | "onError"
+        ),
+        string,
+      ]
+    > = [
+      ["primary", "onPrimary", "primary/onPrimary"],
+      ["secondary", "onSecondary", "secondary/onSecondary"],
+      ["tertiary", "onTertiary", "tertiary/onTertiary"],
+      ["background", "onBackground", "background/onBackground"],
+      ["surface", "onSurface", "surface/onSurface"],
+      ["surfaceVariant", "onSurfaceVariant", "surfaceVariant/onSurfaceVariant"],
+      ["error", "onError", "error/onError"],
     ];
 
-    const tryContrastRatio = (foreground: Color, background: Color): number | undefined => {
+    const tryContrastRatio = (
+      foreground: Color,
+      background: Color,
+    ): number | undefined => {
       try {
         return contrastRatio(foreground, background);
       } catch {
@@ -659,12 +1076,17 @@ export class ThemeEngine {
 
     if (theme.colorScheme) {
       contrastPairs.forEach(([base, on, label]) => {
-        const ratio = tryContrastRatio(theme.colorScheme[base], theme.colorScheme[on]);
+        const ratio = tryContrastRatio(
+          theme.colorScheme[base],
+          theme.colorScheme[on],
+        );
         if (ratio !== undefined && ratio < 4.5) {
           addWarning(
-            `Low contrast for ${label}: ${ratio.toFixed(2)} (recommended >= 4.5)`,
-            'low-contrast',
-            `colorScheme.${label}`
+            `Low contrast for ${label}: ${ratio.toFixed(
+              2,
+            )} (recommended >= 4.5)`,
+            "low-contrast",
+            `colorScheme.${label}`,
           );
         }
       });
@@ -672,59 +1094,97 @@ export class ThemeEngine {
 
     if (roles) {
       const requiredSemanticPairs: Array<[string, string]> = [
-        ['success', 'onSuccess'],
-        ['warning', 'onWarning'],
-        ['info', 'onInfo']
+        ["success", "onSuccess"],
+        ["warning", "onWarning"],
+        ["info", "onInfo"],
       ];
 
       requiredSemanticPairs.forEach(([base, on]) => {
         if (!(base in roles) || !(on in roles)) {
-          addError(`Semantic role pair ${base}/${on} is incomplete`, 'incomplete-semantic-role', `colorScheme.semanticRoles`);
+          addError(
+            `Semantic role pair ${base}/${on} is incomplete`,
+            "incomplete-semantic-role",
+            `colorScheme.semanticRoles`,
+          );
         } else {
-          const ratio = tryContrastRatio(roles[base as keyof typeof roles]!, roles[on as keyof typeof roles]!);
+          const ratio = tryContrastRatio(
+            roles[base as keyof typeof roles]!,
+            roles[on as keyof typeof roles]!,
+          );
           if (ratio !== undefined && ratio < 4.5) {
             addWarning(
-              `Low contrast for semantic role ${base}/${on}: ${ratio.toFixed(2)} (recommended >= 4.5)`,
-              'low-contrast',
-              `colorScheme.semanticRoles.${base}`
+              `Low contrast for semantic role ${base}/${on}: ${ratio.toFixed(
+                2,
+              )} (recommended >= 4.5)`,
+              "low-contrast",
+              `colorScheme.semanticRoles.${base}`,
             );
           }
         }
       });
 
-      const criticalProvided = Boolean(roles.critical) || Boolean(roles.onCritical);
+      const criticalProvided =
+        Boolean(roles.critical) || Boolean(roles.onCritical);
       if (criticalProvided && (!roles.critical || !roles.onCritical)) {
-        addError('Semantic role pair critical/onCritical is incomplete', 'incomplete-semantic-role', 'colorScheme.semanticRoles');
+        addError(
+          "Semantic role pair critical/onCritical is incomplete",
+          "incomplete-semantic-role",
+          "colorScheme.semanticRoles",
+        );
       } else if (roles.critical && roles.onCritical) {
         const ratio = tryContrastRatio(roles.critical, roles.onCritical);
         if (ratio !== undefined && ratio < 4.5) {
           addWarning(
-            `Low contrast for semantic role critical/onCritical: ${ratio.toFixed(2)} (recommended >= 4.5)`,
-            'low-contrast',
-            'colorScheme.semanticRoles.critical'
+            `Low contrast for semantic role critical/onCritical: ${ratio.toFixed(
+              2,
+            )} (recommended >= 4.5)`,
+            "low-contrast",
+            "colorScheme.semanticRoles.critical",
           );
         }
       }
     }
 
     if (theme.tokens?.density && theme.tokens.density.scale <= 0) {
-      addError('Density token scale must be greater than 0', 'invalid-token', 'tokens.density.scale');
+      addError(
+        "Density token scale must be greater than 0",
+        "invalid-token",
+        "tokens.density.scale",
+      );
     }
 
     if (theme.tokens?.corners) {
       const cornerValues = Object.values(theme.tokens.corners);
-      if (cornerValues.some(value => value < 0)) {
-        addError('Corner token values must be non-negative', 'invalid-token', 'tokens.corners');
+      if (cornerValues.some((value) => value < 0)) {
+        addError(
+          "Corner token values must be non-negative",
+          "invalid-token",
+          "tokens.corners",
+        );
       }
     }
 
     if (theme.accessibility) {
-      if (theme.accessibility.minimumContrastRatio !== undefined && theme.accessibility.minimumContrastRatio < 3) {
-        addError('Accessibility minimumContrastRatio must be >= 3', 'invalid-accessibility', 'accessibility.minimumContrastRatio');
+      if (
+        theme.accessibility.minimumContrastRatio !== undefined &&
+        theme.accessibility.minimumContrastRatio < 3
+      ) {
+        addError(
+          "Accessibility minimumContrastRatio must be >= 3",
+          "invalid-accessibility",
+          "accessibility.minimumContrastRatio",
+        );
       }
 
-      if (theme.accessibility.typography?.fontScale !== undefined && theme.accessibility.typography.fontScale <= 0) {
-        addError('Accessibility fontScale must be greater than 0', 'invalid-accessibility', 'accessibility.typography.fontScale');
+      if (
+        theme.accessibility.typography?.fontScale !== undefined &&
+        theme.accessibility.typography.fontScale <= 0
+      ) {
+        addError(
+          "Accessibility fontScale must be greater than 0",
+          "invalid-accessibility",
+          "accessibility.typography.fontScale",
+        );
       }
 
       if (
@@ -732,21 +1192,25 @@ export class ThemeEngine {
         theme.accessibility.interaction.minimumTargetSize < 24
       ) {
         addWarning(
-          'Accessibility minimumTargetSize should be at least 24px (44px recommended)',
-          'invalid-accessibility',
-          'accessibility.interaction.minimumTargetSize'
+          "Accessibility minimumTargetSize should be at least 24px (44px recommended)",
+          "invalid-accessibility",
+          "accessibility.interaction.minimumTargetSize",
         );
       }
     }
 
-    const errors = issues.filter(issue => issue.severity === 'error').map(issue => issue.message);
-    const warnings = issues.filter(issue => issue.severity === 'warning').map(issue => issue.message);
+    const errors = issues
+      .filter((issue) => issue.severity === "error")
+      .map((issue) => issue.message);
+    const warnings = issues
+      .filter((issue) => issue.severity === "warning")
+      .map((issue) => issue.message);
 
     return {
       valid: errors.length === 0,
       errors,
       warnings,
-      issues
+      issues,
     };
   }
 
@@ -760,7 +1224,7 @@ export class ThemeEngine {
     }
     const exportPayload = {
       ...theme,
-      schemaVersion: SCHEMA_VERSION
+      schemaVersion: SCHEMA_VERSION,
     };
     return JSON.stringify(exportPayload, null, 2);
   }
@@ -772,17 +1236,26 @@ export class ThemeEngine {
     try {
       const rawTheme = JSON.parse(json) as Record<string, unknown>;
       if (rawTheme.schemaVersion === undefined) {
-        throw new Error('Schema version is required');
+        throw new Error("Schema version is required");
       }
-      if (typeof rawTheme.schemaVersion === 'number' && rawTheme.schemaVersion < 1) {
-        throw new Error(`Unsupported schema version: ${rawTheme.schemaVersion}`);
+      if (
+        typeof rawTheme.schemaVersion === "number" &&
+        rawTheme.schemaVersion < 1
+      ) {
+        throw new Error(
+          `Unsupported schema version: ${rawTheme.schemaVersion}`,
+        );
       }
       const version = rawTheme.schemaVersion as number;
       const theme = migrateTheme(rawTheme, version, SCHEMA_VERSION);
       this.registerTheme(theme);
       return theme;
     } catch (error) {
-      throw new Error(`Failed to import theme: ${error instanceof Error ? error.message : error}`);
+      throw new Error(
+        `Failed to import theme: ${
+          error instanceof Error ? error.message : error
+        }`,
+      );
     }
   }
 
@@ -790,9 +1263,9 @@ export class ThemeEngine {
    * Export all themes to JSON
    */
   exportAllThemes(): string {
-    const themes = this.getAllThemes().map(theme => ({
+    const themes = this.getAllThemes().map((theme) => ({
       ...theme,
-      schemaVersion: SCHEMA_VERSION
+      schemaVersion: SCHEMA_VERSION,
     }));
     return JSON.stringify(themes, null, 2);
   }
@@ -801,8 +1274,8 @@ export class ThemeEngine {
    * Search themes by tags
    */
   searchByTags(tags: string[]): Theme[] {
-    return this.getAllThemes().filter(theme =>
-      tags.some(tag => theme.metadata.tags.includes(tag))
+    return this.getAllThemes().filter((theme) =>
+      tags.some((tag) => theme.metadata.tags.includes(tag)),
     );
   }
 
@@ -811,9 +1284,10 @@ export class ThemeEngine {
    */
   searchByName(query: string): Theme[] {
     const lowerQuery = query.toLowerCase();
-    return this.getAllThemes().filter(theme =>
-      theme.metadata.name.toLowerCase().includes(lowerQuery) ||
-      (theme.metadata.description ?? '').toLowerCase().includes(lowerQuery)
+    return this.getAllThemes().filter(
+      (theme) =>
+        theme.metadata.name.toLowerCase().includes(lowerQuery) ||
+        (theme.metadata.description ?? "").toLowerCase().includes(lowerQuery),
     );
   }
 }

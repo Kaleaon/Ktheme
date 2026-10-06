@@ -39,12 +39,12 @@ class ThemeLibrary(
         ignoreUnknownKeys = true
     }
     private val json = Json { prettyPrint = true }
-    
+
     companion object {
         // Shared theme directory for cross-app theme sharing
         private val SHARED_THEMES_DIR = File(System.getProperty("user.home"), ".ktheme/shared")
         private val USER_THEMES_DIR = File(System.getProperty("user.home"), ".ktheme/user")
-        
+
         init {
             SHARED_THEMES_DIR.mkdirs()
             USER_THEMES_DIR.mkdirs()
@@ -52,7 +52,7 @@ class ThemeLibrary(
     }
 
     var signatureVerifier: ThemeFileSignatureVerifier? = null
-    
+
     init {
         sharedThemesDirectory.mkdirs()
         userThemesDirectory.mkdirs()

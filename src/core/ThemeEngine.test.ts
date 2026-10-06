@@ -1,281 +1,362 @@
-import { ThemeEngine } from './ThemeEngine';
-import { SCHEMA_VERSION } from './migrations';
-import { NavyGoldTheme } from '../themes/presets';
-import { AdaptationPresets } from '../themes/adaptationPresets';
-import type { Theme } from './types';
-import { DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE } from '../accessibility/defaults';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { ThemeEngine } from "./ThemeEngine";
+import { SCHEMA_VERSION } from "./migrations";
+import { NavyGoldTheme } from "../themes/presets";
+import { AdaptationPresets } from "../themes/adaptationPresets";
+import type { Theme } from "./types";
+import { DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE } from "../accessibility/defaults";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 
-describe('ThemeEngine adaptations', () => {
+describe("ThemeEngine adaptations", () => {
   const loadFixture = (fileName: string): string =>
-    readFileSync(join(__dirname, '__fixtures__', fileName), 'utf-8');
+    readFileSync(join(__dirname, "__fixtures__", fileName), "utf-8");
 
-  it('creates and registers adapted themes', () => {
+  it("creates and registers adapted themes", () => {
     const engine = new ThemeEngine();
     engine.registerTheme(NavyGoldTheme);
 
-    const derived = engine.createAdaptedTheme('navy-gold', AdaptationPresets.frutigerAero, 'navy-gold-aero');
+    const derived = engine.createAdaptedTheme(
+      "navy-gold",
+      AdaptationPresets.frutigerAero,
+      "navy-gold-aero",
+    );
 
-    expect(derived.metadata.id).toBe('navy-gold-aero');
-    expect(derived.adaptation?.layout?.panelStyle).toBe('glass');
-    expect(engine.getTheme('navy-gold-aero')).toBeDefined();
+    expect(derived.metadata.id).toBe("navy-gold-aero");
+    expect(derived.adaptation?.layout?.panelStyle).toBe("glass");
+    expect(engine.getTheme("navy-gold-aero")).toBeDefined();
   });
 
-  it('validates malformed adaptation payloads', () => {
+  it("validates malformed adaptation payloads", () => {
     const engine = new ThemeEngine();
     const invalid = {
       ...NavyGoldTheme,
       metadata: {
         ...NavyGoldTheme.metadata,
-        id: 'invalid-adaptation'
+        id: "invalid-adaptation",
       },
       adaptation: {
         layout: {
-          density: 'comfortable' as const,
-          cornerStyle: 'rounded' as const,
+          density: "comfortable" as const,
+          cornerStyle: "rounded" as const,
           spacingScale: 0,
-          accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
+          accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE,
         },
         icons: {
-          family: 'material' as const,
-          style: 'outlined' as const,
-          sizeScale: -1
+          family: "material" as const,
+          style: "outlined" as const,
+          sizeScale: -1,
         },
         componentOverrides: [
           {
-            selector: '',
+            selector: "",
             styles: {
-              color: 'red'
-            }
-          }
-        ]
-      }
+              color: "red",
+            },
+          },
+        ],
+      },
     };
 
     const validation = engine.validateTheme(invalid);
 
     expect(validation.valid).toBe(false);
-    expect(validation.errors).toContain('Layout spacingScale must be greater than 0');
-    expect(validation.errors).toContain('Icon sizeScale must be greater than 0');
-    expect(validation.errors).toContain('Component override at index 0 is missing selector');
+    expect(validation.errors).toContain(
+      "Layout spacingScale must be greater than 0",
+    );
+    expect(validation.errors).toContain(
+      "Icon sizeScale must be greater than 0",
+    );
+    expect(validation.errors).toContain(
+      "Component override at index 0 is missing selector",
+    );
   });
 
-
-  it('errors when layout accessibility contract is missing', () => {
+  it("errors when layout accessibility contract is missing", () => {
     const engine = new ThemeEngine();
     const invalid = {
       ...NavyGoldTheme,
       metadata: {
         ...NavyGoldTheme.metadata,
-        id: 'missing-layout-a11y-contract'
+        id: "missing-layout-a11y-contract",
       },
       adaptation: {
         layout: {
-          density: 'comfortable' as const,
-          cornerStyle: 'rounded' as const,
-          spacingScale: 1
-        }
-      }
+          density: "comfortable" as const,
+          cornerStyle: "rounded" as const,
+          spacingScale: 1,
+        },
+      },
     };
 
     const validation = engine.validateTheme(invalid as unknown as Theme);
-    expect(validation.errors).toContain('Layout accessibility profile is required when adaptation.layout is provided');
+    expect(validation.errors).toContain(
+      "Layout accessibility profile is required when adaptation.layout is provided",
+    );
   });
 
-  it('warns on low contrast and validates semantic/tokens additions', () => {
+  it("warns on low contrast and validates semantic/tokens additions", () => {
     const engine = new ThemeEngine();
     const invalid = {
       ...NavyGoldTheme,
       metadata: {
         ...NavyGoldTheme.metadata,
-        id: 'invalid-semantics'
+        id: "invalid-semantics",
       },
       colorScheme: {
         ...NavyGoldTheme.colorScheme,
-        primary: '#777777',
-        onPrimary: '#7A7A7A',
+        primary: "#777777",
+        onPrimary: "#7A7A7A",
         semanticRoles: {
-          success: '#22AA22',
-          onSuccess: '#102010',
-          warning: '#CCAA00'
-        }
+          success: "#22AA22",
+          onSuccess: "#102010",
+          warning: "#CCAA00",
+        },
       },
       tokens: {
         density: {
           scale: 0,
-          baseSpacing: 8
+          baseSpacing: 8,
         },
         corners: {
           small: 4,
           medium: -2,
-          large: 12
-        }
-      }
+          large: 12,
+        },
+      },
     };
 
     const validation = engine.validateTheme(invalid as unknown as Theme);
 
     expect(validation.valid).toBe(false);
-    expect(validation.warnings.some(msg => msg.includes('Low contrast for primary/onPrimary'))).toBe(true);
-    expect(validation.errors).toContain('Semantic role pair warning/onWarning is incomplete');
-    expect(validation.errors).toContain('Semantic role pair info/onInfo is incomplete');
-    expect(validation.errors).toContain('Density token scale must be greater than 0');
-    expect(validation.errors).toContain('Corner token values must be non-negative');
+    expect(
+      validation.warnings.some((msg) =>
+        msg.includes("Low contrast for primary/onPrimary"),
+      ),
+    ).toBe(true);
+    expect(validation.errors).toContain(
+      "Semantic role pair warning/onWarning is incomplete",
+    );
+    expect(validation.errors).toContain(
+      "Semantic role pair info/onInfo is incomplete",
+    );
+    expect(validation.errors).toContain(
+      "Density token scale must be greater than 0",
+    );
+    expect(validation.errors).toContain(
+      "Corner token values must be non-negative",
+    );
   });
 
-
-  it('validates expanded contrast pairs including semantic roles', () => {
+  it("validates expanded contrast pairs including semantic roles", () => {
     const engine = new ThemeEngine();
     const invalid = {
       ...NavyGoldTheme,
       metadata: {
         ...NavyGoldTheme.metadata,
-        id: 'invalid-contrast-extended'
+        id: "invalid-contrast-extended",
       },
       colorScheme: {
         ...NavyGoldTheme.colorScheme,
-        secondary: '#808080',
-        onSecondary: '#858585',
-        tertiary: '#707070',
-        onTertiary: '#747474',
-        surfaceVariant: '#666666',
-        onSurfaceVariant: '#696969',
+        secondary: "#808080",
+        onSecondary: "#858585",
+        tertiary: "#707070",
+        onTertiary: "#747474",
+        surfaceVariant: "#666666",
+        onSurfaceVariant: "#696969",
         semanticRoles: {
-          success: '#556b2f',
-          onSuccess: '#5f7b30',
-          warning: '#a07100',
-          onWarning: '#aa7900',
-          info: '#0f5f8f',
-          onInfo: '#116896',
-          critical: '#8f1f1f'
-        }
-      }
+          success: "#556b2f",
+          onSuccess: "#5f7b30",
+          warning: "#a07100",
+          onWarning: "#aa7900",
+          info: "#0f5f8f",
+          onInfo: "#116896",
+          critical: "#8f1f1f",
+        },
+      },
     };
 
     const validation = engine.validateTheme(invalid as unknown as Theme);
 
-    expect(validation.warnings.some(msg => msg.includes('secondary/onSecondary'))).toBe(true);
-    expect(validation.warnings.some(msg => msg.includes('tertiary/onTertiary'))).toBe(true);
-    expect(validation.warnings.some(msg => msg.includes('surfaceVariant/onSurfaceVariant'))).toBe(true);
-    expect(validation.warnings.some(msg => msg.includes('semantic role success/onSuccess'))).toBe(true);
-    expect(validation.errors).toContain('Semantic role pair critical/onCritical is incomplete');
+    expect(
+      validation.warnings.some((msg) => msg.includes("secondary/onSecondary")),
+    ).toBe(true);
+    expect(
+      validation.warnings.some((msg) => msg.includes("tertiary/onTertiary")),
+    ).toBe(true);
+    expect(
+      validation.warnings.some((msg) =>
+        msg.includes("surfaceVariant/onSurfaceVariant"),
+      ),
+    ).toBe(true);
+    expect(
+      validation.warnings.some((msg) =>
+        msg.includes("semantic role success/onSuccess"),
+      ),
+    ).toBe(true);
+    expect(validation.errors).toContain(
+      "Semantic role pair critical/onCritical is incomplete",
+    );
   });
 
-  it('flags problematic adaptation combinations and unsafe component overrides', () => {
+  it("flags problematic adaptation combinations and unsafe component overrides", () => {
     const engine = new ThemeEngine();
     const invalid = {
       ...NavyGoldTheme,
       metadata: {
         ...NavyGoldTheme.metadata,
-        id: 'invalid-overrides'
+        id: "invalid-overrides",
       },
       adaptation: {
         layout: {
-          density: 'spacious' as const,
-          cornerStyle: 'rounded' as const,
+          density: "spacious" as const,
+          cornerStyle: "rounded" as const,
           spacingScale: 0.7,
-          accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
+          accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE,
         },
         icons: {
-          family: 'material' as const,
-          style: 'outlined' as const,
+          family: "material" as const,
+          style: "outlined" as const,
           sizeScale: 0.6,
-          strokeWidth: 4
+          strokeWidth: 4,
         },
         componentOverrides: [
           {
-            selector: 'body',
+            selector: "body",
             styles: {
-              color: 'red'
-            }
+              color: "red",
+            },
           },
           {
-            selector: '.card{color:red}',
+            selector: ".card{color:red}",
             styles: {
-              padding: 12
-            }
+              padding: 12,
+            },
           },
           {
-            selector: '.danger',
+            selector: ".danger",
             styles: {
-              background: 'url(javascript:alert(1))'
-            }
+              background: "url(javascript:alert(1))",
+            },
           },
           {
-            selector: '.x > .y > .z > .a > .b',
+            selector: ".x > .y > .z > .a > .b",
             styles: {
-              color: '#fff'
-            }
+              color: "#fff",
+            },
           },
           {
-            selector: '.card:has(.cta)',
+            selector: ".card:has(.cta)",
             styles: {
-              color: '#fff'
-            }
+              color: "#fff",
+            },
           },
           {
-            selector: '.legacy',
+            selector: ".legacy",
             styles: {
-              behavior: 'url(#default#VML)'
-            }
+              behavior: "url(#default#VML)",
+            },
           },
           {
-            selector: '.empty',
-            styles: {}
-          }
-        ]
-      }
+            selector: ".empty",
+            styles: {},
+          },
+        ],
+      },
     };
 
     const validation = engine.validateTheme(invalid as unknown as Theme);
 
-    expect(validation.errors).toContain('Icon style outlined requires sizeScale >= 0.75 for legibility');
-    expect(validation.errors).toContain('Icon style outlined requires strokeWidth between 1 and 3');
-    expect(validation.warnings).toContain('Tiny spacingScale is likely incompatible with spacious density');
-    expect(validation.warnings.some(msg => msg.includes('dangerously broad'))).toBe(true);
-    expect(validation.errors.some(msg => msg.includes('contains unsupported CSS syntax'))).toBe(true);
-    expect(validation.errors.some(msg => msg.includes('unsafe or unsupported CSS value'))).toBe(true);
-    expect(validation.errors.some(msg => msg.includes('unsupported pseudo selector'))).toBe(true);
-    expect(validation.errors.some(msg => msg.includes('too complex'))).toBe(true);
-    expect(validation.errors.some(msg => msg.includes('is not an allowed property'))).toBe(true);
-    expect(validation.warnings.some(msg => msg.includes('has no style declarations'))).toBe(true);
+    expect(validation.errors).toContain(
+      "Icon style outlined requires sizeScale >= 0.75 for legibility",
+    );
+    expect(validation.errors).toContain(
+      "Icon style outlined requires strokeWidth between 1 and 3",
+    );
+    expect(validation.warnings).toContain(
+      "Tiny spacingScale is likely incompatible with spacious density",
+    );
+    expect(
+      validation.warnings.some((msg) => msg.includes("dangerously broad")),
+    ).toBe(true);
+    expect(
+      validation.errors.some((msg) =>
+        msg.includes("contains unsupported CSS syntax"),
+      ),
+    ).toBe(true);
+    expect(
+      validation.errors.some((msg) =>
+        msg.includes("unsafe or unsupported CSS value"),
+      ),
+    ).toBe(true);
+    expect(
+      validation.errors.some((msg) =>
+        msg.includes("unsupported pseudo selector"),
+      ),
+    ).toBe(true);
+    expect(validation.errors.some((msg) => msg.includes("too complex"))).toBe(
+      true,
+    );
+    expect(
+      validation.errors.some((msg) =>
+        msg.includes("is not an allowed property"),
+      ),
+    ).toBe(true);
+    expect(
+      validation.warnings.some((msg) =>
+        msg.includes("has no style declarations"),
+      ),
+    ).toBe(true);
   });
 
-  it('includes structured validation issues with severity and codes', () => {
+  it("includes structured validation issues with severity and codes", () => {
     const engine = new ThemeEngine();
     const invalid = {
       ...NavyGoldTheme,
       metadata: {
         ...NavyGoldTheme.metadata,
-        id: 'invalid-issues-structured'
+        id: "invalid-issues-structured",
       },
       adaptation: {
         layout: {
-          density: 'spacious' as const,
-          cornerStyle: 'rounded' as const,
+          density: "spacious" as const,
+          cornerStyle: "rounded" as const,
           spacingScale: 0.7,
-          accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE
+          accessibility: DEFAULT_LAYOUT_ACCESSIBILITY_PROFILE,
         },
         icons: {
-          family: 'material' as const,
-          style: 'outlined' as const,
+          family: "material" as const,
+          style: "outlined" as const,
           sizeScale: 0.6,
-          strokeWidth: 4
-        }
-      }
+          strokeWidth: 4,
+        },
+      },
     };
 
     const validation = engine.validateTheme(invalid as unknown as Theme);
 
     expect(validation.issues.length).toBeGreaterThan(0);
-    expect(validation.issues.some(issue => issue.severity === 'error' && issue.code === 'invalid-adaptation')).toBe(true);
-    expect(validation.issues.some(issue => issue.severity === 'warning' && issue.path === 'adaptation.layout.spacingScale')).toBe(true);
-    expect(validation.errors.length).toBe(validation.issues.filter(issue => issue.severity === 'error').length);
-    expect(validation.warnings.length).toBe(validation.issues.filter(issue => issue.severity === 'warning').length);
+    expect(
+      validation.issues.some(
+        (issue) =>
+          issue.severity === "error" && issue.code === "invalid-adaptation",
+      ),
+    ).toBe(true);
+    expect(
+      validation.issues.some(
+        (issue) =>
+          issue.severity === "warning" &&
+          issue.path === "adaptation.layout.spacingScale",
+      ),
+    ).toBe(true);
+    expect(validation.errors.length).toBe(
+      validation.issues.filter((issue) => issue.severity === "error").length,
+    );
+    expect(validation.warnings.length).toBe(
+      validation.issues.filter((issue) => issue.severity === "warning").length,
+    );
   });
 
-  it('resolves effects for reduced motion users', () => {
+  it("resolves effects for reduced motion users", () => {
     const engine = new ThemeEngine();
     const theme = {
       ...NavyGoldTheme,
@@ -285,30 +366,32 @@ describe('ThemeEngine adaptations', () => {
           enabled: true,
           speed: 3,
           intensity: 0.6,
-          angle: 120
+          angle: 120,
         },
         transitions: {
           enabled: true,
           duration: 300,
-          properties: ['all']
+          properties: ["all"],
         },
         animations: {
           enabled: true,
           duration: 400,
-          easing: 'ease-in-out' as const,
-          reducedMotionPolicy: 'disable' as const
-        }
-      }
+          easing: "ease-in-out" as const,
+          reducedMotionPolicy: "disable" as const,
+        },
+      },
     };
 
-    const resolved = engine.resolveEffectsForRuntime(theme, { prefersReducedMotion: true });
+    const resolved = engine.resolveEffectsForRuntime(theme, {
+      prefersReducedMotion: true,
+    });
 
     expect(resolved?.shimmer?.enabled).toBe(false);
     expect(resolved?.animations?.enabled).toBe(false);
     expect((resolved?.transitions?.duration ?? 0) < 300).toBe(true);
   });
 
-  it('resolves accessibility defaults and runtime overrides', () => {
+  it("resolves accessibility defaults and runtime overrides", () => {
     const engine = new ThemeEngine();
     const resolved = engine.resolveAccessibilityForRuntime(
       {
@@ -318,21 +401,21 @@ describe('ThemeEngine adaptations', () => {
           typography: {
             fontScale: 1.1,
             lineHeight: 1.7,
-            letterSpacing: 0.02
+            letterSpacing: 0.02,
           },
           interaction: {
             minimumTargetSize: 48,
             focusRingWidth: 3,
             focusRingOffset: 4,
-            underlineLinks: true
-          }
-        }
+            underlineLinks: true,
+          },
+        },
       },
       {
         prefersReducedMotion: true,
         prefersHighContrast: true,
-        userFontScale: 1.3
-      }
+        userFontScale: 1.3,
+      },
     );
 
     expect(resolved.highContrast).toBe(true);
@@ -342,269 +425,316 @@ describe('ThemeEngine adaptations', () => {
     expect(resolved.minimumTargetSize).toBe(48);
   });
 
-  it('validates accessibility configuration guardrails', () => {
+  it("validates accessibility configuration guardrails", () => {
     const engine = new ThemeEngine();
     const invalid = {
       ...NavyGoldTheme,
       metadata: {
         ...NavyGoldTheme.metadata,
-        id: 'invalid-a11y'
+        id: "invalid-a11y",
       },
       accessibility: {
         minimumContrastRatio: 2.5,
         typography: {
-          fontScale: 0
+          fontScale: 0,
         },
         interaction: {
-          minimumTargetSize: 20
-        }
-      }
+          minimumTargetSize: 20,
+        },
+      },
     };
 
     const validation = engine.validateTheme(invalid as unknown as Theme);
 
     expect(validation.valid).toBe(false);
-    expect(validation.errors).toContain('Accessibility minimumContrastRatio must be >= 3');
-    expect(validation.errors).toContain('Accessibility fontScale must be greater than 0');
+    expect(validation.errors).toContain(
+      "Accessibility minimumContrastRatio must be >= 3",
+    );
+    expect(validation.errors).toContain(
+      "Accessibility fontScale must be greater than 0",
+    );
     expect(
-      validation.warnings.includes('Accessibility minimumTargetSize should be at least 24px (44px recommended)')
+      validation.warnings.includes(
+        "Accessibility minimumTargetSize should be at least 24px (44px recommended)",
+      ),
     ).toBe(true);
   });
 
-  it('rejects malformed imported themes with incomplete metadata shape', () => {
+  it("rejects malformed imported themes with incomplete metadata shape", () => {
     const engine = new ThemeEngine();
 
     const missingDescriptionAndAuthor = {
       ...NavyGoldTheme,
       metadata: {
         ...NavyGoldTheme.metadata,
-        id: 'import-missing-metadata',
-        description: '',
-        author: ''
-      }
+        id: "import-missing-metadata",
+        description: "",
+        author: "",
+      },
     };
 
-    expect(() => engine.importTheme(JSON.stringify(missingDescriptionAndAuthor))).toThrow('Theme description is required');
-    expect(() => engine.importTheme(JSON.stringify(missingDescriptionAndAuthor))).toThrow('Theme author is required');
+    expect(() =>
+      engine.importTheme(JSON.stringify(missingDescriptionAndAuthor)),
+    ).toThrow("Theme description is required");
+    expect(() =>
+      engine.importTheme(JSON.stringify(missingDescriptionAndAuthor)),
+    ).toThrow("Theme author is required");
 
     const invalidTags = {
       ...NavyGoldTheme,
       metadata: {
         ...NavyGoldTheme.metadata,
-        id: 'import-invalid-tags',
-        tags: ['valid', 42]
-      }
+        id: "import-invalid-tags",
+        tags: ["valid", 42],
+      },
     };
 
-    expect(() => engine.importTheme(JSON.stringify(invalidTags))).toThrow('Theme tags must be an array of strings');
+    expect(() => engine.importTheme(JSON.stringify(invalidTags))).toThrow(
+      "Theme tags must be an array of strings",
+    );
   });
 
-  it('searchByName never throws when metadata description is missing', () => {
+  it("searchByName never throws when metadata description is missing", () => {
     const engine = new ThemeEngine();
 
-    (engine as unknown as { themes: Map<string, Theme> }).themes.set('legacy-theme', {
-      ...NavyGoldTheme,
-      metadata: {
-        ...NavyGoldTheme.metadata,
-        id: 'legacy-theme',
-        name: 'Legacy Theme',
-        description: undefined as unknown as string
-      }
-    });
+    (engine as unknown as { themes: Map<string, Theme> }).themes.set(
+      "legacy-theme",
+      {
+        ...NavyGoldTheme,
+        metadata: {
+          ...NavyGoldTheme.metadata,
+          id: "legacy-theme",
+          name: "Legacy Theme",
+          description: undefined as unknown as string,
+        },
+      },
+    );
 
-    expect(() => engine.searchByName('legacy')).not.toThrow();
-    expect(engine.searchByName('legacy')).toHaveLength(1);
+    expect(() => engine.searchByName("legacy")).not.toThrow();
+    expect(engine.searchByName("legacy")).toHaveLength(1);
   });
 
-  it('rejects legacy fixture without schemaVersion during import and validation', () => {
+  it("rejects legacy fixture without schemaVersion during import and validation", () => {
     const engine = new ThemeEngine();
-    const rawFixture = JSON.parse(loadFixture('legacy-theme-no-schema.json')) as Theme;
+    const rawFixture = JSON.parse(
+      loadFixture("legacy-theme-no-schema.json"),
+    ) as Theme;
 
     const validation = engine.validateTheme(rawFixture);
     expect(validation.valid).toBe(false);
-    expect(validation.errors).toContain('Schema version is required');
-    expect(validation.issues.some(issue => issue.code === 'missing-schema')).toBe(true);
+    expect(validation.errors).toContain("Schema version is required");
+    expect(
+      validation.issues.some((issue) => issue.code === "missing-schema"),
+    ).toBe(true);
 
-    expect(() => engine.importTheme(loadFixture('legacy-theme-no-schema.json'))).toThrow('Schema version is required');
+    expect(() =>
+      engine.importTheme(loadFixture("legacy-theme-no-schema.json")),
+    ).toThrow("Schema version is required");
   });
 
-  it('rejects legacy v0 fixture during import and validation', () => {
+  it("rejects legacy v0 fixture during import and validation", () => {
     const engine = new ThemeEngine();
-    const rawFixture = JSON.parse(loadFixture('legacy-theme-v0.json')) as Theme;
+    const rawFixture = JSON.parse(loadFixture("legacy-theme-v0.json")) as Theme;
 
     const validation = engine.validateTheme(rawFixture);
     expect(validation.valid).toBe(false);
-    expect(validation.errors).toContain('Unsupported schema version: 0');
-    expect(validation.issues.some(issue => issue.code === 'invalid-schema')).toBe(true);
+    expect(validation.errors).toContain("Unsupported schema version: 0");
+    expect(
+      validation.issues.some((issue) => issue.code === "invalid-schema"),
+    ).toBe(true);
 
-    expect(() => engine.importTheme(loadFixture('legacy-theme-v0.json'))).toThrow('Unsupported schema version: 0');
+    expect(() =>
+      engine.importTheme(loadFixture("legacy-theme-v0.json")),
+    ).toThrow("Unsupported schema version: 0");
   });
 
-  it('rejects invalid colors across scheme semantic roles state layers and effects', () => {
+  it("rejects invalid colors across scheme semantic roles state layers and effects", () => {
     const engine = new ThemeEngine();
     const invalid = {
       ...NavyGoldTheme,
       metadata: {
         ...NavyGoldTheme.metadata,
-        id: 'invalid-colors-everywhere'
+        id: "invalid-colors-everywhere",
       },
       colorScheme: {
         ...NavyGoldTheme.colorScheme,
-        primary: 'rgb(300, 0, 0)',
-        onPrimary: 'rgba(255,255,255,1)',
+        primary: "rgb(300, 0, 0)",
+        onPrimary: "rgba(255,255,255,1)",
         semanticRoles: {
-          success: '#22AA22',
-          onSuccess: '#001100',
-          warning: 'rgba(120, 30, 20, 1.2)',
-          onWarning: '#FFFFFF',
-          info: '#2080AA',
-          onInfo: '#001122'
+          success: "#22AA22",
+          onSuccess: "#001100",
+          warning: "rgba(120, 30, 20, 1.2)",
+          onWarning: "#FFFFFF",
+          info: "#2080AA",
+          onInfo: "#001122",
         },
         stateLayers: {
-          hover: 'hsl(10, 50%, 50%)'
-        }
+          hover: "hsl(10, 50%, 50%)",
+        },
       },
       effects: {
         metallic: {
           enabled: true,
-          variant: NavyGoldTheme.effects?.metallic?.variant ?? 'GOLD',
+          variant: NavyGoldTheme.effects?.metallic?.variant ?? "GOLD",
           intensity: 1.2,
           gradient: {
-            base: '#123456',
-            highlight: '#abcdef',
-            shadow: '#000000',
-            shimmer: 'rgb(999, 1, 1)'
-          }
+            base: "#123456",
+            highlight: "#abcdef",
+            shadow: "#000000",
+            shimmer: "rgb(999, 1, 1)",
+          },
         },
         shadows: {
           enabled: true,
           elevation: -1,
           blur: -4,
-          color: 'rgba(0, 0, 0, 2)'
+          color: "rgba(0, 0, 0, 2)",
         },
         overlays: {
           enabled: true,
-          color: '#000000',
-          opacity: -0.1
+          color: "#000000",
+          opacity: -0.1,
         },
         noise: {
           enabled: true,
           opacity: 1.1,
-          scale: 1
-        }
-      }
+          scale: 1,
+        },
+      },
     } as unknown as Theme;
 
     const validation = engine.validateTheme(invalid);
 
     expect(validation.valid).toBe(false);
-    expect(validation.errors.some(msg => msg.includes('colorScheme.primary'))).toBe(true);
-    expect(validation.errors.some(msg => msg.includes('colorScheme.semanticRoles.warning'))).toBe(true);
-    expect(validation.errors.some(msg => msg.includes('colorScheme.stateLayers.hover'))).toBe(true);
-    expect(validation.errors).toContain('Metallic intensity must be between 0 and 1');
-    expect(validation.errors).toContain('Shadow elevation must be greater than or equal to 0');
-    expect(validation.errors).toContain('Overlay opacity must be between 0 and 1');
+    expect(
+      validation.errors.some((msg) => msg.includes("colorScheme.primary")),
+    ).toBe(true);
+    expect(
+      validation.errors.some((msg) =>
+        msg.includes("colorScheme.semanticRoles.warning"),
+      ),
+    ).toBe(true);
+    expect(
+      validation.errors.some((msg) =>
+        msg.includes("colorScheme.stateLayers.hover"),
+      ),
+    ).toBe(true);
+    expect(validation.errors).toContain(
+      "Metallic intensity must be between 0 and 1",
+    );
+    expect(validation.errors).toContain(
+      "Shadow elevation must be greater than or equal to 0",
+    );
+    expect(validation.errors).toContain(
+      "Overlay opacity must be between 0 and 1",
+    );
   });
 
-  it('accepts mixed valid color formats and numeric boundaries', () => {
+  it("accepts mixed valid color formats and numeric boundaries", () => {
     const engine = new ThemeEngine();
     const valid = {
       ...NavyGoldTheme,
       metadata: {
         ...NavyGoldTheme.metadata,
-        id: 'valid-mixed-formats-boundary'
+        id: "valid-mixed-formats-boundary",
       },
       colorScheme: {
         ...NavyGoldTheme.colorScheme,
-        primary: '#11223344',
-        onPrimary: 'rgb(255, 255, 255)',
+        primary: "#11223344",
+        onPrimary: "rgb(255, 255, 255)",
         semanticRoles: {
-          success: '#228B22',
-          onSuccess: '#FFFFFF',
-          warning: 'rgba(120, 80, 0, 1)',
-          onWarning: '#FFFFFF',
-          info: '#0077CC',
-          onInfo: '#FFFFFF'
+          success: "#228B22",
+          onSuccess: "#FFFFFF",
+          warning: "rgba(120, 80, 0, 1)",
+          onWarning: "#FFFFFF",
+          info: "#0077CC",
+          onInfo: "#FFFFFF",
         },
         stateLayers: {
-          hover: 'rgba(255, 255, 255, 0.08)',
-          pressed: '#0000001a'
-        }
+          hover: "rgba(255, 255, 255, 0.08)",
+          pressed: "#0000001a",
+        },
       },
       effects: {
         metallic: {
           enabled: true,
-          variant: NavyGoldTheme.effects?.metallic?.variant ?? 'GOLD',
+          variant: NavyGoldTheme.effects?.metallic?.variant ?? "GOLD",
           intensity: 0,
           gradient: {
-            base: '#111111',
-            highlight: '#fefefe',
-            shadow: '#000000',
-            shimmer: '#ffffffff'
-          }
+            base: "#111111",
+            highlight: "#fefefe",
+            shadow: "#000000",
+            shimmer: "#ffffffff",
+          },
         },
         shadows: {
           enabled: true,
           elevation: 0,
           blur: 0,
-          color: 'rgba(0, 0, 0, 0.4)'
+          color: "rgba(0, 0, 0, 0.4)",
         },
         overlays: {
           enabled: true,
-          color: '#000',
-          opacity: 1
+          color: "#000",
+          opacity: 1,
         },
         blur: {
           enabled: true,
-          radius: 0
+          radius: 0,
         },
         shimmer: {
           enabled: true,
           speed: 0.01,
           intensity: 1,
-          angle: 45
+          angle: 45,
         },
         animations: {
           enabled: true,
           duration: 1,
-          easing: 'ease'
+          easing: "ease",
         },
         transitions: {
           enabled: true,
           duration: 1,
-          properties: ['opacity']
+          properties: ["opacity"],
         },
         noise: {
           enabled: true,
           opacity: 0,
-          scale: 2
-        }
-      }
+          scale: 2,
+        },
+      },
     } as unknown as Theme;
 
     const validation = engine.validateTheme(valid);
     expect(validation.errors).toEqual([]);
   });
 
-  it('detects unknown properties and reports structured validation issues', () => {
+  it("detects unknown properties and reports structured validation issues", () => {
     const engine = new ThemeEngine();
     const themeWithUnknown = {
       ...NavyGoldTheme,
-      unmappedTopLevelKey: 'invalidValue',
+      unmappedTopLevelKey: "invalidValue",
       adaptation: {
         ...NavyGoldTheme.adaptation,
-        unmappedAdaptationKey: 123
-      }
+        unmappedAdaptationKey: 123,
+      },
     } as unknown as Theme;
 
     const validation = engine.validateTheme(themeWithUnknown);
-    const unknownIssues = validation.issues.filter(issue => issue.code === 'unknown-property');
+    const unknownIssues = validation.issues.filter(
+      (issue) => issue.code === "unknown-property",
+    );
     expect(unknownIssues.length).toBeGreaterThanOrEqual(2);
-    expect(unknownIssues.some(i => i.path === 'unmappedTopLevelKey')).toBe(true);
-    expect(unknownIssues.some(i => i.path === 'adaptation.unmappedAdaptationKey')).toBe(true);
+    expect(unknownIssues.some((i) => i.path === "unmappedTopLevelKey")).toBe(
+      true,
+    );
+    expect(
+      unknownIssues.some((i) => i.path === "adaptation.unmappedAdaptationKey"),
+    ).toBe(true);
   });
 
-  it('validates desktopAdaptation fields and reports errors for invalid values', () => {
+  it("validates desktopAdaptation fields and reports errors for invalid values", () => {
     const engine = new ThemeEngine();
     const themeWithInvalidDesktopAdaptation = {
       ...NavyGoldTheme,
@@ -612,21 +742,23 @@ describe('ThemeEngine adaptations', () => {
         ...NavyGoldTheme.adaptation,
         desktopAdaptation: {
           windowChrome: {
-            titleBarHeight: -5 as unknown as number
+            titleBarHeight: -5 as unknown as number,
           },
           menuBar: {
-            height: 'invalid' as unknown as number
-          }
-        }
-      }
+            height: "invalid" as unknown as number,
+          },
+        },
+      },
     } as unknown as Theme;
 
     const validation = engine.validateTheme(themeWithInvalidDesktopAdaptation);
     expect(validation.valid).toBe(false);
-    expect(validation.issues.some(i => i.code === 'invalid-adaptation')).toBe(true);
+    expect(validation.issues.some((i) => i.code === "invalid-adaptation")).toBe(
+      true,
+    );
   });
 
-  it('migrates legacy theme with root desktopAdaptation into adaptation.desktopAdaptation', () => {
+  it("migrates legacy theme with root desktopAdaptation into adaptation.desktopAdaptation", () => {
     const engine = new ThemeEngine();
     const legacyDesktopTheme = {
       schemaVersion: 1,
@@ -638,19 +770,19 @@ describe('ThemeEngine adaptations', () => {
         menuBar: { height: 28 },
         taskbar: { height: 40 },
         cameraHud: { panelRadius: 10 },
-        sweep: { elbowWidth: 30 }
+        sweep: { elbowWidth: 30 },
       },
-      layouts: [
-        { id: 'lcars', name: 'LCARS' }
-      ]
+      layouts: [{ id: "lcars", name: "LCARS" }],
     };
 
     const imported = engine.importTheme(JSON.stringify(legacyDesktopTheme));
     expect(imported.schemaVersion).toBe(SCHEMA_VERSION);
-    expect(imported.adaptation?.desktopAdaptation?.windowChrome?.titleBarHeight).toBe(26);
+    expect(
+      imported.adaptation?.desktopAdaptation?.windowChrome?.titleBarHeight,
+    ).toBe(26);
     expect(imported.adaptation?.desktopAdaptation?.menuBar?.height).toBe(28);
     expect(imported.layouts).toBeDefined();
-    expect(imported.layouts?.[0].id).toBe('lcars');
+    expect(imported.layouts?.[0].id).toBe("lcars");
 
     const validation = engine.validateTheme(imported);
     expect(validation.errors).toEqual([]);

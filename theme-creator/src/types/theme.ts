@@ -12,16 +12,16 @@ export interface MetallicGradient {
 }
 
 export type MetallicVariant =
-  | 'SILVER'
-  | 'GOLD'
-  | 'GOLD_ROYAL_BLUE'
-  | 'BRONZE'
-  | 'COPPER'
-  | 'PLATINUM'
-  | 'ROSE_GOLD'
-  | 'TITANIUM'
-  | 'CHROME'
-  | 'COBALT';
+  | "SILVER"
+  | "GOLD"
+  | "GOLD_ROYAL_BLUE"
+  | "BRONZE"
+  | "COPPER"
+  | "PLATINUM"
+  | "ROSE_GOLD"
+  | "TITANIUM"
+  | "CHROME"
+  | "COBALT";
 
 export interface ColorScheme {
   primary: string;
@@ -107,8 +107,8 @@ export interface VisualEffects {
   animations?: {
     enabled: boolean;
     duration: number;
-    easing: 'linear' | 'ease' | 'ease-in' | 'ease-out' | 'ease-in-out';
-    reducedMotionPolicy?: 'none' | 'reduce' | 'disable';
+    easing: "linear" | "ease" | "ease-in" | "ease-out" | "ease-in-out";
+    reducedMotionPolicy?: "none" | "reduce" | "disable";
   };
   transitions?: {
     enabled: boolean;
@@ -119,7 +119,13 @@ export interface VisualEffects {
     enabled: boolean;
     color: string;
     opacity: number;
-    blendMode?: 'normal' | 'multiply' | 'screen' | 'overlay' | 'soft-light' | 'hard-light';
+    blendMode?:
+      | "normal"
+      | "multiply"
+      | "screen"
+      | "overlay"
+      | "soft-light"
+      | "hard-light";
   };
   focusRing?: {
     enabled: boolean;

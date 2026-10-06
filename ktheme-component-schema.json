@@ -4,12 +4,7 @@
   "title": "Ktheme Component Catalog Schema",
   "description": "Schema for specifying cross-platform UI component metadata, prop types, and design token bindings.",
   "type": "object",
-  "required": [
-    "id",
-    "name",
-    "framework",
-    "props"
-  ],
+  "required": ["id", "name", "framework", "props"],
   "properties": {
     "id": {
       "type": "string",
@@ -48,10 +43,7 @@
       "description": "List of component parameters/properties or state controls.",
       "items": {
         "type": "object",
-        "required": [
-          "name",
-          "type"
-        ],
+        "required": ["name", "type"],
         "properties": {
           "name": {
             "type": "string"

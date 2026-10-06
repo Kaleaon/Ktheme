@@ -1,5 +1,5 @@
-import { Theme } from '../core/types';
-import { normalizeSemanticRoles, toHexColor } from './utils';
+import { Theme } from "../core/types";
+import { normalizeSemanticRoles, toHexColor } from "./utils";
 
 export interface BlenderPropertyGroupExport {
   pythonScript: string;
@@ -7,7 +7,7 @@ export interface BlenderPropertyGroupExport {
 }
 
 function hexToRgbaTuple(hex: string): [number, number, number, number] {
-  const cleanHex = hex.replace('#', '');
+  const cleanHex = hex.replace("#", "");
   if (cleanHex.length === 6) {
     const r = parseInt(cleanHex.substring(0, 2), 16) / 255;
     const g = parseInt(cleanHex.substring(2, 4), 16) / 255;
@@ -16,7 +16,7 @@ function hexToRgbaTuple(hex: string): [number, number, number, number] {
       Math.round(r * 10000) / 10000,
       Math.round(g * 10000) / 10000,
       Math.round(b * 10000) / 10000,
-      1.0
+      1.0,
     ];
   } else if (cleanHex.length === 8) {
     const r = parseInt(cleanHex.substring(0, 2), 16) / 255;
@@ -27,7 +27,7 @@ function hexToRgbaTuple(hex: string): [number, number, number, number] {
       Math.round(r * 10000) / 10000,
       Math.round(g * 10000) / 10000,
       Math.round(b * 10000) / 10000,
-      Math.round(a * 10000) / 10000
+      Math.round(a * 10000) / 10000,
     ];
   }
   return [0.5, 0.5, 0.5, 1.0];
@@ -37,7 +37,9 @@ function formatTuple(tuple: [number, number, number, number]): string {
   return `(${tuple[0]}, ${tuple[1]}, ${tuple[2]}, ${tuple[3]})`;
 }
 
-export function toBlenderPropertyGroup(theme: Theme): BlenderPropertyGroupExport {
+export function toBlenderPropertyGroup(
+  theme: Theme,
+): BlenderPropertyGroupExport {
   const semantic = normalizeSemanticRoles(theme);
 
   const colors: Record<string, string> = {
@@ -72,27 +74,29 @@ export function toBlenderPropertyGroup(theme: Theme): BlenderPropertyGroupExport
     semantic_success: semantic.success,
     semantic_warning: semantic.warning,
     semantic_info: semantic.info,
-    semantic_critical: semantic.critical
+    semantic_critical: semantic.critical,
   };
 
   const propertyNames: string[] = [
     ...Object.keys(colors),
-    'layout_margin',
-    'layout_spacing',
-    'panel_width_scale',
-    'button_height_scale',
-    'icon_set'
+    "layout_margin",
+    "layout_spacing",
+    "panel_width_scale",
+    "button_height_scale",
+    "icon_set",
   ];
 
   const colorPropLines = Object.entries(colors)
     .map(([key, hex]) => {
       const tuple = hexToRgbaTuple(hex);
-      const name = key.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+      const name = key
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, (c) => c.toUpperCase());
       return `    ${key}: bpy.props.FloatVectorProperty(name="${name}", subtype='COLOR', size=4, min=0.0, max=1.0, default=${formatTuple(
-        tuple
+        tuple,
       )}, update=on_ktheme_update)`;
     })
-    .join('\n');
+    .join("\n");
 
   const pythonScript = `import bpy
 
@@ -162,6 +166,6 @@ def unregister_ktheme_properties():
 
   return {
     pythonScript,
-    propertyNames
+    propertyNames,
   };
 }

@@ -3,7 +3,14 @@
  * Provides color conversion, manipulation, and validation
  */
 
-import { Color, ColorScheme, HSLColor, HexColor, RGBColor, RGBAColor } from '../core/types';
+import {
+  Color,
+  ColorScheme,
+  HSLColor,
+  HexColor,
+  RGBColor,
+  RGBAColor,
+} from "../core/types";
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
@@ -33,14 +40,16 @@ function isAlphaValue(value: number): boolean {
 
 function expandShorthandHex(hex: string): string {
   return hex
-    .split('')
-    .map(char => `${char}${char}`)
-    .join('');
+    .split("")
+    .map((char) => `${char}${char}`)
+    .join("");
 }
 
 function parseHexColor(hex: string): RGBAColor | null {
   const normalizedHex = hex.trim();
-  const hexBody = normalizedHex.startsWith('#') ? normalizedHex.slice(1) : normalizedHex;
+  const hexBody = normalizedHex.startsWith("#")
+    ? normalizedHex.slice(1)
+    : normalizedHex;
 
   if (HEX_3_PATTERN.test(hexBody)) {
     const expanded = expandShorthandHex(hexBody);
@@ -48,7 +57,7 @@ function parseHexColor(hex: string): RGBAColor | null {
       r: parseInt(expanded.slice(0, 2), 16),
       g: parseInt(expanded.slice(2, 4), 16),
       b: parseInt(expanded.slice(4, 6), 16),
-      a: 1
+      a: 1,
     };
   }
 
@@ -58,7 +67,7 @@ function parseHexColor(hex: string): RGBAColor | null {
       r: parseInt(expanded.slice(0, 2), 16),
       g: parseInt(expanded.slice(2, 4), 16),
       b: parseInt(expanded.slice(4, 6), 16),
-      a: parseInt(expanded.slice(6, 8), 16) / 255
+      a: parseInt(expanded.slice(6, 8), 16) / 255,
     };
   }
 
@@ -67,7 +76,7 @@ function parseHexColor(hex: string): RGBAColor | null {
       r: parseInt(hexBody.slice(0, 2), 16),
       g: parseInt(hexBody.slice(2, 4), 16),
       b: parseInt(hexBody.slice(4, 6), 16),
-      a: 1
+      a: 1,
     };
   }
 
@@ -76,7 +85,7 @@ function parseHexColor(hex: string): RGBAColor | null {
       r: parseInt(hexBody.slice(0, 2), 16),
       g: parseInt(hexBody.slice(2, 4), 16),
       b: parseInt(hexBody.slice(4, 6), 16),
-      a: parseInt(hexBody.slice(6, 8), 16) / 255
+      a: parseInt(hexBody.slice(6, 8), 16) / 255,
     };
   }
 
@@ -125,7 +134,7 @@ export function hexToRgb(hex: HexColor): RGBColor {
   return {
     r: parsed.r,
     g: parsed.g,
-    b: parsed.b
+    b: parsed.b,
   };
 }
 
@@ -135,7 +144,7 @@ export function hexToRgb(hex: HexColor): RGBColor {
 export function rgbToHex(rgb: RGBColor): HexColor {
   const toHex = (n: number) => {
     const hex = Math.round(n).toString(16);
-    return hex.length === 1 ? '0' + hex : hex;
+    return hex.length === 1 ? "0" + hex : hex;
   };
   return `#${toHex(rgb.r)}${toHex(rgb.g)}${toHex(rgb.b)}`;
 }
@@ -154,7 +163,7 @@ export function hexToRgba(hex: HexColor, alpha: number = 1): RGBAColor {
 export function rgbaToHex(rgba: RGBAColor): HexColor {
   const toHex = (n: number) => {
     const hex = Math.round(n).toString(16);
-    return hex.length === 1 ? '0' + hex : hex;
+    return hex.length === 1 ? "0" + hex : hex;
   };
   const alphaHex = toHex(rgba.a * 255);
   return `#${toHex(rgba.r)}${toHex(rgba.g)}${toHex(rgba.b)}${alphaHex}`;
@@ -164,7 +173,7 @@ export function rgbaToHex(rgba: RGBAColor): HexColor {
  * Normalize color to RGBA
  */
 export function normalizeColor(color: Color): RGBAColor {
-  if (typeof color === 'string') {
+  if (typeof color === "string") {
     const hexParsed = parseHexColor(color);
     if (hexParsed) {
       return hexParsed;
@@ -176,7 +185,7 @@ export function normalizeColor(color: Color): RGBAColor {
     }
 
     throw new Error(
-      `Invalid color string format: ${color}. Accepted formats: #RGB, #RGBA, #RRGGBB, #RRGGBBAA, rgb(r,g,b), rgba(r,g,b,a)`
+      `Invalid color string format: ${color}. Accepted formats: #RGB, #RGBA, #RRGGBB, #RRGGBBAA, rgb(r,g,b), rgba(r,g,b,a)`,
     );
   }
 
@@ -185,7 +194,7 @@ export function normalizeColor(color: Color): RGBAColor {
     throw new Error(`Invalid RGB channels: r=${r}, g=${g}, b=${b}`);
   }
 
-  if ('a' in color) {
+  if ("a" in color) {
     if (!isAlphaValue(color.a)) {
       throw new Error(`Invalid alpha channel: a=${color.a}`);
     }
@@ -204,7 +213,7 @@ export function darken(color: Color, percent: number): RGBAColor {
     r: Math.max(0, rgba.r * factor),
     g: Math.max(0, rgba.g * factor),
     b: Math.max(0, rgba.b * factor),
-    a: rgba.a
+    a: rgba.a,
   };
 }
 
@@ -218,7 +227,7 @@ export function lighten(color: Color, percent: number): RGBAColor {
     r: Math.min(255, rgba.r + (255 - rgba.r) * factor),
     g: Math.min(255, rgba.g + (255 - rgba.g) * factor),
     b: Math.min(255, rgba.b + (255 - rgba.b) * factor),
-    a: rgba.a
+    a: rgba.a,
   };
 }
 
@@ -233,15 +242,19 @@ export function opacity(color: Color, alpha: number): RGBAColor {
 /**
  * Mix two colors
  */
-export function mix(color1: Color, color2: Color, weight: number = 0.5): RGBAColor {
+export function mix(
+  color1: Color,
+  color2: Color,
+  weight: number = 0.5,
+): RGBAColor {
   const rgba1 = normalizeColor(color1);
   const rgba2 = normalizeColor(color2);
-  
+
   return {
     r: rgba1.r * (1 - weight) + rgba2.r * weight,
     g: rgba1.g * (1 - weight) + rgba2.g * weight,
     b: rgba1.b * (1 - weight) + rgba2.b * weight,
-    a: rgba1.a * (1 - weight) + rgba2.a * weight
+    a: rgba1.a * (1 - weight) + rgba2.a * weight,
   };
 }
 
@@ -252,7 +265,7 @@ export function getContrastColor(backgroundColor: Color): HexColor {
   const rgb = normalizeColor(backgroundColor);
   // Calculate relative luminance
   const luminance = (0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b) / 255;
-  return luminance > 0.5 ? '#000000' : '#FFFFFF';
+  return luminance > 0.5 ? "#000000" : "#FFFFFF";
 }
 
 /**
@@ -260,17 +273,22 @@ export function getContrastColor(backgroundColor: Color): HexColor {
  */
 export function isValidHex(hex: string): boolean {
   const value = hex.trim();
-  return HEX_3_PATTERN.test(value) || HEX_4_PATTERN.test(value) || HEX_6_PATTERN.test(value) || HEX_8_PATTERN.test(value);
+  return (
+    HEX_3_PATTERN.test(value) ||
+    HEX_4_PATTERN.test(value) ||
+    HEX_6_PATTERN.test(value) ||
+    HEX_8_PATTERN.test(value)
+  );
 }
 
 /**
  * Convert color to CSS string
  */
 export function toCssColor(color: Color): string {
-  if (typeof color === 'string') {
+  if (typeof color === "string") {
     return color;
   }
-  if ('a' in color && color.a < 1) {
+  if ("a" in color && color.a < 1) {
     return `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`;
   }
   return `rgb(${color.r}, ${color.g}, ${color.b})`;
@@ -293,7 +311,7 @@ export function compositeOver(foreground: Color, background: Color): RGBAColor {
     r: (fg.r * fg.a + bg.r * bg.a * (1 - fg.a)) / outAlpha,
     g: (fg.g * fg.a + bg.g * bg.a * (1 - fg.a)) / outAlpha,
     b: (fg.b * fg.a + bg.b * bg.a * (1 - fg.a)) / outAlpha,
-    a: outAlpha
+    a: outAlpha,
   };
 }
 
@@ -361,7 +379,7 @@ export function rgbToHsl(rgb: RGBColor): HSLColor {
   return {
     h: normalizeHue(h),
     s: s * 100,
-    l: l * 100
+    l: l * 100,
   };
 }
 
@@ -404,7 +422,7 @@ export function hslToRgb(hsl: HSLColor): RGBColor {
   return {
     r: Math.round((rPrime + m) * 255),
     g: Math.round((gPrime + m) * 255),
-    b: Math.round((bPrime + m) * 255)
+    b: Math.round((bPrime + m) * 255),
   };
 }
 
@@ -430,14 +448,18 @@ function colorToHsl(color: Color): HSLColor {
 /**
  * Build analogous palette around a seed color.
  */
-export function analogousPalette(color: Color, count: number = 5, spread: number = 30): HexColor[] {
+export function analogousPalette(
+  color: Color,
+  count: number = 5,
+  spread: number = 30,
+): HexColor[] {
   const hsl = colorToHsl(color);
   const total = Math.max(2, count);
   const start = hsl.h - spread;
   const increment = (spread * 2) / (total - 1);
 
   return Array.from({ length: total }, (_, index) =>
-    hslToHex({ ...hsl, h: normalizeHue(start + increment * index) })
+    hslToHex({ ...hsl, h: normalizeHue(start + increment * index) }),
   );
 }
 
@@ -454,7 +476,9 @@ export function complementaryColor(color: Color): HexColor {
  */
 export function triadicPalette(color: Color): HexColor[] {
   const hsl = colorToHsl(color);
-  return [0, 120, 240].map(shift => hslToHex({ ...hsl, h: normalizeHue(hsl.h + shift) }));
+  return [0, 120, 240].map((shift) =>
+    hslToHex({ ...hsl, h: normalizeHue(hsl.h + shift) }),
+  );
 }
 
 /**
@@ -462,7 +486,9 @@ export function triadicPalette(color: Color): HexColor[] {
  */
 export function splitComplementaryPalette(color: Color): HexColor[] {
   const hsl = colorToHsl(color);
-  return [0, 150, 210].map(shift => hslToHex({ ...hsl, h: normalizeHue(hsl.h + shift) }));
+  return [0, 150, 210].map((shift) =>
+    hslToHex({ ...hsl, h: normalizeHue(hsl.h + shift) }),
+  );
 }
 
 /**
@@ -484,20 +510,50 @@ export function adjustHue(color: Color, degrees: number): HexColor {
 /**
  * Generate a coherent partial color scheme from a single brand color.
  */
-export function generatePaletteFromSeed(seedColor: Color): Partial<ColorScheme> {
+export function generatePaletteFromSeed(
+  seedColor: Color,
+): Partial<ColorScheme> {
   const baseHsl = colorToHsl(seedColor);
   const secondary = adjustHue(seedColor, 30);
   const tertiary = adjustHue(seedColor, -30);
-  const surface = hslToHex({ h: baseHsl.h, s: clamp(baseHsl.s * 0.12, 4, 16), l: 97 });
-  const surfaceVariant = hslToHex({ h: baseHsl.h, s: clamp(baseHsl.s * 0.2, 8, 24), l: 92 });
-  const background = hslToHex({ h: baseHsl.h, s: clamp(baseHsl.s * 0.08, 2, 12), l: 99 });
-  const onSurface = hslToHex({ h: baseHsl.h, s: clamp(baseHsl.s * 0.18, 8, 24), l: 14 });
+  const surface = hslToHex({
+    h: baseHsl.h,
+    s: clamp(baseHsl.s * 0.12, 4, 16),
+    l: 97,
+  });
+  const surfaceVariant = hslToHex({
+    h: baseHsl.h,
+    s: clamp(baseHsl.s * 0.2, 8, 24),
+    l: 92,
+  });
+  const background = hslToHex({
+    h: baseHsl.h,
+    s: clamp(baseHsl.s * 0.08, 2, 12),
+    l: 99,
+  });
+  const onSurface = hslToHex({
+    h: baseHsl.h,
+    s: clamp(baseHsl.s * 0.18, 8, 24),
+    l: 14,
+  });
 
   return {
     primary: hslToHex({ ...baseHsl, s: clamp(baseHsl.s, 45, 90), l: 46 }),
-    onPrimary: hslToHex({ ...baseHsl, s: clamp(baseHsl.s * 0.4, 20, 40), l: 98 }),
-    primaryContainer: hslToHex({ ...baseHsl, s: clamp(baseHsl.s * 0.6, 25, 60), l: 88 }),
-    onPrimaryContainer: hslToHex({ ...baseHsl, s: clamp(baseHsl.s * 0.7, 35, 75), l: 20 }),
+    onPrimary: hslToHex({
+      ...baseHsl,
+      s: clamp(baseHsl.s * 0.4, 20, 40),
+      l: 98,
+    }),
+    primaryContainer: hslToHex({
+      ...baseHsl,
+      s: clamp(baseHsl.s * 0.6, 25, 60),
+      l: 88,
+    }),
+    onPrimaryContainer: hslToHex({
+      ...baseHsl,
+      s: clamp(baseHsl.s * 0.7, 35, 75),
+      l: 20,
+    }),
     secondary,
     onSecondary: getContrastColor(secondary),
     secondaryContainer: lighten(secondary, 40),
@@ -511,8 +567,20 @@ export function generatePaletteFromSeed(seedColor: Color): Partial<ColorScheme> 
     surface,
     onSurface,
     surfaceVariant,
-    onSurfaceVariant: hslToHex({ h: baseHsl.h, s: clamp(baseHsl.s * 0.2, 8, 22), l: 30 }),
-    outline: hslToHex({ h: baseHsl.h, s: clamp(baseHsl.s * 0.12, 4, 16), l: 58 }),
-    outlineVariant: hslToHex({ h: baseHsl.h, s: clamp(baseHsl.s * 0.12, 4, 16), l: 72 })
+    onSurfaceVariant: hslToHex({
+      h: baseHsl.h,
+      s: clamp(baseHsl.s * 0.2, 8, 22),
+      l: 30,
+    }),
+    outline: hslToHex({
+      h: baseHsl.h,
+      s: clamp(baseHsl.s * 0.12, 4, 16),
+      l: 58,
+    }),
+    outlineVariant: hslToHex({
+      h: baseHsl.h,
+      s: clamp(baseHsl.s * 0.12, 4, 16),
+      l: 72,
+    }),
   };
 }
