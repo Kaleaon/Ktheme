@@ -30,7 +30,64 @@ export class CssVarsRenderer implements TokenRenderer<CssVarsExport> {
       '--ktheme-semantic-success': tokens.color.semantic.success,
       '--ktheme-semantic-warning': tokens.color.semantic.warning,
       '--ktheme-semantic-info': tokens.color.semantic.info,
-      '--ktheme-semantic-critical': tokens.color.semantic.critical
+      '--ktheme-semantic-critical': tokens.color.semantic.critical,
+
+      // Effect domain builder vars
+      '--ktheme-effect-metallic-variant': String(tokens.effects.metallic.variant),
+      '--ktheme-effect-metallic-base': tokens.effects.metallic.gradient.base,
+      '--ktheme-effect-metallic-highlight': tokens.effects.metallic.gradient.highlight,
+      '--ktheme-effect-metallic-shadow': tokens.effects.metallic.gradient.shadow,
+      '--ktheme-effect-metallic-shimmer': tokens.effects.metallic.gradient.shimmer,
+      '--ktheme-effect-metallic-intensity': String(tokens.effects.metallic.intensity),
+
+      '--ktheme-effect-shimmer-speed': `${tokens.effects.shimmer.speed}s`,
+      '--ktheme-effect-shimmer-intensity': String(tokens.effects.shimmer.intensity),
+      '--ktheme-effect-shimmer-angle': `${tokens.effects.shimmer.angle}deg`,
+      '--ktheme-effect-shimmer-color': tokens.effects.metallic.gradient.shimmer,
+
+      '--ktheme-effect-glass-blur': `${tokens.effects.blur.radius}px`,
+      '--ktheme-effect-glass-opacity': '0.8',
+      '--ktheme-effect-glass-bg': tokens.color.surface,
+
+      '--ktheme-effect-glow-color': tokens.effects.focusRing.color,
+      '--ktheme-effect-glow-spread': `${tokens.effects.focusRing.width}px`,
+
+      // Typography domain builder vars
+      '--ktheme-font-family': tokens.typography.fontFamily,
+      '--ktheme-font-size-small': `${tokens.typography.fontSize.small}px`,
+      '--ktheme-font-size-medium': `${tokens.typography.fontSize.medium}px`,
+      '--ktheme-font-size-large': `${tokens.typography.fontSize.large}px`,
+      '--ktheme-font-size-xlarge': `${tokens.typography.fontSize.xlarge}px`,
+      '--ktheme-font-weight-light': String(tokens.typography.fontWeight.light),
+      '--ktheme-font-weight-regular': String(tokens.typography.fontWeight.regular),
+      '--ktheme-font-weight-medium': String(tokens.typography.fontWeight.medium),
+      '--ktheme-font-weight-bold': String(tokens.typography.fontWeight.bold),
+      '--ktheme-line-height': String(tokens.typography.lineHeight),
+      '--ktheme-letter-spacing': `${tokens.typography.letterSpacing}em`,
+
+      // Corner domain builder vars
+      '--ktheme-corner-small': `${tokens.layout.corners.small}px`,
+      '--ktheme-corner-medium': `${tokens.layout.corners.medium}px`,
+      '--ktheme-corner-large': `${tokens.layout.corners.large}px`,
+      '--ktheme-corner-xlarge': `${tokens.layout.corners.xlarge}px`,
+
+      // Typography IR vars
+      '--ktheme-typography-font-family': tokens.typography.fontFamily,
+      '--ktheme-typography-font-size-small': `${tokens.typography.fontSize.small}px`,
+      '--ktheme-typography-font-size-medium': `${tokens.typography.fontSize.medium}px`,
+      '--ktheme-typography-font-size-large': `${tokens.typography.fontSize.large}px`,
+      '--ktheme-typography-font-size-xlarge': `${tokens.typography.fontSize.xlarge}px`,
+      '--ktheme-typography-font-weight-light': `${tokens.typography.fontWeight.light}`,
+      '--ktheme-typography-font-weight-regular': `${tokens.typography.fontWeight.regular}`,
+      '--ktheme-typography-font-weight-medium': `${tokens.typography.fontWeight.medium}`,
+      '--ktheme-typography-font-weight-bold': `${tokens.typography.fontWeight.bold}`,
+      '--ktheme-typography-line-height': `${tokens.typography.lineHeight}`,
+      '--ktheme-typography-letter-spacing': `${tokens.typography.letterSpacing}em`,
+
+      // Adaptation IR vars
+      '--ktheme-adaptation-layout-density': String(tokens.layout.density),
+      '--ktheme-adaptation-layout-corner-style': String(tokens.layout.cornerStyle),
+      '--ktheme-adaptation-layout-spacing-scale': `${String(tokens.layout.spacingScale)}`
     };
 
     if (resolvedOptions.includeTypography) {

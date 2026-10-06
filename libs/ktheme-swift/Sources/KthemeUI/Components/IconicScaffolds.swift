@@ -4,6 +4,7 @@
 // Bake in the iconic-rule geometry so apps can opt into the look
 // without re-deriving it.
 
+#if canImport(SwiftUI)
 import SwiftUI
 import Ktheme
 
@@ -37,7 +38,7 @@ public struct LcarsScaffold<Content: View>: View {
                     .frame(height: idx == 0 ? 92 : 38)
                     .frame(maxWidth: .infinity)
                     .background(idx % 2 == 0 ? primary : tertiary)
-                    .clipShape(.rect(topLeadingRadius: 24, bottomLeadingRadius: 24))
+                    .clipShape(LeftRoundedRectangle(radius: 24))
                 }
             }
             .frame(width: 160)
@@ -46,6 +47,24 @@ public struct LcarsScaffold<Content: View>: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .background(bg)
+    }
+}
+
+private struct LeftRoundedRectangle: Shape {
+    let radius: CGFloat
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let r = min(radius, min(rect.width, rect.height) / 2)
+        path.move(to: CGPoint(x: rect.maxX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.minX + r, y: rect.minY))
+        path.addArc(center: CGPoint(x: rect.minX + r, y: rect.minY + r),
+                    radius: r, startAngle: .degrees(-90), endAngle: .degrees(180), clockwise: true)
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY - r))
+        path.addArc(center: CGPoint(x: rect.minX + r, y: rect.maxY - r),
+                    radius: r, startAngle: .degrees(180), endAngle: .degrees(90), clockwise: true)
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+        path.closeSubpath()
+        return path
     }
 }
 
@@ -84,3 +103,4 @@ public struct AeroGlassPanel<Content: View>: View {
         content().padding(20).glass(opacity: 0.45)
     }
 }
+#endif

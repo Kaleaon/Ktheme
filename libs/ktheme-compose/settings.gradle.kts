@@ -17,5 +17,4 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ktheme-kotlin"
-
+rootProject.name = "ktheme-compose"

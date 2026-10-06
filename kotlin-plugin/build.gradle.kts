@@ -8,11 +8,6 @@ plugins {
 group = "com.ktheme"
 version = "1.0.0"
 
-repositories {
-    mavenCentral()
-    google()
-}
-
 dependencies {
     // Kotlin
     implementation(kotlin("stdlib"))
