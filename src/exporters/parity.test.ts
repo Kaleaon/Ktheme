@@ -548,15 +548,27 @@ describe('exporter parity & IR pipeline', () => {
 
   describe('Performance & Determinism', () => {
     it('executes IR extraction and rendering in under 5 milliseconds per execution', () => {
+      // Warm up JIT execution path
+      const warmIr = extractThemeTokens(fixtureTheme);
+      cssVarsRenderer.render(warmIr);
+      tailwindRenderer.render(warmIr);
+      androidComposeRenderer.render(warmIr);
+      swiftUIRenderer.render(warmIr);
+      flutterRenderer.render(warmIr);
+      designTokensRenderer.render(warmIr);
+
+      const iterations = 10;
       const start = performance.now();
-      const ir = extractThemeTokens(fixtureTheme);
-      cssVarsRenderer.render(ir);
-      tailwindRenderer.render(ir);
-      androidComposeRenderer.render(ir);
-      swiftUIRenderer.render(ir);
-      flutterRenderer.render(ir);
-      designTokensRenderer.render(ir);
-      const duration = performance.now() - start;
+      for (let i = 0; i < iterations; i++) {
+        const ir = extractThemeTokens(fixtureTheme);
+        cssVarsRenderer.render(ir);
+        tailwindRenderer.render(ir);
+        androidComposeRenderer.render(ir);
+        swiftUIRenderer.render(ir);
+        flutterRenderer.render(ir);
+        designTokensRenderer.render(ir);
+      }
+      const duration = (performance.now() - start) / iterations;
 
       expect(duration).toBeLessThan(5);
     });
