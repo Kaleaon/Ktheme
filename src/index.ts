@@ -9,6 +9,7 @@
 
 // Core exports
 export { ThemeEngine } from './core/ThemeEngine';
+export { VectorTransformer, VectorIRNode, VectorIRPath } from './core/VectorTransformer';
 export * from './core/types';
 
 // Effects exports

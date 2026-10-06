@@ -1,5 +1,6 @@
 import { NormalizedThemeTokens } from '../ir/tokenIR';
 import { TokenRenderer } from './TokenRenderer';
+import { VectorIRNode } from '../../core/VectorTransformer';
 
 export interface AndroidComposeExport {
   colorScheme: Record<string, string>;
@@ -7,11 +8,13 @@ export interface AndroidComposeExport {
   typography: Record<string, unknown>;
   effects: Record<string, unknown>;
   adaptation: Record<string, unknown>;
+  icons?: Record<string, VectorIRNode>;
   kotlin: string;
 }
 
 export interface AndroidComposeOptions {
   packageName?: string;
+  vectorIcons?: VectorIRNode[];
 }
 
 const MATERIAL3_COLOR_SCHEME_KEYS = [
@@ -87,7 +90,29 @@ export class AndroidComposeRenderer implements TokenRenderer<AndroidComposeExpor
       critical: tokens.color.semantic.critical
     };
 
-    const packageHeader = `package ${packageName}\n\nimport androidx.compose.material3.darkColorScheme\nimport androidx.compose.material3.lightColorScheme\nimport androidx.compose.ui.graphics.Color`;
+    let packageHeader = `package ${packageName}\n\nimport androidx.compose.material3.darkColorScheme\nimport androidx.compose.material3.lightColorScheme\nimport androidx.compose.ui.graphics.Color`;
+
+    let kotlinIcons = '';
+    const iconsMap: Record<string, VectorIRNode> = {};
+
+    if (options?.vectorIcons && options.vectorIcons.length > 0) {
+      packageHeader += `\nimport androidx.compose.ui.graphics.SolidColor\nimport androidx.compose.ui.graphics.vector.ImageVector\nimport androidx.compose.ui.graphics.vector.addPathNodes\nimport androidx.compose.ui.graphics.vector.path\nimport androidx.compose.ui.unit.dp`;
+
+      const iconValDefs = options.vectorIcons.map(icon => {
+        iconsMap[icon.id] = icon;
+        const propName = icon.name.charAt(0).toUpperCase() + icon.name.slice(1);
+        const pathDefs = icon.paths.map(p => {
+          const fillArg = p.fill && p.fill !== 'none' ? `SolidColor(${asComposeColor(p.fill)})` : 'null';
+          const strokeArg = p.stroke && p.stroke !== 'none' ? `SolidColor(${asComposeColor(p.stroke)})` : 'null';
+          const strokeWidthArg = p.strokeWidth ?? 0;
+          return `            path(\n                fill = ${fillArg},\n                stroke = ${strokeArg},\n                strokeLineWidth = ${strokeWidthArg}f,\n                pathData = addPathNodes("${p.d}")\n            )`;
+        }).join('\n');
+
+        return `    val ${propName}: ImageVector by lazy {\n        ImageVector.Builder(\n            name = "${propName}",\n            defaultWidth = ${icon.width}.dp,\n            defaultHeight = ${icon.height}.dp,\n            viewportWidth = ${icon.viewBox.width}f,\n            viewportHeight = ${icon.viewBox.height}f\n        ).apply {\n${pathDefs}\n        }.build()\n    }`;
+      }).join('\n\n');
+
+      kotlinIcons = `\n\nobject KthemeIcons {\n${iconValDefs}\n}`;
+    }
 
     const colorSchemeFunction = tokens.darkMode ? 'darkColorScheme' : 'lightColorScheme';
     const kotlinColorScheme = `val KthemeColorScheme = ${colorSchemeFunction}(\n${Object.entries(colorScheme)
@@ -108,7 +133,8 @@ export class AndroidComposeRenderer implements TokenRenderer<AndroidComposeExpor
       typography: tokens.typography as unknown as Record<string, unknown>,
       effects: tokens.effects as unknown as Record<string, unknown>,
       adaptation: tokens.adaptation as unknown as Record<string, unknown>,
-      kotlin: `${packageHeader}\n\n${kotlinColorScheme}\n\n${kotlinSemanticColors}\n\n${kotlinTypography}\n\n${kotlinAdaptation}`
+      icons: Object.keys(iconsMap).length > 0 ? iconsMap : undefined,
+      kotlin: `${packageHeader}\n\n${kotlinColorScheme}\n\n${kotlinSemanticColors}\n\n${kotlinTypography}\n\n${kotlinAdaptation}${kotlinIcons}`
     };
   }
 }

@@ -510,6 +510,42 @@ export interface ResolvedAccessibilitySettings {
 }
 
 /**
+ * Individual vector path definition
+ */
+export interface VectorPath {
+  d: string;
+  fill?: Color;
+  stroke?: Color;
+  strokeWidth?: number;
+  strokeLinecap?: 'butt' | 'round' | 'square';
+  strokeLinejoin?: 'miter' | 'round' | 'bevel';
+  fillRule?: 'nonzero' | 'evenodd';
+  opacity?: number;
+}
+
+/**
+ * Vector icon token definition
+ */
+export interface IconToken {
+  id: string;
+  name: string;
+  viewBox?: string; // e.g., "0 0 24 24"
+  width?: number;
+  height?: number;
+  paths: VectorPath[];
+  svg?: string; // Optional raw SVG representation
+  colorBindings?: Record<string, string>; // Maps element/binding key to color token role
+  tags?: string[];
+}
+
+/**
+ * Asset catalog for vector icons, graphic assets, and theme media
+ */
+export interface AssetCatalog {
+  icons?: Record<string, IconToken>;
+}
+
+/**
  * Theme metadata
  */
 export interface ThemeMetadata {
@@ -538,6 +574,7 @@ export interface Theme {
   tokens?: DesignTokens;
   adaptation?: ThemeAdaptation;
   accessibility?: AccessibilitySettings;
+  assets?: AssetCatalog;
 }
 
 /**
