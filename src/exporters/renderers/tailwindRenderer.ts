@@ -10,6 +10,7 @@ export interface TailwindConfigExport {
       boxShadow?: Record<string, string>;
       backgroundImage?: Record<string, string>;
       backdropBlur?: Record<string, string>;
+      animation?: Record<string, string>;
       fontFamily?: Record<string, string | string[]>;
       fontSize?: Record<string, string>;
       fontWeight?: Record<string, string>;
@@ -19,7 +20,6 @@ export interface TailwindConfigExport {
       typography?: Record<string, unknown>;
       effects?: Record<string, unknown>;
       adaptation?: Record<string, unknown>;
-      animation?: Record<string, string>;
       [key: string]: unknown;
     };
   };

@@ -22,4 +22,3 @@ export function toAndroidCompose(theme: Theme, options?: AndroidComposeOptions):
 
   return androidComposeRenderer.render(ir, mergedOptions);
 }
-}
