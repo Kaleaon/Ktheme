@@ -19,6 +19,9 @@ export interface TailwindConfigExport {
       typography?: Record<string, unknown>;
       effects?: Record<string, unknown>;
       adaptation?: Record<string, unknown>;
+      fontFamily?: Record<string, any>;
+      fontSize?: Record<string, string>;
+      boxShadow?: Record<string, string>;
       fontFamily?: Record<string, string | string[]>;
       fontSize?: Record<string, string>;
       fontWeight?: Record<string, string>;
