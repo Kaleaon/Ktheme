@@ -34,17 +34,19 @@ jobs:
         with:
           distribution: "temurin"
           java-version: "21"
-          cache: "gradle"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Run Root Kotlin Unit Tests
-        run: gradle test
+        run: ./gradlew test
 
       - name: Run Kotlin Plugin Unit Tests
-        run: gradle test
+        run: ../gradlew test
         working-directory: kotlin-plugin
 
       - name: Build & Test Linkpoint Android App
-        run: gradle assembleDebug testDebugUnitTest
+        run: ../../gradlew assembleDebug testDebugUnitTest
         working-directory: apps/linkpoint-android
 
   build-swift:
