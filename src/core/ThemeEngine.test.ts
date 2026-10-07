@@ -787,4 +787,33 @@ describe("ThemeEngine adaptations", () => {
     const validation = engine.validateTheme(imported);
     expect(validation.errors).toEqual([]);
   });
+
+  it("validates non-text UI component contrast threshold (>= 3.0:1)", () => {
+    const engine = new ThemeEngine();
+    const lowContrastCompTheme = {
+      ...NavyGoldTheme,
+      metadata: {
+        ...NavyGoldTheme.metadata,
+        id: "low-component-contrast",
+      },
+      colorScheme: {
+        ...NavyGoldTheme.colorScheme,
+        outline: "#0B1731", // very low contrast against #0A1630 background
+      },
+    };
+
+    const validation = engine.validateTheme(lowContrastCompTheme as unknown as Theme);
+    expect(
+      validation.warnings.some((msg) =>
+        msg.includes("Low non-text UI component contrast for outline/background"),
+      ),
+    ).toBe(true);
+    expect(
+      validation.issues.some(
+        (issue) =>
+          issue.code === "low-contrast" &&
+          issue.path === "colorScheme.outline",
+      ),
+    ).toBe(true);
+  });
 });

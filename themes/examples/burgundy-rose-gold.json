@@ -6,7 +6,11 @@
     "description": "Rich burgundy with elegant rose gold metallic accents",
     "author": "Ktheme",
     "version": "1.0.0",
-    "tags": ["metallic", "elegant", "dark"],
+    "tags": [
+      "metallic",
+      "elegant",
+      "dark"
+    ],
     "createdAt": "2026-02-15T20:42:39.611Z",
     "updatedAt": "2026-02-15T20:42:39.611Z"
   },
@@ -20,7 +24,7 @@
     "onPrimary": "#2D0F1A",
     "primaryContainer": "#93575F",
     "onPrimaryContainer": "#D4969E",
-    "secondary": "#4D1A2A",
+    "secondary": "#895666",
     "onSecondary": "#FFE6ED",
     "secondaryContainer": "#3D1525",
     "onSecondaryContainer": "#FFE6ED",
@@ -34,7 +38,7 @@
     "onSurface": "#FFE6ED",
     "surfaceVariant": "#5C2A3D",
     "onSurfaceVariant": "#E6C0CC",
-    "outline": "#B88A94",
+    "outline": "#885A68",
     "outlineVariant": "#6D3F4D",
     "scrim": "#000000",
     "inverseSurface": "#FFE6ED",
