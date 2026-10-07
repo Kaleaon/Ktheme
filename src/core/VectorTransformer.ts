@@ -33,8 +33,8 @@ const PATH_REGEX = /<path[^>]*\sd\s*=\s*(['"])(.*?)\1[^>]*\/?>/gi;
 const FILL_ATTR_REGEX = /fill\s*=\s*(['"])(.*?)\1/i;
 const STROKE_ATTR_REGEX = /stroke\s*=\s*(['"])(.*?)\1/i;
 const STROKE_WIDTH_ATTR_REGEX = /stroke-width\s*=\s*(['"])(.*?)\1/i;
-const RECT_REGEX = /<rect[^>]*\sx\s*=\s*(['"])(.*?)\1[^>]*\sy\s*=\s*(['"])(.*?)\1[^>]*\swidth\s*=\s*(['"])(.*?)\1[^>]*\sheight\s*=\s*(['"])(.*?)\1[^>]*\/?>/gi;
-const CIRCLE_REGEX = /<circle[^>]*\scx\s*=\s*(['"])(.*?)\1[^>]*\scy\s*=\s*(['"])(.*?)\1[^>]*\sr\s*=\s*(['"])(.*?)\1[^>]*\/?>/gi;
+const RECT_REGEX = /<rect[^>]*\sx\s*=\s*(['"])(.*?)\1[^>]*\sy\s*=\s*(['"])(.*?)\3[^>]*\swidth\s*=\s*(['"])(.*?)\5[^>]*\sheight\s*=\s*(['"])(.*?)\7[^>]*\/?>/gi;
+const CIRCLE_REGEX = /<circle[^>]*\scx\s*=\s*(['"])(.*?)\1[^>]*\scy\s*=\s*(['"])(.*?)\3[^>]*\sr\s*=\s*(['"])(.*?)\5[^>]*\/?>/gi;
 
 const THEME_PREFIX_REGEX = /^theme\.colorScheme\./;
 
@@ -188,8 +188,10 @@ export class VectorTransformer {
       const y = parseFloat(match[4]);
       const w = parseFloat(match[6]);
       const h = parseFloat(match[8]);
-      const d = `M ${x} ${y} h ${w} v ${h} h ${-w} Z`;
-      paths.push({ d });
+      if (!isNaN(x) && !isNaN(y) && !isNaN(w) && !isNaN(h)) {
+        const d = `M ${x} ${y} h ${w} v ${h} h ${-w} Z`;
+        paths.push({ d });
+      }
     }
 
     // Match circle cx="..." cy="..." r="..."
@@ -198,10 +200,12 @@ export class VectorTransformer {
       const cx = parseFloat(match[2]);
       const cy = parseFloat(match[4]);
       const r = parseFloat(match[6]);
-      const d = `M ${cx - r} ${cy} a ${r} ${r} 0 1 0 ${
-        2 * r
-      } 0 a ${r} ${r} 0 1 0 ${-2 * r} 0`;
-      paths.push({ d });
+      if (!isNaN(cx) && !isNaN(cy) && !isNaN(r)) {
+        const d = `M ${cx - r} ${cy} a ${r} ${r} 0 1 0 ${
+          2 * r
+        } 0 a ${r} ${r} 0 1 0 ${-2 * r} 0`;
+        paths.push({ d });
+      }
     }
 
     // Evict oldest entry if capacity reached
