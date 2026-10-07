@@ -1,8 +1,8 @@
-import { type KeyboardEvent, useId, useState } from "react";
+import { type KeyboardEvent, useEffect, useId, useState } from "react";
 import { Download, Trash2 } from "lucide-react";
-import { useTheme } from "../../state/ThemeContext.tsx";
-import { PRESET_THEMES } from "../../utils/preset-themes.ts";
-import type { KTheme } from "../../types/theme.ts";
+import { useTheme } from "../../state/ThemeContext";
+import { PRESET_THEMES } from "../../utils/preset-themes";
+import type { KTheme } from "../../types/theme";
 
 type SubTab = "built-in" | "saved";
 
@@ -10,18 +10,38 @@ export function PresetsPanel() {
   const { state, dispatch } = useTheme();
   const [subTab, setSubTab] = useState<SubTab>("built-in");
   const [statusMessage, setStatusMessage] = useState("");
+  const [themeToDelete, setThemeToDelete] = useState<KTheme | null>(null);
   const builtInPanelId = useId();
   const savedPanelId = useId();
+  const dialogTitleId = useId();
 
   function loadTheme(theme: KTheme) {
     dispatch({ type: "SET_THEME", payload: JSON.parse(JSON.stringify(theme)) });
     setStatusMessage(`${theme.metadata.name} loaded.`);
   }
 
-  function deleteTheme(id: string) {
-    dispatch({ type: "DELETE_SAVED", payload: id });
-    setStatusMessage("Saved theme deleted.");
+  function handleConfirmDelete() {
+    if (!themeToDelete) return;
+    dispatch({ type: "DELETE_SAVED", payload: themeToDelete.metadata.id });
+    setStatusMessage(`Saved theme "${themeToDelete.metadata.name}" deleted.`);
+    setThemeToDelete(null);
   }
+
+  function handleCancelDelete() {
+    setStatusMessage("Theme deletion cancelled.");
+    setThemeToDelete(null);
+  }
+
+  useEffect(() => {
+    if (!themeToDelete) return;
+    function handleKeyDown(e: globalThis.KeyboardEvent) {
+      if (e.key === "Escape") {
+        handleCancelDelete();
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [themeToDelete]);
 
   function handleTabKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
     if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
@@ -91,10 +111,49 @@ export function PresetsPanel() {
               key={theme.metadata.id}
               theme={theme}
               onLoad={loadTheme}
-              onDelete={deleteTheme}
+              onDelete={(t) => setThemeToDelete(t)}
             />
           ))}
       </div>
+
+      {themeToDelete && (
+        <div className="modal-backdrop" onClick={handleCancelDelete}>
+          <div
+            className="modal-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={dialogTitleId}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header">
+              <h3 id={dialogTitleId}>Delete Theme</h3>
+            </div>
+            <div className="modal-body">
+              <p>
+                Are you sure you want to delete{" "}
+                <strong>{themeToDelete.metadata.name}</strong>? This action
+                cannot be undone.
+              </p>
+            </div>
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={handleCancelDelete}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn btn-danger"
+                onClick={handleConfirmDelete}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <p className="sr-only" role="status" aria-live="polite">
         {statusMessage}
@@ -110,7 +169,7 @@ function PresetCard({
 }: {
   theme: KTheme;
   onLoad: (t: KTheme) => void;
-  onDelete?: (id: string) => void;
+  onDelete?: (t: KTheme) => void;
 }) {
   const c = theme.colorScheme;
   const metallic = theme.effects?.metallic;
@@ -207,7 +266,7 @@ function PresetCard({
           <button
             className="btn btn-danger btn-sm"
             type="button"
-            onClick={() => onDelete(theme.metadata.id)}
+            onClick={() => onDelete(theme)}
             aria-label={`Delete saved theme ${theme.metadata.name}`}
           >
             <Trash2 size={14} aria-hidden="true" focusable="false" />
