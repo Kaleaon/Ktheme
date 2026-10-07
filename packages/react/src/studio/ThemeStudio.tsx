@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { useKtheme } from "../useKtheme";
 import { DEFAULT_THEMES } from "../KthemeProvider";
+import { useTablist } from "../hooks/useTablist";
 
 export interface ThemeStudioProps {
   embedded?: boolean;
@@ -99,9 +100,14 @@ export function ThemeStudio({
   const { themeId, tokens, setThemeId, setToken, setTokens, resetTheme } =
     useKtheme();
   const [open, setOpen] = useState(true);
-  const [activeTab, setActiveTab] = useState<
-    "customizer" | "presets" | "metallic" | "preview"
-  >("customizer");
+  const [activeTab, setActiveTab] = useState<StudioTab>("customizer");
+  const STUDIO_TABS: StudioTab[] = ["customizer", "presets", "metallic", "preview"];
+  const { getTablistProps, getTabProps, getPanelProps } = useTablist({
+    tabs: STUDIO_TABS,
+    activeTab,
+    onTabChange: (tabId) => setActiveTab(tabId as StudioTab),
+    labelPrefix: "studio-tab",
+  });
   const [themeName, setThemeName] = useState<string>(
     tokens.name || themeId || "Custom Theme",
   );
@@ -262,48 +268,58 @@ export function ThemeStudio({
         <>
           {/* Tab Navigation */}
           <div
-            style={{
-              display: "flex",
-              gap: 8,
-              marginBottom: 16,
-              borderBottom: "1px solid var(--md-sys-color-outline, #2A3655)",
-              paddingBottom: 8,
-            }}
+            {...getTablistProps({
+              style: {
+                display: "flex",
+                gap: 8,
+                marginBottom: 16,
+                borderBottom: "1px solid var(--md-sys-color-outline, #2A3655)",
+                paddingBottom: 8,
+              },
+            })}
           >
             {[
               ["customizer", "🎨 Customizer"],
               ["presets", "📱 Presets"],
               ["metallic", "✨ Metallic"],
               ["preview", "👁️ Preview Deck"],
-            ].map(([tabKey, label]) => (
-              <button
-                key={tabKey}
-                onClick={() => setActiveTab(tabKey as StudioTab)}
-                style={{
-                  background:
-                    activeTab === tabKey
-                      ? "var(--md-sys-color-primary, #D4AF37)"
-                      : "transparent",
-                  color:
-                    activeTab === tabKey
-                      ? "var(--md-sys-color-on-primary, #0A1630)"
-                      : "var(--md-sys-color-on-background, #E8E3D8)",
-                  border: "none",
-                  borderRadius: 6,
-                  padding: "6px 12px",
-                  fontWeight: activeTab === tabKey ? 700 : 500,
-                  fontSize: 12,
-                  cursor: "pointer",
-                }}
-              >
-                {label}
-              </button>
-            ))}
+            ].map(([tabKey, label], index) => {
+              const tabProps = getTabProps(tabKey as StudioTab, index);
+              return (
+                <button
+                  key={tabKey}
+                  {...tabProps}
+                  style={{
+                    background:
+                      activeTab === tabKey
+                        ? "var(--md-sys-color-primary, #D4AF37)"
+                        : "transparent",
+                    color:
+                      activeTab === tabKey
+                        ? "var(--md-sys-color-on-primary, #0A1630)"
+                        : "var(--md-sys-color-on-background, #E8E3D8)",
+                    border: "none",
+                    borderRadius: 6,
+                    padding: "6px 12px",
+                    fontWeight: activeTab === tabKey ? 700 : 500,
+                    fontSize: 12,
+                    cursor: "pointer",
+                    ...tabProps.style,
+                  }}
+                >
+                  {label}
+                </button>
+              );
+            })}
           </div>
 
           {/* Tab 1: Color Customizer */}
           {activeTab === "customizer" && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            <div
+              {...getPanelProps("customizer", {
+                style: { display: "flex", flexDirection: "column", gap: 14 },
+              })}
+            >
               <div>
                 <label
                   style={{
@@ -395,11 +411,13 @@ export function ThemeStudio({
           {/* Tab 2: Preset Gallery */}
           {activeTab === "presets" && (
             <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
-                gap: 10,
-              }}
+              {...getPanelProps("presets", {
+                style: {
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
+                  gap: 10,
+                },
+              })}
             >
               {Object.keys(DEFAULT_THEMES).map((id) => {
                 const p = DEFAULT_THEMES[id];
@@ -464,7 +482,11 @@ export function ThemeStudio({
 
           {/* Tab 3: Metallic Forge */}
           {activeTab === "metallic" && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            <div
+              {...getPanelProps("metallic", {
+                style: { display: "flex", flexDirection: "column", gap: 14 },
+              })}
+            >
               <div style={{ fontSize: 12, fontWeight: 600 }}>
                 Select Metallic Shimmer Finish:
               </div>
@@ -499,15 +521,17 @@ export function ThemeStudio({
           {/* Tab 4: Preview Deck */}
           {activeTab === "preview" && (
             <div
-              style={{
-                background: "var(--md-sys-color-surface, #1A2645)",
-                borderRadius: 8,
-                padding: 16,
-                border: "1px solid var(--md-sys-color-outline, #2A3655)",
-                display: "flex",
-                flexDirection: "column",
-                gap: 12,
-              }}
+              {...getPanelProps("preview", {
+                style: {
+                  background: "var(--md-sys-color-surface, #1A2645)",
+                  borderRadius: 8,
+                  padding: 16,
+                  border: "1px solid var(--md-sys-color-outline, #2A3655)",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 12,
+                },
+              })}
             >
               <div
                 style={{
