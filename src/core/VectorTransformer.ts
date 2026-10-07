@@ -209,7 +209,7 @@ export class VectorTransformer {
       if (cs[resolvedRole] !== undefined) {
         return toHexColor(cs[resolvedRole] as Parameters<typeof toHexColor>[0]);
       }
-      const semanticRoles = cs.semanticRoles as
+      const semanticRoles = cs.semanticRoles as unknown as
         | Record<string, unknown>
         | undefined;
       if (semanticRoles && semanticRoles[resolvedRole] !== undefined) {
