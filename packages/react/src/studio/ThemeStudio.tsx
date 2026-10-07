@@ -1,6 +1,40 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useKtheme } from "../useKtheme";
 import { DEFAULT_THEMES } from "../KthemeProvider";
+import { batchSetCssVariables } from "../batchStyleMutation";
+
+function tokenToCssVars(key: string, value: string): Record<string, string> {
+  const vars: Record<string, string> = {};
+  vars[`--ktheme-${key}`] = value;
+  if (key === "primary") {
+    vars["--ktheme-pri"] = value;
+    vars["--md-sys-color-primary"] = value;
+  } else if (key === "onPrimary") {
+    vars["--ktheme-onpri"] = value;
+    vars["--md-sys-color-on-primary"] = value;
+  } else if (key === "surface") {
+    vars["--ktheme-surf"] = value;
+    vars["--md-sys-color-surface"] = value;
+  } else if (key === "background") {
+    vars["--ktheme-bg"] = value;
+    vars["--md-sys-color-background"] = value;
+  } else if (key === "outline") {
+    vars["--ktheme-outv"] = value;
+    vars["--md-sys-color-outline"] = value;
+  } else if (key === "error") {
+    vars["--ktheme-err"] = value;
+    vars["--md-sys-color-error"] = value;
+  } else if (key === "warning") {
+    vars["--ktheme-warn"] = value;
+    vars["--md-sys-color-warning"] = value;
+  } else if (key === "success") {
+    vars["--ktheme-ok"] = value;
+    vars["--md-sys-color-success"] = value;
+  } else if (key === "secondary") {
+    vars["--md-sys-color-secondary"] = value;
+  }
+  return vars;
+}
 
 export interface ThemeStudioProps {
   embedded?: boolean;
@@ -109,7 +143,19 @@ export function ThemeStudio({
   const [copied, setCopied] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const handleColorChange = (key: string, val: string) => {
+  const [draftTokens, setDraftTokens] = useState<Record<string, string>>({});
+
+  const handleActiveColorChange = (key: string, val: string) => {
+    setDraftTokens((prev) => ({ ...prev, [key]: val }));
+    batchSetCssVariables(null, tokenToCssVars(key, val));
+  };
+
+  const handleCommitColorChange = (key: string, val: string) => {
+    setDraftTokens((prev) => {
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
     setToken(key, val);
   };
 
@@ -341,7 +387,7 @@ export function ThemeStudio({
                 }}
               >
                 {EDITABLE_TOKENS.map(([key, label]) => {
-                  const val = tokens[key] || "#000000";
+                  const val = draftTokens[key] || tokens[key] || "#000000";
                   return (
                     <div
                       key={key}
@@ -369,8 +415,17 @@ export function ThemeStudio({
                         <input
                           type="color"
                           value={val.startsWith("#") ? val : "#D4AF37"}
+                          onInput={(e: React.FormEvent<HTMLInputElement>) =>
+                            handleActiveColorChange(
+                              key,
+                              (e.target as HTMLInputElement).value,
+                            )
+                          }
                           onChange={(e) =>
-                            handleColorChange(key, e.target.value)
+                            handleCommitColorChange(key, e.target.value)
+                          }
+                          onBlur={(e) =>
+                            handleCommitColorChange(key, e.target.value)
                           }
                           style={{
                             width: 24,
