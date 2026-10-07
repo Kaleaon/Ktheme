@@ -34,7 +34,11 @@ jobs:
           cache: npm
 
       - name: Install Node Dependencies
-        run: npm ci
+        run: |
+          npm ci || npm install
+          if [ -d "theme-creator" ]; then
+            cd theme-creator && (npm ci || npm install) && cd ..
+          fi
 
       - name: Run Node Tests and Build
         run: |
