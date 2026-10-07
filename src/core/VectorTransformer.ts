@@ -112,7 +112,7 @@ export class VectorTransformer {
 
       // Default fill to primary or onSurface if neither fill nor stroke is set
       if (!fill && !stroke) {
-        fill = theme ? toHexColor(theme.colorScheme.primary) : "#000000";
+        fill = theme ? toHexColor(theme.colorScheme.primary) : "#000000"; // ktheme-ignore
       }
 
       let strokeWidth = p.strokeWidth;
