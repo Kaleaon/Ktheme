@@ -4,6 +4,7 @@ export interface FormFieldContextValue {
   id: string;
   labelId: string;
   descId?: string;
+  helperTextId?: string;
   errorId?: string;
   ariaDescribedBy?: string;
   ariaInvalid: boolean;
@@ -14,6 +15,10 @@ export const FormFieldContext = createContext<FormFieldContextValue | null>(
   null,
 );
 
+export function useFormFieldContext() {
+  return useContext(FormFieldContext);
+}
+
 let fallbackIdCounter = 0;
 
 export interface FormFieldProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -23,6 +28,8 @@ export interface FormFieldProps extends React.HTMLAttributes<HTMLDivElement> {
   helperText?: React.ReactNode;
   error?: React.ReactNode;
   required?: boolean;
+  fullWidth?: boolean;
+  hideLabel?: boolean;
   children?: React.ReactNode;
   labelStyle?: React.CSSProperties;
 }
@@ -34,6 +41,8 @@ export const FormField: React.FC<FormFieldProps> = ({
   helperText,
   error,
   required = false,
+  fullWidth = false,
+  hideLabel = false,
   children,
   style,
   className = "",
@@ -51,7 +60,12 @@ export const FormField: React.FC<FormFieldProps> = ({
   const descText = description || helperText;
 
   const labelId = `${inputId}-label`;
-  const descId = descText ? `${inputId}-desc` : undefined;
+  const descId = description
+    ? `${inputId}-desc`
+    : helperText
+      ? `${inputId}-helper`
+      : undefined;
+  const helperTextId = helperText ? `${inputId}-helper` : descId;
   const errorId = error ? `${inputId}-error` : undefined;
 
   const describedByParts: string[] = [];
@@ -64,6 +78,7 @@ export const FormField: React.FC<FormFieldProps> = ({
     id: inputId,
     labelId,
     descId,
+    helperTextId,
     errorId,
     ariaDescribedBy,
     ariaInvalid: Boolean(error),
@@ -74,9 +89,15 @@ export const FormField: React.FC<FormFieldProps> = ({
     if (!React.isValidElement(child)) return child;
     const element = child as React.ReactElement<Record<string, unknown>>;
     const elProps = (element.props || {}) as Record<string, unknown>;
+    const existingDescribedBy = elProps["aria-describedby"] as string | undefined;
+    const combinedDescribedBy =
+      existingDescribedBy && ariaDescribedBy
+        ? `${existingDescribedBy} ${ariaDescribedBy}`
+        : existingDescribedBy || ariaDescribedBy;
+
     return React.cloneElement(element, {
       id: elProps.id || inputId,
-      "aria-describedby": elProps["aria-describedby"] || ariaDescribedBy,
+      "aria-describedby": combinedDescribedBy,
       "aria-invalid":
         elProps["aria-invalid"] !== undefined
           ? elProps["aria-invalid"]
@@ -88,14 +109,24 @@ export const FormField: React.FC<FormFieldProps> = ({
     } as Record<string, unknown>);
   });
 
+  const wrapperClass = [
+    "ktheme-form-field",
+    "form-field",
+    fullWidth ? "full-width" : "",
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
     <FormFieldContext.Provider value={contextValue}>
       <div
-        className={`ktheme-form-field ${className}`}
+        className={wrapperClass}
         style={{
           display: "flex",
           flexDirection: "column",
           gap: "4px",
+          width: fullWidth ? "100%" : undefined,
           ...style,
         }}
         {...props}
@@ -104,6 +135,7 @@ export const FormField: React.FC<FormFieldProps> = ({
           <label
             id={labelId}
             htmlFor={inputId}
+            className={hideLabel ? "sr-only" : "field-label"}
             style={{
               fontSize: "12px",
               fontWeight: 600,
@@ -133,6 +165,7 @@ export const FormField: React.FC<FormFieldProps> = ({
         {descText && (
           <div
             id={descId}
+            className="field-helper-text"
             style={{
               fontSize: "11px",
               color: "var(--ktheme-text-muted, #9ca3af)",
@@ -146,6 +179,8 @@ export const FormField: React.FC<FormFieldProps> = ({
         {error && (
           <div
             id={errorId}
+            role="alert"
+            className="field-error"
             style={{
               fontSize: "11px",
               color: "var(--ktheme-error, #ef4444)",
@@ -159,6 +194,8 @@ export const FormField: React.FC<FormFieldProps> = ({
     </FormFieldContext.Provider>
   );
 };
+
+export default FormField;
 
 export interface FormInputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {}
