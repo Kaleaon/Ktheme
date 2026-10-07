@@ -1,4 +1,4 @@
-import { Color, DesktopAdaptation, MetallicVariant, Theme } from "../core/types";
+import { Color, MetallicVariant, Theme } from "../core/types";
 import { getMetallicGradient } from "../effects/metallic";
 import { normalizeColor, rgbToHex } from "../utils/colors";
 import {
