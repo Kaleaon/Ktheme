@@ -188,4 +188,16 @@ describe("VectorTransformer", () => {
 
     sanitizeSpy.mockRestore();
   });
+
+  it("parses rect and circle SVG elements with mixed single and double quotes", () => {
+    const mixedSvg = `<svg viewBox="0 0 24 24">
+      <rect x="5" y='10' width="15" height='20' />
+      <circle cx='12' cy="12" r='6' />
+    </svg>`;
+
+    const paths = VectorTransformer.parseSvgPaths(mixedSvg);
+    expect(paths).toHaveLength(2);
+    expect(paths[0].d).toBe("M 5 10 h 15 v 20 h -15 Z");
+    expect(paths[1].d).toBe("M 6 12 a 6 6 0 1 0 12 0 a 6 6 0 1 0 -12 0");
+  });
 });
