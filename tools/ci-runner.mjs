@@ -419,7 +419,7 @@ async function taskA11yAudit() {
   try {
     browser = await getPlaywrightBrowser();
     const page = await browser.newPage();
-    await page.goto(targetUrl, { waitUntil: "load" }).catch(() => page.goto(targetUrl, { waitUntil: "domcontentloaded" }));
+    await page.goto(targetUrl, { waitUntil: "domcontentloaded", timeout: 15000 }).catch(() => {});
     await page.waitForSelector("#root > *", { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(500);
 
@@ -650,7 +650,7 @@ async function taskVisualSuite() {
       const page = await browser.newPage({
         viewport: { width: vp.width, height: vp.height },
       });
-      await page.goto(targetUrl, { waitUntil: "load" }).catch(() => page.goto(targetUrl, { waitUntil: "domcontentloaded" }));
+      await page.goto(targetUrl, { waitUntil: "domcontentloaded", timeout: 15000 }).catch(() => {});
       await page
         .waitForSelector("#root > *", { timeout: 20000 })
         .catch(() => {});
