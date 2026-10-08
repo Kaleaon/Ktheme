@@ -326,6 +326,23 @@ async function taskUnitTests() {
   let success = true;
 
   if (hasKthemeJest) {
+    const themeCreatorPkg = path.join(cwd, "theme-creator/package.json");
+    const themeCreatorNodeModules = path.join(
+      cwd,
+      "theme-creator/node_modules",
+    );
+    if (
+      fs.existsSync(themeCreatorPkg) &&
+      !fs.existsSync(themeCreatorNodeModules)
+    ) {
+      log("Installing missing theme-creator dependencies...", "info");
+      spawnSync("npm", ["ci"], {
+        cwd: path.join(cwd, "theme-creator"),
+        stdio: "inherit",
+        shell: true,
+      });
+    }
+
     log("Executing Ktheme Jest Unit Tests...", "info");
     const res = spawnSync("npm", ["test"], {
       cwd,
