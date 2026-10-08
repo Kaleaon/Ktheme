@@ -21,6 +21,9 @@
     "check:theme-catalog": "node scripts/generate-theme-catalog.mjs --check",
     "sync-schemas": "npx ts-node scripts/sync-schemas.ts",
     "validate": "node tools/ci-runner.mjs",
+    "validate:lint": "node tools/ci-runner.mjs --lint",
+    "validate:typecheck": "node tools/ci-runner.mjs --typecheck",
+    "validate:static": "node tools/ci-runner.mjs --static",
     "test:a11y": "node tools/ci-runner.mjs --a11y",
     "test:visual": "node tools/ci-runner.mjs --visual"
   },
