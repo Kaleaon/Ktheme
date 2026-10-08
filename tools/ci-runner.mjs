@@ -389,7 +389,21 @@ async function taskCatalogCheck() {
 
 // TASK 3: WCAG 2.1 AA Accessibility Audit
 async function taskA11yAudit() {
-  log("Running WCAG 2.1 AA Accessibility Audit on Live DOM Nodes...", "header");
+  log("Running WCAG 2.1 AA Accessibility Audit...", "header");
+
+  const contrastScriptTs = path.join(cwd, "scripts/verify-preset-contrast.ts");
+  if (fs.existsSync(contrastScriptTs)) {
+    log("Auditing Raw Theme Preset Tokens for WCAG AA Contrast Compliance...", "info");
+    const contrastRes = spawnSync("npx", ["ts-node", contrastScriptTs], {
+      cwd,
+      stdio: "inherit",
+      shell: true,
+    });
+    if (contrastRes.status !== 0) {
+      log("Theme preset contrast validation failed!", "error");
+      return false;
+    }
+  }
 
   let server;
   let targetUrl;

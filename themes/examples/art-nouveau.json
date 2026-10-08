@@ -6,7 +6,12 @@
     "description": "Organic curves, botanical accents, and decorative linework with a warm natural palette",
     "author": "Ktheme",
     "version": "1.0.0",
-    "tags": ["iconic", "organic", "botanical", "warm"],
+    "tags": [
+      "iconic",
+      "organic",
+      "botanical",
+      "warm"
+    ],
     "createdAt": "2026-03-05T00:00:00.000Z",
     "updatedAt": "2026-03-05T00:00:00.000Z"
   },
@@ -20,7 +25,7 @@
     "onPrimary": "#FFF7EE",
     "primaryContainer": "#D9C2A9",
     "onPrimaryContainer": "#352214",
-    "secondary": "#6B8F57",
+    "secondary": "#73945F",
     "onSecondary": "#F6FFF1",
     "secondaryContainer": "#CFE4BF",
     "onSecondaryContainer": "#24371A",
@@ -34,7 +39,7 @@
     "onSurface": "#2C2218",
     "surfaceVariant": "#E7D8C7",
     "onSurfaceVariant": "#584638",
-    "outline": "#8A7461",
+    "outline": "#9B8875",
     "outlineVariant": "#CBB8A5",
     "scrim": "#000000",
     "inverseSurface": "#372C22",

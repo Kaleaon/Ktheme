@@ -1090,6 +1090,39 @@ export class ThemeEngine {
           );
         }
       });
+
+      const componentContrastPairs: Array<
+        [
+          keyof typeof theme.colorScheme,
+          "background" | "surface",
+          string,
+        ]
+      > = [
+        ["outline", "background", "outline/background"],
+        ["outline", "surface", "outline/surface"],
+        ["secondary", "background", "secondary/background"],
+        ["secondary", "surface", "secondary/surface"],
+        ["primary", "background", "primary/background"],
+        ["primary", "surface", "primary/surface"],
+      ];
+
+      componentContrastPairs.forEach(([comp, bg, label]) => {
+        if (theme.colorScheme[comp] && theme.colorScheme[bg]) {
+          const ratio = tryContrastRatio(
+            theme.colorScheme[comp] as Color,
+            theme.colorScheme[bg] as Color,
+          );
+          if (ratio !== undefined && ratio < 3.0) {
+            addWarning(
+              `Low non-text UI component contrast for ${label}: ${ratio.toFixed(
+                2,
+              )} (recommended >= 3.0)`,
+              "low-contrast",
+              `colorScheme.${comp}`,
+            );
+          }
+        }
+      });
     }
 
     if (roles) {

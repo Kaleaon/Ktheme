@@ -6,7 +6,11 @@
     "description": "Rich emerald green with elegant silver metallic accents",
     "author": "Ktheme",
     "version": "1.0.0",
-    "tags": ["metallic", "nature", "dark"],
+    "tags": [
+      "metallic",
+      "nature",
+      "dark"
+    ],
     "createdAt": "2026-02-15T20:42:39.610Z",
     "updatedAt": "2026-02-15T20:42:39.610Z"
   },
@@ -34,7 +38,7 @@
     "onSurface": "#E8F5E8",
     "surfaceVariant": "#2A6554",
     "onSurfaceVariant": "#C9E4D9",
-    "outline": "#8A9E94",
+    "outline": "#718177",
     "outlineVariant": "#3E4E44",
     "scrim": "#000000",
     "inverseSurface": "#E8F5E8",

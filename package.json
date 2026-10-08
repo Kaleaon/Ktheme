@@ -19,6 +19,7 @@
     "release:bump-preset-updated-at": "node scripts/release/bump-preset-updated-at.mjs",
     "generate:theme-catalog": "node scripts/generate-theme-catalog.mjs",
     "check:theme-catalog": "node scripts/generate-theme-catalog.mjs --check",
+    "verify:preset-contrast": "ts-node scripts/verify-preset-contrast.ts",
     "sync-schemas": "npx ts-node scripts/sync-schemas.ts",
     "validate": "node tools/ci-runner.mjs",
     "test:a11y": "node tools/ci-runner.mjs --a11y",
