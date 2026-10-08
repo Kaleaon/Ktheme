@@ -112,4 +112,92 @@ describe("VectorTransformer", () => {
     expect(ir.paths[0].d).toBe("M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z");
     expect(ir.paths[0].fill).toBe("#112233");
   });
+
+  beforeEach(() => {
+    VectorTransformer.clearCache();
+  });
+
+  it("memoizes SVG parsing results and returns shallow cloned arrays", () => {
+    const svg = `<svg viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2z" fill="#FF0000" /></svg>`;
+
+    const res1 = VectorTransformer.parseSvgPaths(svg);
+    const res2 = VectorTransformer.parseSvgPaths(svg);
+
+    // Deep equality of contents
+    expect(res1).toEqual(res2);
+    // Array reference should be distinct due to cloning
+    expect(res1).not.toBe(res2);
+    // Object elements inside array should also be cloned
+    expect(res1[0]).not.toBe(res2[0]);
+  });
+
+  it("prevents array and path object mutation side effects on cached results", () => {
+    const svg = `<svg viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2z" fill="#FF0000" /></svg>`;
+
+    const res1 = VectorTransformer.parseSvgPaths(svg);
+    res1[0].d = "M0 0h10v10H0z";
+    res1.push({ d: "M5 5h5v5H5z" });
+
+    const res2 = VectorTransformer.parseSvgPaths(svg);
+    expect(res2).toHaveLength(1);
+    expect(res2[0].d).toBe("M12 2L2 22h20L12 2z");
+  });
+
+  it("flushes cache when clearCache is called", () => {
+    const svg = `<svg viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2z" fill="#FF0000" /></svg>`;
+    const sanitizeSpy = jest.spyOn(VectorTransformer, "sanitizeSvg");
+
+    VectorTransformer.parseSvgPaths(svg);
+    expect(sanitizeSpy).toHaveBeenCalledTimes(1);
+
+    VectorTransformer.parseSvgPaths(svg);
+    expect(sanitizeSpy).toHaveBeenCalledTimes(1); // Cache hit, sanitizeSvg not called again
+
+    VectorTransformer.clearCache();
+
+    VectorTransformer.parseSvgPaths(svg);
+    expect(sanitizeSpy).toHaveBeenCalledTimes(2); // Re-parsed after cache clear
+
+    sanitizeSpy.mockRestore();
+  });
+
+  it("evicts least recently used entry when capacity of 500 is exceeded", () => {
+    const sanitizeSpy = jest.spyOn(VectorTransformer, "sanitizeSvg");
+
+    // Fill cache to capacity (500 entries)
+    for (let i = 0; i < 500; i++) {
+      VectorTransformer.parseSvgPaths(`<svg viewBox="0 0 24 24"><path d="M${i} 0h1v1H${i}z" /></svg>`);
+    }
+    expect(sanitizeSpy).toHaveBeenCalledTimes(500);
+
+    // Re-access item 0 so item 1 becomes the LRU item
+    VectorTransformer.parseSvgPaths(`<svg viewBox="0 0 24 24"><path d="M0 0h1v1H0z" /></svg>`);
+    expect(sanitizeSpy).toHaveBeenCalledTimes(500); // hit
+
+    // Insert 501st entry (forces eviction of LRU entry, item 1)
+    VectorTransformer.parseSvgPaths(`<svg viewBox="0 0 24 24"><path d="M999 0h1v1H999z" /></svg>`);
+    expect(sanitizeSpy).toHaveBeenCalledTimes(501);
+
+    // Item 0 should still be cached (hit)
+    VectorTransformer.parseSvgPaths(`<svg viewBox="0 0 24 24"><path d="M0 0h1v1H0z" /></svg>`);
+    expect(sanitizeSpy).toHaveBeenCalledTimes(501);
+
+    // Item 1 was evicted, so accessing it should trigger a re-parse (miss)
+    VectorTransformer.parseSvgPaths(`<svg viewBox="0 0 24 24"><path d="M1 0h1v1H1z" /></svg>`);
+    expect(sanitizeSpy).toHaveBeenCalledTimes(502);
+
+    sanitizeSpy.mockRestore();
+  });
+
+  it("parses rect and circle SVG elements with mixed single and double quotes", () => {
+    const mixedSvg = `<svg viewBox="0 0 24 24">
+      <rect x="5" y='10' width="15" height='20' />
+      <circle cx='12' cy="12" r='6' />
+    </svg>`;
+
+    const paths = VectorTransformer.parseSvgPaths(mixedSvg);
+    expect(paths).toHaveLength(2);
+    expect(paths[0].d).toBe("M 5 10 h 15 v 20 h -15 Z");
+    expect(paths[1].d).toBe("M 6 12 a 6 6 0 1 0 12 0 a 6 6 0 1 0 -12 0");
+  });
 });
