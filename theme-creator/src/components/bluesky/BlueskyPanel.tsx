@@ -17,6 +17,7 @@ import {
   fetchUserThemes,
 } from "../../services/bluesky-themes";
 import type { KTheme } from "../../types/theme";
+import AccessibleFormField from "../common/AccessibleFormField";
 
 type SubTab = "community" | "my-themes" | "share";
 
@@ -38,6 +39,7 @@ export function BlueskyPanel() {
   const communityPanelId = useId();
   const myThemesPanelId = useId();
   const sharePanelId = useId();
+  const loginErrorId = useId();
 
   // Auto-resume session on mount
   useEffect(() => {
@@ -168,22 +170,38 @@ export function BlueskyPanel() {
           </p>
 
           {loginError && (
-            <div className="bsky-error" role="alert" aria-live="assertive">
+            <div
+              id={loginErrorId}
+              className="bsky-error"
+              role="alert"
+              aria-live="assertive"
+            >
               {loginError}
             </div>
           )}
 
-          <label className="form-field">
-            <span className="field-label">Handle or Email</span>
+          <AccessibleFormField
+            label="Handle or Email"
+            error={loginError ? loginError : undefined}
+            errorId={loginErrorId}
+            hideErrorContainer
+            className="form-field"
+          >
             <input
               type="text"
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
               placeholder="user.bsky.social"
             />
-          </label>
-          <label className="form-field">
-            <span className="field-label">App Password</span>
+          </AccessibleFormField>
+
+          <AccessibleFormField
+            label="App Password"
+            error={loginError ? loginError : undefined}
+            errorId={loginErrorId}
+            hideErrorContainer
+            className="form-field"
+          >
             <input
               type="password"
               value={password}
@@ -191,7 +209,7 @@ export function BlueskyPanel() {
               placeholder="xxxx-xxxx-xxxx-xxxx"
               onKeyDown={(e) => e.key === "Enter" && handleLogin()}
             />
-          </label>
+          </AccessibleFormField>
           <p className="bsky-hint">
             Use an App Password from your Bluesky settings for security.
           </p>
