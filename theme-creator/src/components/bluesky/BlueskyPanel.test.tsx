@@ -54,6 +54,11 @@ describe("BlueskyPanel Accessibility Tests", () => {
       expect(alertEl).toBeInTheDocument();
       expect(alertEl.getAttribute("aria-live")).toBe("assertive");
       expect(alertEl).toHaveTextContent("Invalid credentials");
+      expect(alertEl.id).toBeTruthy();
+      expect(handleInput).toHaveAttribute("aria-invalid", "true");
+      expect(handleInput).toHaveAttribute("aria-describedby", alertEl.id);
+      expect(passwordInput).toHaveAttribute("aria-invalid", "true");
+      expect(passwordInput).toHaveAttribute("aria-describedby", alertEl.id);
     });
   });
 });
