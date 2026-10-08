@@ -7,6 +7,8 @@ import { validateComponentCatalog } from "../dist/cli/validator.js";
 import {
   extractComposeComponents,
   extractBlenderPanels,
+  extractReactComponents,
+  extractCleverferretTemplates,
 } from "../dist/cli/extract.js";
 import { pushComponents } from "../dist/cli/push.js";
 import { pullTokens } from "../dist/cli/pull.js";
@@ -32,7 +34,7 @@ async function main() {
 
 Usage:
   ktheme validate [--schema <schema.json>] <catalog.json|dir>
-  ktheme extract --framework <compose|blender> --src <path> [--out <dir>]
+  ktheme extract --framework <react|cleverferret|compose|blender> --src <path> [--out <dir>]
   ktheme push [--input <catalog.json|dir>] [--endpoint <url>]
   ktheme pull [--endpoint <url>] [--theme-id <id>] [--out-kotlin <path>]
 `);
@@ -80,7 +82,7 @@ Usage:
   }
 
   if (command === "extract") {
-    const framework = getArgValue("--framework") || "compose";
+    const framework = (getArgValue("--framework") || "compose").toLowerCase();
     const src = getArgValue("--src");
     const outDir = getArgValue("--out") || ".";
 
@@ -93,21 +95,35 @@ Usage:
       fs.mkdirSync(outDir, { recursive: true });
     }
 
-    if (framework === "compose") {
+    if (framework === "react") {
+      const items = extractReactComponents(src);
+      const outFile = path.join(outDir, "react-components-catalog.json");
+      fs.writeFileSync(outFile, JSON.stringify(items, null, 2), "utf-8");
+      console.log(
+        `✓ Extracted ${items.length} React components to ${outFile}`,
+      );
+    } else if (framework === "cleverferret" || framework === "cleverferret-html") {
+      const items = extractCleverferretTemplates(src);
+      const outFile = path.join(outDir, "cleverferret-templates-catalog.json");
+      fs.writeFileSync(outFile, JSON.stringify(items, null, 2), "utf-8");
+      console.log(
+        `✓ Extracted ${items.length} Cleverferret templates to ${outFile}`,
+      );
+    } else if (framework === "compose" || framework === "jetpack-compose") {
       const items = extractComposeComponents(src);
       const outFile = path.join(outDir, "compose-components-catalog.json");
       fs.writeFileSync(outFile, JSON.stringify(items, null, 2), "utf-8");
       console.log(
         `✓ Extracted ${items.length} Compose components to ${outFile}`,
       );
-    } else if (framework === "blender") {
+    } else if (framework === "blender" || framework === "blender-python") {
       const items = extractBlenderPanels(src, outDir);
       console.log(
         `✓ Extracted ${items.length} Blender panels to catalog in ${outDir}`,
       );
     } else {
       console.error(
-        `Error: Unsupported framework "${framework}". Use "compose" or "blender".`,
+        `Error: Unsupported framework "${framework}". Use "react", "cleverferret", "compose", or "blender".`,
       );
       process.exit(1);
     }
