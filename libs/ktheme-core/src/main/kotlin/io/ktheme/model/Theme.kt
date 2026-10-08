@@ -69,6 +69,13 @@ public data class ColorScheme(
     public val inverseSurface: String,
     public val inverseOnSurface: String,
     public val inversePrimary: String,
+    public val surfaceDim: String? = null,
+    public val surfaceBright: String? = null,
+    public val surfaceContainerLowest: String? = null,
+    public val surfaceContainerLow: String? = null,
+    public val surfaceContainer: String? = null,
+    public val surfaceContainerHigh: String? = null,
+    public val surfaceContainerHighest: String? = null,
     /** Optional MD3 state-layer tints. */
     public val stateLayers: StateLayers? = null,
     /** Optional product-semantic roles (success/warning/info/critical). */

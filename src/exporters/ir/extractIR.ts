@@ -43,6 +43,20 @@ export function extractThemeTokens(theme: Theme): NormalizedThemeTokens {
   const surfaceVariant = toHexColor(cs.surfaceVariant ?? surface);
   const onSurfaceVariant = toHexColor(cs.onSurfaceVariant ?? onSurface);
 
+  const surfaceDim = toHexColor(cs.surfaceDim ?? background);
+  const surfaceBright = toHexColor(cs.surfaceBright ?? surface);
+  const surfaceContainerLowest = toHexColor(
+    cs.surfaceContainerLowest ?? surfaceVariant,
+  );
+  const surfaceContainerLow = toHexColor(
+    cs.surfaceContainerLow ?? surfaceVariant,
+  );
+  const surfaceContainer = toHexColor(cs.surfaceContainer ?? surface);
+  const surfaceContainerHigh = toHexColor(cs.surfaceContainerHigh ?? surface);
+  const surfaceContainerHighest = toHexColor(
+    cs.surfaceContainerHighest ?? surface,
+  );
+
   const outline = toHexColor(cs.outline ?? "#777777");
   const outlineVariant = toHexColor(cs.outlineVariant ?? outline);
 
@@ -194,6 +208,13 @@ export function extractThemeTokens(theme: Theme): NormalizedThemeTokens {
       onSurface,
       surfaceVariant,
       onSurfaceVariant,
+      surfaceDim,
+      surfaceBright,
+      surfaceContainerLowest,
+      surfaceContainerLow,
+      surfaceContainer,
+      surfaceContainerHigh,
+      surfaceContainerHighest,
       outline,
       outlineVariant,
       scrim,
