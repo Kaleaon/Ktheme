@@ -6,7 +6,11 @@
     "description": "Minimalist light theme for comfortable reading",
     "author": "Ktheme",
     "version": "1.0.0",
-    "tags": ["minimalist", "light", "reader"],
+    "tags": [
+      "minimalist",
+      "light",
+      "reader"
+    ],
     "createdAt": "2026-02-15T20:42:39.611Z",
     "updatedAt": "2026-02-15T20:42:39.611Z"
   },
@@ -23,7 +27,7 @@
     "secondary": "#595959",
     "onSecondary": "#FAF9F6",
     "secondaryContainer": "#737373",
-    "onSecondaryContainer": "#FAF9F6",
+    "onSecondaryContainer": "#FCFBF9",
     "tertiary": "#6B6B6B",
     "onTertiary": "#FAF9F6",
     "tertiaryContainer": "#828282",
@@ -34,7 +38,7 @@
     "onSurface": "#2C2C2C",
     "surfaceVariant": "#EBEAE4",
     "onSurfaceVariant": "#454545",
-    "outline": "#7A7A7A",
+    "outline": "#282828",
     "outlineVariant": "#C9C9C9",
     "scrim": "#000000",
     "inverseSurface": "#2C2C2C",

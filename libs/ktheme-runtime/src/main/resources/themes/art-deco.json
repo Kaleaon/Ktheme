@@ -6,7 +6,12 @@
     "description": "Geometric symmetry, stepped motifs, and premium gold-black-ivory contrast",
     "author": "Ktheme",
     "version": "1.0.0",
-    "tags": ["iconic", "geometric", "luxury", "high-contrast"],
+    "tags": [
+      "iconic",
+      "geometric",
+      "luxury",
+      "high-contrast"
+    ],
     "createdAt": "2026-03-05T00:00:00.000Z",
     "updatedAt": "2026-03-05T00:00:00.000Z"
   },
@@ -22,8 +27,8 @@
     "onPrimaryContainer": "#FFF2C6",
     "secondary": "#F4E7CF",
     "onSecondary": "#221A0A",
-    "secondaryContainer": "#B8A17A",
-    "onSecondaryContainer": "#161005",
+    "secondaryContainer": "#3A3222",
+    "onSecondaryContainer": "#F4E7CF",
     "tertiary": "#0F0F11",
     "onTertiary": "#F6EAD1",
     "tertiaryContainer": "#2A2A2E",

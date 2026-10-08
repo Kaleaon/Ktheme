@@ -5,7 +5,10 @@
     "description": "Classic Linden Lab viewer look - Linden blue on deep slate",
     "author": "Linkpoint",
     "version": "1.0.0",
-    "tags": ["built-in", "linkpoint"],
+    "tags": [
+      "built-in",
+      "linkpoint"
+    ],
     "createdAt": "2026-10-02T00:00:00.000Z",
     "updatedAt": "2026-10-02T00:00:00.000Z"
   },

@@ -5,7 +5,14 @@
     "description": "High-contrast Windows Phone Metro variant on a deep navy field with vivid cyan tile accent",
     "author": "Linkpoint",
     "version": "1.0.0",
-    "tags": ["dark", "metro", "windows-phone", "flat", "tile", "modern"],
+    "tags": [
+      "dark",
+      "metro",
+      "windows-phone",
+      "flat",
+      "tile",
+      "modern"
+    ],
     "createdAt": "2026-04-27T00:00:00.000Z",
     "updatedAt": "2026-04-27T00:00:00.000Z"
   },
@@ -33,7 +40,7 @@
     "onSurface": "#F0F8FF",
     "surfaceVariant": "#3D4854",
     "onSurfaceVariant": "#B8CAD6",
-    "outline": "#444444",
+    "outline": "#AAAAAA",
     "outlineVariant": "#222222",
     "scrim": "#000000",
     "inverseSurface": "#FFFFFF",

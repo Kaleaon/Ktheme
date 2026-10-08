@@ -41,6 +41,7 @@ function log(msg, type = "info") {
 const args = process.argv.slice(2);
 let runUnit = args.includes("--unit");
 let runCatalog = args.includes("--catalog");
+let runPalette = args.includes("--palette");
 let runA11y = args.includes("--a11y");
 let runVisual = args.includes("--visual");
 const updateSnapshots =
@@ -63,22 +64,24 @@ ${colors.bold}USAGE:${colors.reset}
 ${colors.bold}FLAGS:${colors.reset}
   --unit              Run unit test suites
   --catalog           Run theme catalog parity checks
+  --palette           Run static WCAG 2.2 AA color palette contrast audit
   --a11y              Run automated WCAG 2.1 AA accessibility auditing
   --visual            Run Playwright visual snapshot regression suite
   --update-snapshots  Update visual baseline snapshots
   --port <number>     Specify static server port override
   --help, -h          Show this help message
 
-  ${colors.gray}If no task flags (--unit, --catalog, --a11y, --visual) are specified,
+  ${colors.gray}If no task flags (--unit, --catalog, --palette, --a11y, --visual) are specified,
   all applicable validation tasks for the current repository will run.${colors.reset}
 `);
   process.exit(0);
 }
 
 // If no specific task flag was passed, run all tasks applicable to the current repo
-if (!runUnit && !runCatalog && !runA11y && !runVisual) {
+if (!runUnit && !runCatalog && !runPalette && !runA11y && !runVisual) {
   runUnit = true;
   runCatalog = true;
+  runPalette = true;
   runA11y = true;
   runVisual = true;
 }
@@ -383,6 +386,146 @@ async function taskCatalogCheck() {
     return true;
   } else {
     log("Theme catalog is out of sync with SHARED_PRESET_REGISTRY.", "error");
+    return false;
+  }
+}
+
+// TASK 3: WCAG 2.2 AA Static Color Palette Audit
+async function taskPaletteCheck() {
+  log("Running WCAG 2.2 AA Static Color Palette Audit...", "header");
+
+  function hexToRgb(hex) {
+    hex = hex.replace(/^#/, "");
+    if (hex.length === 3) hex = hex.split("").map((c) => c + c).join("");
+    if (hex.length === 8) hex = hex.slice(0, 6);
+    const num = parseInt(hex, 16);
+    return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+  }
+
+  function getLuminance(r, g, b) {
+    const [rs, gs, bs] = [r, g, b].map((c) => {
+      c = c / 255;
+      return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+    });
+    return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
+  }
+
+  function getContrastRatio(hex1, hex2) {
+    if (!hex1 || !hex2) return null;
+    try {
+      const rgb1 = hexToRgb(hex1);
+      const rgb2 = hexToRgb(hex2);
+      const l1 = getLuminance(rgb1.r, rgb1.g, rgb1.b);
+      const l2 = getLuminance(rgb2.r, rgb2.g, rgb2.b);
+      return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+    } catch {
+      return null;
+    }
+  }
+
+  let totalAudited = 0;
+  let totalErrors = 0;
+
+  // 1. Check linkpoint-design palettes.js if present
+  const palettesPath = path.join(cwd, "docs/react/src/theme/palettes.js");
+  if (fs.existsSync(palettesPath)) {
+    try {
+      let fileContent = fs.readFileSync(palettesPath, "utf8").replace(/export const /g, "const ");
+      const { Script, createContext } = await import("node:vm");
+      const script = new Script(fileContent + "; PALETTES;");
+      const ctx = createContext({});
+      const PALETTES = script.runInContext(ctx);
+
+      for (const [key, p] of Object.entries(PALETTES)) {
+        const c = p.c;
+        const bgSurfaces = [c.bg, c.surf, c.surf2].filter(Boolean);
+        const textTokens = { ink2: c.ink2, sec2: c.sec2, sec: c.sec };
+
+        for (const [tName, tVal] of Object.entries(textTokens)) {
+          if (!tVal) continue;
+          for (const bgVal of bgSurfaces) {
+            totalAudited++;
+            const ratio = getContrastRatio(tVal, bgVal);
+            if (ratio !== null && ratio < 4.5) {
+              totalErrors++;
+              log(`Palette "${key}" (${p.name}): secondary text token "${tName}" (${tVal}) vs surface (${bgVal}) contrast is ${ratio.toFixed(2)}:1 (required >= 4.5:1)`, "error");
+            }
+          }
+        }
+
+        if (c.outv) {
+          for (const bgVal of bgSurfaces) {
+            totalAudited++;
+            const ratio = getContrastRatio(c.outv, bgVal);
+            if (ratio !== null && ratio < 3.0) {
+              totalErrors++;
+              log(`Palette "${key}" (${p.name}): outline token "outv" (${c.outv}) vs surface (${bgVal}) contrast is ${ratio.toFixed(2)}:1 (required >= 3.0:1)`, "error");
+            }
+          }
+        }
+      }
+    } catch (err) {
+      log(`Error evaluating palettes.js: ${err.message}`, "error");
+      totalErrors++;
+    }
+  }
+
+  // 2. Check Ktheme JSON preset files if present
+  const kthemeJsonDir = path.join(cwd, "themes/examples");
+  if (fs.existsSync(kthemeJsonDir)) {
+    try {
+      const files = fs.readdirSync(kthemeJsonDir).filter((f) => f.endsWith(".json"));
+      for (const file of files) {
+        const json = JSON.parse(fs.readFileSync(path.join(kthemeJsonDir, file), "utf8"));
+        const c = json.colorScheme;
+        if (!c) continue;
+
+        const bgSurfaces = [c.background, c.surface, c.surfaceVariant].filter(Boolean);
+        if (c.onSurfaceVariant) {
+          for (const bg of bgSurfaces) {
+            totalAudited++;
+            const r = getContrastRatio(c.onSurfaceVariant, bg);
+            if (r !== null && r < 4.5) {
+              totalErrors++;
+              log(`Theme preset "${file}": token "onSurfaceVariant" (${c.onSurfaceVariant}) vs surface (${bg}) contrast is ${r.toFixed(2)}:1 (required >= 4.5:1)`, "error");
+            }
+          }
+        }
+
+        if (c.onSecondaryContainer && c.secondaryContainer) {
+          totalAudited++;
+          const r = getContrastRatio(c.onSecondaryContainer, c.secondaryContainer);
+          if (r !== null && r < 4.5) {
+            totalErrors++;
+            log(`Theme preset "${file}": token "onSecondaryContainer" (${c.onSecondaryContainer}) vs secondaryContainer (${c.secondaryContainer}) contrast is ${r.toFixed(2)}:1 (required >= 4.5:1)`, "error");
+          }
+        }
+
+        const outlineSurfaces = [...bgSurfaces, c.secondaryContainer].filter(Boolean);
+        if (c.outline) {
+          for (const bg of outlineSurfaces) {
+            totalAudited++;
+            const r = getContrastRatio(c.outline, bg);
+            if (r !== null && r < 3.0) {
+              totalErrors++;
+              log(`Theme preset "${file}": token "outline" (${c.outline}) vs surface/container (${bg}) contrast is ${r.toFixed(2)}:1 (required >= 3.0:1)`, "error");
+            }
+          }
+        }
+      }
+    } catch (err) {
+      log(`Error evaluating Ktheme preset JSON files: ${err.message}`, "error");
+      totalErrors++;
+    }
+  }
+
+  log(`Audited ${totalAudited} static palette color pairings`, "info");
+
+  if (totalErrors === 0) {
+    log("WCAG 2.2 AA static palette contrast verification passed!", "success");
+    return true;
+  } else {
+    log(`Static palette verification failed with ${totalErrors} contrast violation(s).`, "error");
     return false;
   }
 }
@@ -739,6 +882,7 @@ Working Directory: ${cwd}
 Active Tasks: ${[
     runUnit && "Unit",
     runCatalog && "Catalog",
+    runPalette && "Palette",
     runA11y && "A11y",
     runVisual && "Visual",
   ]
@@ -754,6 +898,10 @@ Active Tasks: ${[
 
   if (runCatalog) {
     results.catalog = await taskCatalogCheck();
+  }
+
+  if (runPalette) {
+    results.palette = await taskPaletteCheck();
   }
 
   if (runA11y) {

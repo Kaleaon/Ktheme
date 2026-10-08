@@ -5,7 +5,13 @@
     "description": "LCARS-inspired interface with warm rails and compact controls",
     "author": "Ktheme",
     "version": "1.0.0",
-    "tags": ["regal", "dark", "lcars", "sci-fi", "console"],
+    "tags": [
+      "regal",
+      "dark",
+      "lcars",
+      "sci-fi",
+      "console"
+    ],
     "createdAt": "2026-02-16T11:46:58.141Z",
     "updatedAt": "2026-02-16T11:46:58.141Z"
   },

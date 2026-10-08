@@ -208,6 +208,7 @@ export function ThemePreview() {
               style={{
                 fontSize: "var(--font-size-md)",
                 lineHeight: "var(--line-height)",
+                color: "var(--c-on-secondary-container)",
               }}
             >
               Container colors provide subtle backgrounds for content grouping.
