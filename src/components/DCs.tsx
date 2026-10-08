@@ -82,21 +82,56 @@ export const KButton: React.FC<ButtonProps> = ({
   );
 };
 
+// ─── Main Landmark Container ───
+export interface MainProps extends React.HTMLAttributes<HTMLElement> {
+  children: React.ReactNode;
+  style?: React.CSSProperties;
+  className?: string;
+}
+
+export const KMain: React.FC<MainProps> = ({
+  children,
+  style,
+  className = "",
+  ...props
+}) => {
+  const baseStyle: React.CSSProperties = {
+    flex: 1,
+    width: "100%",
+    ...style,
+  };
+
+  return (
+    <main
+      style={baseStyle}
+      className={`ktheme-dc-main ${className}`.trim()}
+      {...props}
+    >
+      {children}
+    </main>
+  );
+};
+
 // ─── Cards / Panels ───
 export interface CardProps {
   variant?: "flat" | "elevated" | "glass";
+  as?: React.ElementType;
   title?: string;
   subtitle?: string;
   children: React.ReactNode;
   style?: React.CSSProperties;
+  className?: string;
 }
 
 export const KCard: React.FC<CardProps> = ({
   variant = "flat",
+  as: Component = "div",
   title,
   subtitle,
   children,
   style,
+  className = "",
+  ...props
 }) => {
   let cardStyle: React.CSSProperties = {
     padding: "16px",
@@ -123,7 +158,7 @@ export const KCard: React.FC<CardProps> = ({
   }
 
   return (
-    <div style={cardStyle}>
+    <Component style={cardStyle} className={className} {...props}>
       {title && (
         <h3 style={{ margin: "0 0 4px 0", fontSize: "18px", fontWeight: 700 }}>
           {title}
@@ -141,7 +176,7 @@ export const KCard: React.FC<CardProps> = ({
         </p>
       )}
       {children}
-    </div>
+    </Component>
   );
 };
 
@@ -222,16 +257,18 @@ export interface NavRailProps {
   items: NavItem[];
   activeId: string;
   onSelect: (id: string) => void;
+  ariaLabel?: string;
 }
 
 export const KNavRail: React.FC<NavRailProps> = ({
   items,
   activeId,
   onSelect,
+  ariaLabel = "Sidebar Navigation",
 }) => {
   return (
     <nav
-      aria-label="Sidebar Navigation"
+      aria-label={ariaLabel}
       style={{
         display: "flex",
         flexDirection: "column",

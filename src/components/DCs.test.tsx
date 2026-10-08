@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { KChip, KNavRail, KToggle, KInput, KDialog, KSlider } from "./DCs";
+import { KChip, KNavRail, KToggle, KInput, KDialog, KSlider, KMain, KCard } from "./DCs";
 import { LinkpointUIKit } from "../linkpoint/LinkpointUIKit";
 import { IconicShowcaseGallery } from "./IconicShowcaseGallery";
 
@@ -78,6 +78,29 @@ describe("Accessibility ARIA State Binding Tests", () => {
     });
   });
 
+  describe("KMain & KCard Landmark Components", () => {
+    it("renders KMain as a main landmark tag", () => {
+      render(<KMain>Main primary content</KMain>);
+      const mainEl = screen.getByRole("main");
+      expect(mainEl).toBeInTheDocument();
+      expect(mainEl.tagName).toBe("MAIN");
+      expect(mainEl).toHaveTextContent("Main primary content");
+    });
+
+    it("renders KCard with as='main' as a main landmark tag", () => {
+      render(
+        <KCard as="main" title="Main Section">
+          Card primary content
+        </KCard>,
+      );
+      const mainEl = screen.getByRole("main");
+      expect(mainEl).toBeInTheDocument();
+      expect(mainEl.tagName).toBe("MAIN");
+      expect(mainEl).toHaveTextContent("Main Section");
+      expect(mainEl).toHaveTextContent("Card primary content");
+    });
+  });
+
   describe("KNavRail Component", () => {
     it('renders inside a nav element and uses aria-current="page" on active item', () => {
       const items = [
@@ -98,6 +121,23 @@ describe("Accessibility ARIA State Binding Tests", () => {
       expect(homeBtn.getAttribute("aria-current")).toBe("page");
       expect(settingsBtn.getAttribute("aria-current")).toBeNull();
       expect(homeBtn.getAttribute("aria-selected")).toBeNull();
+    });
+
+    it("uses custom ariaLabel when provided", () => {
+      const items = [{ id: "home", label: "Home" }];
+      render(
+        <KNavRail
+          items={items}
+          activeId="home"
+          onSelect={() => {}}
+          ariaLabel="Primary Navigation"
+        />,
+      );
+
+      const navEl = screen.getByRole("navigation", {
+        name: "Primary Navigation",
+      });
+      expect(navEl).toBeInTheDocument();
     });
   });
 
