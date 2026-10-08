@@ -5,7 +5,11 @@
     "description": "Bold dramatic obsidian black with vibrant crimson accents",
     "author": "Ktheme",
     "version": "1.0.0",
-    "tags": ["metallic", "dramatic", "dark"],
+    "tags": [
+      "metallic",
+      "dramatic",
+      "dark"
+    ],
     "createdAt": "2026-02-15T20:42:39.611Z",
     "updatedAt": "2026-02-15T20:42:39.611Z"
   },

@@ -5,7 +5,14 @@
     "description": "Night-first glass aesthetic with aurora accents and disciplined blur",
     "author": "Ktheme",
     "version": "1.0.0",
-    "tags": ["metallic", "modern", "dark", "aurora", "glass", "consumer"],
+    "tags": [
+      "metallic",
+      "modern",
+      "dark",
+      "aurora",
+      "glass",
+      "consumer"
+    ],
     "createdAt": "2026-02-16T13:00:59.876Z",
     "updatedAt": "2026-02-16T13:00:59.876Z"
   },
@@ -33,7 +40,7 @@
     "onSurface": "#E7F0FF",
     "surfaceVariant": "#1D2B4A",
     "onSurfaceVariant": "#B5C7E9",
-    "outline": "#6A7EAA",
+    "outline": "#8F9EBF",
     "outlineVariant": "#334364",
     "scrim": "#000000",
     "inverseSurface": "#E7F0FF",

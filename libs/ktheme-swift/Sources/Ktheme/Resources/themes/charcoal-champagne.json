@@ -5,7 +5,11 @@
     "description": "Sophisticated charcoal gray with warm champagne accents",
     "author": "Ktheme",
     "version": "1.0.0",
-    "tags": ["metallic", "sophisticated", "dark"],
+    "tags": [
+      "metallic",
+      "sophisticated",
+      "dark"
+    ],
     "createdAt": "2026-02-15T20:42:39.611Z",
     "updatedAt": "2026-02-15T20:42:39.611Z"
   },
