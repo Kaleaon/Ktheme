@@ -11,3 +11,12 @@ export { batchSetCssVariables, flushCssVariables } from "./batchStyleMutation";
 
 export { ThemeStudio } from "./studio/ThemeStudio";
 export type { ThemeStudioProps } from "./studio/ThemeStudio";
+
+export { SculptingCanvas } from "./SculptingCanvas";
+export type {
+  SculptingCanvasProps,
+  SculptMode,
+  FalloffCurve,
+  MeshData,
+  WasmEngineLike,
+} from "./SculptingCanvas";
