@@ -1,5 +1,11 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useReducer, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useReducer,
+  useEffect,
+  type ReactNode,
+} from "react";
 import type { KTheme, ThemePack } from "../types/theme.ts";
 import { createDefaultTheme } from "../utils/theme-defaults.ts";
 
@@ -168,6 +174,73 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       return init;
     }
   });
+
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const c = state.currentTheme.colorScheme;
+    if (!c) return;
+    const root = document.documentElement;
+
+    root.style.setProperty("--ktheme-primary", c.primary);
+    root.style.setProperty("--ktheme-on-primary", c.onPrimary);
+    root.style.setProperty("--ktheme-primary-container", c.primaryContainer);
+    root.style.setProperty("--ktheme-on-primary-container", c.onPrimaryContainer);
+    root.style.setProperty("--ktheme-secondary", c.secondary);
+    root.style.setProperty("--ktheme-on-secondary", c.onSecondary);
+    root.style.setProperty("--ktheme-secondary-container", c.secondaryContainer);
+    root.style.setProperty("--ktheme-on-secondary-container", c.onSecondaryContainer);
+    root.style.setProperty("--ktheme-tertiary", c.tertiary);
+    root.style.setProperty("--ktheme-on-tertiary", c.onTertiary);
+    root.style.setProperty("--ktheme-background", c.background);
+    root.style.setProperty("--ktheme-on-background", c.onBackground);
+    root.style.setProperty("--ktheme-surface", c.surface);
+    root.style.setProperty("--ktheme-on-surface", c.onSurface);
+    root.style.setProperty("--ktheme-surface-variant", c.surfaceVariant);
+    root.style.setProperty("--ktheme-on-surface-variant", c.onSurfaceVariant);
+    root.style.setProperty("--ktheme-outline", c.outline);
+    root.style.setProperty("--ktheme-error", c.error);
+    root.style.setProperty("--ktheme-on-error", c.onError);
+
+    root.style.setProperty("--md-sys-color-primary", c.primary);
+    root.style.setProperty("--md-sys-color-on-primary", c.onPrimary);
+    root.style.setProperty("--md-sys-color-primary-container", c.primaryContainer);
+    root.style.setProperty("--md-sys-color-on-primary-container", c.onPrimaryContainer);
+    root.style.setProperty("--md-sys-color-secondary", c.secondary);
+    root.style.setProperty("--md-sys-color-on-secondary", c.onSecondary);
+    root.style.setProperty("--md-sys-color-secondary-container", c.secondaryContainer);
+    root.style.setProperty("--md-sys-color-on-secondary-container", c.onSecondaryContainer);
+    root.style.setProperty("--md-sys-color-tertiary", c.tertiary);
+    root.style.setProperty("--md-sys-color-on-tertiary", c.onTertiary);
+    root.style.setProperty("--md-sys-color-background", c.background);
+    root.style.setProperty("--md-sys-color-on-background", c.onBackground);
+    root.style.setProperty("--md-sys-color-surface", c.surface);
+    root.style.setProperty("--md-sys-color-on-surface", c.onSurface);
+    root.style.setProperty("--md-sys-color-surface-variant", c.surfaceVariant);
+    root.style.setProperty("--md-sys-color-on-surface-variant", c.onSurfaceVariant);
+    root.style.setProperty("--md-sys-color-outline", c.outline);
+    root.style.setProperty("--md-sys-color-error", c.error);
+    root.style.setProperty("--md-sys-color-on-error", c.onError);
+
+    root.style.setProperty("--c-primary", c.primary);
+    root.style.setProperty("--c-on-primary", c.onPrimary);
+    root.style.setProperty("--c-primary-container", c.primaryContainer);
+    root.style.setProperty("--c-on-primary-container", c.onPrimaryContainer);
+    root.style.setProperty("--c-secondary", c.secondary);
+    root.style.setProperty("--c-on-secondary", c.onSecondary);
+    root.style.setProperty("--c-secondary-container", c.secondaryContainer);
+    root.style.setProperty("--c-on-secondary-container", c.onSecondaryContainer);
+    root.style.setProperty("--c-tertiary", c.tertiary);
+    root.style.setProperty("--c-on-tertiary", c.onTertiary);
+    root.style.setProperty("--c-background", c.background);
+    root.style.setProperty("--c-on-background", c.onBackground);
+    root.style.setProperty("--c-surface", c.surface);
+    root.style.setProperty("--c-on-surface", c.onSurface);
+    root.style.setProperty("--c-surface-variant", c.surfaceVariant);
+    root.style.setProperty("--c-on-surface-variant", c.onSurfaceVariant);
+    root.style.setProperty("--c-outline", c.outline);
+    root.style.setProperty("--c-error", c.error);
+    root.style.setProperty("--c-on-error", c.onError);
+  }, [state.currentTheme]);
 
   return (
     <ThemeContext.Provider value={{ state, dispatch }}>

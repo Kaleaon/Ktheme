@@ -5,6 +5,7 @@ import {
   KthemeProvider,
   useKtheme,
   useKthemeToken,
+  getKthemeCssVar,
   batchSetCssVariables,
   flushCssVariables,
   ThemeStudio,
@@ -87,5 +88,17 @@ describe("@ktheme/react library", () => {
     });
 
     expect(screen.getByText("NAVY GOLD")).toBeInTheDocument();
+  });
+
+  it("getKthemeCssVar outputs fallback expressions inspecting both --ktheme-* and --md-sys-color-*", () => {
+    expect(getKthemeCssVar("primary")).toBe(
+      "var(--ktheme-primary, var(--md-sys-color-primary))",
+    );
+    expect(getKthemeCssVar("onPrimary")).toBe(
+      "var(--ktheme-on-primary, var(--md-sys-color-on-primary))",
+    );
+    expect(getKthemeCssVar("primary", "#123456")).toBe(
+      "var(--ktheme-primary, var(--md-sys-color-primary, #123456))",
+    );
   });
 });
