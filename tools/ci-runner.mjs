@@ -39,6 +39,7 @@ function log(msg, type = "info") {
 
 // Parse Command Line Arguments
 const args = process.argv.slice(2);
+let runLint = args.includes("--lint");
 let runUnit = args.includes("--unit");
 let runCatalog = args.includes("--catalog");
 let runA11y = args.includes("--a11y");
@@ -61,6 +62,7 @@ ${colors.bold}USAGE:${colors.reset}
   node tools/ci-runner.mjs [FLAGS]
 
 ${colors.bold}FLAGS:${colors.reset}
+  --lint              Run ESLint static analysis
   --unit              Run unit test suites
   --catalog           Run theme catalog parity checks
   --a11y              Run automated WCAG 2.1 AA accessibility auditing
@@ -69,14 +71,15 @@ ${colors.bold}FLAGS:${colors.reset}
   --port <number>     Specify static server port override
   --help, -h          Show this help message
 
-  ${colors.gray}If no task flags (--unit, --catalog, --a11y, --visual) are specified,
+  ${colors.gray}If no task flags (--lint, --unit, --catalog, --a11y, --visual) are specified,
   all applicable validation tasks for the current repository will run.${colors.reset}
 `);
   process.exit(0);
 }
 
 // If no specific task flag was passed, run all tasks applicable to the current repo
-if (!runUnit && !runCatalog && !runA11y && !runVisual) {
+if (!runLint && !runUnit && !runCatalog && !runA11y && !runVisual) {
+  runLint = true;
   runUnit = true;
   runCatalog = true;
   runA11y = true;
@@ -309,6 +312,25 @@ async function getPlaywrightBrowser() {
       return await playwright.chromium.launch({ ...launchOpts, executablePath });
     }
     throw err;
+  }
+}
+
+// TASK 0: ESLint Static Analysis
+async function taskLint() {
+  log("Running ESLint Static Analysis...", "header");
+
+  const res = spawnSync("npm", ["run", "lint"], {
+    cwd,
+    stdio: "inherit",
+    shell: true,
+  });
+
+  if (res.status === 0) {
+    log("ESLint static analysis passed.", "success");
+    return true;
+  } else {
+    log("ESLint static analysis found violations.", "error");
+    return false;
   }
 }
 
@@ -737,6 +759,7 @@ ${colors.bold}${
   }=====================================================${colors.reset}
 Working Directory: ${cwd}
 Active Tasks: ${[
+    runLint && "Lint",
     runUnit && "Unit",
     runCatalog && "Catalog",
     runA11y && "A11y",
@@ -747,6 +770,10 @@ Active Tasks: ${[
 `);
 
   const results = {};
+
+  if (runLint) {
+    results.lint = await taskLint();
+  }
 
   if (runUnit) {
     results.unit = await taskUnitTests();
