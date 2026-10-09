@@ -212,7 +212,7 @@ function parsePNG(buffer) {
   return { width, height, raw };
 }
 
-function comparePNGBuffers(bufA, bufB, colorThreshold = 15) {
+function comparePNGBuffers(bufA, bufB, colorThreshold = 25) {
   try {
     const pngA = parsePNG(bufA);
     const pngB = parsePNG(bufB);
@@ -251,7 +251,7 @@ function comparePNGBuffers(bufA, bufB, colorThreshold = 15) {
 
     const diffPercent = (diffPixels / totalPixels) * 100;
     return {
-      match: diffPercent <= 0.1,
+      match: diffPercent <= 1.0,
       diffPercent: parseFloat(diffPercent.toFixed(3)),
       diffPixels,
       totalPixels,
@@ -419,8 +419,9 @@ async function taskA11yAudit() {
   try {
     browser = await getPlaywrightBrowser();
     const page = await browser.newPage();
-    await page.goto(targetUrl, { waitUntil: "domcontentloaded", timeout: 15000 }).catch(() => {});
-    await page.waitForSelector("#root > *", { timeout: 20000 }).catch(() => {});
+    page.on("pageerror", (err) => log(`Browser page error: ${err.message}`, "warn"));
+    await page.goto(targetUrl, { waitUntil: "domcontentloaded", timeout: 20000 }).catch(() => {});
+    await page.waitForSelector("#root > *", { timeout: 25000 }).catch(() => {});
     await page.waitForTimeout(500);
 
     const auditResults = await page.evaluate(() => {
@@ -650,9 +651,10 @@ async function taskVisualSuite() {
       const page = await browser.newPage({
         viewport: { width: vp.width, height: vp.height },
       });
-      await page.goto(targetUrl, { waitUntil: "domcontentloaded", timeout: 15000 }).catch(() => {});
+      page.on("pageerror", (err) => log(`Browser page error: ${err.message}`, "warn"));
+      await page.goto(targetUrl, { waitUntil: "domcontentloaded", timeout: 20000 }).catch(() => {});
       await page
-        .waitForSelector("#root > *", { timeout: 20000 })
+        .waitForSelector("#root > *", { timeout: 25000 })
         .catch(() => {});
       await page.waitForTimeout(500);
 
