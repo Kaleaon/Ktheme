@@ -1,4 +1,5 @@
 {
+  "schemaVersion": 2,
   "metadata": {
     "id": "art-deco",
     "name": "Art Deco",
@@ -16,11 +17,11 @@
     "errorContainer": "#93000A",
     "onErrorContainer": "#FFDAD6",
     "primary": "#D4AF37",
-    "onPrimary": "#0B0A0A",
+    "onPrimary": "#1A1405",
     "primaryContainer": "#8F7121",
     "onPrimaryContainer": "#FFF2C6",
     "secondary": "#F4E7CF",
-    "onSecondary": "#0B0A0A",
+    "onSecondary": "#221A0A",
     "secondaryContainer": "#B8A17A",
     "onSecondaryContainer": "#161005",
     "tertiary": "#0F0F11",
@@ -148,43 +149,6 @@
           "letter-spacing": 1.4
         }
       }
-    ],
-    "desktopAdaptation": {
-      "windowChrome": {
-        "titleBarHeight": 26,
-        "headerStyle": "geometric-stepped",
-        "cornerStyle": "sharp",
-        "panelRadius": 0,
-        "controlRadius": 0,
-        "borderWidth": 1,
-        "shadow": "0 16px 40px rgba(0, 0, 0, 0.75)"
-      },
-      "menuBar": {
-        "height": 28,
-        "fontSize": 11,
-        "letterSpacing": "0.18em",
-        "textTransform": "uppercase",
-        "dropdownRadius": 0,
-        "dropdownShadow": "0 14px 30px rgba(0,0,0,.7)"
-      },
-      "taskbar": {
-        "height": 40,
-        "buttonRadius": 0,
-        "dockAlignment": "left",
-        "quickChatBorderRadius": 0
-      },
-      "cameraHud": {
-        "panelRadius": 0,
-        "buttonRadius": 0,
-        "shadow": "0 8px 24px rgba(0,0,0,0.6)"
-      },
-      "sweep": {
-        "elbowWidth": 30,
-        "titleCapRadius": "0px",
-        "accentBand": "primary",
-        "showElbowBar": true
-      }
-    }
-  },
-  "schemaVersion": 2
+    ]
+  }
 }

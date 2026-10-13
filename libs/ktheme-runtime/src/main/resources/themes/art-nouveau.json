@@ -1,4 +1,5 @@
 {
+  "schemaVersion": 2,
   "metadata": {
     "id": "art-nouveau",
     "name": "Art Nouveau",
@@ -16,11 +17,11 @@
     "errorContainer": "#FFDAD6",
     "onErrorContainer": "#410002",
     "primary": "#7B5737",
-    "onPrimary": "#F6F0E6",
+    "onPrimary": "#FFF7EE",
     "primaryContainer": "#D9C2A9",
     "onPrimaryContainer": "#352214",
-    "secondary": "#769762",
-    "onSecondary": "#2C2218",
+    "secondary": "#6B8F57",
+    "onSecondary": "#F6FFF1",
     "secondaryContainer": "#CFE4BF",
     "onSecondaryContainer": "#24371A",
     "tertiary": "#C57C52",
@@ -136,43 +137,6 @@
           "padding-bottom": 8
         }
       }
-    ],
-    "desktopAdaptation": {
-      "windowChrome": {
-        "titleBarHeight": 26,
-        "headerStyle": "standard",
-        "cornerStyle": "pill",
-        "panelRadius": 18,
-        "controlRadius": 999,
-        "borderWidth": 1,
-        "shadow": "0 10px 26px rgba(0,0,0,0.2)"
-      },
-      "menuBar": {
-        "height": 28,
-        "fontSize": 11,
-        "letterSpacing": "0.06em",
-        "textTransform": "none",
-        "dropdownRadius": 18,
-        "dropdownShadow": "0 8px 20px rgba(0,0,0,0.18)"
-      },
-      "taskbar": {
-        "height": 40,
-        "buttonRadius": 999,
-        "dockAlignment": "left",
-        "quickChatBorderRadius": 999
-      },
-      "cameraHud": {
-        "panelRadius": 18,
-        "buttonRadius": 999,
-        "shadow": "0 8px 20px rgba(0,0,0,0.3)"
-      },
-      "sweep": {
-        "elbowWidth": 30,
-        "titleCapRadius": "999px",
-        "accentBand": "primary",
-        "showElbowBar": true
-      }
-    }
-  },
-  "schemaVersion": 2
+    ]
+  }
 }

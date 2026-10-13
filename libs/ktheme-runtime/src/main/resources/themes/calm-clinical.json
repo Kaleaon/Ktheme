@@ -1,4 +1,5 @@
 {
+  "schemaVersion": 2,
   "metadata": {
     "id": "calm-clinical",
     "name": "Calm Clinical",
@@ -22,12 +23,12 @@
     "onError": "#FFFFFF",
     "errorContainer": "#FFDAD6",
     "onErrorContainer": "#410002",
-    "primary": "#38779E",
-    "onPrimary": "#F5FAFD",
+    "primary": "#3A7CA5",
+    "onPrimary": "#F3FAFF",
     "primaryContainer": "#C4DFF2",
     "onPrimaryContainer": "#17374D",
-    "secondary": "#61B48B",
-    "onSecondary": "#1F394B",
+    "secondary": "#4DAA7C",
+    "onSecondary": "#062A1C",
     "secondaryContainer": "#CBEFDF",
     "onSecondaryContainer": "#184933",
     "tertiary": "#7D9AB2",
@@ -55,43 +56,5 @@
       "color": "#00000011"
     }
   },
-  "adaptation": {
-    "desktopAdaptation": {
-      "windowChrome": {
-        "titleBarHeight": 26,
-        "headerStyle": "standard",
-        "cornerStyle": "rounded",
-        "panelRadius": 10,
-        "controlRadius": 8,
-        "borderWidth": 1,
-        "shadow": "0 10px 26px rgba(0,0,0,0.2)"
-      },
-      "menuBar": {
-        "height": 28,
-        "fontSize": 11,
-        "letterSpacing": "0.06em",
-        "textTransform": "none",
-        "dropdownRadius": 10,
-        "dropdownShadow": "0 8px 20px rgba(0,0,0,0.18)"
-      },
-      "taskbar": {
-        "height": 40,
-        "buttonRadius": 8,
-        "dockAlignment": "left",
-        "quickChatBorderRadius": 8
-      },
-      "cameraHud": {
-        "panelRadius": 10,
-        "buttonRadius": 8,
-        "shadow": "0 8px 20px rgba(0,0,0,0.3)"
-      },
-      "sweep": {
-        "elbowWidth": 30,
-        "titleCapRadius": "10px",
-        "accentBand": "primary",
-        "showElbowBar": true
-      }
-    }
-  },
-  "schemaVersion": 2
+  "adaptation": {}
 }

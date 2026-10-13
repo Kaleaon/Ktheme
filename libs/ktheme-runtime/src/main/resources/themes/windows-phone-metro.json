@@ -1,4 +1,5 @@
 {
+  "schemaVersion": 2,
   "metadata": {
     "id": "windows-phone-metro",
     "name": "Windows Phone Metro",
@@ -114,43 +115,6 @@
           "text-transform": "uppercase"
         }
       }
-    ],
-    "desktopAdaptation": {
-      "windowChrome": {
-        "titleBarHeight": 26,
-        "headerStyle": "flat",
-        "cornerStyle": "sharp",
-        "panelRadius": 0,
-        "controlRadius": 0,
-        "borderWidth": 1,
-        "shadow": "0 10px 24px rgba(0, 0, 0, 0.45)"
-      },
-      "menuBar": {
-        "height": 28,
-        "fontSize": 11,
-        "letterSpacing": "0.02em",
-        "textTransform": "lowercase",
-        "dropdownRadius": 0,
-        "dropdownShadow": "0 10px 24px rgba(0, 0, 0, 0.45)"
-      },
-      "taskbar": {
-        "height": 40,
-        "buttonRadius": 0,
-        "dockAlignment": "left",
-        "quickChatBorderRadius": 0
-      },
-      "cameraHud": {
-        "panelRadius": 0,
-        "buttonRadius": 0,
-        "shadow": "0 6px 18px rgba(0, 0, 0, 0.4)"
-      },
-      "sweep": {
-        "elbowWidth": 26,
-        "titleCapRadius": "0px",
-        "accentBand": "primary",
-        "showElbowBar": false
-      }
-    }
-  },
-  "schemaVersion": 2
+    ]
+  }
 }

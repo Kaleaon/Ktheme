@@ -11,7 +11,7 @@
     "ajv": "^8.12.0"
   },
   "scripts": {
-    "build": "tsc && tsc -p packages/react/tsconfig.json",
+    "build": "node packages/tokens/scripts/build-tokens.mjs && tsc && tsc -p packages/react/tsconfig.json",
     "dev": "tsc --watch",
     "test": "jest",
     "lint": "eslint src packages --ext .ts,.tsx",

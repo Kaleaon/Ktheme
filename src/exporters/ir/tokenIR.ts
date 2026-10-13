@@ -32,6 +32,14 @@ export interface NormalizedColorTokens {
   surfaceVariant: string;
   onSurfaceVariant: string;
 
+  surfaceDim: string;
+  surfaceBright: string;
+  surfaceContainerLowest: string;
+  surfaceContainerLow: string;
+  surfaceContainer: string;
+  surfaceContainerHigh: string;
+  surfaceContainerHighest: string;
+
   outline: string;
   outlineVariant: string;
 

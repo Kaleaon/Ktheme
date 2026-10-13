@@ -1,4 +1,5 @@
 {
+  "schemaVersion": 2,
   "metadata": {
     "id": "lcars",
     "name": "LCARS",
@@ -117,43 +118,6 @@
           "gap": 10
         }
       }
-    ],
-    "desktopAdaptation": {
-      "windowChrome": {
-        "titleBarHeight": 28,
-        "headerStyle": "lcars-elbow",
-        "cornerStyle": "pill",
-        "panelRadius": 22,
-        "controlRadius": 999,
-        "borderWidth": 1,
-        "shadow": "0 16px 44px rgba(0, 0, 0, 0.65)"
-      },
-      "menuBar": {
-        "height": 28,
-        "fontSize": 11,
-        "letterSpacing": "0.12em",
-        "textTransform": "uppercase",
-        "dropdownRadius": 12,
-        "dropdownShadow": "0 14px 34px rgba(0,0,0,.65)"
-      },
-      "taskbar": {
-        "height": 40,
-        "buttonRadius": 999,
-        "dockAlignment": "left",
-        "quickChatBorderRadius": 999
-      },
-      "cameraHud": {
-        "panelRadius": 16,
-        "buttonRadius": 999,
-        "shadow": "0 8px 24px rgba(0,0,0,0.5)"
-      },
-      "sweep": {
-        "elbowWidth": 36,
-        "titleCapRadius": "999px",
-        "accentBand": "primary",
-        "showElbowBar": true
-      }
-    }
-  },
-  "schemaVersion": 2
+    ]
+  }
 }
