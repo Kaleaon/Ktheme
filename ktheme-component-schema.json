@@ -26,6 +26,7 @@
         "react",
         "swift-ui",
         "flutter",
+        "cleverferret",
         "other"
       ],
       "description": "Target framework or platform for the component."
