@@ -60,7 +60,8 @@ function augmentElement(
 
   if (isInputControl || elProps.id === props.id || !elProps.id) {
     if (!elProps.id) newProps.id = props.id;
-    if (props.ariaDescribedBy) newProps["aria-describedby"] = combinedDescribedBy;
+    if (props.ariaDescribedBy)
+      newProps["aria-describedby"] = combinedDescribedBy;
     if (props.ariaInvalid !== undefined) {
       newProps["aria-invalid"] =
         elProps["aria-invalid"] !== undefined

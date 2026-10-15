@@ -1,5 +1,5 @@
-import { Color, IconAdaptation, IconToken, Theme, VectorPath } from './types';
-import { toHexColor } from '../exporters/utils';
+import { Color, IconAdaptation, IconToken, Theme, VectorPath } from "./types";
+import { toHexColor } from "../exporters/utils";
 
 export interface VectorIRPath {
   d: string;
@@ -83,9 +83,13 @@ export class VectorTransformer {
       rawPaths = VectorTransformer.parseSvgPaths(token.svg);
     }
 
-    const irPaths: VectorIRPath[] = rawPaths.map(p => {
-      let fill = p.fill ? VectorTransformer.resolveColor(p.fill, token.colorBindings, theme) : undefined;
-      const stroke = p.stroke ? VectorTransformer.resolveColor(p.stroke, token.colorBindings, theme) : undefined;
+    const irPaths: VectorIRPath[] = rawPaths.map((p) => {
+      let fill = p.fill
+        ? VectorTransformer.resolveColor(p.fill, token.colorBindings, theme)
+        : undefined;
+      const stroke = p.stroke
+        ? VectorTransformer.resolveColor(p.stroke, token.colorBindings, theme)
+        : undefined;
 
       // Default fill to primary or onSurface if neither fill nor stroke is set
       if (!fill && !stroke) {
@@ -213,7 +217,9 @@ export class VectorTransformer {
         | Record<string, unknown>
         | undefined;
       if (semanticRoles && semanticRoles[resolvedRole] !== undefined) {
-        return toHexColor(semanticRoles[resolvedRole] as Parameters<typeof toHexColor>[0]);
+        return toHexColor(
+          semanticRoles[resolvedRole] as Parameters<typeof toHexColor>[0],
+        );
       }
     }
 

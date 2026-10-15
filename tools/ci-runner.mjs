@@ -296,22 +296,28 @@ async function getPlaywrightBrowser() {
   };
 
   if (process.env.CHROMIUM_PATH && fs.existsSync(process.env.CHROMIUM_PATH)) {
-    return await playwright.chromium.launch({ ...launchOpts, executablePath: process.env.CHROMIUM_PATH });
+    return await playwright.chromium.launch({
+      ...launchOpts,
+      executablePath: process.env.CHROMIUM_PATH,
+    });
   }
 
   try {
     return await playwright.chromium.launch(launchOpts);
   } catch (err) {
     const possiblePaths = [
-      '/bin/google-chrome',
-      '/usr/bin/google-chrome',
-      '/usr/bin/chromium-browser',
-      '/usr/bin/chromium'
+      "/bin/google-chrome",
+      "/usr/bin/google-chrome",
+      "/usr/bin/chromium-browser",
+      "/usr/bin/chromium",
     ].filter(Boolean);
 
-    let executablePath = possiblePaths.find(p => fs.existsSync(p));
+    let executablePath = possiblePaths.find((p) => fs.existsSync(p));
     if (executablePath) {
-      return await playwright.chromium.launch({ ...launchOpts, executablePath });
+      return await playwright.chromium.launch({
+        ...launchOpts,
+        executablePath,
+      });
     }
     throw err;
   }
@@ -417,7 +423,11 @@ async function taskPaletteCheck() {
 
   function hexToRgb(hex) {
     hex = hex.replace(/^#/, "");
-    if (hex.length === 3) hex = hex.split("").map((c) => c + c).join("");
+    if (hex.length === 3)
+      hex = hex
+        .split("")
+        .map((c) => c + c)
+        .join("");
     if (hex.length === 8) hex = hex.slice(0, 6);
     const num = parseInt(hex, 16);
     return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
@@ -451,7 +461,9 @@ async function taskPaletteCheck() {
   const palettesPath = path.join(cwd, "docs/react/src/theme/palettes.js");
   if (fs.existsSync(palettesPath)) {
     try {
-      let fileContent = fs.readFileSync(palettesPath, "utf8").replace(/export const /g, "const ");
+      let fileContent = fs
+        .readFileSync(palettesPath, "utf8")
+        .replace(/export const /g, "const ");
       const { Script, createContext } = await import("node:vm");
       const script = new Script(fileContent + "; PALETTES;");
       const ctx = createContext({});
@@ -469,7 +481,14 @@ async function taskPaletteCheck() {
             const ratio = getContrastRatio(tVal, bgVal);
             if (ratio !== null && ratio < 4.5) {
               totalErrors++;
-              log(`Palette "${key}" (${p.name}): secondary text token "${tName}" (${tVal}) vs surface (${bgVal}) contrast is ${ratio.toFixed(2)}:1 (required >= 4.5:1)`, "error");
+              log(
+                `Palette "${key}" (${
+                  p.name
+                }): secondary text token "${tName}" (${tVal}) vs surface (${bgVal}) contrast is ${ratio.toFixed(
+                  2,
+                )}:1 (required >= 4.5:1)`,
+                "error",
+              );
             }
           }
         }
@@ -480,7 +499,14 @@ async function taskPaletteCheck() {
             const ratio = getContrastRatio(c.outv, bgVal);
             if (ratio !== null && ratio < 3.0) {
               totalErrors++;
-              log(`Palette "${key}" (${p.name}): outline token "outv" (${c.outv}) vs surface (${bgVal}) contrast is ${ratio.toFixed(2)}:1 (required >= 3.0:1)`, "error");
+              log(
+                `Palette "${key}" (${p.name}): outline token "outv" (${
+                  c.outv
+                }) vs surface (${bgVal}) contrast is ${ratio.toFixed(
+                  2,
+                )}:1 (required >= 3.0:1)`,
+                "error",
+              );
             }
           }
         }
@@ -495,41 +521,73 @@ async function taskPaletteCheck() {
   const kthemeJsonDir = path.join(cwd, "themes/examples");
   if (fs.existsSync(kthemeJsonDir)) {
     try {
-      const files = fs.readdirSync(kthemeJsonDir).filter((f) => f.endsWith(".json"));
+      const files = fs
+        .readdirSync(kthemeJsonDir)
+        .filter((f) => f.endsWith(".json"));
       for (const file of files) {
-        const json = JSON.parse(fs.readFileSync(path.join(kthemeJsonDir, file), "utf8"));
+        const json = JSON.parse(
+          fs.readFileSync(path.join(kthemeJsonDir, file), "utf8"),
+        );
         const c = json.colorScheme;
         if (!c) continue;
 
-        const bgSurfaces = [c.background, c.surface, c.surfaceVariant].filter(Boolean);
+        const bgSurfaces = [c.background, c.surface, c.surfaceVariant].filter(
+          Boolean,
+        );
         if (c.onSurfaceVariant) {
           for (const bg of bgSurfaces) {
             totalAudited++;
             const r = getContrastRatio(c.onSurfaceVariant, bg);
             if (r !== null && r < 4.5) {
               totalErrors++;
-              log(`Theme preset "${file}": token "onSurfaceVariant" (${c.onSurfaceVariant}) vs surface (${bg}) contrast is ${r.toFixed(2)}:1 (required >= 4.5:1)`, "error");
+              log(
+                `Theme preset "${file}": token "onSurfaceVariant" (${
+                  c.onSurfaceVariant
+                }) vs surface (${bg}) contrast is ${r.toFixed(
+                  2,
+                )}:1 (required >= 4.5:1)`,
+                "error",
+              );
             }
           }
         }
 
         if (c.onSecondaryContainer && c.secondaryContainer) {
           totalAudited++;
-          const r = getContrastRatio(c.onSecondaryContainer, c.secondaryContainer);
+          const r = getContrastRatio(
+            c.onSecondaryContainer,
+            c.secondaryContainer,
+          );
           if (r !== null && r < 4.5) {
             totalErrors++;
-            log(`Theme preset "${file}": token "onSecondaryContainer" (${c.onSecondaryContainer}) vs secondaryContainer (${c.secondaryContainer}) contrast is ${r.toFixed(2)}:1 (required >= 4.5:1)`, "error");
+            log(
+              `Theme preset "${file}": token "onSecondaryContainer" (${
+                c.onSecondaryContainer
+              }) vs secondaryContainer (${
+                c.secondaryContainer
+              }) contrast is ${r.toFixed(2)}:1 (required >= 4.5:1)`,
+              "error",
+            );
           }
         }
 
-        const outlineSurfaces = [...bgSurfaces, c.secondaryContainer].filter(Boolean);
+        const outlineSurfaces = [...bgSurfaces, c.secondaryContainer].filter(
+          Boolean,
+        );
         if (c.outline) {
           for (const bg of outlineSurfaces) {
             totalAudited++;
             const r = getContrastRatio(c.outline, bg);
             if (r !== null && r < 3.0) {
               totalErrors++;
-              log(`Theme preset "${file}": token "outline" (${c.outline}) vs surface/container (${bg}) contrast is ${r.toFixed(2)}:1 (required >= 3.0:1)`, "error");
+              log(
+                `Theme preset "${file}": token "outline" (${
+                  c.outline
+                }) vs surface/container (${bg}) contrast is ${r.toFixed(
+                  2,
+                )}:1 (required >= 3.0:1)`,
+                "error",
+              );
             }
           }
         }
@@ -546,7 +604,10 @@ async function taskPaletteCheck() {
     log("WCAG 2.2 AA static palette contrast verification passed!", "success");
     return true;
   } else {
-    log(`Static palette verification failed with ${totalErrors} contrast violation(s).`, "error");
+    log(
+      `Static palette verification failed with ${totalErrors} contrast violation(s).`,
+      "error",
+    );
     return false;
   }
 }
@@ -583,7 +644,9 @@ async function taskA11yAudit() {
   try {
     browser = await getPlaywrightBrowser();
     const page = await browser.newPage();
-    await page.goto(targetUrl, { waitUntil: "domcontentloaded", timeout: 15000 }).catch(() => {});
+    await page
+      .goto(targetUrl, { waitUntil: "domcontentloaded", timeout: 15000 })
+      .catch(() => {});
     await page.waitForSelector("#root > *", { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(500);
 
@@ -814,7 +877,9 @@ async function taskVisualSuite() {
       const page = await browser.newPage({
         viewport: { width: vp.width, height: vp.height },
       });
-      await page.goto(targetUrl, { waitUntil: "domcontentloaded", timeout: 15000 }).catch(() => {});
+      await page
+        .goto(targetUrl, { waitUntil: "domcontentloaded", timeout: 15000 })
+        .catch(() => {});
       await page
         .waitForSelector("#root > *", { timeout: 20000 })
         .catch(() => {});

@@ -95,9 +95,13 @@ export function AIDesigner() {
       dispatch({ type: "SET_THEME", payload: result.response.theme });
       setError(null);
     } else if (result.status === "INVALID_JSON") {
-      setError(`Failed to load theme: Syntax error in JSON code block (${result.errorDetails})`);
+      setError(
+        `Failed to load theme: Syntax error in JSON code block (${result.errorDetails})`,
+      );
     } else if (result.status === "INVALID_SCHEMA") {
-      setError(`Failed to load theme: Schema validation failed (${result.errorDetails})`);
+      setError(
+        `Failed to load theme: Schema validation failed (${result.errorDetails})`,
+      );
     } else {
       setError("Failed to load theme: No theme JSON block found in message");
     }
@@ -325,7 +329,9 @@ function ThemeActions({
       <div className="ai-theme-error" role="alert">
         <div className="ai-theme-error-title">
           <AlertCircle size={16} aria-hidden="true" focusable="false" />
-          {result.status === "INVALID_JSON" ? "Malformed Theme JSON" : "Invalid Theme Schema"}
+          {result.status === "INVALID_JSON"
+            ? "Malformed Theme JSON"
+            : "Invalid Theme Schema"}
         </div>
         <p className="ai-theme-error-detail">{result.errorDetails}</p>
       </div>
