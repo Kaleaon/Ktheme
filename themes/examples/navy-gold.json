@@ -6,7 +6,11 @@
     "description": "Elegant navy background with luxurious gold metallic accents",
     "author": "Ktheme",
     "version": "1.0.0",
-    "tags": ["metallic", "elegant", "dark"],
+    "tags": [
+      "metallic",
+      "elegant",
+      "dark"
+    ],
     "createdAt": "2026-02-15T20:42:39.610Z",
     "updatedAt": "2026-02-15T20:42:39.610Z"
   },
@@ -34,7 +38,7 @@
     "onSurface": "#E8E3D8",
     "surfaceVariant": "#2A3655",
     "onSurfaceVariant": "#C9C4B9",
-    "outline": "#938F84",
+    "outline": "#62665C",
     "outlineVariant": "#44483E",
     "scrim": "#000000",
     "inverseSurface": "#E8E3D8",

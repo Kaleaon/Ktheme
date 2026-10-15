@@ -6,7 +6,11 @@
     "description": "Royal purple background with elegant silver metallic accents",
     "author": "Ktheme",
     "version": "1.0.0",
-    "tags": ["metallic", "royal", "dark"],
+    "tags": [
+      "metallic",
+      "royal",
+      "dark"
+    ],
     "createdAt": "2026-02-15T20:42:39.611Z",
     "updatedAt": "2026-02-15T20:42:39.611Z"
   },
@@ -20,7 +24,7 @@
     "onPrimary": "#1A1535",
     "primaryContainer": "#9A9A9A",
     "onPrimaryContainer": "#E0E0E0",
-    "secondary": "#2A1F50",
+    "secondary": "#6C6192",
     "onSecondary": "#F0EBFF",
     "secondaryContainer": "#211A40",
     "onSecondaryContainer": "#F0EBFF",
@@ -34,7 +38,7 @@
     "onSurface": "#F0EBFF",
     "surfaceVariant": "#3D2F5C",
     "onSurfaceVariant": "#C8BFE6",
-    "outline": "#9B8AB8",
+    "outline": "#6E6087",
     "outlineVariant": "#4D3F66",
     "scrim": "#000000",
     "inverseSurface": "#F0EBFF",

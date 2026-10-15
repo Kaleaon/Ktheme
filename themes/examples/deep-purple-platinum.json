@@ -6,7 +6,11 @@
     "description": "Deep purple background with luxurious platinum metallic accents",
     "author": "Ktheme",
     "version": "1.0.0",
-    "tags": ["metallic", "luxurious", "dark"],
+    "tags": [
+      "metallic",
+      "luxurious",
+      "dark"
+    ],
     "createdAt": "2026-02-15T20:42:39.611Z",
     "updatedAt": "2026-02-15T20:42:39.611Z"
   },
@@ -20,7 +24,7 @@
     "onPrimary": "#1A0F2E",
     "primaryContainer": "#B8B7B5",
     "onPrimaryContainer": "#F5F4F2",
-    "secondary": "#2E1A50",
+    "secondary": "#6D598F",
     "onSecondary": "#F0EBFF",
     "secondaryContainer": "#24153D",
     "onSecondaryContainer": "#F0EBFF",
@@ -34,7 +38,7 @@
     "onSurface": "#F0EBFF",
     "surfaceVariant": "#3D2A5C",
     "onSurfaceVariant": "#D0C0E6",
-    "outline": "#9B8AB8",
+    "outline": "#6B5D8B",
     "outlineVariant": "#4D3F6D",
     "scrim": "#000000",
     "inverseSurface": "#F0EBFF",

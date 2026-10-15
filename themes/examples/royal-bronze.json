@@ -6,7 +6,11 @@
     "description": "Regal deep purple with luxurious bronze metallic accents",
     "author": "Ktheme",
     "version": "1.0.0",
-    "tags": ["metallic", "regal", "dark"],
+    "tags": [
+      "metallic",
+      "regal",
+      "dark"
+    ],
     "createdAt": "2026-02-15T20:42:39.611Z",
     "updatedAt": "2026-02-15T20:42:39.611Z"
   },
@@ -20,7 +24,7 @@
     "onPrimary": "#1A0A30",
     "primaryContainer": "#A86428",
     "onPrimaryContainer": "#D99952",
-    "secondary": "#2D1550",
+    "secondary": "#6F5792",
     "onSecondary": "#F0E6FF",
     "secondaryContainer": "#220D40",
     "onSecondaryContainer": "#F0E6FF",
@@ -34,7 +38,7 @@
     "onSurface": "#F0E6FF",
     "surfaceVariant": "#3D1F5C",
     "onSurfaceVariant": "#D0B3E6",
-    "outline": "#9B7A99",
+    "outline": "#745683",
     "outlineVariant": "#4D2F5C",
     "scrim": "#000000",
     "inverseSurface": "#F0E6FF",

@@ -6,7 +6,11 @@
     "description": "Sophisticated midnight blue with warm amber metallic accents",
     "author": "Ktheme",
     "version": "1.0.0",
-    "tags": ["metallic", "sophisticated", "dark"],
+    "tags": [
+      "metallic",
+      "sophisticated",
+      "dark"
+    ],
     "createdAt": "2026-02-15T20:42:39.611Z",
     "updatedAt": "2026-02-15T20:42:39.611Z"
   },
@@ -20,8 +24,8 @@
     "onPrimary": "#0C1824",
     "primaryContainer": "#CC9900",
     "onPrimaryContainer": "#FFD14D",
-    "secondary": "#1A2332",
-    "onSecondary": "#E8EEF5",
+    "secondary": "#D4A76A",
+    "onSecondary": "#0C1824",
     "secondaryContainer": "#15202E",
     "onSecondaryContainer": "#E8EEF5",
     "tertiary": "#D4A76A",
@@ -34,7 +38,7 @@
     "onSurface": "#E8EEF5",
     "surfaceVariant": "#253447",
     "onSurfaceVariant": "#B8C5D6",
-    "outline": "#8A95A6",
+    "outline": "#5B6672",
     "outlineVariant": "#3D4854",
     "scrim": "#000000",
     "inverseSurface": "#E8EEF5",

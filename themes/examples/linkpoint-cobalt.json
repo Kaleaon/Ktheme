@@ -6,7 +6,13 @@
     "description": "Deep cobalt blue metallic theme designed for high-density command consoles and Second Life UI presets",
     "author": "Linkpoint & Ktheme",
     "version": "1.0.0",
-    "tags": ["metallic", "linkpoint", "cobalt", "dark", "console"],
+    "tags": [
+      "metallic",
+      "linkpoint",
+      "cobalt",
+      "dark",
+      "console"
+    ],
     "createdAt": "2026-02-15T20:42:39.610Z",
     "updatedAt": "2026-02-15T20:42:39.610Z"
   },
@@ -34,7 +40,7 @@
     "onSurface": "#F9FAFB",
     "surfaceVariant": "#1F2937",
     "onSurfaceVariant": "#9CA3AF",
-    "outline": "#374151",
+    "outline": "#5F6C78",
     "outlineVariant": "#1F2937",
     "scrim": "#000000",
     "inverseSurface": "#F9FAFB",

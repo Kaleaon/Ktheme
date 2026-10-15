@@ -6,7 +6,14 @@
     "description": "Retro-terminal inspired interface with modern accessibility contrast",
     "author": "Ktheme",
     "version": "1.0.0",
-    "tags": ["metallic", "industrial", "dark", "terminal", "developer", "mono"],
+    "tags": [
+      "metallic",
+      "industrial",
+      "dark",
+      "terminal",
+      "developer",
+      "mono"
+    ],
     "createdAt": "2026-02-16T13:00:59.876Z",
     "updatedAt": "2026-02-16T13:00:59.876Z"
   },
@@ -20,7 +27,7 @@
     "onPrimary": "#03240F",
     "primaryContainer": "#1F6640",
     "onPrimaryContainer": "#D7FFE4",
-    "secondary": "#3E4E5E",
+    "secondary": "#536373",
     "onSecondary": "#EAF3FF",
     "secondaryContainer": "#2A3644",
     "onSecondaryContainer": "#D8E6F4",
@@ -34,7 +41,7 @@
     "onSurface": "#D7F5E6",
     "surfaceVariant": "#1B2A2D",
     "onSurfaceVariant": "#A7C8BC",
-    "outline": "#6E8D82",
+    "outline": "#4B655C",
     "outlineVariant": "#365047",
     "scrim": "#000000",
     "inverseSurface": "#D7F5E6",
