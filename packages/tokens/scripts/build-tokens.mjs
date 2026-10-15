@@ -154,7 +154,7 @@ const THEME_DESKTOP_CONFIGS = {
   }
 };
 
-const buildDefaultDesktopConfig = (data) => {
+const _buildDefaultDesktopConfig = (data) => {
   const dark = data.darkMode !== false;
   const corner = data.adaptation?.layout?.cornerStyle || "rounded";
   const nav = data.adaptation?.layout?.navigationStyle || "tabs";

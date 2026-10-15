@@ -39,6 +39,7 @@ function log(msg, type = "info") {
 
 // Parse Command Line Arguments
 const args = process.argv.slice(2);
+let runLint = args.includes("--lint");
 let runUnit = args.includes("--unit");
 let runCatalog = args.includes("--catalog");
 let runPalette = args.includes("--palette");
@@ -62,6 +63,7 @@ ${colors.bold}USAGE:${colors.reset}
   node tools/ci-runner.mjs [FLAGS]
 
 ${colors.bold}FLAGS:${colors.reset}
+  --lint              Run ESLint static analysis
   --unit              Run unit test suites
   --catalog           Run theme catalog parity checks
   --palette           Run static WCAG 2.2 AA color palette contrast audit
@@ -312,6 +314,25 @@ async function getPlaywrightBrowser() {
       return await playwright.chromium.launch({ ...launchOpts, executablePath });
     }
     throw err;
+  }
+}
+
+// TASK 0: ESLint Static Analysis
+async function taskLint() {
+  log("Running ESLint Static Analysis...", "header");
+
+  const res = spawnSync("npm", ["run", "lint"], {
+    cwd,
+    stdio: "inherit",
+    shell: true,
+  });
+
+  if (res.status === 0) {
+    log("ESLint static analysis passed.", "success");
+    return true;
+  } else {
+    log("ESLint static analysis found violations.", "error");
+    return false;
   }
 }
 
@@ -880,6 +901,7 @@ ${colors.bold}${
   }=====================================================${colors.reset}
 Working Directory: ${cwd}
 Active Tasks: ${[
+    runLint && "Lint",
     runUnit && "Unit",
     runCatalog && "Catalog",
     runPalette && "Palette",
@@ -891,6 +913,10 @@ Active Tasks: ${[
 `);
 
   const results = {};
+
+  if (runLint) {
+    results.lint = await taskLint();
+  }
 
   if (runUnit) {
     results.unit = await taskUnitTests();
