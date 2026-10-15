@@ -24,7 +24,9 @@ jobs:
         with:
           distribution: "temurin"
           java-version: "17"
-          cache: gradle
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -42,7 +44,7 @@ jobs:
           npm run build
 
       - name: Build & Publish Maven Packages
-        run: gradle publish
+        run: ./gradlew publish
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
