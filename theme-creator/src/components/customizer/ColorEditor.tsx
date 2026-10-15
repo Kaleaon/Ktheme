@@ -1,6 +1,6 @@
 import { useId } from "react";
 import { useTheme } from "../../state/ThemeContext";
-import { contrastRatio } from "../../utils/colors";
+import { contrastRatio } from "../../../../src/utils/colors";
 import AccessibleFormField from "../common/AccessibleFormField";
 
 const COLOR_GROUPS = [

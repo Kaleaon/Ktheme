@@ -8,7 +8,26 @@ jest.mock("../../state/ThemeContext", () => ({
   useTheme: jest.fn(),
 }));
 
-describe("ColorEditor Accessibility Tests", () => {
+describe("ColorEditor", () => {
+  it("renders color pickers and calculates contrast ratio correctly using core engine", () => {
+    (useTheme as jest.Mock).mockReturnValue({
+      state: {
+        currentTheme: {
+          colorScheme: {
+            primary: "#000000",
+            onPrimary: "#FFFFFF",
+          },
+        },
+      },
+      dispatch: jest.fn(),
+    });
+
+    render(<ColorEditor />);
+
+    expect(screen.getByText("Colors")).toBeInTheDocument();
+    expect(screen.getAllByText("21.0:1 AA")[0]).toBeInTheDocument();
+  });
+
   it("declares aria-invalid='true' and links contrast error container via aria-describedby when contrast ratio fails", () => {
     (useTheme as jest.Mock).mockReturnValue({
       state: {
