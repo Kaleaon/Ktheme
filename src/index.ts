@@ -42,9 +42,10 @@ export * from "./redesign/autoRedesign";
 export * from "./components";
 export * from "./linkpoint";
 
-// Media design tokens exports
+// Media design tokens & importers exports
 export * from "./media/quickAccess";
 export * from "./exporters";
+export * from "./importers";
 export * as cli from "./cli";
 
 // Re-export for convenience

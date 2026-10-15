@@ -80,10 +80,16 @@ describe("HSL color utilities", () => {
       b: 56,
       a: 0.5,
     });
+    expect(normalizeColor("hsl(0, 100%, 50%)")).toEqual({
+      r: 255,
+      g: 0,
+      b: 0,
+      a: 1,
+    });
   });
 
   it("throws on invalid color string formats and channel ranges", () => {
-    expect(() => normalizeColor("hsl(10, 20%, 30%)")).toThrow(
+    expect(() => normalizeColor("invalid-color-string")).toThrow(
       "Invalid color string format",
     );
     expect(() => normalizeColor("rgba(1, 2, 3, 1.2)")).toThrow(
