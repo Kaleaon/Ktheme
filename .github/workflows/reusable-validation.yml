@@ -45,7 +45,10 @@ jobs:
             npm ci || npm install
           fi
           if [ -d "docs/react" ]; then
-            cd docs/react && (npm ci || npm install) && cd ../..
+            (cd docs/react && (npm ci || npm install))
+          fi
+          if [ -d "theme-creator" ]; then
+            (cd theme-creator && (npm ci || npm install))
           fi
 
       - name: Install Playwright Browsers
