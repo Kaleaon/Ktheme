@@ -13,7 +13,9 @@ frutiger-aero.json
 ink-terminal-modern.json
 lcars-tng.json
 lcars.json
+linkpoint-cobalt.json
 linkpoint-default.json
+linkpoint-gold.json
 metro-cyan.json
 midnight-amber.json
 navy-gold.json
