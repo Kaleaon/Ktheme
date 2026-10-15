@@ -39,6 +39,8 @@ function log(msg, type = "info") {
 
 // Parse Command Line Arguments
 const args = process.argv.slice(2);
+let runTypecheck = args.includes("--typecheck");
+let runBuild = args.includes("--build");
 let runLint = args.includes("--lint");
 let runUnit = args.includes("--unit");
 let runCatalog = args.includes("--catalog");
@@ -63,6 +65,8 @@ ${colors.bold}USAGE:${colors.reset}
   node tools/ci-runner.mjs [FLAGS]
 
 ${colors.bold}FLAGS:${colors.reset}
+  --typecheck         Run TypeScript compilation and type checking
+  --build             Build workspace packages and applications
   --lint              Run ESLint static analysis
   --unit              Run unit test suites
   --catalog           Run theme catalog parity checks
@@ -73,14 +77,25 @@ ${colors.bold}FLAGS:${colors.reset}
   --port <number>     Specify static server port override
   --help, -h          Show this help message
 
-  ${colors.gray}If no task flags (--unit, --catalog, --palette, --a11y, --visual) are specified,
+  ${colors.gray}If no task flags (--typecheck, --build, --unit, --catalog, --palette, --a11y, --visual) are specified,
   all applicable validation tasks for the current repository will run.${colors.reset}
 `);
   process.exit(0);
 }
 
 // If no specific task flag was passed, run all tasks applicable to the current repo
-if (!runUnit && !runCatalog && !runPalette && !runA11y && !runVisual) {
+if (
+  !runTypecheck &&
+  !runBuild &&
+  !runLint &&
+  !runUnit &&
+  !runCatalog &&
+  !runPalette &&
+  !runA11y &&
+  !runVisual
+) {
+  runTypecheck = true;
+  runBuild = true;
   runUnit = true;
   runCatalog = true;
   runPalette = true;
@@ -314,6 +329,44 @@ async function getPlaywrightBrowser() {
       return await playwright.chromium.launch({ ...launchOpts, executablePath });
     }
     throw err;
+  }
+}
+
+// TASK -2: TypeScript Type Checking
+async function taskTypecheck() {
+  log("Running TypeScript Type Checking...", "header");
+
+  const res = spawnSync("npm", ["run", "typecheck"], {
+    cwd,
+    stdio: "inherit",
+    shell: true,
+  });
+
+  if (res.status === 0) {
+    log("TypeScript type checking passed.", "success");
+    return true;
+  } else {
+    log("TypeScript type checking found compilation errors.", "error");
+    return false;
+  }
+}
+
+// TASK -1: Workspace Package & Application Build
+async function taskBuild() {
+  log("Building Workspace Packages & Applications...", "header");
+
+  const res = spawnSync("npm", ["run", "build"], {
+    cwd,
+    stdio: "inherit",
+    shell: true,
+  });
+
+  if (res.status === 0) {
+    log("Workspace packages and applications built successfully.", "success");
+    return true;
+  } else {
+    log("Workspace package or application build failed.", "error");
+    return false;
   }
 }
 
@@ -887,6 +940,33 @@ async function taskVisualSuite() {
   }
 }
 
+function printSummary(results) {
+  console.log(`
+${colors.bold}${colors.cyan}=====================================================${colors.reset}
+${colors.bold}                 VALIDATION SUMMARY                 ${colors.reset}
+${colors.bold}${colors.cyan}=====================================================${colors.reset}`);
+
+  let overallPass = true;
+  for (const [task, pass] of Object.entries(results)) {
+    const statusText = pass
+      ? `${colors.green}PASS${colors.reset}`
+      : `${colors.red}FAIL${colors.reset}`;
+    console.log(`  - Task [${task.toUpperCase()}]: ${statusText}`);
+    if (!pass) overallPass = false;
+  }
+
+  console.log(`-----------------------------------------------------`);
+  if (overallPass) {
+    console.log(
+      `${colors.bold}${colors.green}ALL VALIDATION CHECKS PASSED SUCCESSFULLY!${colors.reset}\n`,
+    );
+  } else {
+    console.log(
+      `${colors.bold}${colors.red}VALIDATION CHECKS FAILED. PLEASE REVIEW ERRORS ABOVE.${colors.reset}\n`,
+    );
+  }
+}
+
 // MAIN RUNNER ORCHESTRATION
 async function main() {
   console.log(`
@@ -901,6 +981,8 @@ ${colors.bold}${
   }=====================================================${colors.reset}
 Working Directory: ${cwd}
 Active Tasks: ${[
+    runTypecheck && "Typecheck",
+    runBuild && "Build",
     runLint && "Lint",
     runUnit && "Unit",
     runCatalog && "Catalog",
@@ -913,6 +995,24 @@ Active Tasks: ${[
 `);
 
   const results = {};
+
+  if (runTypecheck) {
+    results.typecheck = await taskTypecheck();
+    if (!results.typecheck) {
+      log("TypeScript type checking failed. Halting execution.", "error");
+      printSummary(results);
+      process.exit(1);
+    }
+  }
+
+  if (runBuild) {
+    results.build = await taskBuild();
+    if (!results.build) {
+      log("Workspace package/application build failed. Halting execution.", "error");
+      printSummary(results);
+      process.exit(1);
+    }
+  }
 
   if (runLint) {
     results.lint = await taskLint();
@@ -938,32 +1038,9 @@ Active Tasks: ${[
     results.visual = await taskVisualSuite();
   }
 
-  console.log(`
-${colors.bold}${colors.cyan}=====================================================${colors.reset}
-${colors.bold}                 VALIDATION SUMMARY                 ${colors.reset}
-${colors.bold}${colors.cyan}=====================================================${colors.reset}`);
-
-  let overallPass = true;
-  for (const [task, pass] of Object.entries(results)) {
-    const statusText = pass
-      ? `${colors.green}PASS${colors.reset}`
-      : `${colors.red}FAIL${colors.reset}`;
-    console.log(`  - Task [${task.toUpperCase()}]: ${statusText}`);
-    if (!pass) overallPass = false;
-  }
-
-  console.log(`-----------------------------------------------------`);
-  if (overallPass) {
-    console.log(
-      `${colors.bold}${colors.green}ALL VALIDATION CHECKS PASSED SUCCESSFULLY!${colors.reset}\n`,
-    );
-    process.exit(0);
-  } else {
-    console.log(
-      `${colors.bold}${colors.red}VALIDATION CHECKS FAILED. PLEASE REVIEW ERRORS ABOVE.${colors.reset}\n`,
-    );
-    process.exit(1);
-  }
+  printSummary(results);
+  const overallPass = Object.values(results).every(Boolean);
+  process.exit(overallPass ? 0 : 1);
 }
 
 main().catch((err) => {
