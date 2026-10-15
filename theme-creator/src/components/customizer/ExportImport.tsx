@@ -2,7 +2,7 @@ import { useId, useRef, useState } from "react";
 import { Download, Upload } from "lucide-react";
 import { useTheme } from "../../state/ThemeContext.tsx";
 import type { KTheme } from "../../types/theme.ts";
-import { FormField } from "../common/FormField.tsx";
+import { FormField } from "../../../../src/components/FormField";
 
 export function ExportImport() {
   const { state, dispatch } = useTheme();
