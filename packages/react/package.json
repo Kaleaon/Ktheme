@@ -15,11 +15,6 @@
       "types": "./dist/studio/index.d.ts",
       "import": "./dist/studio/index.js",
       "require": "./dist/studio/index.js"
-    },
-    "./support": {
-      "types": "./dist/support/index.d.ts",
-      "import": "./dist/support/index.js",
-      "require": "./dist/support/index.js"
     }
   },
   "scripts": {
