@@ -5,7 +5,14 @@
     "description": "Retro-terminal inspired interface with modern accessibility contrast",
     "author": "Ktheme",
     "version": "1.0.0",
-    "tags": ["metallic", "industrial", "dark", "terminal", "developer", "mono"],
+    "tags": [
+      "metallic",
+      "industrial",
+      "dark",
+      "terminal",
+      "developer",
+      "mono"
+    ],
     "createdAt": "2026-02-16T13:00:59.876Z",
     "updatedAt": "2026-02-16T13:00:59.876Z"
   },
