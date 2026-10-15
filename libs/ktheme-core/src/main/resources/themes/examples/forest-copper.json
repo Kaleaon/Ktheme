@@ -5,7 +5,11 @@
     "description": "Deep forest green with warm copper metallic accents",
     "author": "Ktheme",
     "version": "1.0.0",
-    "tags": ["metallic", "nature", "dark"],
+    "tags": [
+      "metallic",
+      "nature",
+      "dark"
+    ],
     "createdAt": "2026-02-15T20:42:39.611Z",
     "updatedAt": "2026-02-15T20:42:39.611Z"
   },
@@ -33,7 +37,7 @@
     "onSurface": "#E8F5E8",
     "surfaceVariant": "#2A4D2A",
     "onSurfaceVariant": "#B8D9B8",
-    "outline": "#6A8A6A",
+    "outline": "#7B9A7B",
     "outlineVariant": "#3D5A3D",
     "scrim": "#000000",
     "inverseSurface": "#E8F5E8",
