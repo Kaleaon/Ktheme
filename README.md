@@ -4,6 +4,10 @@ Ktheme is an **open-source theme engine and design API** for creating, managing,
 
 Ktheme is **not a single product UI** — it's a _theming substrate_ that other apps consume. Themes ship as portable JSON, get exported to CSS variables / Tailwind / Compose / SwiftUI / Flutter, and adapt apps' layout, icon, and component shape — not just their colors.
 
+## Universal layout standards
+
+[Layout standards v1](docs/universal-layout-standards.md) defines seven independent layouts: Compose, Ink Terminal, Sweep Console (LCARS), Metro Tiles, Aero Glass, Deco Rails, and Editorial Press. Import `LAYOUT_STANDARDS`, `getLayoutStandard`, and `lcarsFrameGeometry` from the engine. The portable contract and JSON Schema live in `src/standards/`; palettes and effects remain separate choices.
+
 ## Source
 
 - **Repository:** [Kaleaon/Ktheme](https://github.com/Kaleaon/Ktheme) — `main` branch

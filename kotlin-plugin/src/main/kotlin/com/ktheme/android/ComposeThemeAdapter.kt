@@ -52,6 +52,14 @@ fun Theme.toMaterial3ColorScheme(isDark: Boolean = darkMode): ColorScheme {
     val inverseOnSurface = Color(ColorUtils.hexToColorInt(source.inverseOnSurface))
     val inversePrimary = Color(ColorUtils.hexToColorInt(source.inversePrimary))
 
+    val surfaceDim = Color(ColorUtils.hexToColorInt(source.surfaceDim ?: source.background))
+    val surfaceBright = Color(ColorUtils.hexToColorInt(source.surfaceBright ?: source.surface))
+    val surfaceContainerLowest = Color(ColorUtils.hexToColorInt(source.surfaceContainerLowest ?: source.surfaceVariant))
+    val surfaceContainerLow = Color(ColorUtils.hexToColorInt(source.surfaceContainerLow ?: source.surfaceVariant))
+    val surfaceContainer = Color(ColorUtils.hexToColorInt(source.surfaceContainer ?: source.surface))
+    val surfaceContainerHigh = Color(ColorUtils.hexToColorInt(source.surfaceContainerHigh ?: source.surface))
+    val surfaceContainerHighest = Color(ColorUtils.hexToColorInt(source.surfaceContainerHighest ?: source.surface))
+
     return if (isDark) {
         darkColorScheme(
             primary = primary,
@@ -81,7 +89,14 @@ fun Theme.toMaterial3ColorScheme(isDark: Boolean = darkMode): ColorScheme {
             scrim = scrim,
             inverseSurface = inverseSurface,
             inverseOnSurface = inverseOnSurface,
-            inversePrimary = inversePrimary
+            inversePrimary = inversePrimary,
+            surfaceBright = surfaceBright,
+            surfaceDim = surfaceDim,
+            surfaceContainerLowest = surfaceContainerLowest,
+            surfaceContainerLow = surfaceContainerLow,
+            surfaceContainer = surfaceContainer,
+            surfaceContainerHigh = surfaceContainerHigh,
+            surfaceContainerHighest = surfaceContainerHighest
         )
     } else {
         lightColorScheme(
@@ -112,7 +127,14 @@ fun Theme.toMaterial3ColorScheme(isDark: Boolean = darkMode): ColorScheme {
             scrim = scrim,
             inverseSurface = inverseSurface,
             inverseOnSurface = inverseOnSurface,
-            inversePrimary = inversePrimary
+            inversePrimary = inversePrimary,
+            surfaceBright = surfaceBright,
+            surfaceDim = surfaceDim,
+            surfaceContainerLowest = surfaceContainerLowest,
+            surfaceContainerLow = surfaceContainerLow,
+            surfaceContainer = surfaceContainer,
+            surfaceContainerHigh = surfaceContainerHigh,
+            surfaceContainerHighest = surfaceContainerHighest
         )
     }
 }

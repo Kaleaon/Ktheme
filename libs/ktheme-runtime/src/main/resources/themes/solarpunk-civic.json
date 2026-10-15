@@ -1,4 +1,5 @@
 {
+  "schemaVersion": 2,
   "metadata": {
     "id": "solarpunk-civic",
     "name": "Solarpunk Civic",
@@ -23,11 +24,11 @@
     "errorContainer": "#FFDAD6",
     "onErrorContainer": "#410002",
     "primary": "#38B56A",
-    "onPrimary": "#1E3A27",
+    "onPrimary": "#04250F",
     "primaryContainer": "#BFEFD0",
     "onPrimaryContainer": "#0E3F20",
     "secondary": "#4FAEEA",
-    "onSecondary": "#1E3A27",
+    "onSecondary": "#05253A",
     "secondaryContainer": "#C8E9FF",
     "onSecondaryContainer": "#103A57",
     "tertiary": "#F2C46C",
@@ -37,10 +38,10 @@
     "background": "#F2FBF4",
     "onBackground": "#1E3A27",
     "surface": "#FBFFFC",
-    "onSurface": "#1E3A27",
+    "onSurface": "#224231",
     "surfaceVariant": "#E2F2E8",
     "onSurfaceVariant": "#456355",
-    "outline": "#6E9380",
+    "outline": "#668977",
     "outlineVariant": "#B3D0BF",
     "scrim": "#000000",
     "inverseSurface": "#1C3A28",
@@ -100,43 +101,5 @@
       "angle": 120
     }
   },
-  "adaptation": {
-    "desktopAdaptation": {
-      "windowChrome": {
-        "titleBarHeight": 26,
-        "headerStyle": "standard",
-        "cornerStyle": "rounded",
-        "panelRadius": 10,
-        "controlRadius": 8,
-        "borderWidth": 1,
-        "shadow": "0 10px 26px rgba(0,0,0,0.2)"
-      },
-      "menuBar": {
-        "height": 28,
-        "fontSize": 11,
-        "letterSpacing": "0.06em",
-        "textTransform": "none",
-        "dropdownRadius": 10,
-        "dropdownShadow": "0 8px 20px rgba(0,0,0,0.18)"
-      },
-      "taskbar": {
-        "height": 40,
-        "buttonRadius": 8,
-        "dockAlignment": "left",
-        "quickChatBorderRadius": 8
-      },
-      "cameraHud": {
-        "panelRadius": 10,
-        "buttonRadius": 8,
-        "shadow": "0 8px 20px rgba(0,0,0,0.3)"
-      },
-      "sweep": {
-        "elbowWidth": 30,
-        "titleCapRadius": "10px",
-        "accentBand": "primary",
-        "showElbowBar": true
-      }
-    }
-  },
-  "schemaVersion": 2
+  "adaptation": {}
 }

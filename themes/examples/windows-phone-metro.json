@@ -6,7 +6,13 @@
     "description": "Flat, tile-first Metro-inspired interface theme",
     "author": "Ktheme",
     "version": "1.0.0",
-    "tags": ["modern", "dark", "metro", "windows-phone", "flat"],
+    "tags": [
+      "modern",
+      "dark",
+      "metro",
+      "windows-phone",
+      "flat"
+    ],
     "createdAt": "2026-02-16T11:46:58.141Z",
     "updatedAt": "2026-02-16T11:46:58.141Z"
   },
@@ -34,7 +40,7 @@
     "onSurface": "#F0F8FF",
     "surfaceVariant": "#3D4854",
     "onSurfaceVariant": "#B8CAD6",
-    "outline": "#7A8A99",
+    "outline": "#8897A4",
     "outlineVariant": "#4D5A66",
     "scrim": "#000000",
     "inverseSurface": "#E8F0F5",
