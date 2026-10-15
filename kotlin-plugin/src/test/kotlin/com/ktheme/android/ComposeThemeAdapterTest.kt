@@ -1,13 +1,21 @@
 package com.ktheme.android
 
+import androidx.compose.material3.Typography as MaterialTypography
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight as ComposeFontWeight
+import androidx.compose.ui.unit.sp
 import com.ktheme.models.ColorScheme
+import com.ktheme.models.FontSize
+import com.ktheme.models.FontWeight
 import com.ktheme.models.Theme
 import com.ktheme.models.ThemeMetadata
+import com.ktheme.models.Typography as KthemeTypography
 import com.ktheme.utils.ColorUtils
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNotNull
 
 class ComposeThemeAdapterTest {
     @Test
@@ -64,6 +72,52 @@ class ComposeThemeAdapterTest {
         assertFailsWith<NumberFormatException> {
             invalidCharsTheme.semanticColors()
         }
+    }
+
+    @Test
+    fun `toMaterial3Typography returns default Material3 typography when typography is null`() {
+        val themeWithNullTypography = sampleTheme(darkMode = true).copy(typography = null)
+        val typography = themeWithNullTypography.toMaterial3Typography()
+
+        assertNotNull(typography)
+        assertEquals(MaterialTypography(), typography)
+    }
+
+    @Test
+    fun `toMaterial3Typography maps custom typography tokens correctly`() {
+        val customTypography = KthemeTypography(
+            fontFamily = "monospace",
+            fontSize = FontSize(small = 10, medium = 14, large = 18, xlarge = 24),
+            fontWeight = FontWeight(light = 300, regular = 400, medium = 500, bold = 700),
+            lineHeight = 1.4f,
+            letterSpacing = 0.25f
+        )
+        val theme = sampleTheme(darkMode = true).copy(typography = customTypography)
+
+        val materialTypography = theme.toMaterial3Typography()
+
+        assertNotNull(materialTypography)
+        assertEquals(FontFamily.Monospace, materialTypography.bodyLarge.fontFamily)
+        assertEquals(14.sp, materialTypography.bodyLarge.fontSize)
+        assertEquals(ComposeFontWeight(400), materialTypography.bodyLarge.fontWeight)
+        assertEquals((14 * 1.4f).sp, materialTypography.bodyLarge.lineHeight)
+        assertEquals(0.25.sp, materialTypography.bodyLarge.letterSpacing)
+
+        assertEquals(24.sp, materialTypography.displayLarge.fontSize)
+        assertEquals(ComposeFontWeight(700), materialTypography.displayLarge.fontWeight)
+        assertEquals(10.sp, materialTypography.titleSmall.fontSize)
+    }
+
+    @Test
+    fun `parseFontFamily maps standard font strings to Compose FontFamily equivalents`() {
+        assertEquals(FontFamily.SansSerif, parseFontFamily("sans-serif"))
+        assertEquals(FontFamily.SansSerif, parseFontFamily("sans"))
+        assertEquals(FontFamily.Serif, parseFontFamily("serif"))
+        assertEquals(FontFamily.Monospace, parseFontFamily("monospace"))
+        assertEquals(FontFamily.Monospace, parseFontFamily("mono"))
+        assertEquals(FontFamily.Cursive, parseFontFamily("cursive"))
+        assertEquals(FontFamily.Default, parseFontFamily("unknown-custom-font"))
+        assertEquals(FontFamily.Default, parseFontFamily(null))
     }
 
     private fun sampleTheme(darkMode: Boolean): Theme = Theme(
