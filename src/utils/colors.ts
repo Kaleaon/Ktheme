@@ -7,6 +7,7 @@ import {
   Color,
   ColorScheme,
   HSLColor,
+  HSLAColor,
   HexColor,
   RGBColor,
   RGBAColor,
@@ -29,6 +30,8 @@ const RGB_PATTERN =
   /^rgb\(\s*(\d{1,3})\s*(?:,\s*|\s+)(\d{1,3})\s*(?:,\s*|\s+)(\d{1,3})\s*\)$/i;
 const RGBA_PATTERN =
   /^rgba\(\s*(\d{1,3})\s*(?:,\s*|\s+)(\d{1,3})\s*(?:,\s*|\s+)(\d{1,3})\s*(?:,\s*|\s+)\s*(\d*\.?\d+)\s*\)$/i;
+const HSL_PATTERN =
+  /^hsla?\(\s*(-?\d*(?:\.\d+)?(?:deg|rad|turn)?)\s*(?:,\s*|\s+)(\d*(?:\.\d+)?%?)\s*(?:,\s*|\s+)(\d*(?:\.\d+)?%?)(?:\s*(?:,\s*|\/|\s+)\s*(\d*(?:\.\d+)?%?))?\s*\)$/i;
 
 function isByteValue(value: number): boolean {
   return Number.isFinite(value) && value >= 0 && value <= 255;
@@ -119,8 +122,36 @@ function parseCssRgbColor(input: string): RGBAColor | null {
   return null;
 }
 
+export function parseCssHslColor(input: string): RGBAColor | null {
+  const normalized = input.trim();
+  const match = normalized.match(HSL_PATTERN);
+  if (!match) return null;
+
+  const hStr = match[1];
+  const sStr = match[2];
+  const lStr = match[3];
+  const aStr = match[4];
+
+  let h = Number.parseFloat(hStr);
+  if (hStr.endsWith("deg")) h = Number.parseFloat(hStr);
+  else if (hStr.endsWith("rad")) h = Number.parseFloat(hStr) * (180 / Math.PI);
+  else if (hStr.endsWith("turn")) h = Number.parseFloat(hStr) * 360;
+
+  const s = Number.parseFloat(sStr);
+  const l = Number.parseFloat(lStr);
+  let a = aStr !== undefined ? Number.parseFloat(aStr) : 1;
+  if (aStr && aStr.endsWith("%")) a = Number.parseFloat(aStr) / 100;
+
+  const rgb = hslToRgb({ h, s, l });
+  return { ...rgb, a: clamp(a, 0, 1) };
+}
+
 export function isValidColorString(color: string): boolean {
-  return parseHexColor(color) !== null || parseCssRgbColor(color) !== null;
+  return (
+    parseHexColor(color) !== null ||
+    parseCssRgbColor(color) !== null ||
+    parseCssHslColor(color) !== null
+  );
 }
 
 /**
@@ -184,8 +215,13 @@ export function normalizeColor(color: Color): RGBAColor {
       return rgbParsed;
     }
 
+    const hslParsed = parseCssHslColor(color);
+    if (hslParsed) {
+      return hslParsed;
+    }
+
     throw new Error(
-      `Invalid color string format: ${color}. Accepted formats: #RGB, #RGBA, #RRGGBB, #RRGGBBAA, rgb(r,g,b), rgba(r,g,b,a)`,
+      `Invalid color string format: ${color}. Accepted formats: #RGB, #RGBA, #RRGGBB, #RRGGBBAA, rgb(r,g,b), rgba(r,g,b,a), hsl(h,s,l), hsla(h,s,l,a)`,
     );
   }
 
@@ -201,6 +237,51 @@ export function normalizeColor(color: Color): RGBAColor {
     return color;
   }
   return { r, g, b, a: 1 };
+}
+
+/**
+ * Parses any color input (HEX, RGB, RGBA, HSL, HSLA, or Color object) into a standardized Ktheme HEX string.
+ */
+export function parseColorToHex(color: Color | HSLColor | HSLAColor | string): HexColor {
+  if (typeof color === "string") {
+    const trimmed = color.trim();
+    const hexParsed = parseHexColor(trimmed);
+    if (hexParsed) {
+      return hexParsed.a < 1 ? rgbaToHex(hexParsed).toUpperCase() : rgbToHex(hexParsed).toUpperCase();
+    }
+    const rgbParsed = parseCssRgbColor(trimmed);
+    if (rgbParsed) {
+      return rgbParsed.a < 1 ? rgbaToHex(rgbParsed).toUpperCase() : rgbToHex(rgbParsed).toUpperCase();
+    }
+    const hslParsed = parseCssHslColor(trimmed);
+    if (hslParsed) {
+      return hslParsed.a < 1 ? rgbaToHex(hslParsed).toUpperCase() : rgbToHex(hslParsed).toUpperCase();
+    }
+    if (/^#[0-9a-fA-F]{3,8}$/.test(trimmed)) {
+      return trimmed.toUpperCase();
+    }
+    return trimmed;
+  }
+
+  if ("a" in color && typeof color.a === "number" && color.a < 1) {
+    if ("r" in color) {
+      return rgbaToHex(color as RGBAColor).toUpperCase();
+    }
+    if ("h" in color) {
+      const rgb = hslToRgb(color as HSLColor);
+      return rgbaToHex({ ...rgb, a: color.a }).toUpperCase();
+    }
+  }
+
+  if ("r" in color) {
+    return rgbToHex(color as RGBColor).toUpperCase();
+  }
+
+  if ("h" in color) {
+    return hslToHex(color as HSLColor).toUpperCase();
+  }
+
+  return String(color);
 }
 
 /**

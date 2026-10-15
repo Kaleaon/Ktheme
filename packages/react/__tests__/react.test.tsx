@@ -8,6 +8,7 @@ import {
   batchSetCssVariables,
   flushCssVariables,
   ThemeStudio,
+  importTokensStudioJson,
 } from "../src";
 
 function TestConsumer() {
@@ -70,6 +71,19 @@ describe("@ktheme/react library", () => {
     // Verify property values were applied
     expect(el.style.getPropertyValue("--md-sys-color-primary")).toBe("#FF0000");
     expect(el.style.getPropertyValue("--md-sys-color-surface")).toBe("#00FF00");
+  });
+
+  it("importTokensStudioJson converts Tokens Studio JSON into runtime tokens", () => {
+    const json = {
+      colors: {
+        primary: { value: "#6750A4", type: "color" },
+        background: { value: "#1C1B1F", type: "color" },
+      },
+    };
+
+    const tokens = importTokensStudioJson(json);
+    expect(tokens.primary).toBe("#6750A4");
+    expect(tokens.background).toBe("#1C1B1F");
   });
 
   it("ThemeStudio component renders and allows tab switching", () => {

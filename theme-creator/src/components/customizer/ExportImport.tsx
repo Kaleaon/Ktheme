@@ -3,6 +3,7 @@ import { Download, Upload } from "lucide-react";
 import { useTheme } from "../../state/ThemeContext.tsx";
 import type { KTheme } from "../../types/theme.ts";
 import { FormField } from "../common/FormField.tsx";
+import { tokensStudioToKTheme } from "../../../src/importers/tokensStudioImporter";
 
 export function ExportImport() {
   const { state, dispatch } = useTheme();
@@ -29,13 +30,24 @@ export function ExportImport() {
     const reader = new FileReader();
     reader.onload = (ev) => {
       try {
-        const theme = JSON.parse(ev.target?.result as string) as KTheme;
-        if (theme.metadata?.id && theme.colorScheme?.primary) {
-          dispatch({ type: "SET_THEME", payload: theme });
-          setStatusMessage(`${theme.metadata.name || "Theme"} imported.`);
+        const rawContent = ev.target?.result as string;
+        const parsed = JSON.parse(rawContent);
+
+        if (parsed && typeof parsed === "object" && parsed.metadata?.id && parsed.colorScheme?.primary) {
+          dispatch({ type: "SET_THEME", payload: parsed as KTheme });
+          setStatusMessage(`${parsed.metadata.name || "Theme"} imported.`);
         } else {
-          setStatusMessage("Invalid theme file: missing required fields.");
-          alert("Invalid theme file: missing required fields");
+          // Attempt Tokens Studio / DTCG conversion
+          const converted = tokensStudioToKTheme(parsed, {
+            themeName: file.name.replace(/\.[^/.]+$/, ""),
+          });
+          if (converted && converted.colorScheme?.primary) {
+            dispatch({ type: "SET_THEME", payload: converted as KTheme });
+            setStatusMessage(`${converted.metadata.name || "Tokens Studio Theme"} imported.`);
+          } else {
+            setStatusMessage("Invalid theme file: missing required fields.");
+            alert("Invalid theme file: missing required fields");
+          }
         }
       } catch {
         setStatusMessage("Failed to parse theme file.");
