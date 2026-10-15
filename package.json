@@ -11,7 +11,8 @@
     "ajv": "^8.12.0"
   },
   "scripts": {
-    "build": "node packages/tokens/scripts/build-tokens.mjs && tsc && tsc -p packages/react/tsconfig.json",
+    "build": "node packages/tokens/scripts/build-tokens.mjs && tsc && tsc -p packages/react/tsconfig.json && npm run --prefix theme-creator build",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p packages/react/tsconfig.json && tsc -b theme-creator",
     "dev": "tsc --watch",
     "test": "jest",
     "lint": "eslint src packages",
