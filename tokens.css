@@ -72,8 +72,12 @@
   --ktheme-critical: #ef4444;
 
   /* Typography Tokens */
-  --font-family-sans: "Inter", system-ui, -apple-system, sans-serif;
-  --font-family-mono: "JetBrains Mono", "Fira Code", monospace;
+  --ktheme-font-ui: "Inter", system-ui, -apple-system, sans-serif;
+  --ktheme-font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --ktheme-font-mono: "JetBrains Mono", "Fira Code", monospace;
+
+  --font-family-sans: var(--ktheme-font-sans);
+  --font-family-mono: var(--ktheme-font-mono);
 
   --font-size-xs: 11px;
   --font-size-sm: 12px;
@@ -123,6 +127,86 @@
   /* Shimmer / Motion Defaults */
   --shimmer-speed: 2s;
   --shimmer-intensity: 0.8;
+
+  /* ==========================================================================
+     CSS Variable Alias Matrix
+     Maps legacy namespaces (--c-*, --md-sys-color-*, --bg-*, --kt-font-*, etc.)
+     to canonical --ktheme-* design system tokens
+     ========================================================================== */
+
+  /* Legacy --c-* Namespace */
+  --c-primary: var(--ktheme-primary);
+  --c-on-primary: var(--ktheme-on-primary);
+  --c-primary-container: var(--ktheme-primary-container);
+  --c-on-primary-container: var(--ktheme-on-primary-container);
+  --c-secondary: var(--ktheme-secondary);
+  --c-on-secondary: var(--ktheme-on-secondary);
+  --c-secondary-container: var(--ktheme-secondary-container);
+  --c-on-secondary-container: var(--ktheme-on-secondary-container);
+  --c-tertiary: var(--ktheme-tertiary);
+  --c-on-tertiary: var(--ktheme-on-tertiary);
+  --c-background: var(--ktheme-background);
+  --c-on-background: var(--ktheme-on-background);
+  --c-surface: var(--ktheme-surface);
+  --c-on-surface: var(--ktheme-on-surface);
+  --c-surface-variant: var(--ktheme-surface-variant);
+  --c-on-surface-variant: var(--ktheme-on-surface-variant);
+  --c-outline: var(--ktheme-outline);
+  --c-outline-variant: var(--ktheme-outline-variant);
+  --c-error: var(--ktheme-error);
+  --c-on-error: var(--ktheme-on-error);
+  --c-success: var(--ktheme-success);
+  --c-warning: var(--ktheme-warning);
+  --c-info: var(--ktheme-info);
+  --c-critical: var(--ktheme-critical);
+
+  /* Legacy --md-sys-color-* Namespace */
+  --md-sys-color-primary: var(--ktheme-primary);
+  --md-sys-color-on-primary: var(--ktheme-on-primary);
+  --md-sys-color-primary-container: var(--ktheme-primary-container);
+  --md-sys-color-on-primary-container: var(--ktheme-on-primary-container);
+  --md-sys-color-secondary: var(--ktheme-secondary);
+  --md-sys-color-on-secondary: var(--ktheme-on-secondary);
+  --md-sys-color-secondary-container: var(--ktheme-secondary-container);
+  --md-sys-color-on-secondary-container: var(--ktheme-on-secondary-container);
+  --md-sys-color-tertiary: var(--ktheme-tertiary);
+  --md-sys-color-on-tertiary: var(--ktheme-on-tertiary);
+  --md-sys-color-background: var(--ktheme-background);
+  --md-sys-color-on-background: var(--ktheme-on-background);
+  --md-sys-color-surface: var(--ktheme-surface);
+  --md-sys-color-on-surface: var(--ktheme-on-surface);
+  --md-sys-color-surface-variant: var(--ktheme-surface-variant);
+  --md-sys-color-on-surface-variant: var(--ktheme-on-surface-variant);
+  --md-sys-color-outline: var(--ktheme-outline);
+  --md-sys-color-outline-variant: var(--ktheme-outline-variant);
+  --md-sys-color-error: var(--ktheme-error);
+  --md-sys-color-on-error: var(--ktheme-on-error);
+  --md-sys-color-success: var(--ktheme-success);
+  --md-sys-color-warning: var(--ktheme-warning);
+  --md-sys-color-info: var(--ktheme-info);
+  --md-sys-color-critical: var(--ktheme-critical);
+
+  /* Legacy --bg-*, --text-*, --border-*, --accent-* Namespaces */
+  --bg: var(--ktheme-background, var(--ktheme-bg));
+  --bg-surface: var(--ktheme-surface, var(--ktheme-bg-surface));
+  --bg-elevated: var(--ktheme-surface-variant, var(--ktheme-bg-elevated));
+  --bg-hover: var(--ktheme-bg-hover);
+
+  --text: var(--ktheme-on-background, var(--ktheme-text));
+  --text-muted: var(--ktheme-on-surface-variant, var(--ktheme-text-muted));
+  --text-dim: var(--ktheme-text-dim);
+
+  --border: var(--ktheme-outline, var(--ktheme-border));
+  --border-light: var(--ktheme-border-light);
+
+  --accent: var(--ktheme-primary, var(--ktheme-accent));
+  --accent-hover: var(--ktheme-accent-hover);
+  --accent-muted: var(--ktheme-accent-muted);
+
+  /* Legacy --kt-font-* Namespace */
+  --kt-font-ui: var(--ktheme-font-ui);
+  --kt-font-sans: var(--ktheme-font-sans);
+  --kt-font-mono: var(--ktheme-font-mono);
 }
 
 .k-target-min-size,
