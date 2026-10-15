@@ -37,6 +37,8 @@ repos:
         exclude: ^(dist/|node_modules/|build/)
         additional_dependencies:
           - "eslint@8.57.0"
+          - "@eslint/js@8.57.0"
+          - "globals@15.0.0"
           - "@typescript-eslint/parser@7.0.0"
           - "@typescript-eslint/eslint-plugin@7.0.0"
           - "eslint-plugin-react-hooks@4.6.0"
@@ -58,4 +60,4 @@ repos:
         entry: python3 scripts/ktheme-style-lint.py
         language: python
         types_or: [javascript, jsx, ts, tsx]
-        exclude: ^(dist/|node_modules/|build/|schemas/|tests/|theme-creator/|tokens\.css|styles\.css|design-canvas\.jsx|src/themes/|src/core/|src/utils/|src/exporters/|src/redesign/|src/media/|src/cli/|src/adaptation/|src/effects/|src/linkpoint/|packages/react/src/(?!components/)|.*\.test\.(js|jsx|ts|tsx)$|__tests__/|tm-v.*\.jsx|preview-surface\.jsx|android-frame\.jsx|ds-docs\.jsx|tweaks-panel\.jsx)
+        exclude: ^(dist/|node_modules/|build/|schemas/|tests/|theme-creator/|packages/tokens/|tokens\.css|styles\.css|design-canvas\.jsx|src/themes/|src/core/|src/utils/|src/exporters/|src/redesign/|src/media/|src/cli/|src/adaptation/|src/effects/|src/linkpoint/|packages/react/src/(?!components/)|.*\.test\.(js|jsx|ts|tsx)$|__tests__/|tm-v.*\.jsx|preview-surface\.jsx|android-frame\.jsx|ds-docs\.jsx|tweaks-panel\.jsx)

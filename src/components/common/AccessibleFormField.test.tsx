@@ -1,7 +1,10 @@
 import React from "react";
 import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
-import { AccessibleFormField, useAccessibleFormFieldContext } from "./AccessibleFormField";
+import {
+  AccessibleFormField,
+  useAccessibleFormFieldContext,
+} from "./AccessibleFormField";
 
 function CustomControl() {
   const ctx = useAccessibleFormFieldContext();
@@ -33,7 +36,10 @@ describe("AccessibleFormField Helper Wrapper Component", () => {
 
   it("links error text via aria-describedby and sets aria-invalid='true'", () => {
     render(
-      <AccessibleFormField label="Font Size" error="Font size must be a positive number">
+      <AccessibleFormField
+        label="Font Size"
+        error="Font size must be a positive number"
+      >
         <input placeholder="Font size" />
       </AccessibleFormField>,
     );
@@ -74,14 +80,20 @@ describe("AccessibleFormField Helper Wrapper Component", () => {
 
   it("supports invalid prop without error node", () => {
     render(
-      <AccessibleFormField label="Username" invalid errorId="custom-error-container">
+      <AccessibleFormField
+        label="Username"
+        invalid
+        errorId="custom-error-container"
+      >
         <input placeholder="Enter username" />
       </AccessibleFormField>,
     );
 
     const input = screen.getByPlaceholderText("Enter username");
     expect(input.getAttribute("aria-invalid")).toBe("true");
-    expect(input.getAttribute("aria-describedby")).toBe("custom-error-container");
+    expect(input.getAttribute("aria-describedby")).toBe(
+      "custom-error-container",
+    );
   });
 
   it("augments nested inputs when child is a wrapper element", () => {
