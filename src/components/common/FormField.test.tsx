@@ -137,4 +137,15 @@ describe("Shared FormField Wrapper Component", () => {
     const textarea = screen.getByTestId("textarea-input");
     expect(textarea.id).toBe(textareaLabel.getAttribute("for"));
   });
+
+  it("propagates aria-required to child elements when required prop is set", () => {
+    render(
+      <FormField label="Email" required>
+        <input placeholder="Enter email" />
+      </FormField>,
+    );
+
+    const input = screen.getByPlaceholderText("Enter email");
+    expect(input.getAttribute("aria-required")).toBe("true");
+  });
 });
