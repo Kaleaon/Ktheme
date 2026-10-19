@@ -125,7 +125,7 @@ const __TWEAKS_STYLE = `
   .twk-btn.secondary{background:rgba(0,0,0,.06);color:inherit}
   .twk-btn.secondary:hover{background:rgba(0,0,0,.1)}
 
-  .twk-swatch{appearance:none;-webkit-appearance:none;width:56px;height:22px;
+  .twk-swatch{appearance:none;-webkit-appearance:none;width:56px;height:24px;min-width:24px;min-height:24px;
     border:.5px solid rgba(0,0,0,.1);border-radius:6px;padding:0;cursor:default;
     background:transparent;flex-shrink:0}
   .twk-swatch::-webkit-color-swatch-wrapper{padding:0}

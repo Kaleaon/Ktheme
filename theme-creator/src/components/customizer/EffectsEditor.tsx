@@ -136,6 +136,7 @@ export function EffectsEditor() {
                     <input
                       id={pickerId}
                       type="color"
+                      className="k-target-min-size"
                       value={val}
                       onChange={(e) =>
                         updateEffects({
@@ -316,6 +317,7 @@ export function EffectsEditor() {
                 <input
                   id={stopColorId}
                   type="color"
+                  className="k-target-min-size"
                   value={stop.color}
                   onChange={(e) =>
                     updateEffects({
@@ -380,6 +382,7 @@ export function EffectsEditor() {
           <input
             id={overlayColorId}
             type="color"
+            className="k-target-min-size"
             value={overlays.color}
             onChange={(e) =>
               updateEffects({
@@ -463,6 +466,7 @@ export function EffectsEditor() {
           <input
             id={focusRingColorId}
             type="color"
+            className="k-target-min-size"
             value={focusRing.color}
             onChange={(e) =>
               updateEffects({

@@ -372,6 +372,8 @@ input[type="range"]::-webkit-slider-thumb {
 .color-picker input[type="color"] {
   width: 28px;
   height: 28px;
+  min-width: 24px;
+  min-height: 24px;
   border: 1px solid var(--border);
   border-radius: 4px;
   cursor: pointer;
@@ -403,6 +405,8 @@ input[type="range"]::-webkit-slider-thumb {
 .color-picker.mini input[type="color"] {
   width: 24px;
   height: 24px;
+  min-width: 24px;
+  min-height: 24px;
 }
 
 .contrast-badge {
