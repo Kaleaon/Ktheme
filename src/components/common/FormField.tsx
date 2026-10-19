@@ -6,6 +6,7 @@ export interface FormFieldContextValue {
   errorId?: string;
   helperTextId?: string;
   ariaInvalid?: boolean;
+  required?: boolean;
 }
 
 export const FormFieldContext = createContext<FormFieldContextValue | null>(
@@ -26,6 +27,7 @@ export interface FormFieldProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode;
   id?: string;
   labelStyle?: React.CSSProperties;
+  required?: boolean;
 }
 
 export const FormField: React.FC<FormFieldProps> = ({
@@ -39,6 +41,7 @@ export const FormField: React.FC<FormFieldProps> = ({
   id: explicitId,
   style,
   labelStyle,
+  required = false,
   ...props
 }) => {
   const generatedId = useId();
@@ -59,6 +62,7 @@ export const FormField: React.FC<FormFieldProps> = ({
     errorId,
     helperTextId,
     ariaInvalid: Boolean(error),
+    required,
   };
 
   const renderedChildren = React.Children.map(children, (child) => {
@@ -68,6 +72,7 @@ export const FormField: React.FC<FormFieldProps> = ({
       "aria-describedby"?: string;
       "aria-invalid"?: boolean | "grammar" | "spelling";
       "aria-errormessage"?: string;
+      "aria-required"?: boolean;
     }>;
     const existingDescribedBy = element.props["aria-describedby"];
     const combinedDescribedBy =
@@ -85,6 +90,10 @@ export const FormField: React.FC<FormFieldProps> = ({
             : undefined,
       "aria-errormessage":
         element.props["aria-errormessage"] || (error ? errorId : undefined),
+      "aria-required":
+        element.props["aria-required"] !== undefined
+          ? element.props["aria-required"]
+          : required || undefined,
     });
   });
 
@@ -102,6 +111,12 @@ export const FormField: React.FC<FormFieldProps> = ({
             style={labelStyle}
           >
             {label}
+            {required && (
+              <span aria-hidden="true" className="required-indicator">
+                {" "}
+                *
+              </span>
+            )}
           </label>
         )}
         {renderedChildren}

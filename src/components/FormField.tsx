@@ -8,6 +8,7 @@ export interface FormFieldContextValue {
   ariaDescribedBy?: string;
   ariaInvalid: boolean;
   ariaErrorMessage?: string;
+  required?: boolean;
 }
 
 export const FormFieldContext = createContext<FormFieldContextValue | null>(
@@ -68,6 +69,7 @@ export const FormField: React.FC<FormFieldProps> = ({
     ariaDescribedBy,
     ariaInvalid: Boolean(error),
     ariaErrorMessage: errorId,
+    required,
   };
 
   const renderedChildren = React.Children.map(children, (child) => {
@@ -85,6 +87,10 @@ export const FormField: React.FC<FormFieldProps> = ({
             : undefined,
       "aria-errormessage":
         elProps["aria-errormessage"] || (error ? errorId : undefined),
+      "aria-required":
+        elProps["aria-required"] !== undefined
+          ? elProps["aria-required"]
+          : required || undefined,
     } as Record<string, unknown>);
   });
 
@@ -170,6 +176,8 @@ export const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
       "aria-describedby": ariaDescribedByProp,
       "aria-invalid": ariaInvalidProp,
       "aria-errormessage": ariaErrorMessageProp,
+      "aria-required": ariaRequiredProp,
+      required: requiredProp,
       style,
       className = "",
       ...props
@@ -183,6 +191,12 @@ export const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
     const ariaInvalid =
       ariaInvalidProp !== undefined ? ariaInvalidProp : context?.ariaInvalid;
     const ariaErrorMessage = ariaErrorMessageProp || context?.ariaErrorMessage;
+    const isRequired =
+      requiredProp !== undefined ? requiredProp : context?.required;
+    const ariaRequired =
+      ariaRequiredProp !== undefined
+        ? ariaRequiredProp
+        : isRequired || undefined;
 
     return (
       <input
@@ -191,6 +205,8 @@ export const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
         aria-describedby={ariaDescribedBy}
         aria-invalid={ariaInvalid}
         aria-errormessage={ariaErrorMessage}
+        aria-required={ariaRequired}
+        required={isRequired}
         className={`ktheme-form-input ${className}`}
         style={{
           padding: "8px 12px",
@@ -234,6 +250,7 @@ export const FormSwitch = React.forwardRef<HTMLSpanElement, FormSwitchProps>(
       "aria-describedby": ariaDescribedByProp,
       "aria-invalid": ariaInvalidProp,
       "aria-errormessage": ariaErrorMessageProp,
+      "aria-required": ariaRequiredProp,
       "aria-label": ariaLabel,
       "aria-labelledby": ariaLabelledBy,
       style,
@@ -256,6 +273,10 @@ export const FormSwitch = React.forwardRef<HTMLSpanElement, FormSwitchProps>(
     const ariaInvalid =
       ariaInvalidProp !== undefined ? ariaInvalidProp : context?.ariaInvalid;
     const ariaErrorMessage = ariaErrorMessageProp || context?.ariaErrorMessage;
+    const ariaRequired =
+      ariaRequiredProp !== undefined
+        ? ariaRequiredProp
+        : context?.required || undefined;
 
     return (
       <span
@@ -274,6 +295,7 @@ export const FormSwitch = React.forwardRef<HTMLSpanElement, FormSwitchProps>(
         aria-describedby={ariaDescribedBy}
         aria-invalid={ariaInvalid}
         aria-errormessage={ariaErrorMessage}
+        aria-required={ariaRequired}
         aria-label={ariaLabel || label}
         aria-labelledby={ariaLabelledBy || context?.labelId}
         className={`ktheme-form-switch ${className}`}

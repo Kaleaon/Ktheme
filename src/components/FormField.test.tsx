@@ -57,4 +57,48 @@ describe("FormField & Controls Accessibility", () => {
     const switchEl = screen.getByRole("switch");
     expect(switchEl.getAttribute("aria-checked")).toBe("true");
   });
+
+  it("propagates aria-required prop to child inputs when required is true", () => {
+    render(
+      <FormField label="Full Name" required>
+        <FormInput placeholder="Enter full name" />
+      </FormField>,
+    );
+
+    const input = screen.getByPlaceholderText("Enter full name");
+    expect(input.getAttribute("aria-required")).toBe("true");
+  });
+
+  it("does not set aria-required when required is false or omitted", () => {
+    render(
+      <FormField label="Optional Bio">
+        <FormInput placeholder="Enter bio" />
+      </FormField>,
+    );
+
+    const input = screen.getByPlaceholderText("Enter bio");
+    expect(input.getAttribute("aria-required")).toBeNull();
+  });
+
+  it("propagates aria-required to raw input element children in FormField wrapper", () => {
+    render(
+      <FormField label="Required Text" required>
+        <input placeholder="Raw input" />
+      </FormField>,
+    );
+
+    const input = screen.getByPlaceholderText("Raw input");
+    expect(input.getAttribute("aria-required")).toBe("true");
+  });
+
+  it("preserves child explicit aria-required override", () => {
+    render(
+      <FormField label="Overridden Field" required>
+        <input placeholder="Explicit false" aria-required={false} />
+      </FormField>,
+    );
+
+    const input = screen.getByPlaceholderText("Explicit false");
+    expect(input.getAttribute("aria-required")).toBe("false");
+  });
 });
