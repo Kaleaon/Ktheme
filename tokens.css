@@ -113,6 +113,20 @@
   --radius-2xl: 24px;
   --radius-full: 9999px;
 
+  /* Universal Layout Standards Defaults (Compose baseline) */
+  --ktheme-layout-id: compose;
+  --ktheme-layout-name: Compose;
+  --ktheme-layout-adaptive-width: 720px;
+  --ktheme-layout-nav-phone: bar;
+  --ktheme-layout-nav-wide: rail;
+  --ktheme-layout-corner-large: 18px;
+  --ktheme-layout-corner-panel: 14px;
+  --ktheme-layout-corner-tile: 12px;
+  --ktheme-layout-corner-cover: 6px;
+  --ktheme-layout-corner-control: 999px;
+  --ktheme-layout-corner-icon: 10px;
+  --ktheme-layout-corner-artwork: 20px;
+
   /* Elevation & Shadow Tokens */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);

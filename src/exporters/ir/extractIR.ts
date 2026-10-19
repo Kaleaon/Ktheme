@@ -1,4 +1,5 @@
 import { MetallicVariant, Theme } from "../../core/types";
+import { resolveLayoutStandard } from "../../standards/layouts";
 import { toHexColor } from "../utils";
 import { NormalizedThemeTokens } from "./tokenIR";
 
@@ -275,5 +276,6 @@ export function extractThemeTokens(theme: Theme): NormalizedThemeTokens {
         ? { desktopAdaptation: theme.adaptation.desktopAdaptation }
         : {}),
     },
+    layoutStandard: resolveLayoutStandard(theme),
   };
 }

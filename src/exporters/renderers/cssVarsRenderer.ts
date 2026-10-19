@@ -15,10 +15,16 @@ export class CssVarsRenderer implements TokenRenderer<CssVarsExport> {
     tokens: NormalizedThemeTokens,
     options?: WebExporterOptions,
   ): CssVarsExport {
+    const defaultIncludeLayout = !(
+      options?.includeEffects === false &&
+      options?.includeTypography === false &&
+      options?.includeCorners === false
+    );
     const resolvedOptions: WebExporterOptions = {
       includeEffects: true,
       includeTypography: true,
       includeCorners: true,
+      includeLayout: defaultIncludeLayout,
       ...options,
     };
 
@@ -202,6 +208,34 @@ export class CssVarsRenderer implements TokenRenderer<CssVarsExport> {
       vars["--ktheme-corner-medium"] = `${tokens.layout.corners.medium}px`;
       vars["--ktheme-corner-large"] = `${tokens.layout.corners.large}px`;
       vars["--ktheme-corner-xlarge"] = `${tokens.layout.corners.xlarge}px`;
+    }
+
+    // Universal Layout Standards Custom Properties
+    const layoutStd = tokens.layoutStandard;
+    if (layoutStd && resolvedOptions.includeLayout) {
+      vars["--ktheme-layout-id"] = layoutStd.id;
+      vars["--ktheme-layout-name"] = layoutStd.name;
+      vars["--ktheme-layout-adaptive-width"] = "720px";
+      vars["--ktheme-layout-nav-phone"] = layoutStd.navigation.phone;
+      vars["--ktheme-layout-nav-wide"] = layoutStd.navigation.wide;
+
+      vars["--ktheme-layout-corner-large"] = `${layoutStd.corners.large}px`;
+      vars["--ktheme-layout-corner-panel"] = `${layoutStd.corners.panel}px`;
+      vars["--ktheme-layout-corner-tile"] = `${layoutStd.corners.tile}px`;
+      vars["--ktheme-layout-corner-cover"] = `${layoutStd.corners.cover}px`;
+      vars["--ktheme-layout-corner-control"] = `${layoutStd.corners.control}px`;
+      vars["--ktheme-layout-corner-icon"] = `${layoutStd.corners.icon}px`;
+      vars["--ktheme-layout-corner-artwork"] = `${layoutStd.corners.artwork}px`;
+
+      vars["--ktheme-layout-typography-body"] = layoutStd.typography.body;
+      vars["--ktheme-layout-typography-minimum-metadata"] = `${layoutStd.typography.minimumMetadata}px`;
+      vars["--ktheme-layout-typography-content-case"] = layoutStd.typography.contentCase;
+      vars["--ktheme-layout-typography-navigation-case"] = layoutStd.typography.navigationCase;
+
+      vars["--ktheme-layout-surfaces"] = layoutStd.surfaces;
+      vars["--ktheme-layout-actions"] = layoutStd.actions;
+      vars["--ktheme-layout-player"] = layoutStd.player;
+      vars["--ktheme-layout-shadow"] = layoutStd.shadow;
     }
 
     const isMinimal =
