@@ -104,7 +104,7 @@ export class AndroidComposeRenderer
       critical: tokens.color.semantic.critical,
     };
 
-    let packageHeader = `package ${packageName}\n\nimport androidx.compose.material3.darkColorScheme\nimport androidx.compose.material3.lightColorScheme\nimport androidx.compose.ui.graphics.Color`;
+    let packageHeader = `package ${packageName}\n\nimport androidx.compose.material3.darkColorScheme\nimport androidx.compose.material3.lightColorScheme\nimport androidx.compose.runtime.CompositionLocalProvider\nimport androidx.compose.runtime.staticCompositionLocalOf\nimport androidx.compose.ui.graphics.Color`;
 
     let kotlinIcons = "";
     const iconsMap: Record<string, VectorIRNode> = {};
@@ -158,6 +158,9 @@ export class AndroidComposeRenderer
 
     const kotlinAdaptation = `object KthemeAdaptation {\n    val density = "${tokens.layout.density}"\n    val cornerStyle = "${tokens.layout.cornerStyle}"\n}`;
 
+    const layoutStd = tokens.layoutStandard;
+    const kotlinLayout = `data class KthemeLayout(\n    val id: String = "${layoutStd?.id ?? 'compose'}",\n    val name: String = "${layoutStd?.name ?? 'Compose'}",\n    val navPhone: String = "${layoutStd?.navigation?.phone ?? 'bar'}",\n    val navWide: String = "${layoutStd?.navigation?.wide ?? 'rail'}",\n    val adaptiveWidthDp: Int = 720,\n    val cornerLargeDp: Int = ${layoutStd?.corners?.large ?? 18},\n    val cornerPanelDp: Int = ${layoutStd?.corners?.panel ?? 14},\n    val cornerTileDp: Int = ${layoutStd?.corners?.tile ?? 12},\n    val cornerCoverDp: Int = ${layoutStd?.corners?.cover ?? 6},\n    val cornerControlDp: Int = ${layoutStd?.corners?.control ?? 999},\n    val cornerIconDp: Int = ${layoutStd?.corners?.icon ?? 10},\n    val cornerArtworkDp: Int = ${layoutStd?.corners?.artwork ?? 20},\n    val typographyBody: String = "${layoutStd?.typography?.body ?? 'Roboto'}",\n    val minimumMetadataSp: Int = ${layoutStd?.typography?.minimumMetadata ?? 10},\n    val contentCase: String = "${layoutStd?.typography?.contentCase ?? 'preserve'}",\n    val navigationCase: String = "${layoutStd?.typography?.navigationCase ?? 'preserve'}",\n    val surfaces: String = "${layoutStd?.surfaces ?? 'compose'}",\n    val actions: String = "${layoutStd?.actions ?? 'theme-effect'}",\n    val player: String = "${layoutStd?.player ?? 'docked'}",\n    val shadow: String = "${layoutStd?.shadow ?? 'theme-effect'}"\n)\n\nval LocalKthemeLayout = staticCompositionLocalOf { KthemeLayout() }`;
+
     return {
       colorScheme,
       semanticColors,
@@ -165,7 +168,7 @@ export class AndroidComposeRenderer
       effects: tokens.effects as unknown as Record<string, unknown>,
       adaptation: tokens.adaptation as unknown as Record<string, unknown>,
       icons: Object.keys(iconsMap).length > 0 ? iconsMap : undefined,
-      kotlin: `${packageHeader}\n\n${kotlinColorScheme}\n\n${kotlinSemanticColors}\n\n${kotlinTypography}\n\n${kotlinAdaptation}${kotlinIcons}`,
+      kotlin: `${packageHeader}\n\n${kotlinColorScheme}\n\n${kotlinSemanticColors}\n\n${kotlinTypography}\n\n${kotlinAdaptation}\n\n${kotlinLayout}${kotlinIcons}`,
     };
   }
 }
