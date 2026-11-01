@@ -69,6 +69,43 @@ a:hover {
   border: 0;
 }
 
+/* ─── Skip Navigation Link (WCAG 2.2 SC 2.4.1 Bypass Blocks) ─── */
+.skip-link {
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  z-index: 99999;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  width: auto;
+  height: auto;
+  padding: 10px 16px;
+  clip: auto;
+  overflow: visible;
+  white-space: normal;
+  background-color: #0f172a;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: underline;
+  border: 2px solid #38bdf8;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  outline: 3px solid #60a5fa;
+  outline-offset: 2px;
+  z-index: 999999;
+}
+
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,

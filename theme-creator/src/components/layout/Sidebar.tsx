@@ -106,7 +106,7 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
             type="button"
             role="tab"
             aria-selected={activeTab === tab.id}
-            aria-controls={`main-panel-${tab.id}`}
+            aria-controls="main-content"
             tabIndex={activeTab === tab.id ? 0 : -1}
             data-sidebar-tab="true"
             className={`sidebar-tab ${activeTab === tab.id ? "active" : ""}`}
