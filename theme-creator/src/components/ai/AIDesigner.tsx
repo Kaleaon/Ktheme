@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Send, Key, Loader, Download, X, AlertCircle } from "lucide-react";
-import { useTheme } from "../../state/ThemeContext.tsx";
+import { useTheme } from "../../state/ThemeContext";
 import {
   createAISession,
   revokeAISession,
@@ -11,7 +11,7 @@ import {
   type AIRedesignPlan,
   type AIProvider,
   type AISession,
-} from "../../services/ai.ts";
+} from "../../services/ai";
 
 export function AIDesigner() {
   const { dispatch } = useTheme();
@@ -130,6 +130,7 @@ export function AIDesigner() {
               onChange={(e) => setApiKey(e.target.value)}
               placeholder="sk-ant-..."
               onKeyDown={(e) => e.key === "Enter" && startSecureSession()}
+              autoComplete="current-password"
             />
             <button
               className="btn btn-primary"
