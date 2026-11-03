@@ -4,11 +4,13 @@ import com.ktheme.core.ThemeEngine
 import com.ktheme.core.ThemeFileMetadataSigner
 import com.ktheme.core.ThemeFileSignatureVerifier
 import com.ktheme.models.Theme
+import io.ktheme.presets.Presets
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
+import java.io.InputStream
 import java.time.Instant
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
@@ -62,8 +64,10 @@ class ThemeLibrary(
     /**
      * Load all available themes from various sources
      */
-    fun loadAllThemes(bundledThemesDir: File? = null) {
+    fun loadAllThemes(bundledThemesDir: File? = null, classLoader: ClassLoader? = null) {
         clearPreviouslyLoadedThemes()
+
+        loadClasspathPresets(classLoader)
 
         val sourceDirectories = resolveSourceDirectories(bundledThemesDir)
         val catalog = loadCatalogIndexOrEmpty()
@@ -130,6 +134,34 @@ class ThemeLibrary(
         saveCatalogIndex(ThemeCatalogIndex(reconciledEntries))
         notifyThemesLoaded()
     }
+
+    private fun loadClasspathPresets(classLoader: ClassLoader? = null) {
+        val loader = classLoader
+            ?: Thread.currentThread().contextClassLoader
+            ?: ThemeLibrary::class.java.classLoader
+
+        for (presetId in Presets.ALL_IDS) {
+            val resourcePath = "themes/examples/$presetId.json"
+            val stream = loader.getResourceAsStream(resourcePath)
+                ?: ThemeLibrary::class.java.classLoader.getResourceAsStream(resourcePath)
+                ?: ThemeLibrary::class.java.getResourceAsStream("/$resourcePath")
+
+            if (stream == null) {
+                println("⚠️ Preset resource not found on classpath: $resourcePath")
+                continue
+            }
+
+            val theme = runCatching {
+                engine.loadThemeFromStream(stream, resourcePath, signatureVerifier)
+            }.onFailure { error ->
+                println("✗ Failed to load classpath preset $presetId: ${error.message}")
+            }.getOrNull() ?: continue
+
+            loadedThemeIds.add(theme.metadata.id)
+            println("✓ Loaded canonical theme preset: ${theme.metadata.name} (${theme.metadata.id})")
+        }
+    }
+
 
     /**
      * Rebuild catalog index from the filesystem.

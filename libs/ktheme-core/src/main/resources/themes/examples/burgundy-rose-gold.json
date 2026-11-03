@@ -1,4 +1,5 @@
 {
+  "schemaVersion": 2,
   "metadata": {
     "id": "burgundy-rose-gold",
     "name": "Burgundy Rose Gold",
@@ -15,6 +16,10 @@
   },
   "darkMode": true,
   "colorScheme": {
+    "error": "#FFB4AB",
+    "onError": "#690005",
+    "errorContainer": "#93000A",
+    "onErrorContainer": "#FFDAD6",
     "primary": "#B76E79",
     "onPrimary": "#2D0F1A",
     "primaryContainer": "#93575F",
@@ -27,10 +32,6 @@
     "onTertiary": "#2D0F1A",
     "tertiaryContainer": "#9F7A83",
     "onTertiaryContainer": "#FFE6ED",
-    "error": "#FFB4AB",
-    "onError": "#690005",
-    "errorContainer": "#93000A",
-    "onErrorContainer": "#FFDAD6",
     "background": "#2D0F1A",
     "onBackground": "#FFE6ED",
     "surface": "#3D1525",
@@ -68,5 +69,6 @@
       "intensity": 0.6,
       "angle": 120
     }
-  }
+  },
+  "adaptation": {}
 }

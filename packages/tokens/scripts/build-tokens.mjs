@@ -10,6 +10,7 @@ const kthemeRoot = path.resolve(packageDir, '../..');
 const distDir = path.resolve(packageDir, 'dist');
 const jsonDistDir = path.resolve(distDir, 'json');
 const runtimeThemesDir = path.resolve(kthemeRoot, 'libs/ktheme-runtime/src/main/resources/themes');
+const coreThemesDir = path.resolve(kthemeRoot, 'libs/ktheme-core/src/main/resources/themes/examples');
 
 if (!fs.existsSync(distDir)) fs.mkdirSync(distDir, { recursive: true });
 if (!fs.existsSync(jsonDistDir)) fs.mkdirSync(jsonDistDir, { recursive: true });
@@ -418,6 +419,24 @@ if (fs.existsSync(runtimeThemesDir)) {
     const allRuntimeJson = fs.readdirSync(runtimeThemesDir).filter(f => f.endsWith('.json')).sort();
     fs.writeFileSync(path.join(runtimeThemesDir, 'index.txt'), allRuntimeJson.join('\n') + '\n', 'utf8');
     console.log(`[build-tokens] Synchronized ${jsonFiles.length} theme files to runtime directory.`);
+  }
+}
+
+// Synchronize JSON assets to core resources directory (libs/ktheme-core/src/main/resources/themes/examples/)
+if (fs.existsSync(coreThemesDir)) {
+  console.log(`[build-tokens] Synchronizing theme JSON assets to ${coreThemesDir}...`);
+  if (fs.existsSync(jsonDistDir)) {
+    const jsonFiles = fs.readdirSync(jsonDistDir).filter(f => f.endsWith('.json'));
+    let syncedCoreCount = 0;
+    for (const file of jsonFiles) {
+      const srcPath = path.join(jsonDistDir, file);
+      const destPath = path.join(coreThemesDir, file);
+      if (fs.existsSync(destPath)) {
+        fs.copyFileSync(srcPath, destPath);
+        syncedCoreCount++;
+      }
+    }
+    console.log(`[build-tokens] Synchronized ${syncedCoreCount} canonical theme files to core resources directory.`);
   }
 }
 
