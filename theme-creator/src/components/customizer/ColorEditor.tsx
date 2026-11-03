@@ -105,6 +105,7 @@ export function ColorEditor() {
                       <input
                         id={bgId}
                         type="color"
+                        className="k-target-min-size"
                         value={bgVal}
                         onChange={(e) => setColor(bg, e.target.value)}
                       />
@@ -126,6 +127,7 @@ export function ColorEditor() {
                       <input
                         id={fgId}
                         type="color"
+                        className="k-target-min-size"
                         value={fgVal}
                         onChange={(e) => setColor(fg, e.target.value)}
                       />
@@ -195,6 +197,7 @@ export function ColorEditor() {
                         <input
                           id={id}
                           type="color"
+                          className="k-target-min-size"
                           value={key === bg ? bgVal : fgVal}
                           onChange={(e) =>
                             dispatch({
