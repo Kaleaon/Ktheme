@@ -77,7 +77,11 @@ export function ColorEditor() {
             const fgVal =
               (colors as unknown as Record<string, string>)[fg] || "#FFFFFF";
             const cr = contrastRatio(bgVal, fgVal);
-            const crOk = cr >= 4.5;
+            const isAAA = cr >= 7.0;
+            const isAA = cr >= 4.5;
+            const crOk = isAA;
+            const badgeClass = isAAA ? "aaa ok" : isAA ? "aa ok" : "warn";
+            const badgeLabel = isAAA ? "AAA" : isAA ? "AA" : "Fail";
             const bgId = `${colorBaseId}-${bg}`;
             const fgId = `${colorBaseId}-${fg}`;
             const contrastErrorId = `${colorBaseId}-${bg}-${fg}-contrast-error`;
@@ -132,10 +136,10 @@ export function ColorEditor() {
                 </div>
                 <div
                   id={contrastErrorId}
-                  className={`contrast-badge ${crOk ? "ok" : "warn"}`}
+                  className={`contrast-badge ${badgeClass}`}
                   role={!crOk ? "alert" : undefined}
                 >
-                  {cr.toFixed(1)}:1 {crOk ? "AA" : "!"}
+                  {cr.toFixed(1)}:1 {badgeLabel}
                 </div>
                 <div
                   className="color-swatch-preview"
