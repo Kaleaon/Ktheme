@@ -245,10 +245,7 @@ class ThemeLibraryWindow : JFrame() {
     }
 
     private fun loadThemes() {
-        val bundledDir = File("../themes/examples").takeIf { it.exists() }
-            ?: File("themes/examples").takeIf { it.exists() }
-
-        library.loadAllThemes(bundledDir)
+        library.loadAllThemes()
         val themes = library.getAllThemes()
 
         contentPane.removeAll()
@@ -451,7 +448,7 @@ class ThemeLibraryWindow : JFrame() {
                 • Browse and preview themes
                 • Share themes across applications
                 • Import and export themes
-                • 14 beautiful preset themes included
+                • 24 beautiful preset themes included
 
                 Created with ❤️ by the Ktheme team
             """.trimIndent(),

@@ -22,7 +22,10 @@ rootProject.name = "ktheme"
 include(":ktheme-runtime")
 include(":ktheme-core")
 include(":ktheme-compose")
+include(":kotlin-plugin")
 
 project(":ktheme-runtime").projectDir = file("libs/ktheme-runtime")
 project(":ktheme-core").projectDir = file("libs/ktheme-core")
 project(":ktheme-compose").projectDir = file("libs/ktheme-compose")
+project(":kotlin-plugin").projectDir = file("kotlin-plugin")
+

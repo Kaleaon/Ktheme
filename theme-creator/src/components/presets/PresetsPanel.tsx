@@ -1,4 +1,4 @@
-import { type KeyboardEvent, useEffect, useId, useState } from "react";
+import { type KeyboardEvent, useEffect, useId, useRef, useState } from "react";
 import { Download, Trash2 } from "lucide-react";
 import { useTheme } from "../../state/ThemeContext";
 import { PRESET_THEMES } from "../../utils/preset-themes";
@@ -14,6 +14,9 @@ export function PresetsPanel() {
   const builtInPanelId = useId();
   const savedPanelId = useId();
   const dialogTitleId = useId();
+  const cancelBtnRef = useRef<HTMLButtonElement | null>(null);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   function loadTheme(theme: KTheme) {
     dispatch({ type: "SET_THEME", payload: JSON.parse(JSON.stringify(theme)) });
@@ -34,13 +37,62 @@ export function PresetsPanel() {
 
   useEffect(() => {
     if (!themeToDelete) return;
+
+    previousFocusRef.current = document.activeElement as HTMLElement | null;
+
+    if (cancelBtnRef.current) {
+      cancelBtnRef.current.focus();
+    }
+
     function handleKeyDown(e: globalThis.KeyboardEvent) {
       if (e.key === "Escape") {
+        e.preventDefault();
         handleCancelDelete();
+        return;
+      }
+
+      if (e.key === "Tab" && dialogRef.current) {
+        const focusableSelector =
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+        const focusables = Array.from(
+          dialogRef.current.querySelectorAll<HTMLElement>(focusableSelector)
+        ).filter((el) => !el.hasAttribute("disabled"));
+
+        if (focusables.length === 0) return;
+
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+
+        if (e.shiftKey) {
+          if (
+            document.activeElement === first ||
+            !dialogRef.current.contains(document.activeElement)
+          ) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (
+            document.activeElement === last ||
+            !dialogRef.current.contains(document.activeElement)
+          ) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
       }
     }
+
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      if (
+        previousFocusRef.current &&
+        typeof previousFocusRef.current.focus === "function"
+      ) {
+        previousFocusRef.current.focus();
+      }
+    };
   }, [themeToDelete]);
 
   function handleTabKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
@@ -119,6 +171,7 @@ export function PresetsPanel() {
       {themeToDelete && (
         <div className="modal-backdrop" onClick={handleCancelDelete}>
           <div
+            ref={dialogRef}
             className="modal-dialog"
             role="dialog"
             aria-modal="true"
@@ -137,6 +190,7 @@ export function PresetsPanel() {
             </div>
             <div className="modal-actions">
               <button
+                ref={cancelBtnRef}
                 type="button"
                 className="btn btn-secondary"
                 onClick={handleCancelDelete}
