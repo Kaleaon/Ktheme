@@ -1,4 +1,5 @@
 import { Theme } from "../../core/types";
+import { resolveLayoutStandard } from "../../standards/layouts";
 import {
   normalizeAdaptation,
   normalizeColorTokens,
@@ -31,5 +32,6 @@ export function extractThemeTokens(theme: Theme): NormalizedThemeTokens {
     typography: normalizeTypography(theme),
     effects: normalizeEffects(theme),
     adaptation: normalizeAdaptation(theme),
+    layoutStandard: resolveLayoutStandard(theme),
   };
 }
