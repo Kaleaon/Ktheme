@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import { useKtheme } from "../useKtheme";
 import { DEFAULT_THEMES } from "../KthemeProvider";
 import { batchSetCssVariables } from "../batchStyleMutation";
+import { useTablist } from "../hooks/useTablist";
 
 function tokenToCssVars(key: string, value: string): Record<string, string> {
   const vars: Record<string, string> = {};
@@ -133,15 +134,23 @@ export function ThemeStudio({
   const { themeId, tokens, setThemeId, setToken, setTokens, resetTheme } =
     useKtheme();
   const [open, setOpen] = useState(true);
-  const [activeTab, setActiveTab] = useState<
-    "customizer" | "presets" | "metallic" | "preview"
-  >("customizer");
+  const [activeTab, setActiveTab] = useState<StudioTab>("customizer");
+  const STUDIO_TABS: StudioTab[] = ["customizer", "presets", "metallic", "preview"];
+  const { getTablistProps, getTabProps, getPanelProps } = useTablist({
+    tabs: STUDIO_TABS,
+    activeTab,
+    onTabChange: (tabId) => setActiveTab(tabId as StudioTab),
+    labelPrefix: "studio-tab",
+  });
   const [themeName, setThemeName] = useState<string>(
     tokens.name || themeId || "Custom Theme",
   );
   const [activeMetallic, setActiveMetallic] = useState<string>("GOLD");
   const [copied, setCopied] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const baseId = React.useId ? React.useId() : "theme-studio";
+  const themeNameId = `${baseId}-theme-name`;
 
   const [draftTokens, setDraftTokens] = useState<Record<string, string>>({});
 
@@ -308,50 +317,61 @@ export function ThemeStudio({
         <>
           {/* Tab Navigation */}
           <div
-            style={{
-              display: "flex",
-              gap: 8,
-              marginBottom: 16,
-              borderBottom: "1px solid var(--md-sys-color-outline, #2A3655)",
-              paddingBottom: 8,
-            }}
+            {...getTablistProps({
+              style: {
+                display: "flex",
+                gap: 8,
+                marginBottom: 16,
+                borderBottom: "1px solid var(--md-sys-color-outline, #2A3655)",
+                paddingBottom: 8,
+              },
+            })}
           >
             {[
               ["customizer", "🎨 Customizer"],
               ["presets", "📱 Presets"],
               ["metallic", "✨ Metallic"],
               ["preview", "👁️ Preview Deck"],
-            ].map(([tabKey, label]) => (
-              <button
-                key={tabKey}
-                onClick={() => setActiveTab(tabKey as StudioTab)}
-                style={{
-                  background:
-                    activeTab === tabKey
-                      ? "var(--md-sys-color-primary, #D4AF37)"
-                      : "transparent",
-                  color:
-                    activeTab === tabKey
-                      ? "var(--md-sys-color-on-primary, #0A1630)"
-                      : "var(--md-sys-color-on-background, #E8E3D8)",
-                  border: "none",
-                  borderRadius: 6,
-                  padding: "6px 12px",
-                  fontWeight: activeTab === tabKey ? 700 : 500,
-                  fontSize: 12,
-                  cursor: "pointer",
-                }}
-              >
-                {label}
-              </button>
-            ))}
+            ].map(([tabKey, label], index) => {
+              const tabProps = getTabProps(tabKey as StudioTab, index);
+              return (
+                <button
+                  key={tabKey}
+                  {...tabProps}
+                  style={{
+                    background:
+                      activeTab === tabKey
+                        ? "var(--md-sys-color-primary, #D4AF37)"
+                        : "transparent",
+                    color:
+                      activeTab === tabKey
+                        ? "var(--md-sys-color-on-primary, #0A1630)"
+                        : "var(--md-sys-color-on-background, #E8E3D8)",
+                    border: "none",
+                    borderRadius: 6,
+                    padding: "6px 12px",
+                    fontWeight: activeTab === tabKey ? 700 : 500,
+                    fontSize: 12,
+                    cursor: "pointer",
+                    ...tabProps.style,
+                  }}
+                >
+                  {label}
+                </button>
+              );
+            })}
           </div>
 
           {/* Tab 1: Color Customizer */}
           {activeTab === "customizer" && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            <div
+              {...getPanelProps("customizer", {
+                style: { display: "flex", flexDirection: "column", gap: 14 },
+              })}
+            >
               <div>
                 <label
+                  htmlFor={themeNameId}
                   style={{
                     display: "block",
                     fontSize: 11,
@@ -363,6 +383,7 @@ export function ThemeStudio({
                   THEME NAME
                 </label>
                 <input
+                  id={themeNameId}
                   type="text"
                   value={themeName}
                   onChange={(e) => setThemeName(e.target.value)}
@@ -388,6 +409,7 @@ export function ThemeStudio({
               >
                 {EDITABLE_TOKENS.map(([key, label]) => {
                   const val = draftTokens[key] || tokens[key] || "#000000";
+                  const inputId = `${baseId}-token-${key}`;
                   return (
                     <div
                       key={key}
@@ -402,9 +424,12 @@ export function ThemeStudio({
                         justifyContent: "space-between",
                       }}
                     >
-                      <span style={{ fontSize: 11, fontWeight: 600 }}>
+                      <label
+                        htmlFor={inputId}
+                        style={{ fontSize: 11, fontWeight: 600, cursor: "pointer" }}
+                      >
                         {label}
-                      </span>
+                      </label>
                       <div
                         style={{
                           display: "flex",
@@ -413,6 +438,7 @@ export function ThemeStudio({
                         }}
                       >
                         <input
+                          id={inputId}
                           type="color"
                           value={val.startsWith("#") ? val : "#D4AF37"}
                           onInput={(e: React.FormEvent<HTMLInputElement>) =>
@@ -450,11 +476,13 @@ export function ThemeStudio({
           {/* Tab 2: Preset Gallery */}
           {activeTab === "presets" && (
             <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
-                gap: 10,
-              }}
+              {...getPanelProps("presets", {
+                style: {
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
+                  gap: 10,
+                },
+              })}
             >
               {Object.keys(DEFAULT_THEMES).map((id) => {
                 const p = DEFAULT_THEMES[id];
@@ -519,7 +547,11 @@ export function ThemeStudio({
 
           {/* Tab 3: Metallic Forge */}
           {activeTab === "metallic" && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            <div
+              {...getPanelProps("metallic", {
+                style: { display: "flex", flexDirection: "column", gap: 14 },
+              })}
+            >
               <div style={{ fontSize: 12, fontWeight: 600 }}>
                 Select Metallic Shimmer Finish:
               </div>
@@ -554,15 +586,17 @@ export function ThemeStudio({
           {/* Tab 4: Preview Deck */}
           {activeTab === "preview" && (
             <div
-              style={{
-                background: "var(--md-sys-color-surface, #1A2645)",
-                borderRadius: 8,
-                padding: 16,
-                border: "1px solid var(--md-sys-color-outline, #2A3655)",
-                display: "flex",
-                flexDirection: "column",
-                gap: 12,
-              }}
+              {...getPanelProps("preview", {
+                style: {
+                  background: "var(--md-sys-color-surface, #1A2645)",
+                  borderRadius: 8,
+                  padding: 16,
+                  border: "1px solid var(--md-sys-color-outline, #2A3655)",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 12,
+                },
+              })}
             >
               <div
                 style={{
@@ -639,8 +673,10 @@ export function ThemeStudio({
             </button>
             <input
               ref={fileRef}
+              id={`${baseId}-file-import`}
               type="file"
               accept="application/json,.json"
+              aria-label="Import theme JSON"
               onChange={handleImportFile}
               style={{ display: "none" }}
             />
