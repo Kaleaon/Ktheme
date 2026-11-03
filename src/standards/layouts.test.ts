@@ -4,6 +4,7 @@ import {
   getLayoutStandard,
   lcarsFrameGeometry,
   LAYOUT_STANDARDS,
+  resolveLayoutStandard,
 } from "./layouts";
 
 describe("Universal layout standards v1", () => {
@@ -63,5 +64,15 @@ describe("Universal layout standards v1", () => {
     expect(getLayoutStandard("sweep").player).toBe("docked-text");
     expect(getLayoutStandard("press").actions).toBe("quiet-solid");
     expect(getLayoutStandard("press").shadow).toBe("none");
+  });
+  it("resolves layout standards correctly based on theme metadata or layout ID string", () => {
+    expect(resolveLayoutStandard("terminal").id).toBe("terminal");
+    expect(resolveLayoutStandard("lcars-2400").id).toBe("sweep");
+    expect(resolveLayoutStandard("metro-lumia").id).toBe("tiles");
+    expect(resolveLayoutStandard("frutiger-aero").id).toBe("glass");
+    expect(resolveLayoutStandard({ metadata: { id: "press-paper" } }).id).toBe(
+      "press",
+    );
+    expect(resolveLayoutStandard(null).id).toBe("compose");
   });
 });

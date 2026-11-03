@@ -81,6 +81,60 @@ class ThemeLibrarySearchTest {
         assertEquals(listOf("aurora-light", "night-aurora"), paged.map { it.theme.metadata.id })
     }
 
+    @Test
+    fun `searchThemes dynamically updates inverted index on theme registration and removal`() {
+        val library = createLibraryWithThemes()
+
+        var results = library.searchThemes("neon")
+        assertTrue(results.isEmpty(), "Expected no matches for 'neon' initially")
+
+        registerTheme(
+            library,
+            theme(
+                id = "neon-cyber",
+                name = "Neon Cyberpunk",
+                description = "Vibrant neon dark theme",
+                tags = listOf("neon", "futuristic"),
+                author = "dave",
+                darkMode = true,
+                updatedAt = "2026-01-08T00:00:00Z"
+            )
+        )
+
+        results = library.searchThemes("neon")
+        assertEquals(listOf("neon-cyber"), results.map { it.theme.metadata.id })
+
+        val engineField = ThemeLibrary::class.java.getDeclaredField("engine")
+        engineField.isAccessible = true
+        val engine = engineField.get(library) as com.ktheme.core.ThemeEngine
+        engine.removeTheme("neon-cyber")
+
+        results = library.searchThemes("neon")
+        assertTrue(results.isEmpty(), "Expected 'neon' match to be empty after theme removal")
+    }
+
+    @Test
+    fun `searchThemes is thread-safe during concurrent queries and updates`() {
+        val library = createLibraryWithThemes()
+        val executor = java.util.concurrent.Executors.newFixedThreadPool(4)
+        val exceptions = java.util.concurrent.CopyOnWriteArrayList<Throwable>()
+
+        for (i in 0 until 50) {
+            executor.submit {
+                try {
+                    val res = library.searchThemes("aurora")
+                    assertTrue(res.isNotEmpty())
+                } catch (t: Throwable) {
+                    exceptions.add(t)
+                }
+            }
+        }
+
+        executor.shutdown()
+        assertTrue(executor.awaitTermination(5, java.util.concurrent.TimeUnit.SECONDS))
+        assertTrue(exceptions.isEmpty(), "Expected no thread safety exceptions during search")
+    }
+
     private fun createLibraryWithThemes(): ThemeLibrary {
         val library = ThemeLibrary()
 
