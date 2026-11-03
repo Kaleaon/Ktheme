@@ -3,6 +3,7 @@ import {
   adjustSaturation,
   analogousPalette,
   complementaryColor,
+  contrastRatio,
   generatePaletteFromSeed,
   hexToRgb,
   hexToHsl,
@@ -10,6 +11,7 @@ import {
   hslToRgb,
   isValidHex,
   normalizeColor,
+  relativeLuminance,
   rgbToHsl,
   splitComplementaryPalette,
   triadicPalette,
@@ -101,5 +103,27 @@ describe("HSL color utilities", () => {
     expect(() => normalizeColor({ r: 0, g: 0, b: 0, a: -0.1 })).toThrow(
       "Invalid alpha channel",
     );
+  });
+
+  describe("WCAG Relative Luminance & Contrast Ratio", () => {
+    it("computes accurate luminance for standard colors", () => {
+      expect(relativeLuminance("#000000")).toBe(0);
+      expect(relativeLuminance("#ffffff")).toBe(1);
+      expect(relativeLuminance("#fff")).toBe(1);
+      expect(relativeLuminance("#000")).toBe(0);
+    });
+
+    it("computes contrast ratio accurately according to WCAG 2.1/2.2", () => {
+      // Black vs White is 21:1
+      expect(contrastRatio("#000000", "#FFFFFF")).toBeCloseTo(21, 1);
+      expect(contrastRatio("#ffffff", "#000000")).toBeCloseTo(21, 1);
+
+      // Identical colors have contrast ratio 1:1
+      expect(contrastRatio("#D4AF37", "#D4AF37")).toBe(1);
+
+      // Navy background (#0A1630) vs Gold primary (#D4AF37)
+      const ratio = contrastRatio("#D4AF37", "#0A1630");
+      expect(ratio).toBeGreaterThan(4.5);
+    });
   });
 });
