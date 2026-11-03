@@ -36,4 +36,5 @@ export declare const LEGACY_PALETTES: Record<string, any>;
 export declare const FAMILIES: Array<{ name: string; keys: string[] }>;
 export declare const PK: Record<string, [string, string, number?]>;
 export declare const THEME_DESKTOP_CONFIGS: Record<string, any>;
+export declare const TYPOGRAPHY: Record<string, string>;
 export declare function buildDefaultDesktopConfig(data: any): any;

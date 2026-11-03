@@ -6,7 +6,12 @@
     "description": "Warm and elegant rose gold with burgundy undertones",
     "author": "Ktheme",
     "version": "1.0.0",
-    "tags": ["metallic", "warm", "elegant", "dark"],
+    "tags": [
+      "metallic",
+      "warm",
+      "elegant",
+      "dark"
+    ],
     "createdAt": "2026-02-15T20:42:39.611Z",
     "updatedAt": "2026-02-15T20:42:39.611Z"
   },
@@ -23,7 +28,7 @@
     "secondary": "#D4A5A5",
     "onSecondary": "#442929",
     "secondaryContainer": "#8C6969",
-    "onSecondaryContainer": "#F5E5E5",
+    "onSecondaryContainer": "#FCF7F7",
     "tertiary": "#C9A9A9",
     "onTertiary": "#3D2929",
     "tertiaryContainer": "#8A7474",
@@ -34,7 +39,7 @@
     "onSurface": "#F5E5E8",
     "surfaceVariant": "#5D3F4B",
     "onSurfaceVariant": "#E5D5D8",
-    "outline": "#9E8A8E",
+    "outline": "#D4CCCD",
     "outlineVariant": "#4E3A3E",
     "scrim": "#000000",
     "inverseSurface": "#F5E5E8",

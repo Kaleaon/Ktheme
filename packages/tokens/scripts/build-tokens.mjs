@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
+import { exportTypographyVars } from '../../../src/exporters/web/exportTypographyVars.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -201,6 +202,17 @@ const _buildDefaultDesktopConfig = (data) => {
   };
 };
 
+// Canonical theme typography via exportTypographyVars
+const themeExamplesDir = path.resolve(kthemeRoot, 'themes/examples');
+let canonicalTheme = {};
+const inkModernPath = path.join(themeExamplesDir, 'ink-terminal-modern.json');
+if (fs.existsSync(inkModernPath)) {
+  try {
+    canonicalTheme = JSON.parse(fs.readFileSync(inkModernPath, 'utf8'));
+  } catch (e) {}
+}
+const typographyExport = exportTypographyVars(canonicalTheme);
+
 // Write dist/index.js (ESM)
 const esmContent = `// @ktheme/tokens ESM bundle
 export const PALETTES = ${JSON.stringify(PALETTES, null, 2)};
@@ -208,6 +220,7 @@ export const LEGACY_PALETTES = ${JSON.stringify(LEGACY_PALETTES, null, 2)};
 export const FAMILIES = ${JSON.stringify(FAMILIES, null, 2)};
 export const PK = ${JSON.stringify(PK, null, 2)};
 export const THEME_DESKTOP_CONFIGS = ${JSON.stringify(THEME_DESKTOP_CONFIGS, null, 2)};
+export const TYPOGRAPHY = ${JSON.stringify(typographyExport.vars, null, 2)};
 
 export function buildDefaultDesktopConfig(data) {
   const dark = data.darkMode !== false;
@@ -265,6 +278,7 @@ const LEGACY_PALETTES = ${JSON.stringify(LEGACY_PALETTES, null, 2)};
 const FAMILIES = ${JSON.stringify(FAMILIES, null, 2)};
 const PK = ${JSON.stringify(PK, null, 2)};
 const THEME_DESKTOP_CONFIGS = ${JSON.stringify(THEME_DESKTOP_CONFIGS, null, 2)};
+const TYPOGRAPHY = ${JSON.stringify(typographyExport.vars, null, 2)};
 
 function buildDefaultDesktopConfig(data) {
   const dark = data.darkMode !== false;
@@ -319,7 +333,8 @@ module.exports = {
   FAMILIES,
   PK,
   THEME_DESKTOP_CONFIGS,
-  buildDefaultDesktopConfig
+  buildDefaultDesktopConfig,
+  TYPOGRAPHY
 };
 `;
 fs.writeFileSync(path.join(distDir, 'index.cjs'), cjsContent, 'utf8');
@@ -363,16 +378,18 @@ export declare const LEGACY_PALETTES: Record<string, any>;
 export declare const FAMILIES: Array<{ name: string; keys: string[] }>;
 export declare const PK: Record<string, [string, string, number?]>;
 export declare const THEME_DESKTOP_CONFIGS: Record<string, any>;
+export declare const TYPOGRAPHY: Record<string, string>;
 export declare function buildDefaultDesktopConfig(data: any): any;
 `;
 fs.writeFileSync(path.join(distDir, 'index.d.ts'), dtsContent, 'utf8');
 
 // Write dist/tokens.json and individual JSON files in dist/json/
-const themeExamplesDir = path.resolve(kthemeRoot, 'themes/examples');
 const tokensJsonObject = {
   palettes: PALETTES,
   desktopConfigs: THEME_DESKTOP_CONFIGS,
-  themes: {}
+  themes: {},
+  typography: typographyExport.vars,
+  typographyVars: typographyExport.vars
 };
 
 if (fs.existsSync(themeExamplesDir)) {
@@ -385,6 +402,12 @@ if (fs.existsSync(themeExamplesDir)) {
     try {
       const parsed = JSON.parse(raw);
       const themeId = parsed.metadata?.id || file.replace('.json', '');
+      if (parsed.typography) {
+        try {
+          const themeTypo = exportTypographyVars(parsed);
+          parsed.typographyVars = themeTypo.vars;
+        } catch (e) {}
+      }
       tokensJsonObject.themes[themeId] = parsed;
     } catch (e) {
       // ignore non-JSON or malformed
@@ -400,6 +423,9 @@ for (const [palKey, pal] of Object.entries(PALETTES)) {
   for (const [role, val] of Object.entries(pal.c)) {
     cssContent += `  --ktheme-${palKey}-${role}: ${val};\n`;
   }
+}
+for (const [varName, varVal] of Object.entries(typographyExport.vars)) {
+  cssContent += `  ${varName}: ${varVal};\n`;
 }
 cssContent += `}\n`;
 fs.writeFileSync(path.join(distDir, 'tokens.css'), cssContent, 'utf8');

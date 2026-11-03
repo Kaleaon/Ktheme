@@ -1462,6 +1462,19 @@ export const THEME_DESKTOP_CONFIGS = {
     }
   }
 };
+export const TYPOGRAPHY = {
+  "--ktheme-font-family": "\"JetBrains Mono\", \"IBM Plex Mono\", \"SFMono-Regular\", monospace",
+  "--ktheme-font-size-small": "12px",
+  "--ktheme-font-size-medium": "16px",
+  "--ktheme-font-size-large": "20px",
+  "--ktheme-font-size-xlarge": "28px",
+  "--ktheme-font-weight-light": "300",
+  "--ktheme-font-weight-regular": "400",
+  "--ktheme-font-weight-medium": "500",
+  "--ktheme-font-weight-bold": "700",
+  "--ktheme-line-height": "1.55",
+  "--ktheme-letter-spacing": "0em"
+};
 
 export function buildDefaultDesktopConfig(data) {
   const dark = data.darkMode !== false;
