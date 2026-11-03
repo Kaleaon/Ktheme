@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ThemeProvider } from "./state/ThemeContext.tsx";
 import { BlueskyProvider } from "./state/BlueskyContext.tsx";
 import { Sidebar } from "./components/layout/Sidebar.tsx";
+import { SkipLink } from "./components/common/SkipLink.tsx";
 import { CustomizerPanel } from "./components/customizer/CustomizerPanel.tsx";
 import { ThemePreview } from "./components/preview/ThemePreview.tsx";
 import { AIDesigner } from "./components/ai/AIDesigner.tsx";
@@ -31,19 +32,21 @@ function AppContent() {
 
   return (
     <div className="app">
+      <SkipLink targetId="main-content">Skip to main content</SkipLink>
       <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
       <div className="main-area">
-        <div
+        <main
           className="left-panel"
-          id={`main-panel-${activeTab}`}
-          role="tabpanel"
+          id="main-content"
+          role="main"
+          tabIndex={-1}
           aria-labelledby={`main-tab-${activeTab}`}
         >
           {renderPanel()}
-        </div>
-        <div className="right-panel">
+        </main>
+        <aside className="right-panel" aria-label="Theme preview">
           <ThemePreview />
-        </div>
+        </aside>
       </div>
     </div>
   );
