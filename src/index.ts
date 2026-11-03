@@ -14,6 +14,17 @@ export {
   VectorIRNode,
   VectorIRPath,
 } from "./core/VectorTransformer";
+export {
+  MotionASTTransformer,
+  motionASTTransformer,
+} from "./core/MotionASTTransformer";
+export type {
+  CssMotionAST,
+  TailwindMotionAST,
+  ComposeMotionAST,
+  SwiftUIMotionAST,
+  MotionPlatformAST,
+} from "./core/MotionASTTransformer";
 export * from "./core/types";
 export * from "./standards/layouts";
 

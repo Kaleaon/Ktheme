@@ -3,6 +3,9 @@ export type { KthemeProviderProps } from "./KthemeProvider";
 
 export { useKtheme } from "./useKtheme";
 export { useKthemeToken, getKthemeCssVar } from "./useKthemeToken";
+export { usePrefersReducedMotion } from "./usePrefersReducedMotion";
+export { useMotionTokens } from "./useMotionTokens";
+export type { MotionTokenValues } from "./useMotionTokens";
 
 export { KthemeContext } from "./KthemeContext";
 export type { KthemeTokens, KthemeContextValue } from "./KthemeContext";

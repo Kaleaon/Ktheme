@@ -1,6 +1,7 @@
 import { MetallicVariant, Theme } from "../../core/types";
 import { toHexColor } from "../utils";
-import { NormalizedThemeTokens } from "./tokenIR";
+import { DTCGMotionTokenGroup, NormalizedThemeTokens } from "./tokenIR";
+import { MotionASTTransformer } from "../../core/MotionASTTransformer";
 
 /**
  * Extracts and normalizes tokens from a Theme object into a canonical NormalizedThemeTokens IR tree.
@@ -175,6 +176,14 @@ export function extractThemeTokens(theme: Theme): NormalizedThemeTokens {
     offset: effects?.focusRing?.offset ?? 2,
   };
 
+  const customMotion = (theme as unknown as { motion?: DTCGMotionTokenGroup }).motion;
+  const motion: DTCGMotionTokenGroup = customMotion ?? MotionASTTransformer.createMotionTokenGroup({
+    duration: effects?.animations?.duration ?? 300,
+    easing: effects?.animations?.easing ?? "ease-in-out",
+    reducedMotionPolicy: effects?.animations?.reducedMotionPolicy ?? "disable",
+    description: `${theme.metadata?.name ?? "Theme"} DTCG motion token group`,
+  });
+
   return {
     metadata: {
       id: theme.metadata?.id ?? "theme",
@@ -275,5 +284,6 @@ export function extractThemeTokens(theme: Theme): NormalizedThemeTokens {
         ? { desktopAdaptation: theme.adaptation.desktopAdaptation }
         : {}),
     },
+    motion,
   };
 }

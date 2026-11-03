@@ -1,6 +1,7 @@
 import { NormalizedThemeTokens } from "../ir/tokenIR";
 import { TokenRenderer } from "./TokenRenderer";
 import { VectorIRNode } from "../../core/VectorTransformer";
+import { MotionASTTransformer } from "../../core/MotionASTTransformer";
 
 export interface AndroidComposeExport {
   colorScheme: Record<string, string>;
@@ -8,6 +9,7 @@ export interface AndroidComposeExport {
   typography: Record<string, unknown>;
   effects: Record<string, unknown>;
   adaptation: Record<string, unknown>;
+  motion?: Record<string, unknown>;
   icons?: Record<string, VectorIRNode>;
   kotlin: string;
 }
@@ -104,7 +106,7 @@ export class AndroidComposeRenderer
       critical: tokens.color.semantic.critical,
     };
 
-    let packageHeader = `package ${packageName}\n\nimport androidx.compose.material3.darkColorScheme\nimport androidx.compose.material3.lightColorScheme\nimport androidx.compose.ui.graphics.Color`;
+    let packageHeader = `package ${packageName}\n\nimport androidx.compose.animation.core.CubicBezierEasing\nimport androidx.compose.material3.darkColorScheme\nimport androidx.compose.material3.lightColorScheme\nimport androidx.compose.ui.graphics.Color`;
 
     let kotlinIcons = "";
     const iconsMap: Record<string, VectorIRNode> = {};
@@ -158,14 +160,20 @@ export class AndroidComposeRenderer
 
     const kotlinAdaptation = `object KthemeAdaptation {\n    val density = "${tokens.layout.density}"\n    val cornerStyle = "${tokens.layout.cornerStyle}"\n}`;
 
+    const motionAST = tokens.motion
+      ? MotionASTTransformer.toCompose(tokens.motion)
+      : undefined;
+    const kotlinMotion = motionAST ? `\n\n${motionAST.kotlinSnippet}` : "";
+
     return {
       colorScheme,
       semanticColors,
       typography: tokens.typography as unknown as Record<string, unknown>,
       effects: tokens.effects as unknown as Record<string, unknown>,
       adaptation: tokens.adaptation as unknown as Record<string, unknown>,
+      motion: tokens.motion as unknown as Record<string, unknown>,
       icons: Object.keys(iconsMap).length > 0 ? iconsMap : undefined,
-      kotlin: `${packageHeader}\n\n${kotlinColorScheme}\n\n${kotlinSemanticColors}\n\n${kotlinTypography}\n\n${kotlinAdaptation}${kotlinIcons}`,
+      kotlin: `${packageHeader}\n\n${kotlinColorScheme}\n\n${kotlinSemanticColors}\n\n${kotlinTypography}\n\n${kotlinAdaptation}${kotlinMotion}${kotlinIcons}`,
     };
   }
 }
