@@ -7,6 +7,14 @@ export { usePrefersReducedMotion } from "./usePrefersReducedMotion";
 export { useMotionTokens } from "./useMotionTokens";
 export type { MotionTokenValues } from "./useMotionTokens";
 
+export { useTablist } from "./hooks/useTablist";
+export type {
+  TabItem,
+  TabInput,
+  UseTablistOptions,
+  UseTablistReturn,
+} from "./hooks/useTablist";
+
 export { KthemeContext } from "./KthemeContext";
 export type { KthemeTokens, KthemeContextValue } from "./KthemeContext";
 
