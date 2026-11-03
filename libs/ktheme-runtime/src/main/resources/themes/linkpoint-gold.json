@@ -6,7 +6,13 @@
     "description": "Signature Linkpoint UI kit theme featuring high-contrast gold metallic accents and deep navy obsidian background",
     "author": "Linkpoint & Ktheme",
     "version": "1.0.0",
-    "tags": ["metallic", "linkpoint", "dark", "hero", "gold"],
+    "tags": [
+      "metallic",
+      "linkpoint",
+      "dark",
+      "hero",
+      "gold"
+    ],
     "createdAt": "2026-02-15T20:42:39.610Z",
     "updatedAt": "2026-02-15T20:42:39.610Z"
   },
@@ -34,7 +40,7 @@
     "onSurface": "#F3F4F6",
     "surfaceVariant": "#1F293D",
     "onSurfaceVariant": "#9CA3AF",
-    "outline": "#374151",
+    "outline": "#7586A2",
     "outlineVariant": "#1F293D",
     "scrim": "#000000",
     "inverseSurface": "#F3F4F6",

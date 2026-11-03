@@ -12,7 +12,9 @@
     "ajv": "^8.12.0"
   },
   "scripts": {
-    "build": "node packages/tokens/scripts/build-tokens.mjs && tsc && tsc -p packages/react/tsconfig.json && node packages/schema-cli/scripts/build.mjs",
+    "build": "node packages/tokens/scripts/build-tokens.mjs && tsc && tsc -p packages/react/tsconfig.json && npm run --prefix theme-creator build && node packages/schema-cli/scripts/build.mjs",
+    "build:schema-cli": "node packages/schema-cli/scripts/build.mjs",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p packages/react/tsconfig.json && tsc -b theme-creator",
     "dev": "tsc --watch",
     "test": "jest && node --test packages/schema-cli/test/cli.test.mjs",
     "lint": "eslint src packages",
@@ -42,6 +44,7 @@
     "url": "https://github.com/Kaleaon/Ktheme.git"
   },
   "devDependencies": {
+    "@atproto/api": "^0.19.0",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@types/jest": "^29.5.0",
@@ -53,6 +56,7 @@
     "eslint": "^8.0.0",
     "jest": "^29.5.0",
     "jest-environment-jsdom": "^30.5.2",
+    "lucide-react": "^0.575.0",
     "playwright": "^1.63.0",
     "ts-jest": "^29.1.0",
     "typescript": "^5.0.0"

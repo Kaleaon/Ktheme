@@ -203,6 +203,25 @@ class ThemeEngine {
     }
 
     /**
+     * Load theme from JSON input stream.
+     */
+    fun loadThemeFromStream(
+        stream: java.io.InputStream,
+        sourceName: String = "stream",
+        signatureVerifier: ThemeFileSignatureVerifier? = null
+    ): Theme {
+        return try {
+            val jsonString = stream.bufferedReader().use { it.readText() }
+            val parsedTheme = parseThemeJson(jsonString, signatureVerifier)
+            registerTheme(parsedTheme.theme)
+            parsedTheme.theme
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Failed to load theme from $sourceName: ${e.message}", e)
+        }
+    }
+
+
+    /**
      * Save theme to JSON file.
      */
     fun saveThemeToFile(
