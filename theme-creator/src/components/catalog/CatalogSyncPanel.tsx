@@ -140,7 +140,16 @@ export function CatalogSyncPanel() {
                 className={`catalog-item-card ${
                   selectedItem?.id === item.id ? "selected" : ""
                 }`}
+                role="button"
+                tabIndex={0}
+                aria-pressed={selectedItem?.id === item.id}
                 onClick={() => setSelectedItem(item)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
+                    e.preventDefault();
+                    setSelectedItem(item);
+                  }
+                }}
                 style={{
                   padding: "12px",
                   borderRadius: "6px",
