@@ -164,6 +164,23 @@ const checks = [
       },
     ],
   },
+  {
+    file: "src/components/catalog/CatalogSyncPanel.tsx",
+    rules: [
+      {
+        regex: /role="button"/,
+        message: 'Catalog sync panel cards are missing role="button".',
+      },
+      {
+        regex: /tabIndex=\{0\}/,
+        message: "Catalog sync panel cards are missing tabIndex={0}.",
+      },
+      {
+        regex: /onKeyDown=/,
+        message: "Catalog sync panel cards are missing onKeyDown handler.",
+      },
+    ],
+  },
 ];
 
 const failures = [];

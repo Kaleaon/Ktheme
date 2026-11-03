@@ -1,4 +1,5 @@
 {
+  "schemaVersion": 2,
   "metadata": {
     "id": "solarpunk-civic",
     "name": "Solarpunk Civic",
@@ -18,6 +19,10 @@
   },
   "darkMode": false,
   "colorScheme": {
+    "error": "#BA1A1A",
+    "onError": "#FFFFFF",
+    "errorContainer": "#FFDAD6",
+    "onErrorContainer": "#410002",
     "primary": "#38B56A",
     "onPrimary": "#04250F",
     "primaryContainer": "#BFEFD0",
@@ -30,10 +35,6 @@
     "onTertiary": "#3A2A08",
     "tertiaryContainer": "#FFE8BA",
     "onTertiaryContainer": "#5A420F",
-    "error": "#BA1A1A",
-    "onError": "#FFFFFF",
-    "errorContainer": "#FFDAD6",
-    "onErrorContainer": "#410002",
     "background": "#F2FBF4",
     "onBackground": "#1E3A27",
     "surface": "#FBFFFC",
@@ -99,5 +100,6 @@
       "intensity": 0.32,
       "angle": 120
     }
-  }
+  },
+  "adaptation": {}
 }
