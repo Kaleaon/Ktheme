@@ -10,6 +10,7 @@ const kthemeRoot = path.resolve(packageDir, '../..');
 const distDir = path.resolve(packageDir, 'dist');
 const jsonDistDir = path.resolve(distDir, 'json');
 const runtimeThemesDir = path.resolve(kthemeRoot, 'libs/ktheme-runtime/src/main/resources/themes');
+const coreThemesDir = path.resolve(kthemeRoot, 'libs/ktheme-core/src/main/resources/themes/examples');
 
 if (!fs.existsSync(distDir)) fs.mkdirSync(distDir, { recursive: true });
 if (!fs.existsSync(jsonDistDir)) fs.mkdirSync(jsonDistDir, { recursive: true });
@@ -208,6 +209,32 @@ const _buildDefaultDesktopConfig = (data) => {
   };
 };
 
+// Standard elevation depth shadow tokens
+const ELEVATION_TOKENS = {
+  "elevation-0": "none",
+  "elevation-1": "0 1px 3px 1px rgba(0, 0, 0, 0.15), 0 1px 2px 0 rgba(0, 0, 0, 0.30)",
+  "elevation-2": "0 2px 6px 2px rgba(0, 0, 0, 0.15), 0 1px 2px 0 rgba(0, 0, 0, 0.30)",
+  "elevation-3": "0 4px 8px 3px rgba(0, 0, 0, 0.15), 0 1px 3px 0 rgba(0, 0, 0, 0.30)",
+  "elevation-4": "0 6px 10px 4px rgba(0, 0, 0, 0.15), 0 2px 3px 0 rgba(0, 0, 0, 0.30)",
+  "elevation-5": "0 8px 12px 6px rgba(0, 0, 0, 0.15), 0 4px 4px 0 rgba(0, 0, 0, 0.30)"
+};
+
+// Standard stacking layer z-index tokens
+const Z_INDEX_TOKENS = {
+  "base": 0,
+  "card": 1,
+  "window": 10,
+  "dock": 20,
+  "taskbar": 50,
+  "header": 80,
+  "dropdown": 90,
+  "overlay": 100,
+  "toast": 400,
+  "modal": 500,
+  "popover": 600,
+  "tooltip": 700
+};
+
 // Write dist/index.js (ESM)
 const esmContent = `// @ktheme/tokens ESM bundle
 export const PALETTES = ${JSON.stringify(PALETTES, null, 2)};
@@ -216,6 +243,10 @@ export const FAMILIES = ${JSON.stringify(FAMILIES, null, 2)};
 export const PK = ${JSON.stringify(PK, null, 2)};
 export const THEME_DESKTOP_CONFIGS = ${JSON.stringify(THEME_DESKTOP_CONFIGS, null, 2)};
 export const SPATIAL_TOKENS = ${JSON.stringify(SPATIAL_TOKENS, null, 2)};
+export const ELEVATION_TOKENS = ${JSON.stringify(ELEVATION_TOKENS, null, 2)};
+export const ELEVATION = ELEVATION_TOKENS;
+export const Z_INDEX_TOKENS = ${JSON.stringify(Z_INDEX_TOKENS, null, 2)};
+export const Z_INDEX = Z_INDEX_TOKENS;
 
 export function buildDefaultDesktopConfig(data) {
   const dark = data.darkMode !== false;
@@ -274,6 +305,10 @@ const FAMILIES = ${JSON.stringify(FAMILIES, null, 2)};
 const PK = ${JSON.stringify(PK, null, 2)};
 const THEME_DESKTOP_CONFIGS = ${JSON.stringify(THEME_DESKTOP_CONFIGS, null, 2)};
 const SPATIAL_TOKENS = ${JSON.stringify(SPATIAL_TOKENS, null, 2)};
+const ELEVATION_TOKENS = ${JSON.stringify(ELEVATION_TOKENS, null, 2)};
+const ELEVATION = ELEVATION_TOKENS;
+const Z_INDEX_TOKENS = ${JSON.stringify(Z_INDEX_TOKENS, null, 2)};
+const Z_INDEX = Z_INDEX_TOKENS;
 
 function buildDefaultDesktopConfig(data) {
   const dark = data.darkMode !== false;
@@ -329,6 +364,10 @@ module.exports = {
   PK,
   THEME_DESKTOP_CONFIGS,
   SPATIAL_TOKENS,
+  ELEVATION_TOKENS,
+  ELEVATION,
+  Z_INDEX_TOKENS,
+  Z_INDEX,
   buildDefaultDesktopConfig
 };
 `;
@@ -381,6 +420,10 @@ export declare const FAMILIES: Array<{ name: string; keys: string[] }>;
 export declare const PK: Record<string, [string, string, number?]>;
 export declare const THEME_DESKTOP_CONFIGS: Record<string, any>;
 export declare const SPATIAL_TOKENS: SpatialTokens;
+export declare const ELEVATION_TOKENS: Record<string, string>;
+export declare const ELEVATION: Record<string, string>;
+export declare const Z_INDEX_TOKENS: Record<string, number>;
+export declare const Z_INDEX: Record<string, number>;
 export declare function buildDefaultDesktopConfig(data: any): any;
 `;
 fs.writeFileSync(path.join(distDir, 'index.d.ts'), dtsContent, 'utf8');
@@ -391,6 +434,8 @@ const tokensJsonObject = {
   palettes: PALETTES,
   desktopConfigs: THEME_DESKTOP_CONFIGS,
   spatial: SPATIAL_TOKENS,
+  elevation: ELEVATION_TOKENS,
+  zIndex: Z_INDEX_TOKENS,
   themes: {}
 };
 
@@ -419,6 +464,15 @@ cssContent += `  --ktheme-touch-target-min-mobile: ${SPATIAL_TOKENS.touchTargetM
 cssContent += `  --ktheme-touch-target-min-desktop: ${SPATIAL_TOKENS.touchTargetMinDesktop};\n`;
 cssContent += `  --ktheme-touch-padding-compact: ${SPATIAL_TOKENS.touchPaddingCompact};\n`;
 cssContent += `  --ktheme-touch-padding-coarse: ${SPATIAL_TOKENS.touchPaddingCoarse};\n`;
+cssContent += `  /* Standard Elevation Tokens */\n`;
+for (const [key, val] of Object.entries(ELEVATION_TOKENS)) {
+  cssContent += `  --ktheme-${key}: ${val};\n`;
+}
+cssContent += `\n  /* Standard Z-Index Layer Tokens */\n`;
+for (const [key, val] of Object.entries(Z_INDEX_TOKENS)) {
+  cssContent += `  --ktheme-z-${key}: ${val};\n`;
+}
+cssContent += `\n`;
 for (const [palKey, pal] of Object.entries(PALETTES)) {
   for (const [role, val] of Object.entries(pal.c)) {
     cssContent += `  --ktheme-${palKey}-${role}: ${val};\n`;
@@ -441,6 +495,24 @@ if (fs.existsSync(runtimeThemesDir)) {
     const allRuntimeJson = fs.readdirSync(runtimeThemesDir).filter(f => f.endsWith('.json')).sort();
     fs.writeFileSync(path.join(runtimeThemesDir, 'index.txt'), allRuntimeJson.join('\n') + '\n', 'utf8');
     console.log(`[build-tokens] Synchronized ${jsonFiles.length} theme files to runtime directory.`);
+  }
+}
+
+// Synchronize JSON assets to core resources directory (libs/ktheme-core/src/main/resources/themes/examples/)
+if (fs.existsSync(coreThemesDir)) {
+  console.log(`[build-tokens] Synchronizing theme JSON assets to ${coreThemesDir}...`);
+  if (fs.existsSync(jsonDistDir)) {
+    const jsonFiles = fs.readdirSync(jsonDistDir).filter(f => f.endsWith('.json'));
+    let syncedCoreCount = 0;
+    for (const file of jsonFiles) {
+      const srcPath = path.join(jsonDistDir, file);
+      const destPath = path.join(coreThemesDir, file);
+      if (fs.existsSync(destPath)) {
+        fs.copyFileSync(srcPath, destPath);
+        syncedCoreCount++;
+      }
+    }
+    console.log(`[build-tokens] Synchronized ${syncedCoreCount} canonical theme files to core resources directory.`);
   }
 }
 
