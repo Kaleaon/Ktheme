@@ -1,16 +1,25 @@
 {
+  "schemaVersion": 2,
   "metadata": {
     "id": "deep-purple-platinum",
     "name": "Deep Purple Platinum",
     "description": "Deep purple background with luxurious platinum metallic accents",
     "author": "Ktheme",
     "version": "1.0.0",
-    "tags": ["metallic", "luxurious", "dark"],
+    "tags": [
+      "metallic",
+      "luxurious",
+      "dark"
+    ],
     "createdAt": "2026-02-15T20:42:39.611Z",
     "updatedAt": "2026-02-15T20:42:39.611Z"
   },
   "darkMode": true,
   "colorScheme": {
+    "error": "#CF6679",
+    "onError": "#FFFFFF",
+    "errorContainer": "#93000A",
+    "onErrorContainer": "#FFDAD6",
     "primary": "#E5E4E2",
     "onPrimary": "#1A0F2E",
     "primaryContainer": "#B8B7B5",
@@ -23,10 +32,6 @@
     "onTertiary": "#1A0F2E",
     "tertiaryContainer": "#9F99B3",
     "onTertiaryContainer": "#F0EBFF",
-    "error": "#CF6679",
-    "onError": "#FFFFFF",
-    "errorContainer": "#93000A",
-    "onErrorContainer": "#FFDAD6",
     "background": "#1A0F2E",
     "onBackground": "#F0EBFF",
     "surface": "#24153D",
@@ -58,5 +63,6 @@
       "blur": 8,
       "color": "#00000066"
     }
-  }
+  },
+  "adaptation": {}
 }

@@ -1,6 +1,7 @@
 import { useId } from "react";
-import { useTheme } from "../../state/ThemeContext.tsx";
-import { contrastRatio } from "../../utils/colors.ts";
+import { useTheme } from "../../state/ThemeContext";
+import { contrastRatio } from "../../../../src/utils/colors";
+import AccessibleFormField from "../common/AccessibleFormField";
 
 const COLOR_GROUPS = [
   {
@@ -76,35 +77,71 @@ export function ColorEditor() {
             const fgVal =
               (colors as unknown as Record<string, string>)[fg] || "#FFFFFF";
             const cr = contrastRatio(bgVal, fgVal);
-            const crOk = cr >= 4.5;
+            const isAAA = cr >= 7.0;
+            const isAA = cr >= 4.5;
+            const crOk = isAA;
+            const badgeClass = isAAA ? "aaa ok" : isAA ? "aa ok" : "warn";
+            const badgeLabel = isAAA ? "AAA" : isAA ? "AA" : "Fail";
             const bgId = `${colorBaseId}-${bg}`;
             const fgId = `${colorBaseId}-${fg}`;
+            const contrastErrorId = `${colorBaseId}-${bg}-${fg}-contrast-error`;
+            const contrastMessage = !crOk
+              ? `Low contrast ratio ${cr.toFixed(1)}:1`
+              : undefined;
+
             return (
               <div key={`${bg}-${fg}`} className="color-pair">
                 <div className="color-picker-row">
-                  <label className="color-picker" htmlFor={bgId}>
-                    <input
-                      id={bgId}
-                      type="color"
-                      value={bgVal}
-                      onChange={(e) => setColor(bg, e.target.value)}
-                    />
-                    <span className="color-label">{formatLabel(bg)}</span>
-                    <span className="color-hex">{bgVal}</span>
-                  </label>
-                  <label className="color-picker" htmlFor={fgId}>
-                    <input
-                      id={fgId}
-                      type="color"
-                      value={fgVal}
-                      onChange={(e) => setColor(fg, e.target.value)}
-                    />
-                    <span className="color-label">{formatLabel(fg)}</span>
-                    <span className="color-hex">{fgVal}</span>
-                  </label>
+                  <AccessibleFormField
+                    id={bgId}
+                    label={formatLabel(bg)}
+                    error={contrastMessage}
+                    errorId={contrastErrorId}
+                    hideErrorContainer
+                    hideLabel
+                    className="color-picker"
+                  >
+                    <label className="color-picker" htmlFor={bgId}>
+                      <input
+                        id={bgId}
+                        type="color"
+                        className="k-target-min-size"
+                        value={bgVal}
+                        onChange={(e) => setColor(bg, e.target.value)}
+                      />
+                      <span className="color-label">{formatLabel(bg)}</span>
+                      <span className="color-hex">{bgVal}</span>
+                    </label>
+                  </AccessibleFormField>
+
+                  <AccessibleFormField
+                    id={fgId}
+                    label={formatLabel(fg)}
+                    error={contrastMessage}
+                    errorId={contrastErrorId}
+                    hideErrorContainer
+                    hideLabel
+                    className="color-picker"
+                  >
+                    <label className="color-picker" htmlFor={fgId}>
+                      <input
+                        id={fgId}
+                        type="color"
+                        className="k-target-min-size"
+                        value={fgVal}
+                        onChange={(e) => setColor(fg, e.target.value)}
+                      />
+                      <span className="color-label">{formatLabel(fg)}</span>
+                      <span className="color-hex">{fgVal}</span>
+                    </label>
+                  </AccessibleFormField>
                 </div>
-                <div className={`contrast-badge ${crOk ? "ok" : "warn"}`}>
-                  {cr.toFixed(1)}:1 {crOk ? "AA" : "!"}
+                <div
+                  id={contrastErrorId}
+                  className={`contrast-badge ${badgeClass}`}
+                  role={!crOk ? "alert" : undefined}
+                >
+                  {cr.toFixed(1)}:1 {badgeLabel}
                 </div>
                 <div
                   className="color-swatch-preview"
@@ -130,16 +167,37 @@ export function ColorEditor() {
           ).map(([bg, fg]) => {
             const bgVal = colors.semanticRoles?.[bg] || "#000000";
             const fgVal = colors.semanticRoles?.[fg] || "#FFFFFF";
+            const cr = contrastRatio(bgVal, fgVal);
+            const crOk = cr >= 4.5;
+            const bgId = `${semanticBaseId}-${bg}`;
+            const fgId = `${semanticBaseId}-${fg}`;
+            const contrastErrorId = `${semanticBaseId}-${bg}-${fg}-contrast-error`;
+            const contrastMessage = !crOk
+              ? `Low contrast ratio ${cr.toFixed(1)}:1`
+              : undefined;
+
             return (
               <div className="color-pair" key={bg}>
                 <div className="color-picker-row">
-                  {[bg, fg].map((key) => {
-                    const keyId = `${semanticBaseId}-${key}`;
-                    return (
-                      <label className="color-picker" key={key} htmlFor={keyId}>
+                  {[
+                    { key: bg, id: bgId },
+                    { key: fg, id: fgId },
+                  ].map(({ key, id }) => (
+                    <AccessibleFormField
+                      key={key}
+                      id={id}
+                      label={formatLabel(key)}
+                      error={contrastMessage}
+                      errorId={contrastErrorId}
+                      hideErrorContainer
+                      hideLabel
+                      className="color-picker"
+                    >
+                      <label className="color-picker" htmlFor={id}>
                         <input
-                          id={keyId}
+                          id={id}
                           type="color"
+                          className="k-target-min-size"
                           value={key === bg ? bgVal : fgVal}
                           onChange={(e) =>
                             dispatch({
@@ -158,8 +216,15 @@ export function ColorEditor() {
                         />
                         <span className="color-label">{formatLabel(key)}</span>
                       </label>
-                    );
-                  })}
+                    </AccessibleFormField>
+                  ))}
+                </div>
+                <div
+                  id={contrastErrorId}
+                  className={`contrast-badge ${crOk ? "ok" : "warn"}`}
+                  role={!crOk ? "alert" : undefined}
+                >
+                  {cr.toFixed(1)}:1 {crOk ? "AA" : "!"}
                 </div>
                 <div
                   className="color-swatch-preview"

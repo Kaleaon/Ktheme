@@ -1,16 +1,25 @@
 {
+  "schemaVersion": 2,
   "metadata": {
     "id": "obsidian-crimson",
     "name": "Obsidian Crimson",
     "description": "Bold dramatic obsidian black with vibrant crimson accents",
     "author": "Ktheme",
     "version": "1.0.0",
-    "tags": ["metallic", "dramatic", "dark"],
+    "tags": [
+      "metallic",
+      "dramatic",
+      "dark"
+    ],
     "createdAt": "2026-02-15T20:42:39.611Z",
     "updatedAt": "2026-02-15T20:42:39.611Z"
   },
   "darkMode": true,
   "colorScheme": {
+    "error": "#FF6B6B",
+    "onError": "#0A0A0A",
+    "errorContainer": "#CC0000",
+    "onErrorContainer": "#FFD9D9",
     "primary": "#DC143C",
     "onPrimary": "#0A0A0A",
     "primaryContainer": "#B00F30",
@@ -23,10 +32,6 @@
     "onTertiary": "#FFFFFF",
     "tertiaryContainer": "#7D3C45",
     "onTertiaryContainer": "#F5D9DC",
-    "error": "#FF6B6B",
-    "onError": "#0A0A0A",
-    "errorContainer": "#CC0000",
-    "onErrorContainer": "#FFD9D9",
     "background": "#0A0A0A",
     "onBackground": "#F5F5F5",
     "surface": "#141414",
@@ -58,5 +63,6 @@
       "blur": 10,
       "color": "#00000077"
     }
-  }
+  },
+  "adaptation": {}
 }
