@@ -40,6 +40,11 @@ export interface KthemeTokens {
   font?: string;
   dfont?: string;
   tls?: string;
+  // Spatial interaction tokens
+  touchTargetMinMobile?: string;
+  touchTargetMinDesktop?: string;
+  touchPaddingCompact?: string;
+  touchPaddingCoarse?: string;
   [key: string]: string | undefined;
 }
 

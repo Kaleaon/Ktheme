@@ -18,6 +18,13 @@ if (!fs.existsSync(jsonDistDir)) fs.mkdirSync(jsonDistDir, { recursive: true });
 const mkPal = (name, c, note, light) => ({ name, note, light: !!light, c });
 
 // 1. PALETTES definition
+const SPATIAL_TOKENS = {
+  touchTargetMinMobile: "44px",
+  touchTargetMinDesktop: "24px",
+  touchPaddingCompact: "4px",
+  touchPaddingCoarse: "10px",
+};
+
 const PALETTES = {
   ink: mkPal("Ink Terminal", { bg:"#0A1112", surf:"#101A1C", surf2:"#1B2A2D", ink:"#D7F5E6", ink2:"#A7C8BC", pri:"#6CFF9A", onpri:"#0A1112", priC:"#1F6640", onpriC:"#D7F5E6", sec:"#3E4E5E", onsec:"#D7F5E6", sec2:"#8AD0B0", bdg:"#8AD0B0", onbdg:"#0A1112", info:"#8AD0B0", outv:"#365047", ok:"#6CFF9A", err:"#CF6679", warn:"#FFC98A", sky1:"#1c4a5c", sky2:"#12333a", gnd:"#10241d", gnd2:"#0a1112" }, "ink-terminal-modern, phosphor green on near-black"),
   lcars: mkPal("LCARS Amber", { bg:"#120C1C", surf:"#1C132A", surf2:"#3D1F5C", ink:"#F3E9FF", ink2:"#D0B3E6", pri:"#F2A65A", onpri:"#120C1C", priC:"#CC7A2B", onpriC:"#120C1C", sec:"#A485F7", onsec:"#120C1C", sec2:"#C5678D", bdg:"#A485F7", onbdg:"#120C1C", info:"#C5678D", outv:"#4D2F5C", ok:"#F2A65A", err:"#CF6679", warn:"#FFC46B", sky1:"#3D1F5C", sky2:"#241338", gnd:"#1C132A", gnd2:"#120C1C" }, "lcars, amber + violet + mauve on aubergine"),
@@ -208,6 +215,7 @@ export const LEGACY_PALETTES = ${JSON.stringify(LEGACY_PALETTES, null, 2)};
 export const FAMILIES = ${JSON.stringify(FAMILIES, null, 2)};
 export const PK = ${JSON.stringify(PK, null, 2)};
 export const THEME_DESKTOP_CONFIGS = ${JSON.stringify(THEME_DESKTOP_CONFIGS, null, 2)};
+export const SPATIAL_TOKENS = ${JSON.stringify(SPATIAL_TOKENS, null, 2)};
 
 export function buildDefaultDesktopConfig(data) {
   const dark = data.darkMode !== false;
@@ -265,6 +273,7 @@ const LEGACY_PALETTES = ${JSON.stringify(LEGACY_PALETTES, null, 2)};
 const FAMILIES = ${JSON.stringify(FAMILIES, null, 2)};
 const PK = ${JSON.stringify(PK, null, 2)};
 const THEME_DESKTOP_CONFIGS = ${JSON.stringify(THEME_DESKTOP_CONFIGS, null, 2)};
+const SPATIAL_TOKENS = ${JSON.stringify(SPATIAL_TOKENS, null, 2)};
 
 function buildDefaultDesktopConfig(data) {
   const dark = data.darkMode !== false;
@@ -319,6 +328,7 @@ module.exports = {
   FAMILIES,
   PK,
   THEME_DESKTOP_CONFIGS,
+  SPATIAL_TOKENS,
   buildDefaultDesktopConfig
 };
 `;
@@ -358,11 +368,19 @@ export interface PaletteEntry {
   c: PaletteColorRoles;
 }
 
+export interface SpatialTokens {
+  touchTargetMinMobile: string;
+  touchTargetMinDesktop: string;
+  touchPaddingCompact: string;
+  touchPaddingCoarse: string;
+}
+
 export declare const PALETTES: Record<string, PaletteEntry>;
 export declare const LEGACY_PALETTES: Record<string, any>;
 export declare const FAMILIES: Array<{ name: string; keys: string[] }>;
 export declare const PK: Record<string, [string, string, number?]>;
 export declare const THEME_DESKTOP_CONFIGS: Record<string, any>;
+export declare const SPATIAL_TOKENS: SpatialTokens;
 export declare function buildDefaultDesktopConfig(data: any): any;
 `;
 fs.writeFileSync(path.join(distDir, 'index.d.ts'), dtsContent, 'utf8');
@@ -372,6 +390,7 @@ const themeExamplesDir = path.resolve(kthemeRoot, 'themes/examples');
 const tokensJsonObject = {
   palettes: PALETTES,
   desktopConfigs: THEME_DESKTOP_CONFIGS,
+  spatial: SPATIAL_TOKENS,
   themes: {}
 };
 
@@ -396,6 +415,10 @@ fs.writeFileSync(path.join(distDir, 'tokens.json'), JSON.stringify(tokensJsonObj
 
 // Generate CSS custom properties in dist/tokens.css
 let cssContent = `/* Ktheme Centralized Tokens CSS */\n:root {\n`;
+cssContent += `  --ktheme-touch-target-min-mobile: ${SPATIAL_TOKENS.touchTargetMinMobile};\n`;
+cssContent += `  --ktheme-touch-target-min-desktop: ${SPATIAL_TOKENS.touchTargetMinDesktop};\n`;
+cssContent += `  --ktheme-touch-padding-compact: ${SPATIAL_TOKENS.touchPaddingCompact};\n`;
+cssContent += `  --ktheme-touch-padding-coarse: ${SPATIAL_TOKENS.touchPaddingCoarse};\n`;
 for (const [palKey, pal] of Object.entries(PALETTES)) {
   for (const [role, val] of Object.entries(pal.c)) {
     cssContent += `  --ktheme-${palKey}-${role}: ${val};\n`;

@@ -293,6 +293,16 @@ function tokensToCssVars(tokens: KthemeTokens): Record<string, string> {
   if (tokens.rs) vars["--ktheme-rs"] = tokens.rs;
   if (tokens.font) vars["--ktheme-font"] = tokens.font;
 
+  // Spatial interaction tokens
+  vars["--ktheme-touch-target-min-mobile"] =
+    tokens.touchTargetMinMobile || "44px";
+  vars["--ktheme-touch-target-min-desktop"] =
+    tokens.touchTargetMinDesktop || "24px";
+  vars["--ktheme-touch-padding-compact"] =
+    tokens.touchPaddingCompact || "4px";
+  vars["--ktheme-touch-padding-coarse"] =
+    tokens.touchPaddingCoarse || "10px";
+
   // Additional custom token keys
   Object.keys(tokens).forEach((k) => {
     if (typeof tokens[k] === "string" && !vars[`--ktheme-${k}`]) {

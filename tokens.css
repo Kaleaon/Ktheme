@@ -123,6 +123,12 @@
   /* Shimmer / Motion Defaults */
   --shimmer-speed: 2s;
   --shimmer-intensity: 0.8;
+
+  /* Spatial Interaction & Touch Target Tokens */
+  --ktheme-touch-target-min-mobile: 44px;
+  --ktheme-touch-target-min-desktop: 24px;
+  --ktheme-touch-padding-compact: 4px;
+  --ktheme-touch-padding-coarse: 10px;
 }
 
 .k-target-min-size,
@@ -130,5 +136,7 @@
 .k-overlay-drawer .close-btn {
   min-width: 24px;
   min-height: 24px;
+  min-width: var(--ktheme-touch-target-min-desktop, 24px);
+  min-height: var(--ktheme-touch-target-min-desktop, 24px);
   box-sizing: border-box;
 }

@@ -1462,6 +1462,12 @@ export const THEME_DESKTOP_CONFIGS = {
     }
   }
 };
+export const SPATIAL_TOKENS = {
+  "touchTargetMinMobile": "44px",
+  "touchTargetMinDesktop": "24px",
+  "touchPaddingCompact": "4px",
+  "touchPaddingCoarse": "10px"
+};
 
 export function buildDefaultDesktopConfig(data) {
   const dark = data.darkMode !== false;

@@ -34,4 +34,14 @@ describe("WCAG 2.2 SC 2.5.8 Target Size (Minimum) Compliance Tests", () => {
     expect(content).toContain("min-width: 24px");
     expect(content).toContain("min-height: 24px");
   });
+
+  it("exports spatial interaction and touch padding tokens in tokens.css", () => {
+    const filePath = path.join(__dirname, "../../tokens.css");
+    const content = fs.readFileSync(filePath, "utf8");
+
+    expect(content).toContain("--ktheme-touch-target-min-mobile: 44px;");
+    expect(content).toContain("--ktheme-touch-target-min-desktop: 24px;");
+    expect(content).toContain("--ktheme-touch-padding-compact: 4px;");
+    expect(content).toContain("--ktheme-touch-padding-coarse: 10px;");
+  });
 });

@@ -1462,6 +1462,12 @@ const THEME_DESKTOP_CONFIGS = {
     }
   }
 };
+const SPATIAL_TOKENS = {
+  "touchTargetMinMobile": "44px",
+  "touchTargetMinDesktop": "24px",
+  "touchPaddingCompact": "4px",
+  "touchPaddingCoarse": "10px"
+};
 
 function buildDefaultDesktopConfig(data) {
   const dark = data.darkMode !== false;
@@ -1516,5 +1522,6 @@ module.exports = {
   FAMILIES,
   PK,
   THEME_DESKTOP_CONFIGS,
+  SPATIAL_TOKENS,
   buildDefaultDesktopConfig
 };

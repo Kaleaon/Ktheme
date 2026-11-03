@@ -31,9 +31,17 @@ export interface PaletteEntry {
   c: PaletteColorRoles;
 }
 
+export interface SpatialTokens {
+  touchTargetMinMobile: string;
+  touchTargetMinDesktop: string;
+  touchPaddingCompact: string;
+  touchPaddingCoarse: string;
+}
+
 export declare const PALETTES: Record<string, PaletteEntry>;
 export declare const LEGACY_PALETTES: Record<string, any>;
 export declare const FAMILIES: Array<{ name: string; keys: string[] }>;
 export declare const PK: Record<string, [string, string, number?]>;
 export declare const THEME_DESKTOP_CONFIGS: Record<string, any>;
+export declare const SPATIAL_TOKENS: SpatialTokens;
 export declare function buildDefaultDesktopConfig(data: any): any;

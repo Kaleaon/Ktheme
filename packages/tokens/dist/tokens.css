@@ -1,5 +1,9 @@
 /* Ktheme Centralized Tokens CSS */
 :root {
+  --ktheme-touch-target-min-mobile: 44px;
+  --ktheme-touch-target-min-desktop: 24px;
+  --ktheme-touch-padding-compact: 4px;
+  --ktheme-touch-padding-coarse: 10px;
   --ktheme-ink-bg: #0A1112;
   --ktheme-ink-surf: #101A1C;
   --ktheme-ink-surf2: #1B2A2D;
