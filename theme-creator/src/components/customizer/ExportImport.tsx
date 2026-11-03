@@ -3,7 +3,7 @@ import { Download, Upload, Loader2, Archive } from "lucide-react";
 import { useTheme } from "../../state/ThemeContext.tsx";
 import type { KTheme } from "../../types/theme.ts";
 import { FormField } from "../../../../src/components/FormField";
-import { tokensStudioToKTheme } from "../../../src/importers/tokensStudioImporter";
+import { tokensStudioToKTheme } from "../../../../src/importers/tokensStudioImporter";
 
 export function ExportImport() {
   const { state, dispatch } = useTheme();
