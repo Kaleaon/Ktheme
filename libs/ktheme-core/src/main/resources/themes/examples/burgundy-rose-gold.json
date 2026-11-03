@@ -1,21 +1,30 @@
 {
+  "schemaVersion": 2,
   "metadata": {
     "id": "burgundy-rose-gold",
     "name": "Burgundy Rose Gold",
     "description": "Rich burgundy with elegant rose gold metallic accents",
     "author": "Ktheme",
     "version": "1.0.0",
-    "tags": ["metallic", "elegant", "dark"],
+    "tags": [
+      "metallic",
+      "elegant",
+      "dark"
+    ],
     "createdAt": "2026-02-15T20:42:39.611Z",
     "updatedAt": "2026-02-15T20:42:39.611Z"
   },
   "darkMode": true,
   "colorScheme": {
+    "error": "#FFB4AB",
+    "onError": "#690005",
+    "errorContainer": "#93000A",
+    "onErrorContainer": "#FFDAD6",
     "primary": "#B76E79",
     "onPrimary": "#2D0F1A",
     "primaryContainer": "#93575F",
     "onPrimaryContainer": "#D4969E",
-    "secondary": "#4D1A2A",
+    "secondary": "#895666",
     "onSecondary": "#FFE6ED",
     "secondaryContainer": "#3D1525",
     "onSecondaryContainer": "#FFE6ED",
@@ -23,10 +32,6 @@
     "onTertiary": "#2D0F1A",
     "tertiaryContainer": "#9F7A83",
     "onTertiaryContainer": "#FFE6ED",
-    "error": "#FFB4AB",
-    "onError": "#690005",
-    "errorContainer": "#93000A",
-    "onErrorContainer": "#FFDAD6",
     "background": "#2D0F1A",
     "onBackground": "#FFE6ED",
     "surface": "#3D1525",
@@ -64,5 +69,6 @@
       "intensity": 0.6,
       "angle": 120
     }
-  }
+  },
+  "adaptation": {}
 }

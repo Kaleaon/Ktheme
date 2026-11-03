@@ -1,4 +1,5 @@
 {
+  "schemaVersion": 2,
   "metadata": {
     "id": "frutiger-aero",
     "name": "Frutiger Aero",
@@ -18,11 +19,15 @@
   },
   "darkMode": false,
   "colorScheme": {
-    "primary": "#39B6F0",
-    "onPrimary": "#022A40",
+    "error": "#BA1A1A",
+    "onError": "#FFFFFF",
+    "errorContainer": "#FFDAD6",
+    "onErrorContainer": "#410002",
+    "primary": "#1895CF",
+    "onPrimary": "#000000",
     "primaryContainer": "#A9E6FF",
     "onPrimaryContainer": "#00314D",
-    "secondary": "#79D87E",
+    "secondary": "#409F45",
     "onSecondary": "#07350D",
     "secondaryContainer": "#C6F4CC",
     "onSecondaryContainer": "#113D17",
@@ -30,17 +35,13 @@
     "onTertiary": "#0D2C4F",
     "tertiaryContainer": "#DAEEFF",
     "onTertiaryContainer": "#123659",
-    "error": "#BA1A1A",
-    "onError": "#FFFFFF",
-    "errorContainer": "#FFDAD6",
-    "onErrorContainer": "#410002",
     "background": "#EAF7FF",
     "onBackground": "#14344A",
     "surface": "#F7FCFF",
     "onSurface": "#173A52",
     "surfaceVariant": "#DDF1FF",
     "onSurfaceVariant": "#34566E",
-    "outline": "#6E93AB",
+    "outline": "#6189A4",
     "outlineVariant": "#A9C7DA",
     "scrim": "#000000",
     "inverseSurface": "#173A52",
@@ -106,7 +107,32 @@
       "cornerStyle": "rounded",
       "spacingScale": 1.1,
       "panelStyle": "glass",
-      "navigationStyle": "tabs"
+      "navigationStyle": "tabs",
+      "accessibility": {
+        "landmarks": {
+          "main": "main",
+          "nav": "navigation",
+          "header": "header",
+          "footer": "footer"
+        },
+        "naming": {
+          "strategy": "native",
+          "main": "Main Content",
+          "nav": "Primary Navigation",
+          "header": "Application Header",
+          "footer": "Footer"
+        },
+        "keyboard": {
+          "order": "document",
+          "focusPolicy": "native",
+          "trapFocusWithinModals": true
+        },
+        "liveRegion": {
+          "mode": "polite",
+          "atomic": true,
+          "relevant": "additions"
+        }
+      }
     },
     "icons": {
       "family": "custom",

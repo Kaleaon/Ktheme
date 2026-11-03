@@ -88,7 +88,14 @@ data class ColorScheme(
     val scrim: String,
     val inverseSurface: String,
     val inverseOnSurface: String,
-    val inversePrimary: String
+    val inversePrimary: String,
+    val surfaceDim: String? = null,
+    val surfaceBright: String? = null,
+    val surfaceContainerLowest: String? = null,
+    val surfaceContainerLow: String? = null,
+    val surfaceContainer: String? = null,
+    val surfaceContainerHigh: String? = null,
+    val surfaceContainerHighest: String? = null
 )
 
 /**

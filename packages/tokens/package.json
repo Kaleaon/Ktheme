@@ -1,0 +1,27 @@
+{
+  "name": "@ktheme/tokens",
+  "version": "1.0.0",
+  "description": "Centralized design tokens, canonical theme presets, CSS custom properties, and palette definitions for Ktheme",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./json/*": "./dist/json/*",
+    "./tokens.json": "./dist/tokens.json",
+    "./tokens.css": "./dist/tokens.css",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "node scripts/build-tokens.mjs"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "license": "Apache-2.0"
+}

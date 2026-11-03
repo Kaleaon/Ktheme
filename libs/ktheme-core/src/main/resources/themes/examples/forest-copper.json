@@ -1,21 +1,30 @@
 {
+  "schemaVersion": 2,
   "metadata": {
     "id": "forest-copper",
     "name": "Forest Copper",
     "description": "Deep forest green with warm copper metallic accents",
     "author": "Ktheme",
     "version": "1.0.0",
-    "tags": ["metallic", "nature", "dark"],
+    "tags": [
+      "metallic",
+      "nature",
+      "dark"
+    ],
     "createdAt": "2026-02-15T20:42:39.611Z",
     "updatedAt": "2026-02-15T20:42:39.611Z"
   },
   "darkMode": true,
   "colorScheme": {
+    "error": "#CF6679",
+    "onError": "#FFFFFF",
+    "errorContainer": "#93000A",
+    "onErrorContainer": "#FFDAD6",
     "primary": "#B87333",
     "onPrimary": "#0D1F0D",
     "primaryContainer": "#935E29",
     "onPrimaryContainer": "#D4965A",
-    "secondary": "#1A3D1A",
+    "secondary": "#4D704D",
     "onSecondary": "#E8F5E8",
     "secondaryContainer": "#152915",
     "onSecondaryContainer": "#E8F5E8",
@@ -23,17 +32,13 @@
     "onTertiary": "#0D1F0D",
     "tertiaryContainer": "#6D7D68",
     "onTertiaryContainer": "#E8F5E8",
-    "error": "#CF6679",
-    "onError": "#FFFFFF",
-    "errorContainer": "#93000A",
-    "onErrorContainer": "#FFDAD6",
     "background": "#0D1F0D",
     "onBackground": "#E8F5E8",
     "surface": "#152915",
     "onSurface": "#E8F5E8",
     "surfaceVariant": "#2A4D2A",
     "onSurfaceVariant": "#B8D9B8",
-    "outline": "#6A8A6A",
+    "outline": "#7B9A7B",
     "outlineVariant": "#3D5A3D",
     "scrim": "#000000",
     "inverseSurface": "#E8F5E8",
@@ -58,5 +63,6 @@
       "blur": 8,
       "color": "#00000066"
     }
-  }
+  },
+  "adaptation": {}
 }

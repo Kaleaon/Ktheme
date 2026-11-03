@@ -142,4 +142,63 @@ describe("PresetsPanel Theme Deletion Dialog", () => {
     // Dialog should be closed
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
+
+  it("auto-focuses Cancel button when dialog opens", () => {
+    render(<PresetsPanel />);
+
+    fireEvent.click(screen.getByRole("tab", { name: /Saved/i }));
+    const deleteCardBtn = screen.getByRole("button", {
+      name: /Delete saved theme My Custom Theme/i,
+    });
+    deleteCardBtn.focus();
+    fireEvent.click(deleteCardBtn);
+
+    const cancelBtn = screen.getByRole("button", { name: "Cancel" });
+    expect(document.activeElement).toBe(cancelBtn);
+  });
+
+  it("traps focus inside dialog when pressing Tab and Shift+Tab", () => {
+    render(<PresetsPanel />);
+
+    fireEvent.click(screen.getByRole("tab", { name: /Saved/i }));
+    const deleteCardBtn = screen.getByRole("button", {
+      name: /Delete saved theme My Custom Theme/i,
+    });
+    fireEvent.click(deleteCardBtn);
+
+    const cancelBtn = screen.getByRole("button", { name: "Cancel" });
+    const confirmDeleteBtn = screen.getByRole("button", { name: "Delete" });
+
+    // Initial focus is Cancel button (first focusable)
+    expect(document.activeElement).toBe(cancelBtn);
+
+    // Press Shift+Tab from Cancel button (first element) -> wraps focus to Delete button (last element)
+    fireEvent.keyDown(window, { key: "Tab", shiftKey: true });
+    expect(document.activeElement).toBe(confirmDeleteBtn);
+
+    // Press Tab from Delete button (last element) -> wraps focus back to Cancel button (first element)
+    fireEvent.keyDown(window, { key: "Tab", shiftKey: false });
+    expect(document.activeElement).toBe(cancelBtn);
+  });
+
+  it("restores focus to triggering element when dialog is dismissed", () => {
+    render(<PresetsPanel />);
+
+    fireEvent.click(screen.getByRole("tab", { name: /Saved/i }));
+    const deleteCardBtn = screen.getByRole("button", {
+      name: /Delete saved theme My Custom Theme/i,
+    });
+    deleteCardBtn.focus();
+    expect(document.activeElement).toBe(deleteCardBtn);
+
+    fireEvent.click(deleteCardBtn);
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+
+    // Dismiss with Cancel button
+    const cancelBtn = screen.getByRole("button", { name: "Cancel" });
+    fireEvent.click(cancelBtn);
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(document.activeElement).toBe(deleteCardBtn);
+  });
 });

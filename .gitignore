@@ -5,6 +5,9 @@ yarn.lock
 # Build outputs
 dist/
 build/
+!packages/tokens/dist
+!packages/tokens/**/*.js
+!packages/tokens/**/*.d.ts
 *.js
 *.d.ts
 !jest.config.js

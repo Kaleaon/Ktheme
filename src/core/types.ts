@@ -102,6 +102,15 @@ export interface ColorScheme {
   surfaceVariant: Color;
   onSurfaceVariant: Color;
 
+  // Material Design 3 Surface Container elevation tokens
+  surfaceDim?: Color;
+  surfaceBright?: Color;
+  surfaceContainerLowest?: Color;
+  surfaceContainerLow?: Color;
+  surfaceContainer?: Color;
+  surfaceContainerHigh?: Color;
+  surfaceContainerHighest?: Color;
+
   outline: Color;
   outlineVariant: Color;
 

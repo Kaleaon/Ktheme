@@ -5,7 +5,13 @@
     "description": "Warm rail/sweep LCARS palette tuned for TNG-era amber and lilac, with strict pill geometry",
     "author": "Linkpoint",
     "version": "1.0.0",
-    "tags": ["dark", "sci-fi", "lcars", "console", "tng"],
+    "tags": [
+      "dark",
+      "sci-fi",
+      "lcars",
+      "console",
+      "tng"
+    ],
     "createdAt": "2026-04-27T00:00:00.000Z",
     "updatedAt": "2026-04-27T00:00:00.000Z"
   },

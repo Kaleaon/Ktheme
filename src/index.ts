@@ -15,6 +15,7 @@ export {
   VectorIRPath,
 } from "./core/VectorTransformer";
 export * from "./core/types";
+export * from "./standards/layouts";
 
 // Effects exports
 export * from "./effects/metallic";

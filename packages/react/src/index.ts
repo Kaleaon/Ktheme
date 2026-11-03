@@ -3,6 +3,13 @@ export type { KthemeProviderProps } from "./KthemeProvider";
 
 export { useKtheme } from "./useKtheme";
 export { useKthemeToken, getKthemeCssVar } from "./useKthemeToken";
+export { useTablist } from "./hooks/useTablist";
+export type {
+  TabItem,
+  TabInput,
+  UseTablistOptions,
+  UseTablistReturn,
+} from "./hooks/useTablist";
 
 export { KthemeContext } from "./KthemeContext";
 export type { KthemeTokens, KthemeContextValue } from "./KthemeContext";
@@ -11,3 +18,23 @@ export { batchSetCssVariables, flushCssVariables } from "./batchStyleMutation";
 
 export { ThemeStudio } from "./studio/ThemeStudio";
 export type { ThemeStudioProps } from "./studio/ThemeStudio";
+export {
+  calcContrastRatio,
+  calcLuminance,
+  formatBadgeText,
+  getTokenCounterpart,
+  auditThemeTokens,
+} from "./studio/contrast";
+export type {
+  ContrastPairAudit,
+  ContrastAuditSummary,
+} from "./studio/contrast";
+
+export { SculptingCanvas } from "./SculptingCanvas";
+export type {
+  SculptingCanvasProps,
+  SculptMode,
+  FalloffCurve,
+  MeshData,
+  WasmEngineLike,
+} from "./SculptingCanvas";

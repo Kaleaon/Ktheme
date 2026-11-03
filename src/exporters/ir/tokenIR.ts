@@ -1,4 +1,5 @@
 import { DesktopAdaptation, MetallicVariant } from "../../core/types";
+import { LayoutStandard } from "../../standards/layouts";
 
 /**
  * Normalized color tokens in canonical IR format.
@@ -31,6 +32,14 @@ export interface NormalizedColorTokens {
   onSurface: string;
   surfaceVariant: string;
   onSurfaceVariant: string;
+
+  surfaceDim: string;
+  surfaceBright: string;
+  surfaceContainerLowest: string;
+  surfaceContainerLow: string;
+  surfaceContainer: string;
+  surfaceContainerHigh: string;
+  surfaceContainerHighest: string;
 
   outline: string;
   outlineVariant: string;
@@ -172,4 +181,5 @@ export interface NormalizedThemeTokens {
   typography: NormalizedTypographyTokens;
   effects: NormalizedEffectsTokens;
   adaptation: NormalizedAdaptationTokens;
+  layoutStandard: LayoutStandard;
 }
