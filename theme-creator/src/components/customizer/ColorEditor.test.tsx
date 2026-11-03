@@ -1,6 +1,6 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { ColorEditor } from "./ColorEditor";
 import { useTheme } from "../../state/ThemeContext";
 
@@ -25,7 +25,7 @@ describe("ColorEditor", () => {
     render(<ColorEditor />);
 
     expect(screen.getByText("Colors")).toBeInTheDocument();
-    expect(screen.getAllByText("21.0:1 AA")[0]).toBeInTheDocument();
+    expect(screen.getAllByText(/21\.0:1\s+AAA/)[0]).toBeInTheDocument();
   });
 
   it("declares aria-invalid='true' and links contrast error container via aria-describedby when contrast ratio fails", () => {
