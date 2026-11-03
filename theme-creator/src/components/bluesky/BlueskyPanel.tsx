@@ -189,6 +189,7 @@ export function BlueskyPanel() {
           >
             <input
               type="text"
+              autoComplete="username"
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
               placeholder="user.bsky.social"
@@ -204,6 +205,7 @@ export function BlueskyPanel() {
           >
             <input
               type="password"
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="xxxx-xxxx-xxxx-xxxx"

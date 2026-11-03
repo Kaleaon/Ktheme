@@ -1462,6 +1462,30 @@ export const THEME_DESKTOP_CONFIGS = {
     }
   }
 };
+export const ELEVATION_TOKENS = {
+  "elevation-0": "none",
+  "elevation-1": "0 1px 3px 1px rgba(0, 0, 0, 0.15), 0 1px 2px 0 rgba(0, 0, 0, 0.30)",
+  "elevation-2": "0 2px 6px 2px rgba(0, 0, 0, 0.15), 0 1px 2px 0 rgba(0, 0, 0, 0.30)",
+  "elevation-3": "0 4px 8px 3px rgba(0, 0, 0, 0.15), 0 1px 3px 0 rgba(0, 0, 0, 0.30)",
+  "elevation-4": "0 6px 10px 4px rgba(0, 0, 0, 0.15), 0 2px 3px 0 rgba(0, 0, 0, 0.30)",
+  "elevation-5": "0 8px 12px 6px rgba(0, 0, 0, 0.15), 0 4px 4px 0 rgba(0, 0, 0, 0.30)"
+};
+export const ELEVATION = ELEVATION_TOKENS;
+export const Z_INDEX_TOKENS = {
+  "base": 0,
+  "card": 1,
+  "window": 10,
+  "dock": 20,
+  "taskbar": 50,
+  "header": 80,
+  "dropdown": 90,
+  "overlay": 100,
+  "toast": 400,
+  "modal": 500,
+  "popover": 600,
+  "tooltip": 700
+};
+export const Z_INDEX = Z_INDEX_TOKENS;
 export const TYPOGRAPHY = {
   "--ktheme-font-family": "\"JetBrains Mono\", \"IBM Plex Mono\", \"SFMono-Regular\", monospace",
   "--ktheme-font-size-small": "12px",
