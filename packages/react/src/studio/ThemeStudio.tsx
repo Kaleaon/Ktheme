@@ -109,6 +109,9 @@ export function ThemeStudio({
   const [copied, setCopied] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
+  const baseId = React.useId ? React.useId() : "theme-studio";
+  const themeNameId = `${baseId}-theme-name`;
+
   const handleColorChange = (key: string, val: string) => {
     setToken(key, val);
   };
@@ -306,6 +309,7 @@ export function ThemeStudio({
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               <div>
                 <label
+                  htmlFor={themeNameId}
                   style={{
                     display: "block",
                     fontSize: 11,
@@ -317,6 +321,7 @@ export function ThemeStudio({
                   THEME NAME
                 </label>
                 <input
+                  id={themeNameId}
                   type="text"
                   value={themeName}
                   onChange={(e) => setThemeName(e.target.value)}
@@ -342,6 +347,7 @@ export function ThemeStudio({
               >
                 {EDITABLE_TOKENS.map(([key, label]) => {
                   const val = tokens[key] || "#000000";
+                  const inputId = `${baseId}-token-${key}`;
                   return (
                     <div
                       key={key}
@@ -356,9 +362,12 @@ export function ThemeStudio({
                         justifyContent: "space-between",
                       }}
                     >
-                      <span style={{ fontSize: 11, fontWeight: 600 }}>
+                      <label
+                        htmlFor={inputId}
+                        style={{ fontSize: 11, fontWeight: 600, cursor: "pointer" }}
+                      >
                         {label}
-                      </span>
+                      </label>
                       <div
                         style={{
                           display: "flex",
@@ -367,6 +376,7 @@ export function ThemeStudio({
                         }}
                       >
                         <input
+                          id={inputId}
                           type="color"
                           value={val.startsWith("#") ? val : "#D4AF37"}
                           onChange={(e) =>
@@ -584,8 +594,10 @@ export function ThemeStudio({
             </button>
             <input
               ref={fileRef}
+              id={`${baseId}-file-import`}
               type="file"
               accept="application/json,.json"
+              aria-label="Import theme JSON"
               onChange={handleImportFile}
               style={{ display: "none" }}
             />
