@@ -6,6 +6,7 @@ export interface AccessibleFormFieldContextValue {
   errorId?: string;
   helperTextId?: string;
   ariaInvalid?: boolean;
+  required?: boolean;
 }
 
 export const AccessibleFormFieldContext =
@@ -30,6 +31,7 @@ export interface AccessibleFormFieldProps
   helperTextId?: string;
   labelStyle?: React.CSSProperties;
   invalid?: boolean;
+  required?: boolean;
 }
 
 function augmentElement(
@@ -39,6 +41,7 @@ function augmentElement(
     ariaDescribedBy?: string;
     ariaInvalid?: boolean;
     ariaErrorMessage?: string;
+    required?: boolean;
   },
 ): React.ReactNode {
   if (!React.isValidElement(child)) return child;
@@ -71,6 +74,12 @@ function augmentElement(
       newProps["aria-errormessage"] =
         elProps["aria-errormessage"] || props.ariaErrorMessage;
     }
+    if (props.required !== undefined) {
+      newProps["aria-required"] =
+        elProps["aria-required"] !== undefined
+          ? elProps["aria-required"]
+          : props.required || undefined;
+    }
   }
 
   if (elProps.children) {
@@ -99,6 +108,7 @@ export const AccessibleFormField: React.FC<AccessibleFormFieldProps> = ({
   style,
   labelStyle,
   invalid,
+  required = false,
   ...props
 }) => {
   const generatedId = useId();
@@ -123,6 +133,7 @@ export const AccessibleFormField: React.FC<AccessibleFormFieldProps> = ({
     errorId,
     helperTextId,
     ariaInvalid: isInvalid,
+    required,
   };
 
   const renderedChildren = React.Children.map(children, (child) =>
@@ -131,6 +142,7 @@ export const AccessibleFormField: React.FC<AccessibleFormFieldProps> = ({
       ariaDescribedBy,
       ariaInvalid: isInvalid ? true : undefined,
       ariaErrorMessage: errorId,
+      required,
     }),
   );
 
