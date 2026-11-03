@@ -119,7 +119,92 @@ export async function shareThemePack(
   return mainPost.uri;
 }
 
-export async function fetchSharedThemes(agent: BskyAgent): Promise<KTheme[]> {
+export const DEFAULT_THREAD_CONCURRENCY = 6;
+export const MAX_THREAD_CONCURRENCY = 8;
+
+/**
+ * Executes async tasks with bounded concurrency using Promise.allSettled.
+ * Parallel request concurrency is clamped to a maximum limit (default 6, capped at 8)
+ * to prevent API rate throttling while executing requests in parallel batches.
+ */
+export async function batchAllSettled<T, R>(
+  items: T[],
+  fn: (item: T) => Promise<R>,
+  concurrency: number = DEFAULT_THREAD_CONCURRENCY,
+): Promise<PromiseSettledResult<R>[]> {
+  const boundedConcurrency = Math.max(
+    1,
+    Math.min(concurrency, MAX_THREAD_CONCURRENCY),
+  );
+  const results: PromiseSettledResult<R>[] = [];
+
+  for (let i = 0; i < items.length; i += boundedConcurrency) {
+    const chunk = items.slice(i, i + boundedConcurrency);
+    const chunkResults = await Promise.allSettled(
+      chunk.map((item) => fn(item)),
+    );
+    results.push(...chunkResults);
+  }
+
+  return results;
+}
+
+/**
+ * Retrieves a post thread and reassembles encoded theme data.
+ * Returns null if the thread does not contain a valid KTheme or if data is malformed.
+ */
+export async function extractThemeFromThread(
+  agent: BskyAgent,
+  uri: string,
+): Promise<KTheme | null> {
+  const thread = await agent.getPostThread({ uri, depth: 10 });
+
+  if (thread.data.thread.$type !== "app.bsky.feed.defs#threadViewPost") {
+    return null;
+  }
+
+  const replies = (
+    thread.data.thread as {
+      replies?: Array<{
+        $type: string;
+        post: { record: Record<string, string> };
+      }>;
+    }
+  ).replies;
+  if (!replies) return null;
+
+  // Collect and reassemble chunks
+  const chunks: Array<{ index: number; data: string }> = [];
+  for (const reply of replies) {
+    if (reply.$type !== "app.bsky.feed.defs#threadViewPost") continue;
+    const replyText = reply.post?.record?.text || "";
+    const chunkMatch = replyText.match(/^\[KTD (\d+)\/\d+\] (.+)$/);
+    if (chunkMatch) {
+      chunks.push({
+        index: parseInt(chunkMatch[1], 10),
+        data: chunkMatch[2],
+      });
+    }
+  }
+
+  if (chunks.length === 0) return null;
+
+  chunks.sort((a, b) => a.index - b.index);
+  const encoded = chunks.map((c) => c.data).join("");
+  const json = decodeURIComponent(escape(atob(encoded)));
+  const theme = JSON.parse(json) as KTheme;
+
+  if (theme.metadata?.id && theme.colorScheme?.primary) {
+    return theme;
+  }
+
+  return null;
+}
+
+export async function fetchSharedThemes(
+  agent: BskyAgent,
+  concurrency: number = DEFAULT_THREAD_CONCURRENCY,
+): Promise<KTheme[]> {
   if (!agent.session) throw new Error("Not logged in");
 
   const themes: KTheme[] = [];
@@ -131,53 +216,20 @@ export async function fetchSharedThemes(agent: BskyAgent): Promise<KTheme[]> {
       limit: 25,
     });
 
-    for (const post of searchResult.data.posts) {
-      try {
-        const text = (post.record as Record<string, string>).text || "";
-        if (!text.includes(THEME_TAG)) continue;
+    const targetPosts = (searchResult.data.posts || []).filter((post) => {
+      const text = (post.record as Record<string, string>)?.text || "";
+      return text.includes(THEME_TAG);
+    });
 
-        // Get the thread to find the data replies
-        const thread = await agent.getPostThread({ uri: post.uri, depth: 10 });
+    const settledResults = await batchAllSettled(
+      targetPosts,
+      (post) => extractThemeFromThread(agent, post.uri),
+      concurrency,
+    );
 
-        if (thread.data.thread.$type !== "app.bsky.feed.defs#threadViewPost")
-          continue;
-
-        const replies = (
-          thread.data.thread as {
-            replies?: Array<{
-              $type: string;
-              post: { record: Record<string, string> };
-            }>;
-          }
-        ).replies;
-        if (!replies) continue;
-
-        // Collect and reassemble chunks
-        const chunks: Array<{ index: number; data: string }> = [];
-        for (const reply of replies) {
-          if (reply.$type !== "app.bsky.feed.defs#threadViewPost") continue;
-          const replyText = reply.post?.record?.text || "";
-          const chunkMatch = replyText.match(/^\[KTD (\d+)\/\d+\] (.+)$/);
-          if (chunkMatch) {
-            chunks.push({
-              index: parseInt(chunkMatch[1]),
-              data: chunkMatch[2],
-            });
-          }
-        }
-
-        if (chunks.length === 0) continue;
-
-        chunks.sort((a, b) => a.index - b.index);
-        const encoded = chunks.map((c) => c.data).join("");
-        const json = decodeURIComponent(escape(atob(encoded)));
-        const theme = JSON.parse(json) as KTheme;
-
-        if (theme.metadata?.id && theme.colorScheme?.primary) {
-          themes.push(theme);
-        }
-      } catch {
-        // Skip malformed themes
+    for (const result of settledResults) {
+      if (result.status === "fulfilled" && result.value) {
+        themes.push(result.value);
       }
     }
   } catch {
@@ -187,7 +239,10 @@ export async function fetchSharedThemes(agent: BskyAgent): Promise<KTheme[]> {
   return themes;
 }
 
-export async function fetchUserThemes(agent: BskyAgent): Promise<KTheme[]> {
+export async function fetchUserThemes(
+  agent: BskyAgent,
+  concurrency: number = DEFAULT_THREAD_CONCURRENCY,
+): Promise<KTheme[]> {
   if (!agent.session) throw new Error("Not logged in");
 
   const themes: KTheme[] = [];
@@ -198,51 +253,20 @@ export async function fetchUserThemes(agent: BskyAgent): Promise<KTheme[]> {
       limit: 50,
     });
 
-    for (const item of feed.data.feed) {
-      const text = (item.post.record as Record<string, string>).text || "";
-      if (!text.includes(THEME_TAG)) continue;
+    const targetItems = (feed.data.feed || []).filter((item) => {
+      const text = (item.post?.record as Record<string, string>)?.text || "";
+      return text.includes(THEME_TAG);
+    });
 
-      try {
-        const thread = await agent.getPostThread({
-          uri: item.post.uri,
-          depth: 10,
-        });
-        if (thread.data.thread.$type !== "app.bsky.feed.defs#threadViewPost")
-          continue;
+    const settledResults = await batchAllSettled(
+      targetItems,
+      (item) => extractThemeFromThread(agent, item.post.uri),
+      concurrency,
+    );
 
-        const replies = (
-          thread.data.thread as {
-            replies?: Array<{
-              $type: string;
-              post: { record: Record<string, string> };
-            }>;
-          }
-        ).replies;
-        if (!replies) continue;
-
-        const chunks: Array<{ index: number; data: string }> = [];
-        for (const reply of replies) {
-          if (reply.$type !== "app.bsky.feed.defs#threadViewPost") continue;
-          const replyText = reply.post?.record?.text || "";
-          const chunkMatch = replyText.match(/^\[KTD (\d+)\/\d+\] (.+)$/);
-          if (chunkMatch) {
-            chunks.push({
-              index: parseInt(chunkMatch[1]),
-              data: chunkMatch[2],
-            });
-          }
-        }
-
-        if (chunks.length === 0) continue;
-        chunks.sort((a, b) => a.index - b.index);
-        const encoded = chunks.map((c) => c.data).join("");
-        const json = decodeURIComponent(escape(atob(encoded)));
-        const theme = JSON.parse(json) as KTheme;
-        if (theme.metadata?.id && theme.colorScheme?.primary) {
-          themes.push(theme);
-        }
-      } catch {
-        // skip
+    for (const result of settledResults) {
+      if (result.status === "fulfilled" && result.value) {
+        themes.push(result.value);
       }
     }
   } catch {
@@ -251,3 +275,4 @@ export async function fetchUserThemes(agent: BskyAgent): Promise<KTheme[]> {
 
   return themes;
 }
+
