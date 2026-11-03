@@ -13,6 +13,7 @@ import java.time.Instant
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.security.MessageDigest
+import java.util.concurrent.locks.ReentrantReadWriteLock
 import com.ktheme.utils.ThemeIdCollisionPolicy
 
 /**
@@ -33,6 +34,10 @@ class ThemeLibrary(
     private val engine = ThemeEngine()
     private val listeners = mutableListOf<ThemeLibraryListener>()
     private val loadedThemeIds = mutableSetOf<String>()
+
+    private val indexLock = ReentrantReadWriteLock()
+    private val recordsById = mutableMapOf<String, ThemeIndexedRecord>()
+    private val invertedIndex = mutableMapOf<String, MutableSet<String>>()
 
     private val indexJson = Json {
         prettyPrint = true
@@ -57,6 +62,91 @@ class ThemeLibrary(
         sharedThemesDirectory.mkdirs()
         userThemesDirectory.mkdirs()
         catalogFile.parentFile?.mkdirs()
+    }
+
+    private fun ensureIndexInSync() {
+        val currentEngineThemes = engine.getAllThemes()
+        indexLock.writeLock().lock()
+        try {
+            val currentEngineIds = currentEngineThemes.map { it.metadata.id }.toSet()
+
+            val staleIds = recordsById.keys.filter { it !in currentEngineIds }
+            for (staleId in staleIds) {
+                removeThemeFromIndexInternal(staleId)
+            }
+
+            currentEngineThemes.forEachIndexed { index, theme ->
+                val existingRecord = recordsById[theme.metadata.id]
+                if (existingRecord == null || existingRecord.theme !== theme || existingRecord.originalIndex != index) {
+                    indexThemeInternal(theme, index)
+                }
+            }
+        } finally {
+            indexLock.writeLock().unlock()
+        }
+    }
+
+    private fun indexThemeInternal(theme: Theme, originalIndex: Int) {
+        val id = theme.metadata.id
+        recordsById[id]?.let { oldRecord ->
+            for (term in oldRecord.terms) {
+                val posting = invertedIndex[term]
+                if (posting != null) {
+                    posting.remove(id)
+                    if (posting.isEmpty()) {
+                        invertedIndex.remove(term)
+                    }
+                }
+            }
+        }
+
+        val nameLower = theme.metadata.name.lowercase()
+        val authorLower = theme.metadata.author.lowercase()
+        val darkMode = theme.darkMode
+        val tagsSet = theme.metadata.tags.map { it.trim().lowercase() }.filter { it.isNotEmpty() }.toSet()
+        val updatedAtInstant = runCatching { Instant.parse(theme.metadata.updatedAt) }.getOrNull()
+
+        val terms = mutableSetOf<String>()
+        terms.addAll(tagsSet)
+
+        if (nameLower.isNotEmpty()) {
+            val nameLen = nameLower.length
+            for (i in 0 until nameLen) {
+                for (j in i + 1..nameLen) {
+                    terms.add(nameLower.substring(i, j))
+                }
+            }
+        }
+
+        val record = ThemeIndexedRecord(
+            theme = theme,
+            id = id,
+            nameLower = nameLower,
+            authorLower = authorLower,
+            darkMode = darkMode,
+            tagsSet = tagsSet,
+            updatedAtInstant = updatedAtInstant,
+            originalIndex = originalIndex,
+            terms = terms
+        )
+
+        recordsById[id] = record
+        for (term in terms) {
+            invertedIndex.getOrPut(term) { mutableSetOf() }.add(id)
+        }
+    }
+
+    private fun removeThemeFromIndexInternal(id: String) {
+        val record = recordsById.remove(id) ?: return
+        for (term in record.terms) {
+            val posting = invertedIndex[term]
+            if (posting != null) {
+                posting.remove(id)
+                if (posting.isEmpty()) {
+                    invertedIndex.remove(term)
+                }
+            }
+        }
     }
 
     /**
@@ -128,6 +218,7 @@ class ThemeLibrary(
             .sortedBy { it.filePath }
 
         saveCatalogIndex(ThemeCatalogIndex(reconciledEntries))
+        ensureIndexInSync()
         notifyThemesLoaded()
     }
 
@@ -185,6 +276,10 @@ class ThemeLibrary(
         offset: Int = 0,
         limit: Int = 50
     ): List<ThemeSearchResult> {
+        if (limit <= 0) {
+            return emptyList()
+        }
+
         val normalizedQueryTerms = query
             .split(',', ' ', '\n', '\t')
             .map { it.trim().lowercase() }
@@ -202,68 +297,82 @@ class ThemeLibrary(
             ?.takeIf { it.isNotEmpty() }
             ?.let { runCatching { Instant.parse(it) }.getOrNull() }
 
-        if (limit <= 0) {
-            return emptyList()
-        }
+        ensureIndexInSync()
 
-        return engine.getAllThemes()
-            .mapIndexedNotNull { index, theme ->
-                if (darkMode != null && theme.darkMode != darkMode) {
-                    return@mapIndexedNotNull null
+        indexLock.readLock().lock()
+        try {
+            val candidateRecords: Collection<ThemeIndexedRecord> = if (normalizedQueryTerms.isEmpty()) {
+                recordsById.values
+            } else {
+                val candidateIds = mutableSetOf<String>()
+                for (term in normalizedQueryTerms) {
+                    invertedIndex[term]?.let { candidateIds.addAll(it) }
                 }
-                if (normalizedAuthor != null && theme.metadata.author.lowercase() != normalizedAuthor) {
-                    return@mapIndexedNotNull null
+                if (candidateIds.isEmpty()) {
+                    return emptyList()
                 }
-                val normalizedThemeTags = theme.metadata.tags.map { it.trim().lowercase() }.toSet()
-                if (normalizedTags.isNotEmpty() && !normalizedTags.all { it in normalizedThemeTags }) {
-                    return@mapIndexedNotNull null
-                }
-                if (updatedAfterInstant != null) {
-                    val themeUpdatedAt = runCatching { Instant.parse(theme.metadata.updatedAt) }.getOrNull()
-                        ?: return@mapIndexedNotNull null
-                    if (themeUpdatedAt.isBefore(updatedAfterInstant)) {
+                candidateIds.mapNotNull { recordsById[it] }
+            }
+
+            return candidateRecords
+                .mapIndexedNotNull { _, record ->
+                    if (darkMode != null && record.darkMode != darkMode) {
                         return@mapIndexedNotNull null
                     }
-                }
-
-                val name = theme.metadata.name.lowercase()
-                val matchedFields = linkedSetOf<String>()
-                var score = 0
-
-                normalizedQueryTerms.forEach { term ->
-                    when {
-                        name == term -> {
-                            score += 400
-                            matchedFields.add(ThemeSearchMatchField.NAME_EXACT.fieldName)
-                        }
-                        name.startsWith(term) -> {
-                            score += 260
-                            matchedFields.add(ThemeSearchMatchField.NAME_PREFIX.fieldName)
-                        }
-                        name.contains(term) -> {
-                            score += 160
-                            matchedFields.add(ThemeSearchMatchField.NAME_SUBSTRING.fieldName)
-                        }
-                        term in normalizedThemeTags -> {
-                            score += 80
-                            matchedFields.add(ThemeSearchMatchField.TAGS.fieldName)
+                    if (normalizedAuthor != null && record.authorLower != normalizedAuthor) {
+                        return@mapIndexedNotNull null
+                    }
+                    if (normalizedTags.isNotEmpty() && !normalizedTags.all { it in record.tagsSet }) {
+                        return@mapIndexedNotNull null
+                    }
+                    if (updatedAfterInstant != null) {
+                        val themeUpdatedAt = record.updatedAtInstant ?: return@mapIndexedNotNull null
+                        if (themeUpdatedAt.isBefore(updatedAfterInstant)) {
+                            return@mapIndexedNotNull null
                         }
                     }
-                }
 
-                if (normalizedQueryTerms.isNotEmpty() && score == 0) {
-                    return@mapIndexedNotNull null
-                }
+                    val name = record.nameLower
+                    val matchedFields = linkedSetOf<String>()
+                    var score = 0
 
-                ScoredTheme(theme, score, matchedFields.toList(), index)
-            }
-            .sortedWith(
-                compareByDescending<ScoredTheme> { it.score }
-                    .thenBy { it.originalIndex }
-            )
-            .drop(offset.coerceAtLeast(0))
-            .take(limit)
-            .map { ThemeSearchResult(it.theme, it.score, it.matchedFields) }
+                    normalizedQueryTerms.forEach { term ->
+                        when {
+                            name == term -> {
+                                score += 400
+                                matchedFields.add(ThemeSearchMatchField.NAME_EXACT.fieldName)
+                            }
+                            name.startsWith(term) -> {
+                                score += 260
+                                matchedFields.add(ThemeSearchMatchField.NAME_PREFIX.fieldName)
+                            }
+                            name.contains(term) -> {
+                                score += 160
+                                matchedFields.add(ThemeSearchMatchField.NAME_SUBSTRING.fieldName)
+                            }
+                            term in record.tagsSet -> {
+                                score += 80
+                                matchedFields.add(ThemeSearchMatchField.TAGS.fieldName)
+                            }
+                        }
+                    }
+
+                    if (normalizedQueryTerms.isNotEmpty() && score == 0) {
+                        return@mapIndexedNotNull null
+                    }
+
+                    ScoredTheme(record.theme, score, matchedFields.toList(), record.originalIndex)
+                }
+                .sortedWith(
+                    compareByDescending<ScoredTheme> { it.score }
+                        .thenBy { it.originalIndex }
+                )
+                .drop(offset.coerceAtLeast(0))
+                .take(limit)
+                .map { ThemeSearchResult(it.theme, it.score, it.matchedFields) }
+        } finally {
+            indexLock.readLock().unlock()
+        }
     }
 
     /**
@@ -440,6 +549,18 @@ private data class ScoredTheme(
     val score: Int,
     val matchedFields: List<String>,
     val originalIndex: Int
+)
+
+private data class ThemeIndexedRecord(
+    val theme: Theme,
+    val id: String,
+    val nameLower: String,
+    val authorLower: String,
+    val darkMode: Boolean,
+    val tagsSet: Set<String>,
+    val updatedAtInstant: Instant?,
+    val originalIndex: Int,
+    val terms: Set<String>
 )
 @Serializable
 data class ThemeCatalogIndex(
