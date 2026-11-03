@@ -8,3 +8,4 @@ export * from './toDesignTokensJson';
 export * from './ir';
 export * from './renderers';
 export * from './toBlenderPropertyGroup';
+export * from './exportEngine';

@@ -1,4 +1,5 @@
 import { DesktopAdaptation, MetallicVariant } from "../../core/types";
+import { LayoutStandard } from "../../standards/layouts";
 
 /**
  * Normalized color tokens in canonical IR format.
@@ -180,4 +181,5 @@ export interface NormalizedThemeTokens {
   typography: NormalizedTypographyTokens;
   effects: NormalizedEffectsTokens;
   adaptation: NormalizedAdaptationTokens;
+  layoutStandard: LayoutStandard;
 }

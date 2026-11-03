@@ -8,11 +8,14 @@ jest.mock("../../state/ThemeContext", () => ({
   useTheme: jest.fn(),
 }));
 
-describe("AIDesigner Autofill & Accessibility Tests", () => {
+describe("AIDesigner Accessibility Tests", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (useTheme as jest.Mock).mockReturnValue({
-      state: {},
+      state: {
+        currentTheme: { metadata: { name: "Test Theme" }, colorScheme: {} },
+        savedThemes: [],
+      },
       dispatch: jest.fn(),
     });
   });
