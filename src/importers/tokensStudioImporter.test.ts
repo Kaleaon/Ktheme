@@ -1,5 +1,4 @@
 import {
-  TokensStudioImporter,
   parseTokensStudio,
   tokensStudioToKTheme,
 } from "./tokensStudioImporter";

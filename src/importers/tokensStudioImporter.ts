@@ -12,21 +12,21 @@ import { parseColorToHex, generatePaletteFromSeed, getContrastColor } from "../u
  * Standard token node structure following W3C DTCG draft & Tokens Studio specs.
  */
 export interface StudioTokenNode {
-  $value?: any;
-  value?: any;
+  $value?: unknown;
+  value?: unknown;
   $type?: string;
   type?: string;
   $description?: string;
   description?: string;
-  $extensions?: Record<string, any>;
-  [key: string]: any;
+  $extensions?: Record<string, unknown>;
+  [key: string]: unknown;
 }
 
 export interface ResolvedToken {
   path: string;
   type: string;
-  value: any;
-  rawValue: any;
+  value: unknown;
+  rawValue: unknown;
   description?: string;
 }
 
@@ -44,7 +44,7 @@ export interface TokensStudioImporterOptions {
 
 export interface TokensStudioParseResult {
   tokens: Record<string, ResolvedToken>;
-  flatValues: Record<string, any>;
+  flatValues: Record<string, unknown>;
   metadata: {
     name: string;
     sets: string[];
@@ -62,7 +62,7 @@ export interface ConvertOptions extends TokensStudioImporterOptions {
 /**
  * Check if a JS object represents a leaf token node (has value or $value property)
  */
-function isTokenNode(obj: any): boolean {
+function isTokenNode(obj: unknown): boolean {
   if (!obj || typeof obj !== "object" || Array.isArray(obj)) {
     return false;
   }
@@ -72,7 +72,7 @@ function isTokenNode(obj: any): boolean {
 /**
  * Extract token value from token node
  */
-function getTokenRawValue(node: StudioTokenNode): any {
+function getTokenRawValue(node: StudioTokenNode): unknown {
   if ("$value" in node) return node.$value;
   if ("value" in node) return node.value;
   return node;
@@ -97,20 +97,21 @@ export class TokensStudioImporter {
   /**
    * Parses Tokens Studio or DTCG JSON into resolved tokens with multi-hop alias resolution.
    */
-  public parse(jsonInput: string | Record<string, any>): TokensStudioParseResult {
-    let rawObj: Record<string, any>;
+  public parse(jsonInput: string | Record<string, unknown>): TokensStudioParseResult {
+    let rawObj: Record<string, unknown>;
     if (typeof jsonInput === "string") {
       try {
         rawObj = JSON.parse(jsonInput);
-      } catch (err: any) {
-        throw new Error(`Invalid JSON provided to TokensStudioImporter: ${err.message}`);
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        throw new Error(`Invalid JSON provided to TokensStudioImporter: ${msg}`);
       }
     } else {
       rawObj = jsonInput;
     }
 
     const warnings: string[] = [];
-    const rawTokensByPath: Record<string, { value: any; type: string; description?: string }> = {};
+    const rawTokensByPath: Record<string, { value: unknown; type: string; description?: string }> = {};
     const availableSets: string[] = [];
 
     // Determine top-level sets or root structure
@@ -132,10 +133,13 @@ export class TokensStudioImporter {
         targetSets = activeSets;
       } else if (Array.isArray(rawObj.$themes) && rawObj.$themes.length > 0) {
         // Look for default active sets from $themes metadata
-        const activeTheme = rawObj.$themes.find((t: any) => t.group || t.selectedTokenSets) || rawObj.$themes[0];
-        if (activeTheme && activeTheme.selectedTokenSets) {
-          targetSets = Object.keys(activeTheme.selectedTokenSets).filter(
-            (setName) => activeTheme.selectedTokenSets[setName] !== "disabled"
+        const activeTheme = (rawObj.$themes as Record<string, unknown>[]).find(
+          (t: Record<string, unknown>) => Boolean(t.group || t.selectedTokenSets)
+        ) || (rawObj.$themes as Record<string, unknown>[])[0];
+        if (activeTheme && activeTheme.selectedTokenSets && typeof activeTheme.selectedTokenSets === "object") {
+          const selectedSets = activeTheme.selectedTokenSets as Record<string, unknown>;
+          targetSets = Object.keys(selectedSets).filter(
+            (setName) => selectedSets[setName] !== "disabled"
           );
         }
       }
@@ -158,7 +162,7 @@ export class TokensStudioImporter {
 
     // Resolve aliases across rawTokensByPath
     const resolvedTokens: Record<string, ResolvedToken> = {};
-    const flatValues: Record<string, any> = {};
+    const flatValues: Record<string, unknown> = {};
 
     for (const [path, rawToken] of Object.entries(rawTokensByPath)) {
       const resolvedValue = this.resolveValue(rawToken.value, rawTokensByPath, new Set([path]), warnings);
@@ -219,7 +223,7 @@ export class TokensStudioImporter {
   /**
    * Converts Tokens Studio / DTCG JSON directly into a Ktheme Theme definition.
    */
-  public convertToKTheme(jsonInput: string | Record<string, any>, options: ConvertOptions = {}): Theme {
+  public convertToKTheme(jsonInput: string | Record<string, unknown>, options: ConvertOptions = {}): Theme {
     const parseResult = this.parse(jsonInput);
     const { flatValues, tokens } = parseResult;
 
@@ -364,16 +368,16 @@ export class TokensStudioImporter {
   }
 
   private traverseTokenTree(
-    node: any,
+    node: unknown,
     prefix: string,
-    out: Record<string, { value: any; type: string; description?: string }>,
+    out: Record<string, { value: unknown; type: string; description?: string }>,
     warnings: string[],
     parentType?: string,
     rootSetName?: string
   ): void {
     if (!node || typeof node !== "object") return;
 
-    const recordToken = (path: string, val: any, type: string, desc?: string) => {
+    const recordToken = (path: string, val: unknown, type: string, desc?: string) => {
       const entry = { value: val, type, description: desc };
       out[path] = entry;
       if (rootSetName && path.startsWith(`${rootSetName}.`)) {
@@ -385,18 +389,19 @@ export class TokensStudioImporter {
     };
 
     if (isTokenNode(node)) {
-      const val = getTokenRawValue(node);
-      const type = getTokenType(node) !== "unknown" ? getTokenType(node) : parentType || "unknown";
-      const desc = node.$description || node.description;
+      const val = getTokenRawValue(node as StudioTokenNode);
+      const type = getTokenType(node as StudioTokenNode) !== "unknown" ? getTokenType(node as StudioTokenNode) : parentType || "unknown";
+      const desc = (node as StudioTokenNode).$description || (node as StudioTokenNode).description;
       if (prefix) {
         recordToken(prefix, val, type, desc);
       }
       return;
     }
 
-    const currentGroupType = node.$type || node.type || parentType;
+    const nodeObj = node as Record<string, unknown>;
+    const currentGroupType = (nodeObj.$type as string | undefined) || (nodeObj.type as string | undefined) || parentType;
 
-    for (const [key, child] of Object.entries(node)) {
+    for (const [key, child] of Object.entries(nodeObj)) {
       if (key.startsWith("$") && key !== "$value" && key !== "$type" && key !== "$description") continue;
       if (key === "type" && typeof child === "string") continue;
 
@@ -404,7 +409,7 @@ export class TokensStudioImporter {
 
       if (child && typeof child === "object") {
         if (isTokenNode(child)) {
-          const childNode = child as any;
+          const childNode = child as StudioTokenNode;
           const val = getTokenRawValue(childNode);
           const type = getTokenType(childNode) !== "unknown" ? getTokenType(childNode) : currentGroupType || "unknown";
           const desc = childNode.$description || childNode.description;
@@ -417,11 +422,11 @@ export class TokensStudioImporter {
   }
 
   private resolveValue(
-    value: any,
-    rawTokens: Record<string, { value: any; type: string; description?: string }>,
+    value: unknown,
+    rawTokens: Record<string, { value: unknown; type: string; description?: string }>,
     visited: Set<string>,
     warnings: string[]
-  ): any {
+  ): unknown {
     if (typeof value === "string") {
       // Check if value is a pure reference string e.g. "{colors.brand.500}"
       const directRefMatch = value.trim().match(/^\{([^}]+)\}$/);
@@ -442,7 +447,7 @@ export class TokensStudioImporter {
     }
 
     if (value && typeof value === "object") {
-      const resolvedObj: Record<string, any> = {};
+      const resolvedObj: Record<string, unknown> = {};
       for (const [k, v] of Object.entries(value)) {
         resolvedObj[k] = this.resolveValue(v, rawTokens, new Set(visited), warnings);
       }
@@ -454,10 +459,10 @@ export class TokensStudioImporter {
 
   private lookupAndDereference(
     refPath: string,
-    rawTokens: Record<string, { value: any; type: string; description?: string }>,
+    rawTokens: Record<string, { value: unknown; type: string; description?: string }>,
     visited: Set<string>,
     warnings: string[]
-  ): any {
+  ): unknown {
     // Strip trailing .value or .$value if present in alias reference
     const cleanRef = refPath.replace(/\.(\$)?value$/, "");
 
@@ -491,37 +496,39 @@ export class TokensStudioImporter {
   }
 
   private processCompositeTypography(
-    val: any,
-    rawTokens: Record<string, any>,
-    warnings: string[]
-  ): any {
+    val: unknown,
+    _rawTokens: Record<string, unknown>,
+    _warnings: string[]
+  ): unknown {
     if (typeof val !== "object" || val === null) return val;
+    const v = val as Record<string, unknown>;
     return {
-      fontFamily: val.fontFamily || val.fontFamilies || "sans-serif",
-      fontSize: val.fontSize || val.fontSizes || 16,
-      fontWeight: val.fontWeight || val.fontWeights || 400,
-      lineHeight: val.lineHeight || val.lineHeights || 1.5,
-      letterSpacing: val.letterSpacing || val.letterSpacings || 0,
+      fontFamily: v.fontFamily || v.fontFamilies || "sans-serif",
+      fontSize: v.fontSize || v.fontSizes || 16,
+      fontWeight: v.fontWeight || v.fontWeights || 400,
+      lineHeight: v.lineHeight || v.lineHeights || 1.5,
+      letterSpacing: v.letterSpacing || v.letterSpacings || 0,
     };
   }
 
-  private processShadowToken(val: any, rawTokens: Record<string, any>, warnings: string[]): any {
+  private processShadowToken(val: unknown, _rawTokens: Record<string, unknown>, _warnings: string[]): unknown {
     const shadowObj = Array.isArray(val) ? val[0] : val;
     if (!shadowObj || typeof shadowObj !== "object") return val;
+    const s = shadowObj as Record<string, unknown>;
 
     return {
-      color: shadowObj.color ? parseColorToHex(String(shadowObj.color)) : "#00000040",
-      x: shadowObj.x || shadowObj.offsetX || 0,
-      y: shadowObj.y || shadowObj.offsetY || 4,
-      blur: shadowObj.blur || 8,
-      spread: shadowObj.spread || 0,
+      color: s.color ? parseColorToHex(String(s.color)) : "#00000040",
+      x: s.x || s.offsetX || 0,
+      y: s.y || s.offsetY || 4,
+      blur: s.blur || 8,
+      spread: s.spread || 0,
     };
   }
 
-  private findColorToken(flatValues: Record<string, any>, keys: string[]): string | undefined {
+  private findColorToken(flatValues: Record<string, unknown>, keys: string[]): string | undefined {
     for (const k of keys) {
       if (k in flatValues && typeof flatValues[k] === "string") {
-        return flatValues[k];
+        return flatValues[k] as string;
       }
     }
     const foundEntry = Object.entries(flatValues).find(
@@ -529,7 +536,7 @@ export class TokensStudioImporter {
         typeof val === "string" &&
         keys.some((k) => path.toLowerCase().endsWith(k.toLowerCase()))
     );
-    return foundEntry ? foundEntry[1] : undefined;
+    return foundEntry ? String(foundEntry[1]) : undefined;
   }
 
   private findShadowToken(tokens: Record<string, ResolvedToken>): { color?: string; blur?: number } | undefined {
@@ -540,15 +547,16 @@ export class TokensStudioImporter {
 
     const shadowVal = Array.isArray(shadowToken.value) ? shadowToken.value[0] : shadowToken.value;
     if (typeof shadowVal === "object" && shadowVal !== null) {
+      const s = shadowVal as Record<string, unknown>;
       return {
-        color: shadowVal.color,
-        blur: typeof shadowVal.blur === "number" ? shadowVal.blur : parseFloat(String(shadowVal.blur)) || 8,
+        color: typeof s.color === "string" ? s.color : undefined,
+        blur: typeof s.blur === "number" ? s.blur : parseFloat(String(s.blur)) || 8,
       };
     }
     return undefined;
   }
 
-  private parseNumericToken(flatValues: Record<string, any>, keys: string[], defaultValue: number): number {
+  private parseNumericToken(flatValues: Record<string, unknown>, keys: string[], defaultValue: number): number {
     for (const key of keys) {
       if (key in flatValues) {
         const val = flatValues[key];
@@ -567,7 +575,7 @@ export class TokensStudioImporter {
  * Convenience function to parse Tokens Studio JSON string or object
  */
 export function parseTokensStudio(
-  jsonInput: string | Record<string, any>,
+  jsonInput: string | Record<string, unknown>,
   options?: TokensStudioImporterOptions
 ): TokensStudioParseResult {
   const importer = new TokensStudioImporter(options);
@@ -578,7 +586,7 @@ export function parseTokensStudio(
  * Convenience function to convert Tokens Studio JSON directly to Ktheme Theme
  */
 export function tokensStudioToKTheme(
-  jsonInput: string | Record<string, any>,
+  jsonInput: string | Record<string, unknown>,
   options?: ConvertOptions
 ): Theme {
   const importer = new TokensStudioImporter(options);

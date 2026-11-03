@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { tokensStudioToKTheme, TokensStudioImporter } from "../importers/tokensStudioImporter";
+import { tokensStudioToKTheme } from "../importers/tokensStudioImporter";
 import { toAndroidCompose } from "../exporters/toAndroidCompose";
 import { toSwiftUI } from "../exporters/toSwiftUI";
 import { toCssVars } from "../exporters/toCssVars";

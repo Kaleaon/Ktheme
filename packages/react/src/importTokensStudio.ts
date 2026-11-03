@@ -13,7 +13,7 @@ export type { TokensStudioParseResult };
  * Dynamically converts Tokens Studio JSON string or object into a KthemeTokens object suitable for use in KthemeProvider or React runtime token updates.
  */
 export function importTokensStudioJson(
-  jsonContent: string | Record<string, any>,
+  jsonContent: string | Record<string, unknown>,
   options?: ConvertOptions
 ): KthemeTokens {
   const theme = tokensStudioToKTheme(jsonContent, options);
