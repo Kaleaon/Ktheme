@@ -1267,7 +1267,7 @@ export const ArtNouveauTheme: Theme = {
     secondary: "#73945F",
     onSecondary: "#F6FFF1",
     secondaryContainer: "#CFE4BF",
-    onSecondaryContainer: "#E8F0F5",
+    onSecondaryContainer: "#24371A",
     tertiary: "#C57C52",
     onTertiary: "#FFF8F3",
     tertiaryContainer: "#F1C9AF",
