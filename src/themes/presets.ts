@@ -173,7 +173,7 @@ export const RoyalBronzeTheme: Theme = {
     surfaceVariant: "#3D1F5C",
     onSurfaceVariant: "#D0B3E6",
 
-    outline: "#745683",
+    outline: "#9B8AB8",
     outlineVariant: "#4D2F5C",
 
     scrim: "#000000",
@@ -241,7 +241,7 @@ export const MidnightAmberTheme: Theme = {
     surfaceVariant: "#253447",
     onSurfaceVariant: "#B8C5D6",
 
-    outline: "#5B6672",
+    outline: "#7F8E9D",
     outlineVariant: "#3D4854",
 
     scrim: "#000000",
@@ -365,7 +365,7 @@ export const RoyalSilverTheme: Theme = {
     surfaceVariant: "#3D2F5C",
     onSurfaceVariant: "#C8BFE6",
 
-    outline: "#6E6087",
+    outline: "#9B8AB8",
     outlineVariant: "#4D3F66",
 
     scrim: "#000000",
@@ -501,7 +501,7 @@ export const BurgundyRoseGoldTheme: Theme = {
     surfaceVariant: "#5C2A3D",
     onSurfaceVariant: "#E6C0CC",
 
-    outline: "#885A68",
+    outline: "#B88A94",
     outlineVariant: "#6D3F4D",
 
     scrim: "#000000",
@@ -575,7 +575,7 @@ export const CharcoalChampagneTheme: Theme = {
     surfaceVariant: "#3D3D3D",
     onSurfaceVariant: "#D0D0D0",
 
-    outline: "#6B6B6B",
+    outline: "#9A9A9A",
     outlineVariant: "#4D4D4D",
 
     scrim: "#000000",
@@ -712,7 +712,7 @@ export const DeepPurplePlatinumTheme: Theme = {
     surfaceVariant: "#3D2A5C",
     onSurfaceVariant: "#D0C0E6",
 
-    outline: "#6B5D8B",
+    outline: "#9B8AB8",
     outlineVariant: "#4D3F6D",
 
     scrim: "#000000",
@@ -1050,7 +1050,7 @@ export const InkTerminalModernTheme: Theme = {
     onSurface: "#D7F5E6",
     surfaceVariant: "#1B2A2D",
     onSurfaceVariant: "#A7C8BC",
-    outline: "#4B655C",
+    outline: "#6E8D82",
     outlineVariant: "#365047",
     inverseSurface: "#D7F5E6",
     inverseOnSurface: "#0A1112",
@@ -1363,7 +1363,7 @@ export const ArtDecoTheme: Theme = {
     onSurface: "#F3E8D0",
     surfaceVariant: "#232124",
     onSurfaceVariant: "#C9BDA2",
-    outline: "#665E4D",
+    outline: "#9E8A63",
     outlineVariant: "#4B4332",
     scrim: "#000000",
     inverseSurface: "#F3E8D0",

@@ -359,7 +359,7 @@ export const OBSIDIAN_CRIMSON_COLOR_SCHEME: SharedColorSchemeData = {
   onSurface: "#F5F5F5",
   surfaceVariant: "#2D2D2D",
   onSurfaceVariant: "#D0D0D0",
-  outline: "#5E5E5E",
+  outline: "#8A8A8A",
   outlineVariant: "#3D3D3D",
   scrim: "#000000",
   inverseSurface: "#F5F5F5",
