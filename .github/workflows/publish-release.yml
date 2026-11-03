@@ -54,6 +54,13 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      - name: Publish @kaleaon/ktheme-schema-cli npm Package
+        run: |
+          npm --prefix packages/schema-cli publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Compute Cryptographic SHA-256 Checksums
         run: |
           mkdir -p dist/checksums

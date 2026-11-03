@@ -1,0 +1,35 @@
+{
+  "name": "@kaleaon/ktheme-schema-cli",
+  "version": "1.0.0",
+  "description": "Standalone CLI for Ktheme schema migration and validation",
+  "bin": {
+    "ktheme-schema": "./dist/cli.js",
+    "ktheme-schema-cli": "./dist/cli.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test test/cli.test.mjs"
+  },
+  "keywords": [
+    "ktheme",
+    "theme",
+    "schema",
+    "migration",
+    "cli"
+  ],
+  "author": "Kaleaon",
+  "license": "Apache-2.0"
+}

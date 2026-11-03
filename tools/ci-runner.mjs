@@ -42,6 +42,7 @@ const args = process.argv.slice(2);
 let runLint = args.includes("--lint");
 let runUnit = args.includes("--unit");
 let runCatalog = args.includes("--catalog");
+let runSchema = args.includes("--schema");
 let runPalette = args.includes("--palette");
 let runA11y = args.includes("--a11y");
 let runVisual = args.includes("--visual");
@@ -66,6 +67,7 @@ ${colors.bold}FLAGS:${colors.reset}
   --lint              Run ESLint static analysis
   --unit              Run unit test suites
   --catalog           Run theme catalog parity checks
+  --schema            Run Ktheme theme schema validation
   --palette           Run static WCAG 2.2 AA color palette contrast audit
   --a11y              Run automated WCAG 2.1 AA accessibility auditing
   --visual            Run Playwright visual snapshot regression suite
@@ -80,9 +82,10 @@ ${colors.bold}FLAGS:${colors.reset}
 }
 
 // If no specific task flag was passed, run all tasks applicable to the current repo
-if (!runUnit && !runCatalog && !runPalette && !runA11y && !runVisual) {
+if (!runUnit && !runCatalog && !runSchema && !runPalette && !runA11y && !runVisual) {
   runUnit = true;
   runCatalog = true;
+  runSchema = true;
   runPalette = true;
   runA11y = true;
   runVisual = true;
@@ -407,6 +410,35 @@ async function taskCatalogCheck() {
     return true;
   } else {
     log("Theme catalog is out of sync with SHARED_PRESET_REGISTRY.", "error");
+    return false;
+  }
+}
+
+// TASK: Theme Schema Validation
+async function taskSchemaValidation() {
+  log("Running Theme Schema Validation...", "header");
+  const repoRoot = path.resolve(__dirname, "..");
+  const targetDir =
+    cwd === repoRoot || cwd.startsWith(repoRoot) ? cwd : repoRoot;
+  const binScript = path.join(targetDir, "bin/ktheme-schema.mjs");
+  let res;
+  if (fs.existsSync(binScript)) {
+    res = spawnSync(process.execPath, [binScript, "sync", "--check"], {
+      cwd: targetDir,
+      stdio: "inherit",
+    });
+  } else {
+    res = spawnSync("npx", ["ktheme-schema", "sync", "--check"], {
+      cwd: targetDir,
+      stdio: "inherit",
+      shell: true,
+    });
+  }
+  if (res.status === 0) {
+    log("Theme schema validation passed.", "success");
+    return true;
+  } else {
+    log("Theme schema validation failed.", "error");
     return false;
   }
 }
@@ -904,6 +936,7 @@ Active Tasks: ${[
     runLint && "Lint",
     runUnit && "Unit",
     runCatalog && "Catalog",
+    runSchema && "Schema",
     runPalette && "Palette",
     runA11y && "A11y",
     runVisual && "Visual",
@@ -924,6 +957,10 @@ Active Tasks: ${[
 
   if (runCatalog) {
     results.catalog = await taskCatalogCheck();
+  }
+
+  if (runSchema) {
+    results.schema = await taskSchemaValidation();
   }
 
   if (runPalette) {
