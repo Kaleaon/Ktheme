@@ -1,4 +1,5 @@
 import { MetallicVariant, Theme } from "../../core/types";
+import { resolveLayoutStandard } from "../../standards/layouts";
 import { toHexColor } from "../utils";
 import { NormalizedThemeTokens } from "./tokenIR";
 
@@ -26,7 +27,7 @@ export function extractThemeTokens(theme: Theme): NormalizedThemeTokens {
     cs.onSecondaryContainer ?? onSecondary,
   );
 
-  const tertiary = toHexColor(cs.tertiary ?? "#888888");
+  const tertiary = toHexColor(cs.tertiary ?? "#595959");
   const onTertiary = toHexColor(cs.onTertiary ?? "#FFFFFF");
   const tertiaryContainer = toHexColor(cs.tertiaryContainer ?? tertiary);
   const onTertiaryContainer = toHexColor(cs.onTertiaryContainer ?? onTertiary);
@@ -43,7 +44,21 @@ export function extractThemeTokens(theme: Theme): NormalizedThemeTokens {
   const surfaceVariant = toHexColor(cs.surfaceVariant ?? surface);
   const onSurfaceVariant = toHexColor(cs.onSurfaceVariant ?? onSurface);
 
-  const outline = toHexColor(cs.outline ?? "#777777");
+  const surfaceDim = toHexColor(cs.surfaceDim ?? background);
+  const surfaceBright = toHexColor(cs.surfaceBright ?? surface);
+  const surfaceContainerLowest = toHexColor(
+    cs.surfaceContainerLowest ?? surfaceVariant,
+  );
+  const surfaceContainerLow = toHexColor(
+    cs.surfaceContainerLow ?? surfaceVariant,
+  );
+  const surfaceContainer = toHexColor(cs.surfaceContainer ?? surface);
+  const surfaceContainerHigh = toHexColor(cs.surfaceContainerHigh ?? surface);
+  const surfaceContainerHighest = toHexColor(
+    cs.surfaceContainerHighest ?? surface,
+  );
+
+  const outline = toHexColor(cs.outline ?? "#595959");
   const outlineVariant = toHexColor(cs.outlineVariant ?? outline);
 
   const scrim = toHexColor(cs.scrim ?? "#000000");
@@ -194,6 +209,13 @@ export function extractThemeTokens(theme: Theme): NormalizedThemeTokens {
       onSurface,
       surfaceVariant,
       onSurfaceVariant,
+      surfaceDim,
+      surfaceBright,
+      surfaceContainerLowest,
+      surfaceContainerLow,
+      surfaceContainer,
+      surfaceContainerHigh,
+      surfaceContainerHighest,
       outline,
       outlineVariant,
       scrim,
@@ -254,5 +276,6 @@ export function extractThemeTokens(theme: Theme): NormalizedThemeTokens {
         ? { desktopAdaptation: theme.adaptation.desktopAdaptation }
         : {}),
     },
+    layoutStandard: resolveLayoutStandard(theme),
   };
 }

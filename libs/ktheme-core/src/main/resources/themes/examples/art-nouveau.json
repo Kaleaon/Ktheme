@@ -1,16 +1,26 @@
 {
+  "schemaVersion": 2,
   "metadata": {
     "id": "art-nouveau",
     "name": "Art Nouveau",
     "description": "Organic curves, botanical accents, and decorative linework with a warm natural palette",
     "author": "Ktheme",
     "version": "1.0.0",
-    "tags": ["iconic", "organic", "botanical", "warm"],
+    "tags": [
+      "iconic",
+      "organic",
+      "botanical",
+      "warm"
+    ],
     "createdAt": "2026-03-05T00:00:00.000Z",
     "updatedAt": "2026-03-05T00:00:00.000Z"
   },
   "darkMode": false,
   "colorScheme": {
+    "error": "#BA1A1A",
+    "onError": "#FFFFFF",
+    "errorContainer": "#FFDAD6",
+    "onErrorContainer": "#410002",
     "primary": "#7B5737",
     "onPrimary": "#FFF7EE",
     "primaryContainer": "#D9C2A9",
@@ -23,10 +33,6 @@
     "onTertiary": "#FFF8F3",
     "tertiaryContainer": "#F1C9AF",
     "onTertiaryContainer": "#43210D",
-    "error": "#BA1A1A",
-    "onError": "#FFFFFF",
-    "errorContainer": "#FFDAD6",
-    "onErrorContainer": "#410002",
     "background": "#F6F0E6",
     "onBackground": "#2C2218",
     "surface": "#FFF8EE",
@@ -77,7 +83,32 @@
       "cornerStyle": "pill",
       "spacingScale": 1.08,
       "panelStyle": "glass",
-      "navigationStyle": "tabs"
+      "navigationStyle": "tabs",
+      "accessibility": {
+        "landmarks": {
+          "main": "main",
+          "nav": "navigation",
+          "header": "header",
+          "footer": "footer"
+        },
+        "naming": {
+          "strategy": "native",
+          "main": "Main Content",
+          "nav": "Primary Navigation",
+          "header": "Application Header",
+          "footer": "Footer"
+        },
+        "keyboard": {
+          "order": "document",
+          "focusPolicy": "native",
+          "trapFocusWithinModals": true
+        },
+        "liveRegion": {
+          "mode": "polite",
+          "atomic": true,
+          "relevant": "additions"
+        }
+      }
     },
     "icons": {
       "family": "custom",

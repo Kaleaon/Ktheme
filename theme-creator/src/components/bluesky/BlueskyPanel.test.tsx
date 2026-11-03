@@ -54,6 +54,31 @@ describe("BlueskyPanel Accessibility Tests", () => {
       expect(alertEl).toBeInTheDocument();
       expect(alertEl.getAttribute("aria-live")).toBe("assertive");
       expect(alertEl).toHaveTextContent("Invalid credentials");
+      expect(alertEl.id).toBeTruthy();
+      expect(handleInput).toHaveAttribute("aria-invalid", "true");
+      expect(handleInput).toHaveAttribute("aria-describedby", alertEl.id);
+      expect(passwordInput).toHaveAttribute("aria-invalid", "true");
+      expect(passwordInput).toHaveAttribute("aria-describedby", alertEl.id);
     });
+  });
+
+  it("has explicit WCAG-compliant autoComplete attributes on authentication inputs", () => {
+    (useBluesky as jest.Mock).mockReturnValue({
+      agent: null,
+      profile: null,
+      isLoading: false,
+      error: null,
+      login: jest.fn(),
+      logout: jest.fn(),
+      resumeSession: jest.fn(),
+    });
+
+    render(<BlueskyPanel />);
+
+    const handleInput = screen.getByPlaceholderText("user.bsky.social");
+    const passwordInput = screen.getByPlaceholderText("xxxx-xxxx-xxxx-xxxx");
+
+    expect(handleInput).toHaveAttribute("autocomplete", "username");
+    expect(passwordInput).toHaveAttribute("autocomplete", "current-password");
   });
 });

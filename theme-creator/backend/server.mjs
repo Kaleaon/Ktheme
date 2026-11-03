@@ -1,5 +1,11 @@
 import { createServer } from "node:http";
 import crypto from "node:crypto";
+import {
+  validateThemePayload,
+  createZipArchive,
+  exportThemeForTarget,
+  normalizeTarget,
+} from "../../dist/exporters/exportEngine.js";
 
 const PORT = Number(process.env.AI_BACKEND_PORT || 8787);
 const SESSION_TTL_MS = Number(process.env.AI_SESSION_TTL_MS || 15 * 60 * 1000);
@@ -253,6 +259,91 @@ function cleanupExpiredSessions() {
 
 createServer(async (req, res) => {
   if (req.method === "OPTIONS") return json(res, 200, { ok: true });
+
+  if (req.method === "POST" && req.url.startsWith("/api/export/")) {
+    const clientKey = req.headers["x-client-ip"] || req.socket.remoteAddress || "global";
+    if (!checkRateLimit(`export:${clientKey}`)) {
+      return json(res, 429, {
+        error: "Rate limit exceeded. Please wait before issuing additional export requests.",
+      });
+    }
+
+    try {
+      const urlObj = new URL(
+        req.url,
+        `http://${req.headers.host || "localhost"}`,
+      );
+      const pathParts = urlObj.pathname.split("/").filter(Boolean);
+      const rawTarget = pathParts[2] || "";
+
+      const body = await parseBody(req);
+
+      const validation = validateThemePayload(body);
+      if (!validation.valid) {
+        return json(res, 400, {
+          error: "Invalid theme payload schema",
+          details: validation.errors,
+        });
+      }
+
+      const normTarget = normalizeTarget(rawTarget);
+      if (!normTarget) {
+        return json(res, 400, {
+          error: `Unsupported target '${rawTarget}'. Supported targets: android, swiftui, css, tailwind, flutter, json, blender`,
+        });
+      }
+
+      const isZipRequested =
+        urlObj.searchParams.get("archive") === "true" ||
+        urlObj.searchParams.get("zip") === "true" ||
+        urlObj.searchParams.get("format") === "zip" ||
+        body.archive === true ||
+        body.format === "zip" ||
+        (req.headers.accept && req.headers.accept.includes("application/zip"));
+
+      const exportResult = await exportThemeForTarget(
+        validation.theme,
+        normTarget,
+      );
+
+      if (isZipRequested) {
+        const zipBuffer = createZipArchive(exportResult.files);
+        const themeId = validation.theme.metadata?.id || "ktheme";
+        res.writeHead(200, {
+          "Content-Type": "application/zip",
+          "Content-Disposition": `attachment; filename="${themeId}-${normTarget}.zip"`,
+          "Content-Length": zipBuffer.length,
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Allow-Methods": "POST,OPTIONS",
+        });
+        return res.end(zipBuffer);
+      } else {
+        return json(res, 200, {
+          ok: true,
+          target: normTarget,
+          filename: exportResult.defaultFilename,
+          contentType: exportResult.contentType,
+          code: exportResult.singleCode,
+          files: exportResult.files,
+        });
+      }
+    } catch (err) {
+      if (err.message === "Payload too large") {
+        return json(res, 413, {
+          error: "Payload size exceeds maximum allowed limit of 4MB.",
+        });
+      }
+      if (err.message === "Invalid JSON") {
+        return json(res, 400, {
+          error: "Invalid JSON body payload.",
+        });
+      }
+      return json(res, 500, {
+        error: err instanceof Error ? err.message : String(err),
+      });
+    }
+  }
 
   if (req.method === "POST" && req.url === "/api/ai/session") {
     try {

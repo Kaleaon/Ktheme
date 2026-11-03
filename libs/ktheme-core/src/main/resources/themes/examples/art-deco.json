@@ -1,32 +1,38 @@
 {
+  "schemaVersion": 2,
   "metadata": {
     "id": "art-deco",
     "name": "Art Deco",
     "description": "Geometric symmetry, stepped motifs, and premium gold-black-ivory contrast",
     "author": "Ktheme",
     "version": "1.0.0",
-    "tags": ["iconic", "geometric", "luxury", "high-contrast"],
+    "tags": [
+      "iconic",
+      "geometric",
+      "luxury",
+      "high-contrast"
+    ],
     "createdAt": "2026-03-05T00:00:00.000Z",
     "updatedAt": "2026-03-05T00:00:00.000Z"
   },
   "darkMode": true,
   "colorScheme": {
+    "error": "#FFB4AB",
+    "onError": "#690005",
+    "errorContainer": "#93000A",
+    "onErrorContainer": "#FFDAD6",
     "primary": "#D4AF37",
     "onPrimary": "#1A1405",
     "primaryContainer": "#8F7121",
     "onPrimaryContainer": "#FFF2C6",
     "secondary": "#F4E7CF",
     "onSecondary": "#221A0A",
-    "secondaryContainer": "#B8A17A",
-    "onSecondaryContainer": "#161005",
+    "secondaryContainer": "#3A3222",
+    "onSecondaryContainer": "#F4E7CF",
     "tertiary": "#0F0F11",
     "onTertiary": "#F6EAD1",
     "tertiaryContainer": "#2A2A2E",
     "onTertiaryContainer": "#F2E2B2",
-    "error": "#FFB4AB",
-    "onError": "#690005",
-    "errorContainer": "#93000A",
-    "onErrorContainer": "#FFDAD6",
     "background": "#0B0A0A",
     "onBackground": "#F3E8D0",
     "surface": "#141314",
@@ -88,7 +94,32 @@
       "cornerStyle": "sharp",
       "spacingScale": 0.94,
       "panelStyle": "elevated",
-      "navigationStyle": "rail"
+      "navigationStyle": "rail",
+      "accessibility": {
+        "landmarks": {
+          "main": "main",
+          "nav": "navigation",
+          "header": "header",
+          "footer": "footer"
+        },
+        "naming": {
+          "strategy": "native",
+          "main": "Main Content",
+          "nav": "Primary Navigation",
+          "header": "Application Header",
+          "footer": "Footer"
+        },
+        "keyboard": {
+          "order": "document",
+          "focusPolicy": "native",
+          "trapFocusWithinModals": true
+        },
+        "liveRegion": {
+          "mode": "polite",
+          "atomic": true,
+          "relevant": "additions"
+        }
+      }
     },
     "icons": {
       "family": "material",

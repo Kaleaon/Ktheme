@@ -1,11 +1,17 @@
 {
+  "schemaVersion": 2,
   "metadata": {
     "id": "rose-gold",
     "name": "Rose Gold",
     "description": "Warm and elegant rose gold with burgundy undertones",
     "author": "Ktheme",
     "version": "1.0.0",
-    "tags": ["metallic", "warm", "elegant", "dark"],
+    "tags": [
+      "metallic",
+      "warm",
+      "elegant",
+      "dark"
+    ],
     "createdAt": "2026-02-15T20:42:39.611Z",
     "updatedAt": "2026-02-15T20:42:39.611Z"
   },
@@ -15,14 +21,14 @@
     "onError": "#690005",
     "errorContainer": "#93000A",
     "onErrorContainer": "#FFDAD6",
-    "primary": "#C1818B",
+    "primary": "#B76E79",
     "onPrimary": "#3D1F2B",
     "primaryContainer": "#7D4A52",
     "onPrimaryContainer": "#F5D5D8",
     "secondary": "#D4A5A5",
-    "onSecondary": "#3D1F2B",
+    "onSecondary": "#442929",
     "secondaryContainer": "#8C6969",
-    "onSecondaryContainer": "#F5E5E5",
+    "onSecondaryContainer": "#FCF7F7",
     "tertiary": "#C9A9A9",
     "onTertiary": "#3D2929",
     "tertiaryContainer": "#8A7474",
@@ -33,7 +39,7 @@
     "onSurface": "#F5E5E8",
     "surfaceVariant": "#5D3F4B",
     "onSurfaceVariant": "#E5D5D8",
-    "outline": "#9E8A8E",
+    "outline": "#D4CCCD",
     "outlineVariant": "#4E3A3E",
     "scrim": "#000000",
     "inverseSurface": "#F5E5E8",
@@ -65,43 +71,5 @@
       "angle": 120
     }
   },
-  "adaptation": {
-    "desktopAdaptation": {
-      "windowChrome": {
-        "titleBarHeight": 26,
-        "headerStyle": "standard",
-        "cornerStyle": "rounded",
-        "panelRadius": 10,
-        "controlRadius": 8,
-        "borderWidth": 1,
-        "shadow": "0 14px 36px rgba(0,0,0,0.5)"
-      },
-      "menuBar": {
-        "height": 28,
-        "fontSize": 11,
-        "letterSpacing": "0.06em",
-        "textTransform": "uppercase",
-        "dropdownRadius": 10,
-        "dropdownShadow": "0 12px 28px rgba(0,0,0,0.4)"
-      },
-      "taskbar": {
-        "height": 40,
-        "buttonRadius": 8,
-        "dockAlignment": "left",
-        "quickChatBorderRadius": 8
-      },
-      "cameraHud": {
-        "panelRadius": 10,
-        "buttonRadius": 8,
-        "shadow": "0 8px 20px rgba(0,0,0,0.3)"
-      },
-      "sweep": {
-        "elbowWidth": 30,
-        "titleCapRadius": "10px",
-        "accentBand": "primary",
-        "showElbowBar": true
-      }
-    }
-  },
-  "schemaVersion": 2
+  "adaptation": {}
 }

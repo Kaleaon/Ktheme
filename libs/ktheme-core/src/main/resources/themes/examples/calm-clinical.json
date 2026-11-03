@@ -1,4 +1,5 @@
 {
+  "schemaVersion": 2,
   "metadata": {
     "id": "calm-clinical",
     "name": "Calm Clinical",
@@ -18,6 +19,10 @@
   },
   "darkMode": false,
   "colorScheme": {
+    "error": "#BA1A1A",
+    "onError": "#FFFFFF",
+    "errorContainer": "#FFDAD6",
+    "onErrorContainer": "#410002",
     "primary": "#3A7CA5",
     "onPrimary": "#F3FAFF",
     "primaryContainer": "#C4DFF2",
@@ -30,17 +35,13 @@
     "onTertiary": "#0E2333",
     "tertiaryContainer": "#D8E6F0",
     "onTertiaryContainer": "#264256",
-    "error": "#BA1A1A",
-    "onError": "#FFFFFF",
-    "errorContainer": "#FFDAD6",
-    "onErrorContainer": "#410002",
     "background": "#F5FAFD",
     "onBackground": "#1F394B",
     "surface": "#FFFFFF",
     "onSurface": "#1F394B",
     "surfaceVariant": "#E5EEF4",
     "onSurfaceVariant": "#445F72",
-    "outline": "#6D8799",
+    "outline": "#6B8698",
     "outlineVariant": "#B5C8D5",
     "scrim": "#000000",
     "inverseSurface": "#1F394B",
@@ -54,5 +55,6 @@
       "blur": 2,
       "color": "#00000011"
     }
-  }
+  },
+  "adaptation": {}
 }

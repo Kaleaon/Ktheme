@@ -5,7 +5,12 @@
     "description": "Organic curves, botanical accents, and decorative linework with a warm natural palette",
     "author": "Ktheme",
     "version": "1.0.0",
-    "tags": ["iconic", "organic", "botanical", "warm"],
+    "tags": [
+      "iconic",
+      "organic",
+      "botanical",
+      "warm"
+    ],
     "createdAt": "2026-03-05T00:00:00.000Z",
     "updatedAt": "2026-03-05T00:00:00.000Z"
   },

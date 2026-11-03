@@ -56,14 +56,14 @@ public fun Theme.toComposeColorScheme(): ColorScheme {
         cs.outline.toComposeColor(),
         cs.outlineVariant.toComposeColor(),
         cs.scrim.toComposeColor(),
-        // surfaceBright / surfaceDim / surfaceContainer*  -> sensible defaults
-        cs.surface.toComposeColor(),
-        cs.background.toComposeColor(),
-        cs.surfaceVariant.toComposeColor(),
-        cs.surfaceVariant.toComposeColor(),
-        cs.surface.toComposeColor(),
-        cs.surface.toComposeColor(),
-        cs.surface.toComposeColor(),
+        // surfaceBright / surfaceDim / surfaceContainer*
+        (cs.surfaceBright ?: cs.surface).toComposeColor(),
+        (cs.surfaceDim ?: cs.background).toComposeColor(),
+        (cs.surfaceContainerLowest ?: cs.surfaceVariant).toComposeColor(),
+        (cs.surfaceContainerLow ?: cs.surfaceVariant).toComposeColor(),
+        (cs.surfaceContainer ?: cs.surface).toComposeColor(),
+        (cs.surfaceContainerHigh ?: cs.surface).toComposeColor(),
+        (cs.surfaceContainerHighest ?: cs.surface).toComposeColor(),
     )
 }
 
