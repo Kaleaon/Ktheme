@@ -11,6 +11,17 @@ export { batchSetCssVariables, flushCssVariables } from "./batchStyleMutation";
 
 export { ThemeStudio } from "./studio/ThemeStudio";
 export type { ThemeStudioProps } from "./studio/ThemeStudio";
+export {
+  calcContrastRatio,
+  calcLuminance,
+  formatBadgeText,
+  getTokenCounterpart,
+  auditThemeTokens,
+} from "./studio/contrast";
+export type {
+  ContrastPairAudit,
+  ContrastAuditSummary,
+} from "./studio/contrast";
 
 export { SculptingCanvas } from "./SculptingCanvas";
 export type {
