@@ -569,7 +569,7 @@ describe("ThemeEngine adaptations", () => {
           onInfo: "#001122",
         },
         stateLayers: {
-          hover: "hsl(10, 50%, 50%)",
+          hover: "invalid-color-string",
         },
       },
       effects: {
