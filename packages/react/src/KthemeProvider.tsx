@@ -293,6 +293,14 @@ function tokensToCssVars(tokens: KthemeTokens): Record<string, string> {
   if (tokens.rs) vars["--ktheme-rs"] = tokens.rs;
   if (tokens.font) vars["--ktheme-font"] = tokens.font;
 
+  // Motion tokens
+  vars["--ktheme-motion-duration"] = tokens.motionDuration || "300ms";
+  vars["--ktheme-motion-easing"] = tokens.motionEasing || "cubic-bezier(0.25, 0.1, 0.25, 1.0)";
+  vars["--ktheme-motion-duration-reduced"] = tokens.motionDurationReduced || "0ms";
+  vars["--ktheme-motion-easing-reduced"] = tokens.motionEasingReduced || "cubic-bezier(0.0, 0.0, 1.0, 1.0)";
+  vars["--ktheme-animation-duration"] = vars["--ktheme-motion-duration"];
+  vars["--ktheme-animation-easing"] = vars["--ktheme-motion-easing"];
+
   // Additional custom token keys
   Object.keys(tokens).forEach((k) => {
     if (typeof tokens[k] === "string" && !vars[`--ktheme-${k}`]) {
