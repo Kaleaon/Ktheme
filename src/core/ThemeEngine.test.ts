@@ -802,17 +802,20 @@ describe("ThemeEngine adaptations", () => {
       },
     };
 
-    const validation = engine.validateTheme(lowContrastCompTheme as unknown as Theme);
+    const validation = engine.validateTheme(
+      lowContrastCompTheme as unknown as Theme,
+    );
     expect(
       validation.warnings.some((msg) =>
-        msg.includes("Low non-text UI component contrast for outline/background"),
+        msg.includes(
+          "Low non-text UI component contrast for outline/background",
+        ),
       ),
     ).toBe(true);
     expect(
       validation.issues.some(
         (issue) =>
-          issue.code === "low-contrast" &&
-          issue.path === "colorScheme.outline",
+          issue.code === "low-contrast" && issue.path === "colorScheme.outline",
       ),
     ).toBe(true);
   });

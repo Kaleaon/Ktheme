@@ -146,7 +146,9 @@ export function ExportImport() {
           if (converted && converted.colorScheme?.primary) {
             dispatch({ type: "SET_THEME", payload: converted as KTheme });
             setStatusMessage(
-              `${converted.metadata.name || "Tokens Studio Theme"} imported successfully.`,
+              `${
+                converted.metadata.name || "Tokens Studio Theme"
+              } imported successfully.`,
             );
             setErrorMessage("");
           } else {

@@ -7,7 +7,4 @@ export {
   getTokenCounterpart,
   auditThemeTokens,
 } from "./contrast";
-export type {
-  ContrastPairAudit,
-  ContrastAuditSummary,
-} from "./contrast";
+export type { ContrastPairAudit, ContrastAuditSummary } from "./contrast";

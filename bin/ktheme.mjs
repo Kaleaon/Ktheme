@@ -165,19 +165,29 @@ Usage:
     const themeId = getArgValue("--theme-id");
 
     if (!source) {
-      console.error("Error: --source <tokens-studio.json> path is required for import.");
+      console.error(
+        "Error: --source <tokens-studio.json> path is required for import.",
+      );
       process.exit(1);
     }
 
     try {
-      const result = importTokensCommand({ source, out, format, themeName, themeId });
+      const result = importTokensCommand({
+        source,
+        out,
+        format,
+        themeName,
+        themeId,
+      });
       console.log(`✓ ${result.message}`);
       for (const file of result.generatedFiles) {
         console.log(`  - ${file}`);
       }
       process.exit(0);
     } catch (err) {
-      console.error(`✗ Import failed: ${err instanceof Error ? err.message : String(err)}`);
+      console.error(
+        `✗ Import failed: ${err instanceof Error ? err.message : String(err)}`,
+      );
       process.exit(1);
     }
   }

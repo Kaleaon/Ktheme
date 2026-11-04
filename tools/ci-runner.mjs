@@ -688,7 +688,10 @@ async function taskA11yAudit() {
 
   const contrastScriptTs = path.join(cwd, "scripts/verify-preset-contrast.ts");
   if (fs.existsSync(contrastScriptTs)) {
-    log("Auditing Raw Theme Preset Tokens for WCAG AA Contrast Compliance...", "info");
+    log(
+      "Auditing Raw Theme Preset Tokens for WCAG AA Contrast Compliance...",
+      "info",
+    );
     const contrastRes = spawnSync("npx", ["ts-node", contrastScriptTs], {
       cwd,
       stdio: "inherit",

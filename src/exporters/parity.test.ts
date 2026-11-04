@@ -1020,7 +1020,10 @@ describe("exporter parity & IR pipeline", () => {
 
   describe("@ktheme/tokens build distribution", () => {
     it("generates dist/tokens.css containing --ktheme-font-family and typography scale variables in :root", () => {
-      const tokensCssPath = path.resolve(__dirname, "../../packages/tokens/dist/tokens.css");
+      const tokensCssPath = path.resolve(
+        __dirname,
+        "../../packages/tokens/dist/tokens.css",
+      );
       expect(fs.existsSync(tokensCssPath)).toBe(true);
       const css = fs.readFileSync(tokensCssPath, "utf8");
 
@@ -1036,7 +1039,10 @@ describe("exporter parity & IR pipeline", () => {
     });
 
     it("generates dist/tokens.json containing typography CSS custom property definitions", () => {
-      const tokensJsonPath = path.resolve(__dirname, "../../packages/tokens/dist/tokens.json");
+      const tokensJsonPath = path.resolve(
+        __dirname,
+        "../../packages/tokens/dist/tokens.json",
+      );
       expect(fs.existsSync(tokensJsonPath)).toBe(true);
       const json = JSON.parse(fs.readFileSync(tokensJsonPath, "utf8"));
 

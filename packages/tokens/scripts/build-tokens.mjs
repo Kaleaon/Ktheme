@@ -1431,12 +1431,12 @@ const _buildDefaultDesktopConfig = (data) => {
 };
 
 // Canonical theme typography via exportTypographyVars
-const themeExamplesDir = path.resolve(kthemeRoot, 'themes/examples');
+const themeExamplesDir = path.resolve(kthemeRoot, "themes/examples");
 let canonicalTheme = {};
-const inkModernPath = path.join(themeExamplesDir, 'ink-terminal-modern.json');
+const inkModernPath = path.join(themeExamplesDir, "ink-terminal-modern.json");
 if (fs.existsSync(inkModernPath)) {
   try {
-    canonicalTheme = JSON.parse(fs.readFileSync(inkModernPath, 'utf8'));
+    canonicalTheme = JSON.parse(fs.readFileSync(inkModernPath, "utf8"));
   } catch (e) {
     // ignore parse error
   }
@@ -1704,7 +1704,7 @@ if (fs.existsSync(themeExamplesDir)) {
 
 fs.writeFileSync(
   path.join(distDir, "tokens.json"),
-  JSON.stringify(tokensJsonObject, null, 2),
+  JSON.stringify(tokensJsonObject, null, 2) + "\n",
   "utf8",
 );
 

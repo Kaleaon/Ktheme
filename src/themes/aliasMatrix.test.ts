@@ -8,7 +8,9 @@ describe("CSS Token Alias Matrix & Generator Standardization", () => {
 
     expect(content).toContain("--c-primary: var(--ktheme-primary);");
     expect(content).toContain("--md-sys-color-primary: var(--ktheme-primary);");
-    expect(content).toContain("--bg-surface: var(--ktheme-surface, var(--ktheme-bg-surface));");
+    expect(content).toContain(
+      "--bg-surface: var(--ktheme-surface, var(--ktheme-bg-surface));",
+    );
     expect(content).toContain("--kt-font-ui: var(--ktheme-font-ui);");
   });
 });

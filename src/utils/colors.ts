@@ -242,20 +242,28 @@ export function normalizeColor(color: Color): RGBAColor {
 /**
  * Parses any color input (HEX, RGB, RGBA, HSL, HSLA, or Color object) into a standardized Ktheme HEX string.
  */
-export function parseColorToHex(color: Color | HSLColor | HSLAColor | string): HexColor {
+export function parseColorToHex(
+  color: Color | HSLColor | HSLAColor | string,
+): HexColor {
   if (typeof color === "string") {
     const trimmed = color.trim();
     const hexParsed = parseHexColor(trimmed);
     if (hexParsed) {
-      return hexParsed.a < 1 ? rgbaToHex(hexParsed).toUpperCase() : rgbToHex(hexParsed).toUpperCase();
+      return hexParsed.a < 1
+        ? rgbaToHex(hexParsed).toUpperCase()
+        : rgbToHex(hexParsed).toUpperCase();
     }
     const rgbParsed = parseCssRgbColor(trimmed);
     if (rgbParsed) {
-      return rgbParsed.a < 1 ? rgbaToHex(rgbParsed).toUpperCase() : rgbToHex(rgbParsed).toUpperCase();
+      return rgbParsed.a < 1
+        ? rgbaToHex(rgbParsed).toUpperCase()
+        : rgbToHex(rgbParsed).toUpperCase();
     }
     const hslParsed = parseCssHslColor(trimmed);
     if (hslParsed) {
-      return hslParsed.a < 1 ? rgbaToHex(hslParsed).toUpperCase() : rgbToHex(hslParsed).toUpperCase();
+      return hslParsed.a < 1
+        ? rgbaToHex(hslParsed).toUpperCase()
+        : rgbToHex(hslParsed).toUpperCase();
     }
     if (/^#[0-9a-fA-F]{3,8}$/.test(trimmed)) {
       return trimmed.toUpperCase();

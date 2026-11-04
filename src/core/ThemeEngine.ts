@@ -1099,11 +1099,7 @@ export class ThemeEngine {
       });
 
       const componentContrastPairs: Array<
-        [
-          keyof typeof theme.colorScheme,
-          "background" | "surface",
-          string,
-        ]
+        [keyof typeof theme.colorScheme, "background" | "surface", string]
       > = [
         ["outline", "background", "outline/background"],
         ["outline", "surface", "outline/surface"],
