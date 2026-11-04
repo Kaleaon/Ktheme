@@ -14,7 +14,7 @@
     "build": "node packages/tokens/scripts/build-tokens.mjs && tsc && tsc -p packages/react/tsconfig.json && npm run --prefix theme-creator build",
     "typecheck": "tsc --noEmit && tsc --noEmit -p packages/react/tsconfig.json && tsc -b theme-creator",
     "dev": "tsc --watch",
-    "test": "jest",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "lint": "eslint src packages",
     "lint:pre-commit": "ESLINT_USE_FLAT_CONFIG=true pre-commit run --all-files",
     "creator": "cd theme-creator && npm start",

@@ -40,6 +40,11 @@ export interface KthemeTokens {
   font?: string;
   dfont?: string;
   tls?: string;
+  // Motion tokens
+  motionDuration?: string;
+  motionEasing?: string;
+  motionDurationReduced?: string;
+  motionEasingReduced?: string;
   [key: string]: string | undefined;
 }
 
