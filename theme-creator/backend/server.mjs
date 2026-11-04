@@ -1,11 +1,67 @@
 import { createServer } from "node:http";
 import crypto from "node:crypto";
-import {
+import { createRequire } from "node:module";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
+import fs from "node:fs";
+import { execSync } from "node:child_process";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const require = createRequire(import.meta.url);
+
+function loadCoreModules() {
+  const distDir = path.resolve(__dirname, "../../dist");
+  const enginePath = path.join(distDir, "core/ThemeEngine.js");
+  const colorsPath = path.join(distDir, "utils/colors.js");
+  const exportPath = path.join(distDir, "exporters/exportEngine.js");
+
+  if (
+    !fs.existsSync(enginePath) ||
+    !fs.existsSync(colorsPath) ||
+    !fs.existsSync(exportPath)
+  ) {
+    try {
+      execSync("npm run build", {
+        cwd: path.resolve(__dirname, "../.."),
+        stdio: "ignore",
+      });
+    } catch (e) {
+      console.error("[server] Failed to build core modules:", e);
+    }
+  }
+
+  const { ThemeEngine } = require(enginePath);
+  const { contrastRatio } = require(colorsPath);
+  const {
+    validateThemePayload,
+    createZipArchive,
+    exportThemeForTarget,
+    normalizeTarget,
+  } = require(exportPath);
+
+  return {
+    ThemeEngine,
+    contrastRatio,
+    validateThemePayload,
+    createZipArchive,
+    exportThemeForTarget,
+    normalizeTarget,
+  };
+}
+
+const {
+  ThemeEngine,
+  contrastRatio,
   validateThemePayload,
   createZipArchive,
   exportThemeForTarget,
   normalizeTarget,
-} from "../../dist/exporters/exportEngine.js";
+} = loadCoreModules();
+const engine = new ThemeEngine();
+
+const MAX_RETRIES = 2;
+const MAX_TOTAL_TIMEOUT_MS = 5000;
 
 const PORT = Number(process.env.AI_BACKEND_PORT || 8787);
 const SESSION_TTL_MS = Number(process.env.AI_SESSION_TTL_MS || 15 * 60 * 1000);
@@ -20,7 +76,18 @@ const LOG_MODE = process.env.AI_LOG_MODE || "metadata"; // none | metadata | ful
 const sessions = new Map();
 const rateLimits = new Map();
 const interactionLogs = [];
+const validationLogs = [];
 const upstreamComponents = [];
+
+function logValidationEvent(type, details) {
+  const entry = {
+    at: new Date().toISOString(),
+    type,
+    ...details,
+  };
+  validationLogs.push(entry);
+  if (validationLogs.length > 500) validationLogs.shift();
+}
 
 const SYSTEM_PROMPT = `You are Ktheme AI, an expert theme designer for the Ktheme theming engine. You help users create beautiful, accessible application themes.
 
@@ -40,6 +107,7 @@ Response contract:
 The "theme" object MUST follow this exact structure:
 
 {
+  "schemaVersion": 2,
   "metadata": {
     "id": "unique-kebab-case-id",
     "name": "Theme Display Name",
@@ -175,8 +243,283 @@ function maybeLog(entry) {
     log.prompt = entry.prompt;
     log.output = entry.output;
   }
+  if (entry.retries !== undefined) log.retries = entry.retries;
+  if (entry.validationValid !== undefined) log.validationValid = entry.validationValid;
+  if (entry.diagnosticLogs) log.diagnosticLogs = entry.diagnosticLogs;
   interactionLogs.push(log);
   if (interactionLogs.length > 500) interactionLogs.shift();
+}
+
+const REQUIRED_COLOR_KEYS = [
+  "primary",
+  "onPrimary",
+  "primaryContainer",
+  "onPrimaryContainer",
+  "secondary",
+  "onSecondary",
+  "secondaryContainer",
+  "onSecondaryContainer",
+  "tertiary",
+  "onTertiary",
+  "tertiaryContainer",
+  "onTertiaryContainer",
+  "error",
+  "onError",
+  "errorContainer",
+  "onErrorContainer",
+  "background",
+  "onBackground",
+  "surface",
+  "onSurface",
+  "surfaceVariant",
+  "onSurfaceVariant",
+  "outline",
+  "outlineVariant",
+  "scrim",
+  "inverseSurface",
+  "inverseOnSurface",
+  "inversePrimary",
+];
+
+const HEX_COLOR_REGEX = /^#[0-9A-Fa-f]{6}$/;
+
+const CONTRAST_PAIRS = [
+  ["primary", "onPrimary"],
+  ["secondary", "onSecondary"],
+  ["tertiary", "onTertiary"],
+  ["background", "onBackground"],
+  ["surface", "onSurface"],
+  ["surfaceVariant", "onSurfaceVariant"],
+  ["error", "onError"],
+];
+
+const SEMANTIC_CONTRAST_PAIRS = [
+  ["success", "onSuccess"],
+  ["warning", "onWarning"],
+  ["info", "onInfo"],
+  ["critical", "onCritical"],
+];
+
+function validateThemeOutput(rawText) {
+  if (typeof rawText !== "string" || !rawText.trim()) {
+    return {
+      valid: false,
+      errors: ["Response is empty or not a string."],
+      issues: [
+        {
+          severity: "error",
+          message: "Response is empty",
+          code: "missing-schema",
+        },
+      ],
+      theme: null,
+    };
+  }
+
+  // 1. Extract JSON code block or raw JSON
+  const jsonMatch = rawText.match(/```(?:json)?\s*([\s\S]*?)```/);
+  let codeBlockText = jsonMatch ? jsonMatch[1].trim() : "";
+  if (!codeBlockText) {
+    const trimmed = rawText.trim();
+    if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
+      codeBlockText = trimmed;
+    } else {
+      return {
+        valid: false,
+        errors: [
+          "Response does not contain a JSON code block enclosed in ```json ... ```.",
+        ],
+        issues: [
+          {
+            severity: "error",
+            message: "Missing JSON code block in response",
+            code: "missing-schema",
+          },
+        ],
+        theme: null,
+      };
+    }
+  }
+
+  // 2. Parse JSON
+  let parsed;
+  try {
+    parsed = JSON.parse(codeBlockText);
+  } catch (err) {
+    return {
+      valid: false,
+      errors: [`JSON syntax error: ${err.message}`],
+      issues: [
+        {
+          severity: "error",
+          message: `JSON parse error: ${err.message}`,
+          code: "invalid-schema",
+        },
+      ],
+      theme: null,
+    };
+  }
+
+  // 3. Extract candidate theme object
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+    return {
+      valid: false,
+      errors: ["Parsed JSON payload must be an object."],
+      issues: [
+        {
+          severity: "error",
+          message: "Parsed JSON payload must be an object",
+          code: "invalid-schema",
+        },
+      ],
+      theme: null,
+    };
+  }
+
+  const candidateTheme =
+    parsed.theme && typeof parsed.theme === "object" && !Array.isArray(parsed.theme)
+      ? parsed.theme
+      : parsed;
+
+  const errors = [];
+  const issues = [];
+
+  // 4. Validate with ThemeEngine
+  try {
+    const valResult = engine.validateTheme(candidateTheme);
+    if (!valResult.valid) {
+      for (const err of valResult.errors) {
+        errors.push(err);
+      }
+    }
+    if (Array.isArray(valResult.issues)) {
+      issues.push(...valResult.issues);
+    }
+  } catch (engineErr) {
+    errors.push(`ThemeEngine validation exception: ${engineErr.message}`);
+    issues.push({
+      severity: "error",
+      message: engineErr.message,
+      code: "invalid-schema",
+    });
+  }
+
+  // 5. Validate client schema expectations (all 28 required colorScheme keys as valid hex)
+  if (!candidateTheme.colorScheme || typeof candidateTheme.colorScheme !== "object") {
+    if (!errors.some((e) => e.includes("Color scheme is required"))) {
+      errors.push("Color scheme is required");
+      issues.push({
+        severity: "error",
+        message: "Color scheme is required",
+        code: "missing-color",
+        path: "colorScheme",
+      });
+    }
+  } else {
+    for (const key of REQUIRED_COLOR_KEYS) {
+      const val = candidateTheme.colorScheme[key];
+      if (!val || typeof val !== "string" || !HEX_COLOR_REGEX.test(val)) {
+        const msg = `colorScheme.${key} is missing or not a valid 6-digit hex color (got: ${JSON.stringify(
+          val,
+        )})`;
+        if (!errors.includes(msg)) {
+          errors.push(msg);
+          issues.push({
+            severity: "error",
+            message: msg,
+            code: "invalid-token",
+            path: `colorScheme.${key}`,
+          });
+        }
+      }
+    }
+  }
+
+  // 6. WCAG AA Contrast Validation (minimum 4.5:1 ratio)
+  if (candidateTheme.colorScheme && typeof candidateTheme.colorScheme === "object") {
+    for (const [base, on] of CONTRAST_PAIRS) {
+      const colorBase = candidateTheme.colorScheme[base];
+      const colorOn = candidateTheme.colorScheme[on];
+      if (
+        colorBase &&
+        colorOn &&
+        HEX_COLOR_REGEX.test(colorBase) &&
+        HEX_COLOR_REGEX.test(colorOn)
+      ) {
+        try {
+          const ratio = contrastRatio(colorBase, colorOn);
+          if (ratio < 4.5) {
+            const msg = `Low contrast for colorScheme.${base} (${colorBase}) and colorScheme.${on} (${colorOn}): ratio is ${ratio.toFixed(
+              2,
+            )}:1 (WCAG AA requires >= 4.5:1)`;
+            errors.push(msg);
+            issues.push({
+              severity: "error",
+              message: msg,
+              code: "low-contrast",
+              path: `colorScheme.${base}/${on}`,
+            });
+          }
+        } catch (contrastErr) {
+          errors.push(`Contrast check error for ${base}/${on}: ${contrastErr.message}`);
+        }
+      }
+    }
+
+    // Semantic roles contrast check
+    if (
+      candidateTheme.colorScheme.semanticRoles &&
+      typeof candidateTheme.colorScheme.semanticRoles === "object"
+    ) {
+      for (const [base, on] of SEMANTIC_CONTRAST_PAIRS) {
+        const colorBase = candidateTheme.colorScheme.semanticRoles[base];
+        const colorOn = candidateTheme.colorScheme.semanticRoles[on];
+        if (
+          colorBase &&
+          colorOn &&
+          HEX_COLOR_REGEX.test(colorBase) &&
+          HEX_COLOR_REGEX.test(colorOn)
+        ) {
+          try {
+            const ratio = contrastRatio(colorBase, colorOn);
+            if (ratio < 4.5) {
+              const msg = `Low contrast for semantic role ${base} (${colorBase}) and ${on} (${colorOn}): ratio is ${ratio.toFixed(
+                2,
+              )}:1 (WCAG AA requires >= 4.5:1)`;
+              errors.push(msg);
+              issues.push({
+                severity: "error",
+                message: msg,
+                code: "low-contrast",
+                path: `colorScheme.semanticRoles.${base}/${on}`,
+              });
+            }
+          } catch {}
+        }
+      }
+    }
+  }
+
+  const uniqueErrors = [...new Set(errors)];
+
+  return {
+    valid: uniqueErrors.length === 0,
+    errors: uniqueErrors,
+    issues,
+    theme: candidateTheme,
+  };
+}
+
+function formatCorrectionPrompt(errors, issues = []) {
+  const bulletErrors = errors.map((err, idx) => `${idx + 1}. ${err}`).join("\n");
+  return `The theme candidate you generated failed strict backend validation against the Ktheme specification and WCAG AA contrast rules:\n\n${bulletErrors}\n\nPlease regenerate the theme and correct all the errors listed above. Return the entire corrected response containing a single valid JSON object enclosed in a \`\`\`json code block.
+Ensure that:
+1. schemaVersion is 2.
+2. All metadata fields (id, name, description, author, version, tags, createdAt, updatedAt) are present and valid.
+3. darkMode is a boolean.
+4. All 28 colorScheme colors are valid 6-digit hex codes (#RRGGBB).
+5. All foreground/background color pairs strictly meet WCAG AA contrast ratio of at least 4.5:1 (e.g. primary/onPrimary, secondary/onSecondary, tertiary/onTertiary, background/onBackground, surface/onSurface, surfaceVariant/onSurfaceVariant, error/onError).
+6. Do not include any text outside the \`\`\`json code block.`;
 }
 
 const providers = {
@@ -257,7 +600,7 @@ function cleanupExpiredSessions() {
   }
 }
 
-createServer(async (req, res) => {
+async function requestHandler(req, res) {
   if (req.method === "OPTIONS") return json(res, 200, { ok: true });
 
   if (req.method === "POST" && req.url.startsWith("/api/export/")) {
@@ -381,17 +724,191 @@ createServer(async (req, res) => {
         return json(res, 429, { error: "Rate limit exceeded" });
 
       const provider = session.provider;
-      const output =
-        provider === "claude"
-          ? await providers.claude({
-              apiKey: session.apiKey,
-              messages: Array.isArray(body.messages) ? body.messages : [],
-            })
-          : await providers.gemini({
-              apiKey: session.apiKey,
-              prompt: typeof body.prompt === "string" ? body.prompt : "",
-              screenshots: body.screenshots,
-            });
+      const startTime = Date.now();
+      const diagnosticLogs = [];
+
+      let currentMessages = Array.isArray(body.messages) ? [...body.messages] : [];
+      let currentPrompt = typeof body.prompt === "string" ? body.prompt : "";
+
+      async function invokeProvider(messagesParam, promptParam) {
+        if (provider === "claude") {
+          return await providers.claude({
+            apiKey: session.apiKey,
+            messages: messagesParam,
+          });
+        } else {
+          return await providers.gemini({
+            apiKey: session.apiKey,
+            prompt: promptParam,
+            screenshots: body.screenshots,
+          });
+        }
+      }
+
+      // Initial invocation (Attempt 0)
+      let currentOutput = await invokeProvider(currentMessages, currentPrompt);
+      let validation = validateThemeOutput(currentOutput);
+
+      if (validation.valid) {
+        logValidationEvent("validation_success", {
+          sessionId: sessionToken.slice(0, 8),
+          provider,
+          attempt: 0,
+        });
+
+        maybeLog({
+          sessionId: sessionToken.slice(0, 8),
+          provider,
+          promptPreview:
+            typeof body.prompt === "string"
+              ? body.prompt.slice(0, 120)
+              : (body.messages?.at?.(-1)?.content || "").slice(0, 120),
+          prompt: body.prompt || JSON.stringify(body.messages || []),
+          promptLength: JSON.stringify(body.messages || body.prompt || "").length,
+          outputPreview: String(currentOutput).slice(0, 120),
+          output: currentOutput,
+          retries: 0,
+          validationValid: true,
+        });
+
+        return json(res, 200, { text: currentOutput, provider, retries: 0 });
+      }
+
+      // Initial attempt failed validation
+      diagnosticLogs.push({
+        attempt: 0,
+        errors: validation.errors,
+        issues: validation.issues,
+        timestamp: new Date().toISOString(),
+      });
+
+      logValidationEvent("validation_failure", {
+        sessionId: sessionToken.slice(0, 8),
+        provider,
+        attempt: 0,
+        errors: validation.errors,
+      });
+
+      console.warn(
+        `[AI Validation Gate] Session ${sessionToken.slice(0, 8)} attempt 0 failed validation:`,
+        validation.errors,
+      );
+
+      // Automated Re-prompt Retry Loop (up to MAX_RETRIES)
+      let retryAttempt = 0;
+      while (retryAttempt < MAX_RETRIES) {
+        const elapsed = Date.now() - startTime;
+        if (elapsed >= MAX_TOTAL_TIMEOUT_MS) {
+          console.warn(
+            `[AI Validation Gate] Exceeded total retry timeout (${elapsed}ms >= ${MAX_TOTAL_TIMEOUT_MS}ms). Aborting retries.`,
+          );
+          logValidationEvent("timeout_abort", {
+            sessionId: sessionToken.slice(0, 8),
+            provider,
+            elapsed,
+            retryAttempt,
+          });
+          break;
+        }
+
+        retryAttempt++;
+        const correctionMsg = formatCorrectionPrompt(
+          validation.errors,
+          validation.issues,
+        );
+
+        if (provider === "claude") {
+          currentMessages = [
+            ...currentMessages,
+            { role: "assistant", content: currentOutput },
+            { role: "user", content: correctionMsg },
+          ];
+        } else {
+          currentPrompt = `${currentPrompt}\n\n[Previous Candidate Theme Output]:\n${currentOutput}\n\n[Validation Correction Request]:\n${correctionMsg}`;
+        }
+
+        logValidationEvent("retry_attempt", {
+          sessionId: sessionToken.slice(0, 8),
+          provider,
+          retryAttempt,
+          errorsToCorrect: validation.errors,
+        });
+
+        console.log(
+          `[AI Validation Gate] Executing retry attempt ${retryAttempt}/${MAX_RETRIES} for session ${sessionToken.slice(
+            0,
+            8,
+          )} via ${provider}...`,
+        );
+
+        currentOutput = await invokeProvider(currentMessages, currentPrompt);
+        validation = validateThemeOutput(currentOutput);
+
+        if (validation.valid) {
+          console.log(
+            `[AI Validation Gate] Theme successfully corrected on retry attempt ${retryAttempt}!`,
+          );
+          logValidationEvent("retry_success", {
+            sessionId: sessionToken.slice(0, 8),
+            provider,
+            retryAttempt,
+          });
+
+          maybeLog({
+            sessionId: sessionToken.slice(0, 8),
+            provider,
+            promptPreview:
+              typeof body.prompt === "string"
+                ? body.prompt.slice(0, 120)
+                : (body.messages?.at?.(-1)?.content || "").slice(0, 120),
+            prompt: body.prompt || JSON.stringify(body.messages || []),
+            promptLength: JSON.stringify(body.messages || body.prompt || "").length,
+            outputPreview: String(currentOutput).slice(0, 120),
+            output: currentOutput,
+            retries: retryAttempt,
+            validationValid: true,
+            diagnosticLogs,
+          });
+
+          return json(res, 200, {
+            text: currentOutput,
+            provider,
+            retries: retryAttempt,
+          });
+        }
+
+        // Retry failed validation
+        diagnosticLogs.push({
+          attempt: retryAttempt,
+          errors: validation.errors,
+          issues: validation.issues,
+          timestamp: new Date().toISOString(),
+        });
+
+        logValidationEvent("retry_failure", {
+          sessionId: sessionToken.slice(0, 8),
+          provider,
+          retryAttempt,
+          errors: validation.errors,
+        });
+
+        console.warn(
+          `[AI Validation Gate] Retry attempt ${retryAttempt} failed validation:`,
+          validation.errors,
+        );
+      }
+
+      // If we reach here, all retries failed (or timed out)
+      console.error(
+        `[AI Validation Gate] All retry attempts failed (${retryAttempt} retries). Emitting HTTP 422.`,
+      );
+
+      logValidationEvent("validation_exhausted", {
+        sessionId: sessionToken.slice(0, 8),
+        provider,
+        attempts: retryAttempt,
+        finalErrors: validation.errors,
+      });
 
       maybeLog({
         sessionId: sessionToken.slice(0, 8),
@@ -402,11 +919,22 @@ createServer(async (req, res) => {
             : (body.messages?.at?.(-1)?.content || "").slice(0, 120),
         prompt: body.prompt || JSON.stringify(body.messages || []),
         promptLength: JSON.stringify(body.messages || body.prompt || "").length,
-        outputPreview: String(output).slice(0, 120),
-        output,
+        outputPreview: String(currentOutput).slice(0, 120),
+        output: currentOutput,
+        retries: retryAttempt,
+        validationValid: false,
+        diagnosticLogs,
       });
 
-      return json(res, 200, { text: output, provider });
+      return json(res, 422, {
+        error: `Theme validation failed after ${retryAttempt} retry attempt${
+          retryAttempt === 1 ? "" : "s"
+        }: ${validation.errors.join("; ")}`,
+        errors: validation.errors,
+        issues: validation.issues,
+        diagnosticLogs,
+        attempts: retryAttempt,
+      });
     } catch (error) {
       return json(res, 500, {
         error: error instanceof Error ? error.message : "Request failed",
@@ -514,6 +1042,35 @@ createServer(async (req, res) => {
   }
 
   return json(res, 404, { error: "Not found" });
-}).listen(PORT, () => {
-  console.log(`AI proxy listening on http://localhost:${PORT}`);
-});
+}
+
+function createServerInstance() {
+  return createServer(requestHandler);
+}
+
+const server = createServerInstance();
+
+const isMain =
+  process.argv[1] &&
+  fileURLToPath(import.meta.url) === path.resolve(process.argv[1]);
+
+if (isMain) {
+  server.listen(PORT, () => {
+    console.log(`AI proxy listening on http://localhost:${PORT}`);
+  });
+}
+
+export {
+  providers,
+  sessions,
+  rateLimits,
+  interactionLogs,
+  validationLogs,
+  validateThemeOutput,
+  formatCorrectionPrompt,
+  requestHandler,
+  createServerInstance,
+  SYSTEM_PROMPT,
+  MAX_RETRIES,
+  MAX_TOTAL_TIMEOUT_MS,
+};
