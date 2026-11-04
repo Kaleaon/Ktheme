@@ -1,7 +1,47 @@
 import React, { useState, useRef } from "react";
 import { useKtheme } from "../useKtheme";
 import { DEFAULT_THEMES } from "../KthemeProvider";
+import { batchSetCssVariables } from "../batchStyleMutation";
+import {
+  calcContrastRatio,
+  formatBadgeText,
+  getTokenCounterpart,
+  auditThemeTokens,
+} from "./contrast";
 import { useTablist } from "../hooks/useTablist";
+
+function tokenToCssVars(key: string, value: string): Record<string, string> {
+  const vars: Record<string, string> = {};
+  vars[`--ktheme-${key}`] = value;
+  if (key === "primary") {
+    vars["--ktheme-pri"] = value;
+    vars["--md-sys-color-primary"] = value;
+  } else if (key === "onPrimary") {
+    vars["--ktheme-onpri"] = value;
+    vars["--md-sys-color-on-primary"] = value;
+  } else if (key === "surface") {
+    vars["--ktheme-surf"] = value;
+    vars["--md-sys-color-surface"] = value;
+  } else if (key === "background") {
+    vars["--ktheme-bg"] = value;
+    vars["--md-sys-color-background"] = value;
+  } else if (key === "outline") {
+    vars["--ktheme-outv"] = value;
+    vars["--md-sys-color-outline"] = value;
+  } else if (key === "error") {
+    vars["--ktheme-err"] = value;
+    vars["--md-sys-color-error"] = value;
+  } else if (key === "warning") {
+    vars["--ktheme-warn"] = value;
+    vars["--md-sys-color-warning"] = value;
+  } else if (key === "success") {
+    vars["--ktheme-ok"] = value;
+    vars["--md-sys-color-success"] = value;
+  } else if (key === "secondary") {
+    vars["--md-sys-color-secondary"] = value;
+  }
+  return vars;
+}
 
 export interface ThemeStudioProps {
   embedded?: boolean;
@@ -9,6 +49,8 @@ export interface ThemeStudioProps {
   onSave?: (name: string, tokens: Record<string, string>) => void;
   className?: string;
   style?: React.CSSProperties;
+  contrastAuditFn?: (colorA: string, colorB: string) => number;
+  luminanceFn?: (color: string) => number;
 }
 
 const EDITABLE_TOKENS: Array<[string, string]> = [
@@ -96,6 +138,8 @@ export function ThemeStudio({
   onSave,
   className = "",
   style = {},
+  contrastAuditFn,
+  luminanceFn: _luminanceFn,
 }: ThemeStudioProps) {
   const { themeId, tokens, setThemeId, setToken, setTokens, resetTheme } =
     useKtheme();
@@ -118,16 +162,31 @@ export function ThemeStudio({
   );
   const [activeMetallic, setActiveMetallic] = useState<string>("GOLD");
   const [copied, setCopied] = useState(false);
+  const [warningModalAction, setWarningModalAction] = useState<
+    "export" | "save" | null
+  >(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const baseId = React.useId ? React.useId() : "theme-studio";
   const themeNameId = `${baseId}-theme-name`;
 
-  const handleColorChange = (key: string, val: string) => {
+  const [draftTokens, setDraftTokens] = useState<Record<string, string>>({});
+
+  const handleActiveColorChange = (key: string, val: string) => {
+    setDraftTokens((prev) => ({ ...prev, [key]: val }));
+    batchSetCssVariables(null, tokenToCssVars(key, val));
+  };
+
+  const handleCommitColorChange = (key: string, val: string) => {
+    setDraftTokens((prev) => {
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
     setToken(key, val);
   };
 
-  const handleExportJSON = () => {
+  const executeExport = () => {
     const payload = JSON.stringify(
       {
         schemaVersion: 1,
@@ -153,6 +212,36 @@ export function ThemeStudio({
       a.download = `${themeName.toLowerCase().replace(/\s+/g, "-")}-theme.json`;
       a.click();
       URL.revokeObjectURL(url);
+    }
+    setWarningModalAction(null);
+  };
+
+  const handleExportJSON = () => {
+    const audit = auditThemeTokens(tokens as Record<string, string>);
+    if (audit.hasErrors) {
+      setWarningModalAction("export");
+    } else {
+      executeExport();
+    }
+  };
+
+  const executeSave = () => {
+    if (typeof localStorage !== "undefined") {
+      localStorage.setItem(
+        "ktheme_custom_theme",
+        JSON.stringify({ name: themeName, tokens }),
+      );
+    }
+    if (onSave) onSave(themeName, tokens as Record<string, string>);
+    setWarningModalAction(null);
+  };
+
+  const handleSaveToDevice = () => {
+    const audit = auditThemeTokens(tokens as Record<string, string>);
+    if (audit.hasErrors) {
+      setWarningModalAction("save");
+    } else {
+      executeSave();
     }
   };
 
@@ -186,16 +275,6 @@ export function ThemeStudio({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
-  };
-
-  const handleSaveToDevice = () => {
-    if (typeof localStorage !== "undefined") {
-      localStorage.setItem(
-        "ktheme_custom_theme",
-        JSON.stringify({ name: themeName, tokens }),
-      );
-    }
-    if (onSave) onSave(themeName, tokens as Record<string, string>);
   };
 
   return (
@@ -362,12 +441,21 @@ export function ThemeStudio({
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
                   gap: 10,
                 }}
               >
                 {EDITABLE_TOKENS.map(([key, label]) => {
-                  const val = tokens[key] || "#000000";
+                  const val = draftTokens[key] || tokens[key] || "#000000";
+                  const counterpart = getTokenCounterpart(
+                    key,
+                    tokens as Record<string, string>,
+                  );
+                  const ratio = contrastAuditFn
+                    ? contrastAuditFn(val, counterpart.color)
+                    : calcContrastRatio(val, counterpart.color);
+                  const pass = ratio >= 4.5;
+                  const badgeText = formatBadgeText(ratio, 4.5);
                   const inputId = `${baseId}-token-${key}`;
                   return (
                     <div
@@ -381,32 +469,61 @@ export function ThemeStudio({
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "space-between",
+                        gap: 8,
                       }}
                     >
-                      <label
-                        htmlFor={inputId}
+                      <div
                         style={{
-                          fontSize: 11,
-                          fontWeight: 600,
-                          cursor: "pointer",
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 2,
                         }}
                       >
-                        {label}
-                      </label>
+                        <label
+                          htmlFor={inputId}
+                          style={{
+                            fontSize: 11,
+                            fontWeight: 600,
+                            cursor: "pointer",
+                          }}
+                        >
+                          {label}
+                        </label>
+                        <span
+                          style={{
+                            fontSize: 9.5,
+                            opacity: 0.65,
+                            fontFamily: "monospace",
+                          }}
+                        >
+                          vs {counterpart.label}
+                        </span>
+                      </div>
                       <div
                         style={{
                           display: "flex",
                           alignItems: "center",
                           gap: 6,
+                          flexShrink: 0,
                         }}
                       >
                         <input
                           id={inputId}
                           type="color"
                           value={val.startsWith("#") ? val : "#D4AF37"}
-                          onChange={(e) =>
-                            handleColorChange(key, e.target.value)
+                          onInput={(e: React.FormEvent<HTMLInputElement>) =>
+                            handleActiveColorChange(
+                              key,
+                              (e.target as HTMLInputElement).value,
+                            )
                           }
+                          onChange={(e) =>
+                            handleCommitColorChange(key, e.target.value)
+                          }
+                          onBlur={(e) =>
+                            handleCommitColorChange(key, e.target.value)
+                          }
+                          aria-label={`${label} color picker`}
                           style={{
                             width: 24,
                             height: 24,
@@ -419,6 +536,32 @@ export function ThemeStudio({
                         <code style={{ fontSize: 11, fontFamily: "monospace" }}>
                           {val.toUpperCase()}
                         </code>
+                        <span
+                          className={`ktheme-wcag-badge ${pass ? "pass" : "fail"}`}
+                          data-testid={`contrast-badge-${key}`}
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            padding: "2px 6px",
+                            borderRadius: 4,
+                            fontSize: 10,
+                            fontWeight: 700,
+                            fontFamily: "monospace",
+                            background: pass
+                              ? "rgba(76, 175, 80, 0.18)"
+                              : "rgba(207, 102, 121, 0.22)",
+                            color: pass ? "#81C784" : "#FF5252",
+                            border: `1px solid ${
+                              pass
+                                ? "rgba(129, 199, 132, 0.4)"
+                                : "rgba(255, 82, 82, 0.4)"
+                            }`,
+                            whiteSpace: "nowrap",
+                          }}
+                          title={`Contrast ratio vs ${counterpart.label}: ${ratio.toFixed(1)}:1 (${pass ? "AA PASS" : "AA FAIL"})`}
+                        >
+                          {badgeText}
+                        </span>
                       </div>
                     </div>
                   );
@@ -636,6 +779,125 @@ export function ThemeStudio({
             />
           </div>
         </>
+      )}
+
+      {/* Pre-export / Pre-save WCAG Contrast Warning Modal */}
+      {warningModalAction && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="contrast-modal-title"
+          data-testid="contrast-warning-modal"
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0, 0, 0, 0.75)",
+            backdropFilter: "blur(4px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999,
+            padding: 20,
+          }}
+        >
+          <div
+            style={{
+              background: "var(--md-sys-color-surface, #1A2645)",
+              color: "var(--md-sys-color-on-surface, #E8E3D8)",
+              border: "1px solid rgba(255, 82, 82, 0.5)",
+              borderRadius: 12,
+              padding: 22,
+              maxWidth: 480,
+              width: "100%",
+              boxShadow: "0 12px 40px rgba(0, 0, 0, 0.6)",
+              fontFamily: "var(--ktheme-font, system-ui, sans-serif)",
+            }}
+          >
+            <div
+              id="contrast-modal-title"
+              style={{
+                fontSize: 16,
+                fontWeight: 700,
+                color: "#FF5252",
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                marginBottom: 10,
+              }}
+            >
+              ⚠️ WCAG AA Contrast Warning
+            </div>
+            <p
+              style={{
+                fontSize: 13,
+                lineHeight: 1.5,
+                margin: "0 0 12px 0",
+                opacity: 0.9,
+              }}
+            >
+              The current theme contains color pairs with contrast ratios below
+              4.5:1, failing WCAG Level AA accessibility standards. Low-contrast
+              elements may be unreadable for users with visual impairments:
+            </p>
+            <ul
+              style={{
+                margin: "0 0 16px 0",
+                paddingLeft: 20,
+                fontSize: 12,
+                lineHeight: 1.6,
+                color: "#CF6679",
+              }}
+            >
+              {auditThemeTokens(tokens as Record<string, string>).violations.map(
+                (v) => (
+                  <li key={v.id}>
+                    <strong>{v.label}</strong>: {v.ratio.toFixed(1)}:1 (Requires{" "}
+                    {v.threshold.toFixed(1)}:1)
+                  </li>
+                ),
+              )}
+            </ul>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: 10,
+              }}
+            >
+              <button
+                onClick={() => setWarningModalAction(null)}
+                style={{
+                  ...actionBtnStyle,
+                  background: "transparent",
+                }}
+              >
+                Dismiss / Cancel
+              </button>
+              <button
+                onClick={() => {
+                  if (warningModalAction === "export") {
+                    executeExport();
+                  } else {
+                    executeSave();
+                  }
+                }}
+                style={{
+                  ...actionBtnStyle,
+                  background: "rgba(207, 102, 121, 0.25)",
+                  color: "#FF5252",
+                  border: "1px solid rgba(255, 82, 82, 0.5)",
+                }}
+              >
+                {warningModalAction === "export"
+                  ? "Export Anyway"
+                  : "Save Anyway"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
