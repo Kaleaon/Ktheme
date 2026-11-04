@@ -25,7 +25,7 @@ describe("ColorEditor", () => {
     render(<ColorEditor />);
 
     expect(screen.getByText("Colors")).toBeInTheDocument();
-    expect(screen.getAllByText(/21\.0:1\s+AAA/)[0]).toBeInTheDocument();
+    expect(screen.getAllByText("21.0:1 AAA")[0]).toBeInTheDocument();
   });
 
   it("declares aria-invalid='true' and links contrast error container via aria-describedby when contrast ratio fails", () => {

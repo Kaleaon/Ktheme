@@ -40,4 +40,5 @@ export declare const ELEVATION_TOKENS: Record<string, string>;
 export declare const ELEVATION: Record<string, string>;
 export declare const Z_INDEX_TOKENS: Record<string, number>;
 export declare const Z_INDEX: Record<string, number>;
+export declare const TYPOGRAPHY: Record<string, string>;
 export declare function buildDefaultDesktopConfig(data: any): any;

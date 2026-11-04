@@ -205,7 +205,7 @@ export const ROSE_GOLD_METADATA: SharedMetadataData = {
 };
 
 export const ROSE_GOLD_COLOR_SCHEME: SharedColorSchemeData = {
-  primary: "#B76E79",
+  primary: "#C1818B",
   onPrimary: "#3D1F2B",
   primaryContainer: "#7D4A52",
   onPrimaryContainer: "#F5D5D8",
@@ -338,10 +338,10 @@ export const OBSIDIAN_CRIMSON_METADATA: SharedMetadataData = {
 
 export const OBSIDIAN_CRIMSON_COLOR_SCHEME: SharedColorSchemeData = {
   primary: "#DC143C",
-  onPrimary: "#0A0A0A",
+  onPrimary: "#F5F5F5",
   primaryContainer: "#B00F30",
   onPrimaryContainer: "#E5395F",
-  secondary: "#262626",
+  secondary: "#A8505A",
   onSecondary: "#F5F5F5",
   secondaryContainer: "#141414",
   onSecondaryContainer: "#F5F5F5",
@@ -456,7 +456,7 @@ export const SLATE_CYAN_COLOR_SCHEME: SharedColorSchemeData = {
   onPrimary: "#1A1F24",
   primaryContainer: "#00A8CC",
   onPrimaryContainer: "#4DE2FF",
-  secondary: "#2A333D",
+  secondary: "#636C76",
   onSecondary: "#E8F0F5",
   secondaryContainer: "#232930",
   onSecondaryContainer: "#E8F0F5",

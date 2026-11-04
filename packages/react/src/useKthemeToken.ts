@@ -21,24 +21,21 @@ export function useKthemeToken(
     return value;
   }
 
-  return (
-    fallback ||
-    `var(--md-sys-color-${String(tokenName)}, var(--ktheme-${String(
-      tokenName,
-    )}))`
-  );
+  return getKthemeCssVar(String(tokenName), fallback);
 }
 
 /**
  * Returns the CSS variable expression for a Ktheme token name.
- * e.g. getKthemeCssVar('primary') -> 'var(--md-sys-color-primary)'
+ * e.g. getKthemeCssVar('primary') -> 'var(--ktheme-primary, var(--md-sys-color-primary))'
  */
 export function getKthemeCssVar(tokenName: string, fallback?: string): string {
-  const md3Name = `--md-sys-color-${tokenName
+  const kebab = tokenName
     .replace(/([A-Z])/g, "-$1")
-    .toLowerCase()}`;
+    .toLowerCase();
+  const kthemeName = `--ktheme-${kebab}`;
+  const md3Name = `--md-sys-color-${kebab}`;
   if (fallback) {
-    return `var(${md3Name}, var(--ktheme-${tokenName}, ${fallback}))`;
+    return `var(${kthemeName}, var(${md3Name}, ${fallback}))`;
   }
-  return `var(${md3Name}, var(--ktheme-${tokenName}))`;
+  return `var(${kthemeName}, var(${md3Name}))`;
 }
