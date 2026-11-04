@@ -1055,10 +1055,18 @@ describe("exporter parity & IR pipeline", () => {
       expect(exportJson.theme.motion.duration.$type).toBe("duration");
       expect(exportJson.theme.motion.duration.$value).toBe("350ms");
       expect(exportJson.theme.motion.easing.$type).toBe("cubicBezier");
-      expect(exportJson.theme.motion.easing.$value).toEqual([0.25, 0.1, 0.25, 1.0]);
-      expect(exportJson.theme.motion.reducedMotion?.duration.$type).toBe("duration");
-      expect(exportJson.theme.motion.reducedMotion?.duration.$value).toBe("0ms");
-      expect(exportJson.theme.motion.reducedMotion?.easing?.$type).toBe("cubicBezier");
+      expect(exportJson.theme.motion.easing.$value).toEqual([
+        0.25, 0.1, 0.25, 1.0,
+      ]);
+      expect(exportJson.theme.motion.reducedMotion?.duration.$type).toBe(
+        "duration",
+      );
+      expect(exportJson.theme.motion.reducedMotion?.duration.$value).toBe(
+        "0ms",
+      );
+      expect(exportJson.theme.motion.reducedMotion?.easing?.$type).toBe(
+        "cubicBezier",
+      );
     });
 
     it("generates native motion code artifacts across all four platform renderers", () => {

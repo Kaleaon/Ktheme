@@ -110,7 +110,9 @@ export class MotionASTTransformer {
       }
       if (trimmed.endsWith("s")) {
         const parsed = parseFloat(trimmed.slice(0, -1));
-        return Number.isNaN(parsed) ? 300 : Math.max(0, Math.round(parsed * 1000));
+        return Number.isNaN(parsed)
+          ? 300
+          : Math.max(0, Math.round(parsed * 1000));
       }
       const parsed = parseFloat(trimmed);
       return Number.isNaN(parsed) ? 300 : Math.max(0, parsed);
@@ -141,7 +143,9 @@ export class MotionASTTransformer {
    */
   static formatComposeEasing(coords: DTCGCubicBezierCoordinates): string {
     const f = (n: number) => (Number.isInteger(n) ? `${n}.0f` : `${n}f`);
-    return `CubicBezierEasing(${f(coords[0])}, ${f(coords[1])}, ${f(coords[2])}, ${f(coords[3])})`;
+    return `CubicBezierEasing(${f(coords[0])}, ${f(coords[1])}, ${f(
+      coords[2],
+    )}, ${f(coords[3])})`;
   }
 
   /**
@@ -211,7 +215,9 @@ export class MotionASTTransformer {
    * Transforms DTCGMotionTokenGroup into CSS variables AST.
    */
   static toCss(motionTokens: DTCGMotionTokenGroup): CssMotionAST {
-    const durationMs = this.parseDuration(motionTokens.duration?.$value ?? "300ms");
+    const durationMs = this.parseDuration(
+      motionTokens.duration?.$value ?? "300ms",
+    );
     const durationStr = motionTokens.duration?.$value ?? `${durationMs}ms`;
     const coords = this.parseCubicBezier(
       motionTokens.easing?.$value ?? STANDARD_EASING_COORDINATES["ease"],
