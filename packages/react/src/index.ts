@@ -42,3 +42,9 @@ export type {
   MeshData,
   WasmEngineLike,
 } from "./SculptingCanvas";
+
+export {
+  importTokensStudioJson,
+  parseTokensStudio,
+  tokensStudioToKTheme,
+} from "./importTokensStudio";
