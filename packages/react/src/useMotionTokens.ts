@@ -8,7 +8,11 @@ export interface MotionTokenValues {
   durationReduced: string;
   easingReduced: string;
   reducedMotion: boolean;
-  transition: (property?: string, overrideDuration?: string, overrideEasing?: string) => string;
+  transition: (
+    property?: string,
+    overrideDuration?: string,
+    overrideEasing?: string,
+  ) => string;
 }
 
 /**
@@ -20,9 +24,11 @@ export function useMotionTokens(): MotionTokenValues {
   const reducedMotion = usePrefersReducedMotion();
 
   const duration = ctx?.tokens?.motionDuration || "300ms";
-  const easing = ctx?.tokens?.motionEasing || "cubic-bezier(0.25, 0.1, 0.25, 1.0)";
+  const easing =
+    ctx?.tokens?.motionEasing || "cubic-bezier(0.25, 0.1, 0.25, 1.0)";
   const durationReduced = ctx?.tokens?.motionDurationReduced || "0ms";
-  const easingReduced = ctx?.tokens?.motionEasingReduced || "cubic-bezier(0.0, 0.0, 1.0, 1.0)";
+  const easingReduced =
+    ctx?.tokens?.motionEasingReduced || "cubic-bezier(0.0, 0.0, 1.0, 1.0)";
 
   const activeDuration = reducedMotion ? durationReduced : duration;
   const activeEasing = reducedMotion ? easingReduced : easing;

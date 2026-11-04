@@ -3,10 +3,12 @@ repos:
     rev: v4.6.0
     hooks:
       - id: trailing-whitespace
+        exclude: ^(dist/|packages/tokens/dist/|node_modules/|build/|\.gradle/|gradle/)
       - id: end-of-file-fixer
+        exclude: ^(dist/|packages/tokens/dist/|node_modules/|build/|\.gradle/|gradle/)
       - id: check-yaml
       - id: check-json
-        exclude: tsconfig.*\.json$
+        exclude: (tsconfig.*\.json$|^(dist/|packages/tokens/dist/|node_modules/|build/|\.gradle/|gradle/))
       - id: check-added-large-files
 
   - repo: https://github.com/psf/black
@@ -26,7 +28,7 @@ repos:
       - id: prettier
         types_or:
           [javascript, jsx, ts, tsx, css, scss, json, yaml, markdown, html]
-        exclude: ^(dist/|node_modules/|build/|\.gradle/|gradle/)
+        exclude: ^(dist/|packages/tokens/dist/|node_modules/|build/|\.gradle/|gradle/)
 
   - repo: https://github.com/pre-commit/mirrors-eslint
     rev: v8.56.0
