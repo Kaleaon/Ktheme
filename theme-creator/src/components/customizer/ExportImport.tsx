@@ -3,6 +3,7 @@ import { Download, Upload, Loader2, Archive } from "lucide-react";
 import { useTheme } from "../../state/ThemeContext.tsx";
 import type { KTheme } from "../../types/theme.ts";
 import { FormField } from "../../../../src/components/FormField";
+import { tokensStudioToKTheme } from "../../../../src/importers/tokensStudioImporter";
 
 export function ExportImport() {
   const { state, dispatch } = useTheme();
@@ -123,17 +124,36 @@ export function ExportImport() {
     const reader = new FileReader();
     reader.onload = (ev) => {
       try {
-        const theme = JSON.parse(ev.target?.result as string) as KTheme;
-        if (theme.metadata?.id && theme.colorScheme?.primary) {
-          dispatch({ type: "SET_THEME", payload: theme });
+        const rawContent = ev.target?.result as string;
+        const parsed = JSON.parse(rawContent);
+
+        if (
+          parsed &&
+          typeof parsed === "object" &&
+          parsed.metadata?.id &&
+          parsed.colorScheme?.primary
+        ) {
+          dispatch({ type: "SET_THEME", payload: parsed as KTheme });
           setStatusMessage(
-            `${theme.metadata.name || "Theme"} imported successfully.`,
+            `${parsed.metadata.name || "Theme"} imported successfully.`,
           );
           setErrorMessage("");
         } else {
-          setErrorMessage("Invalid theme file: missing required fields.");
-          setStatusMessage("Invalid theme file.");
-          alert("Invalid theme file: missing required fields");
+          // Attempt Tokens Studio / DTCG conversion
+          const converted = tokensStudioToKTheme(parsed, {
+            themeName: file.name.replace(/\.[^/.]+$/, ""),
+          });
+          if (converted && converted.colorScheme?.primary) {
+            dispatch({ type: "SET_THEME", payload: converted as KTheme });
+            setStatusMessage(
+              `${converted.metadata.name || "Tokens Studio Theme"} imported successfully.`,
+            );
+            setErrorMessage("");
+          } else {
+            setErrorMessage("Invalid theme file: missing required fields.");
+            setStatusMessage("Invalid theme file.");
+            alert("Invalid theme file: missing required fields");
+          }
         }
       } catch {
         setErrorMessage("Failed to parse theme JSON file.");

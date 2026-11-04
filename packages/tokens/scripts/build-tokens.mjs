@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
+import { exportTypographyVars } from "../../../src/exporters/web/exportTypographyVars.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -1429,6 +1430,19 @@ const _buildDefaultDesktopConfig = (data) => {
   };
 };
 
+// Canonical theme typography via exportTypographyVars
+const themeExamplesDir = path.resolve(kthemeRoot, 'themes/examples');
+let canonicalTheme = {};
+const inkModernPath = path.join(themeExamplesDir, 'ink-terminal-modern.json');
+if (fs.existsSync(inkModernPath)) {
+  try {
+    canonicalTheme = JSON.parse(fs.readFileSync(inkModernPath, 'utf8'));
+  } catch (e) {
+    // ignore parse error
+  }
+}
+const typographyExport = exportTypographyVars(canonicalTheme);
+
 // Standard elevation depth shadow tokens
 const ELEVATION_TOKENS = {
   "elevation-0": "none",
@@ -1475,6 +1489,7 @@ export const ELEVATION_TOKENS = ${JSON.stringify(ELEVATION_TOKENS, null, 2)};
 export const ELEVATION = ELEVATION_TOKENS;
 export const Z_INDEX_TOKENS = ${JSON.stringify(Z_INDEX_TOKENS, null, 2)};
 export const Z_INDEX = Z_INDEX_TOKENS;
+export const TYPOGRAPHY = ${JSON.stringify(typographyExport.vars, null, 2)};
 
 export function buildDefaultDesktopConfig(data) {
   const dark = data.darkMode !== false;
@@ -1536,6 +1551,7 @@ const ELEVATION_TOKENS = ${JSON.stringify(ELEVATION_TOKENS, null, 2)};
 const ELEVATION = ELEVATION_TOKENS;
 const Z_INDEX_TOKENS = ${JSON.stringify(Z_INDEX_TOKENS, null, 2)};
 const Z_INDEX = Z_INDEX_TOKENS;
+const TYPOGRAPHY = ${JSON.stringify(typographyExport.vars, null, 2)};
 
 function buildDefaultDesktopConfig(data) {
   const dark = data.darkMode !== false;
@@ -1594,6 +1610,7 @@ module.exports = {
   ELEVATION,
   Z_INDEX_TOKENS,
   Z_INDEX,
+  TYPOGRAPHY,
   buildDefaultDesktopConfig
 };
 `;
@@ -1642,18 +1659,20 @@ export declare const ELEVATION_TOKENS: Record<string, string>;
 export declare const ELEVATION: Record<string, string>;
 export declare const Z_INDEX_TOKENS: Record<string, number>;
 export declare const Z_INDEX: Record<string, number>;
+export declare const TYPOGRAPHY: Record<string, string>;
 export declare function buildDefaultDesktopConfig(data: any): any;
 `;
 fs.writeFileSync(path.join(distDir, "index.d.ts"), dtsContent, "utf8");
 
 // Write dist/tokens.json and individual JSON files in dist/json/
-const themeExamplesDir = path.resolve(kthemeRoot, "themes/examples");
 const tokensJsonObject = {
   palettes: PALETTES,
   desktopConfigs: THEME_DESKTOP_CONFIGS,
   elevation: ELEVATION_TOKENS,
   zIndex: Z_INDEX_TOKENS,
   themes: {},
+  typography: typographyExport.vars,
+  typographyVars: typographyExport.vars,
 };
 
 if (fs.existsSync(themeExamplesDir)) {
@@ -1668,6 +1687,14 @@ if (fs.existsSync(themeExamplesDir)) {
     try {
       const parsed = JSON.parse(raw);
       const themeId = parsed.metadata?.id || file.replace(".json", "");
+      if (parsed.typography) {
+        try {
+          const themeTypo = exportTypographyVars(parsed);
+          parsed.typographyVars = themeTypo.vars;
+        } catch (e) {
+          // ignore typography extraction error
+        }
+      }
       tokensJsonObject.themes[themeId] = parsed;
     } catch (e) {
       // ignore non-JSON or malformed
@@ -1696,6 +1723,9 @@ for (const [palKey, pal] of Object.entries(PALETTES)) {
   for (const [role, val] of Object.entries(pal.c)) {
     cssContent += `  --ktheme-${palKey}-${role}: ${val};\n`;
   }
+}
+for (const [varName, varVal] of Object.entries(typographyExport.vars)) {
+  cssContent += `  ${varName}: ${varVal};\n`;
 }
 cssContent += `}\n`;
 fs.writeFileSync(path.join(distDir, "tokens.css"), cssContent, "utf8");

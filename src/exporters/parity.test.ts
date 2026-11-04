@@ -1,3 +1,5 @@
+import * as fs from "fs";
+import * as path from "path";
 import { MetallicVariant, Theme } from "../core/types";
 import { extractThemeTokens } from "./ir/extractIR";
 import {
@@ -1013,6 +1015,35 @@ describe("exporter parity & IR pipeline", () => {
     });
     expect(fullTailwind.theme.extend.animation).toEqual({
       shimmer: "shimmer 2.5s linear infinite",
+    });
+  });
+
+  describe("@ktheme/tokens build distribution", () => {
+    it("generates dist/tokens.css containing --ktheme-font-family and typography scale variables in :root", () => {
+      const tokensCssPath = path.resolve(__dirname, "../../packages/tokens/dist/tokens.css");
+      expect(fs.existsSync(tokensCssPath)).toBe(true);
+      const css = fs.readFileSync(tokensCssPath, "utf8");
+
+      expect(css).toContain(":root");
+      expect(css).toContain("--ktheme-font-family:");
+      expect(css).toContain("--ktheme-font-size-small:");
+      expect(css).toContain("--ktheme-font-size-medium:");
+      expect(css).toContain("--ktheme-font-size-large:");
+      expect(css).toContain("--ktheme-font-size-xlarge:");
+      expect(css).toContain("--ktheme-font-weight-bold:");
+      expect(css).toContain("--ktheme-line-height:");
+      expect(css).toContain("--ktheme-letter-spacing:");
+    });
+
+    it("generates dist/tokens.json containing typography CSS custom property definitions", () => {
+      const tokensJsonPath = path.resolve(__dirname, "../../packages/tokens/dist/tokens.json");
+      expect(fs.existsSync(tokensJsonPath)).toBe(true);
+      const json = JSON.parse(fs.readFileSync(tokensJsonPath, "utf8"));
+
+      expect(json.typography).toBeDefined();
+      expect(json.typography["--ktheme-font-family"]).toBeDefined();
+      expect(json.typography["--ktheme-font-size-medium"]).toBeDefined();
+      expect(json.typography["--ktheme-font-weight-bold"]).toBeDefined();
     });
   });
 });
