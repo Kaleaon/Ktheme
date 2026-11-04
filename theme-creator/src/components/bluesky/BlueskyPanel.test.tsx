@@ -45,6 +45,9 @@ describe("BlueskyPanel Accessibility Tests", () => {
     const passwordInput = screen.getByPlaceholderText("xxxx-xxxx-xxxx-xxxx");
     const loginBtn = screen.getByRole("button", { name: /Log In/i });
 
+    expect(handleInput).toHaveAttribute("autoComplete", "username");
+    expect(passwordInput).toHaveAttribute("autoComplete", "current-password");
+
     fireEvent.change(handleInput, { target: { value: "user.bsky.social" } });
     fireEvent.change(passwordInput, { target: { value: "invalid-pass" } });
     fireEvent.click(loginBtn);
