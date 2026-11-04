@@ -14,6 +14,9 @@ class ThemeLibraryWindowTest {
 
     @Test
     fun `ThemeLibraryWindow displays all 24 canonical themes when launched`() {
+        if (java.awt.GraphicsEnvironment.isHeadless()) {
+            return
+        }
         var window: ThemeLibraryWindow? = null
         SwingUtilities.invokeAndWait {
             window = ThemeLibraryWindow()
