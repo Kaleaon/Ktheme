@@ -126,11 +126,11 @@ export function AIDesigner() {
             <input
               id={apiKeyInputId}
               type="password"
-              autoComplete="off"
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
               placeholder="sk-ant-..."
               onKeyDown={(e) => e.key === "Enter" && startSecureSession()}
+              autoComplete="current-password"
             />
             <button
               className="btn btn-primary"
