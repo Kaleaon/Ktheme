@@ -45,6 +45,11 @@ export interface KthemeTokens {
   touchTargetMinDesktop?: string;
   touchPaddingCompact?: string;
   touchPaddingCoarse?: string;
+  // Motion tokens
+  motionDuration?: string;
+  motionEasing?: string;
+  motionDurationReduced?: string;
+  motionEasingReduced?: string;
   [key: string]: string | undefined;
 }
 

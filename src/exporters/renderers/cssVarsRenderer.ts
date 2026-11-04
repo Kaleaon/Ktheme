@@ -1,6 +1,7 @@
 import { NormalizedThemeTokens } from "../ir/tokenIR";
 import { TokenRenderer } from "./TokenRenderer";
 import { WebExporterOptions } from "../web/types";
+import { MotionASTTransformer } from "../../core/MotionASTTransformer";
 
 export interface CssVarsExport {
   vars: Record<string, string>;
@@ -200,6 +201,16 @@ export class CssVarsRenderer implements TokenRenderer<CssVarsExport> {
         vars["--ktheme-effects-shadow-color"] = String(
           tokens.effects.shadows.color,
         );
+      }
+
+      if (tokens.motion) {
+        const motionCss = MotionASTTransformer.toCss(tokens.motion);
+        vars["--ktheme-motion-duration"] = motionCss.duration;
+        vars["--ktheme-motion-easing"] = motionCss.easing;
+        vars["--ktheme-motion-duration-reduced"] = motionCss.durationReduced;
+        vars["--ktheme-motion-easing-reduced"] = motionCss.easingReduced;
+        vars["--ktheme-animation-duration"] = motionCss.duration;
+        vars["--ktheme-animation-easing"] = motionCss.easing;
       }
     }
 

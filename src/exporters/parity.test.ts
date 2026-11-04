@@ -18,6 +18,7 @@ import { toDesignTokensJson } from "./toDesignTokensJson";
 import { toFlutterTheme } from "./toFlutterTheme";
 import { toSwiftUI } from "./toSwiftUI";
 import { toTailwindConfig } from "./toTailwindConfig";
+import { MotionASTTransformer } from "../core/MotionASTTransformer";
 import {
   exportEffectVars,
   exportTypographyVars,
@@ -1001,6 +1002,144 @@ describe("exporter parity & IR pipeline", () => {
     });
     expect(fullTailwind.theme.extend.animation).toEqual({
       shimmer: "shimmer 2.5s linear infinite",
+    });
+  });
+
+  describe("DTCG-compliant Motion AST and multi-platform exporters", () => {
+    const motionTheme: Theme = {
+      ...fixtureTheme,
+      effects: {
+        animations: {
+          enabled: true,
+          duration: 350,
+          easing: "ease",
+          reducedMotionPolicy: "disable",
+        },
+      },
+    };
+
+    it("defines W3C DTCG motion token interfaces and extracts normalized motion AST", () => {
+      const ir = extractThemeTokens(motionTheme);
+      expect(ir.motion).toBeDefined();
+      expect(ir.motion.duration?.$type).toBe("duration");
+      expect(ir.motion.duration?.$value).toBe("350ms");
+      expect(ir.motion.duration?.$description).toBeDefined();
+
+      expect(ir.motion.easing?.$type).toBe("cubicBezier");
+      expect(ir.motion.easing?.$value).toEqual([0.25, 0.1, 0.25, 1.0]);
+      expect(ir.motion.easing?.$description).toBeDefined();
+
+      expect(ir.motion.reducedMotion).toBeDefined();
+      expect(ir.motion.reducedMotion?.duration.$type).toBe("duration");
+      expect(ir.motion.reducedMotion?.duration.$value).toBe("0ms");
+      expect(ir.motion.reducedMotion?.easing?.$type).toBe("cubicBezier");
+    });
+
+    it("exports W3C DTCG compliant Design Tokens JSON via toDesignTokensJson", () => {
+      const exportJson = toDesignTokensJson(motionTheme);
+      expect(exportJson.theme.motion).toBeDefined();
+      expect(exportJson.theme.motion.duration.$type).toBe("duration");
+      expect(exportJson.theme.motion.duration.$value).toBe("350ms");
+      expect(exportJson.theme.motion.easing.$type).toBe("cubicBezier");
+      expect(exportJson.theme.motion.easing.$value).toEqual([0.25, 0.1, 0.25, 1.0]);
+      expect(exportJson.theme.motion.reducedMotion?.duration.$type).toBe("duration");
+      expect(exportJson.theme.motion.reducedMotion?.duration.$value).toBe("0ms");
+      expect(exportJson.theme.motion.reducedMotion?.easing?.$type).toBe("cubicBezier");
+    });
+
+    it("generates native motion code artifacts across all four platform renderers", () => {
+      // 1. CSS Variables
+      const cssResult = toCssVars(motionTheme);
+      expect(cssResult.vars["--ktheme-motion-duration"]).toBe("350ms");
+      expect(cssResult.vars["--ktheme-motion-easing"]).toBe(
+        "cubic-bezier(0.25, 0.1, 0.25, 1)",
+      );
+      expect(cssResult.vars["--ktheme-motion-duration-reduced"]).toBe("0ms");
+      expect(cssResult.cssText).toContain("--ktheme-motion-duration: 350ms;");
+      expect(cssResult.cssText).toContain(
+        "--ktheme-motion-easing: cubic-bezier(0.25, 0.1, 0.25, 1);",
+      );
+
+      // 2. Tailwind Config
+      const twResult = toTailwindConfig(motionTheme);
+      expect(twResult.theme.extend.transitionDuration).toEqual({
+        DEFAULT: "350ms",
+        motion: "350ms",
+        "motion-reduced": "0ms",
+      });
+      expect(twResult.theme.extend.transitionTimingFunction).toEqual({
+        DEFAULT: "cubic-bezier(0.25, 0.1, 0.25, 1)",
+        motion: "cubic-bezier(0.25, 0.1, 0.25, 1)",
+        "motion-reduced": "cubic-bezier(0, 0, 1, 1)",
+      });
+      expect(twResult.theme.extend.motion).toBeDefined();
+
+      // 3. Android Compose
+      const composeResult = toAndroidCompose(motionTheme);
+      expect(composeResult.kotlin).toContain(
+        "import androidx.compose.animation.core.CubicBezierEasing",
+      );
+      expect(composeResult.kotlin).toContain("object KthemeMotion {");
+      expect(composeResult.kotlin).toContain("val durationMillis = 350");
+      expect(composeResult.kotlin).toContain(
+        "val easing = CubicBezierEasing(0.25f, 0.1f, 0.25f, 1.0f)",
+      );
+      expect(composeResult.kotlin).toContain("val reducedDurationMillis = 0");
+      expect(composeResult.motion).toBeDefined();
+
+      // 4. SwiftUI
+      const swiftResult = toSwiftUI(motionTheme);
+      expect(swiftResult.swift).toContain("struct KthemeMotion {");
+      expect(swiftResult.swift).toContain("let duration: Double = 0.35");
+      expect(swiftResult.swift).toContain(
+        "let easing = Animation.timingCurve(0.25, 0.1, 0.25, 1)",
+      );
+      expect(swiftResult.swift).toContain("let reducedDuration: Double = 0");
+      expect(swiftResult.motion).toBeDefined();
+    });
+
+    it("compiles standard bezier coordinates [0.25, 0.1, 0.25, 1.0] across targets", () => {
+      const coords: [number, number, number, number] = [0.25, 0.1, 0.25, 1.0];
+      const motionTokens = MotionASTTransformer.createMotionTokenGroup({
+        duration: 300,
+        easing: coords,
+      });
+
+      const platformAST = MotionASTTransformer.transform(motionTokens);
+      expect(platformAST.css.easing).toBe("cubic-bezier(0.25, 0.1, 0.25, 1)");
+      expect(platformAST.compose.easing).toBe(
+        "CubicBezierEasing(0.25f, 0.1f, 0.25f, 1.0f)",
+      );
+      expect(platformAST.swiftUI.easing).toBe(
+        "Animation.timingCurve(0.25, 0.1, 0.25, 1)",
+      );
+    });
+
+    it("supports reduced-motion policy variations across all code generation targets", () => {
+      const reduceTheme: Theme = {
+        ...fixtureTheme,
+        effects: {
+          animations: {
+            enabled: true,
+            duration: 400,
+            easing: "ease-in-out",
+            reducedMotionPolicy: "reduce",
+          },
+        },
+      };
+
+      const ir = extractThemeTokens(reduceTheme);
+      // Scaled by 35%: 400 * 0.35 = 140ms
+      expect(ir.motion.reducedMotion?.duration.$value).toBe("140ms");
+
+      const css = toCssVars(reduceTheme);
+      expect(css.vars["--ktheme-motion-duration-reduced"]).toBe("140ms");
+
+      const compose = toAndroidCompose(reduceTheme);
+      expect(compose.kotlin).toContain("val reducedDurationMillis = 140");
+
+      const swift = toSwiftUI(reduceTheme);
+      expect(swift.swift).toContain("let reducedDuration: Double = 0.14");
     });
   });
 
