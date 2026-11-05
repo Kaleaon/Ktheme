@@ -1704,7 +1704,7 @@ if (fs.existsSync(themeExamplesDir)) {
 
 fs.writeFileSync(
   path.join(distDir, "tokens.json"),
-  JSON.stringify(tokensJsonObject, null, 2),
+  JSON.stringify(tokensJsonObject, null, 2) + "\n",
   "utf8",
 );
 
