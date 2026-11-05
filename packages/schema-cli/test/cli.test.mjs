@@ -31,7 +31,7 @@ test("CLI: fails with unknown command", () => {
     (err) => {
       assert.equal(err.status, 1);
       return true;
-    }
+    },
   );
 });
 
@@ -72,7 +72,7 @@ test("CLI: sync --check passes on valid schema v2 theme", () => {
     const output = execFileSync(
       process.execPath,
       [cliPath, "sync", "--check", filePath],
-      { encoding: "utf-8" }
+      { encoding: "utf-8" },
     );
     assert.match(output, /Errors: 0/);
   } finally {
@@ -111,7 +111,11 @@ test("CLI: sync --check detects drift on unmigrated theme and exits 1", () => {
       },
     };
     const filePath = path.join(tmpDir, "theme.json");
-    fs.writeFileSync(filePath, JSON.stringify(unmigratedTheme, null, 2), "utf-8");
+    fs.writeFileSync(
+      filePath,
+      JSON.stringify(unmigratedTheme, null, 2),
+      "utf-8",
+    );
 
     assert.throws(
       () => {
@@ -124,7 +128,7 @@ test("CLI: sync --check detects drift on unmigrated theme and exits 1", () => {
         assert.equal(err.status, 1);
         assert.match(err.stderr || err.stdout, /Schema drift detected/);
         return true;
-      }
+      },
     );
   } finally {
     fs.rmSync(tmpDir, { recursive: true, force: true });
@@ -162,12 +166,16 @@ test("CLI: sync --apply migrates theme to schemaVersion 2", () => {
       },
     };
     const filePath = path.join(tmpDir, "theme.json");
-    fs.writeFileSync(filePath, JSON.stringify(unmigratedTheme, null, 2), "utf-8");
+    fs.writeFileSync(
+      filePath,
+      JSON.stringify(unmigratedTheme, null, 2),
+      "utf-8",
+    );
 
     const output = execFileSync(
       process.execPath,
       [cliPath, "sync", "--apply", filePath],
-      { encoding: "utf-8" }
+      { encoding: "utf-8" },
     );
     assert.match(output, /Migrated: 1/);
     assert.match(output, /Errors: 0/);
@@ -180,7 +188,7 @@ test("CLI: sync --apply migrates theme to schemaVersion 2", () => {
     const checkOutput = execFileSync(
       process.execPath,
       [cliPath, "sync", "--check", filePath],
-      { encoding: "utf-8" }
+      { encoding: "utf-8" },
     );
     assert.match(checkOutput, /Errors: 0/);
   } finally {

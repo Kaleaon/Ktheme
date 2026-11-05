@@ -84,7 +84,7 @@ function isLikelyTheme(json: Record<string, unknown>): boolean {
     !Array.isArray(json.metadata) &&
     Boolean(
       (json.metadata as Record<string, unknown>).id ||
-        (json.metadata as Record<string, unknown>).name
+        (json.metadata as Record<string, unknown>).name,
     )
   ) {
     return true;
@@ -128,7 +128,7 @@ export function syncSchemas(options?: SyncOptions): SyncResult {
   console.log(
     `[ktheme-schema] Processing ${allFiles.length} candidate files in mode: ${
       isCheck ? "CHECK" : "APPLY"
-    }...`
+    }...`,
   );
 
   for (const filePath of allFiles) {
@@ -139,7 +139,7 @@ export function syncSchemas(options?: SyncOptions): SyncResult {
         json = JSON.parse(rawText);
       } catch (err) {
         console.error(
-          `[ERR] ${filePath}: Invalid JSON syntax: ${(err as Error).message}`
+          `[ERR] ${filePath}: Invalid JSON syntax: ${(err as Error).message}`,
         );
         errorCount += 1;
         continue;
@@ -175,7 +175,7 @@ export function syncSchemas(options?: SyncOptions): SyncResult {
         if (needsMigration) {
           errorCount += 1;
           console.error(
-            `[ERR] ${filePath}: Schema drift detected (current: v${initialVersion}, expected: v${SCHEMA_VERSION}). Run 'ktheme-schema sync --apply' to migrate.`
+            `[ERR] ${filePath}: Schema drift detected (current: v${initialVersion}, expected: v${SCHEMA_VERSION}). Run 'ktheme-schema sync --apply' to migrate.`,
           );
         }
       } else {
@@ -189,7 +189,7 @@ export function syncSchemas(options?: SyncOptions): SyncResult {
   }
 
   console.log(
-    `[ktheme-schema] Completed! Processed: ${processed}, Migrated: ${migratedCount}, Warnings: ${warningCount}, Errors: ${errorCount}`
+    `[ktheme-schema] Completed! Processed: ${processed}, Migrated: ${migratedCount}, Warnings: ${warningCount}, Errors: ${errorCount}`,
   );
   return {
     processed,
