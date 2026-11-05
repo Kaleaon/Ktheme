@@ -39,9 +39,9 @@ function log(msg, type = "info") {
 
 // Parse Command Line Arguments
 const args = process.argv.slice(2);
-let runTypecheck = args.includes("--typecheck");
+let runTypecheck = args.includes("--typecheck") || args.includes("--static");
 let runBuild = args.includes("--build");
-let runLint = args.includes("--lint");
+let runLint = args.includes("--lint") || args.includes("--static");
 let runUnit = args.includes("--unit");
 let runCatalog = args.includes("--catalog");
 let runPalette = args.includes("--palette");
@@ -67,7 +67,8 @@ ${colors.bold}USAGE:${colors.reset}
 ${colors.bold}FLAGS:${colors.reset}
   --typecheck         Run TypeScript compilation and type checking
   --build             Build workspace packages and applications
-  --lint              Run ESLint static analysis
+  --lint              Run ESLint static code linting
+  --static            Run static analysis (lint and typecheck)
   --unit              Run unit test suites
   --catalog           Run theme catalog parity checks
   --palette           Run static WCAG 2.2 AA color palette contrast audit
@@ -77,7 +78,7 @@ ${colors.bold}FLAGS:${colors.reset}
   --port <number>     Specify static server port override
   --help, -h          Show this help message
 
-  ${colors.gray}If no task flags (--typecheck, --build, --unit, --catalog, --palette, --a11y, --visual) are specified,
+  ${colors.gray}If no task flags (--typecheck, --build, --lint, --static, --unit, --catalog, --palette, --a11y, --visual) are specified,
   all applicable validation tasks for the current repository will run.${colors.reset}
 `);
   process.exit(0);
@@ -96,6 +97,7 @@ if (
 ) {
   runTypecheck = true;
   runBuild = true;
+  runLint = true;
   runUnit = true;
   runCatalog = true;
   runPalette = true;
@@ -332,23 +334,88 @@ async function getPlaywrightBrowser() {
   }
 }
 
-// TASK -2: TypeScript Type Checking
+// Helper to determine environment variables for ESLint per directory config
+function getEslintEnv(dirPath) {
+  const env = { ...process.env };
+  const hasLegacyConfig =
+    fs.existsSync(path.join(dirPath, ".eslintrc.cjs")) ||
+    fs.existsSync(path.join(dirPath, ".eslintrc.json")) ||
+    fs.existsSync(path.join(dirPath, ".eslintrc.js"));
+  const hasFlatConfig =
+    fs.existsSync(path.join(dirPath, "eslint.config.js")) ||
+    fs.existsSync(path.join(dirPath, "eslint.config.mjs"));
+
+  if (hasLegacyConfig && !hasFlatConfig) {
+    env.ESLINT_USE_FLAT_CONFIG = "false";
+  } else {
+    delete env.ESLINT_USE_FLAT_CONFIG;
+  }
+  return env;
+}
+
+// TASK -2: TypeScript Type Checking & Compilation
 async function taskTypecheck() {
   log("Running TypeScript Type Checking...", "header");
 
-  const res = spawnSync("npm", ["run", "typecheck"], {
-    cwd,
-    stdio: "inherit",
-    shell: true,
-  });
-
-  if (res.status === 0) {
-    log("TypeScript type checking passed.", "success");
-    return true;
-  } else {
-    log("TypeScript type checking found compilation errors.", "error");
-    return false;
+  const pkgPath = path.join(cwd, "package.json");
+  if (fs.existsSync(pkgPath)) {
+    try {
+      const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
+      if (pkg.scripts && pkg.scripts.typecheck) {
+        const res = spawnSync("npm", ["run", "typecheck"], {
+          cwd,
+          stdio: "inherit",
+          shell: true,
+        });
+        if (res.status === 0) {
+          log("TypeScript type checking passed.", "success");
+          return true;
+        } else {
+          log("TypeScript type checking found compilation errors.", "error");
+          return false;
+        }
+      }
+    } catch (_) {}
   }
+
+  let success = true;
+  let executedAny = false;
+
+  const tsconfigsToTest = [
+    { name: "Root TypeScript", path: "tsconfig.json" },
+    { name: "React Package TypeScript", path: "packages/react/tsconfig.json" },
+    { name: "Theme Creator TypeScript", path: "theme-creator/tsconfig.json" },
+    { name: "Docs React TypeScript", path: "docs/react/tsconfig.json" },
+  ];
+
+  for (const { name, path: relPath } of tsconfigsToTest) {
+    const fullPath = path.join(cwd, relPath);
+    if (fs.existsSync(fullPath)) {
+      executedAny = true;
+      log(`Compiling ${name} (${relPath})...`, "info");
+      const res = spawnSync("npx", ["tsc", "--noEmit", "-p", fullPath], {
+        cwd,
+        stdio: "inherit",
+        shell: true,
+      });
+      if (res.status !== 0) success = false;
+    }
+  }
+
+  if (!executedAny) {
+    log(
+      "No tsconfig.json found for TypeScript compilation check. Skipped.",
+      "warn",
+    );
+    return true;
+  }
+
+  if (success) {
+    log("TypeScript compilation checks passed successfully.", "success");
+  } else {
+    log("TypeScript compilation check failed with type errors.", "error");
+  }
+  return success;
 }
 
 // TASK -1: Workspace Package & Application Build
@@ -370,26 +437,84 @@ async function taskBuild() {
   }
 }
 
-// TASK 0: ESLint Static Analysis
+// TASK 0: ESLint Static Code Analysis
 async function taskLint() {
-  log("Running ESLint Static Analysis...", "header");
+  log("Running ESLint Static Code Analysis...", "header");
 
-  const res = spawnSync("npm", ["run", "lint"], {
-    cwd,
-    stdio: "inherit",
-    shell: true,
-  });
+  let success = true;
+  let executedAny = false;
 
-  if (res.status === 0) {
-    log("ESLint static analysis passed.", "success");
-    return true;
-  } else {
-    log("ESLint static analysis found violations.", "error");
-    return false;
+  // 1. Root directory check
+  const hasRootEslint =
+    fs.existsSync(path.join(cwd, ".eslintrc.cjs")) ||
+    fs.existsSync(path.join(cwd, ".eslintrc.json")) ||
+    fs.existsSync(path.join(cwd, ".eslintrc.js")) ||
+    fs.existsSync(path.join(cwd, "eslint.config.js")) ||
+    fs.existsSync(path.join(cwd, "eslint.config.mjs"));
+
+  if (hasRootEslint) {
+    executedAny = true;
+    log("Executing Root ESLint Check...", "info");
+
+    const rootEnv = getEslintEnv(cwd);
+    const pkgPath = path.join(cwd, "package.json");
+    let lintCmd = ["exec", "eslint", "src", "packages", "--ext", ".ts,.tsx"];
+    if (fs.existsSync(pkgPath)) {
+      try {
+        const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
+        if (pkg.scripts && pkg.scripts.lint) {
+          lintCmd = ["run", "lint"];
+        }
+      } catch (_) {}
+    }
+
+    const res = spawnSync("npm", lintCmd, {
+      cwd,
+      stdio: "inherit",
+      shell: true,
+      env: rootEnv,
+    });
+    if (res.status !== 0) success = false;
   }
+
+  // 2. Subproject checks (e.g. theme-creator, docs/react)
+  const subdirs = ["theme-creator", "docs/react"];
+  for (const dir of subdirs) {
+    const subPath = path.join(cwd, dir);
+    const subPkg = path.join(subPath, "package.json");
+    if (fs.existsSync(subPkg)) {
+      try {
+        const pkg = JSON.parse(fs.readFileSync(subPkg, "utf-8"));
+        if (pkg.scripts && pkg.scripts.lint) {
+          executedAny = true;
+          log(`Executing ESLint in ${dir}...`, "info");
+          const subEnv = getEslintEnv(subPath);
+          const res = spawnSync("npm", ["run", "lint"], {
+            cwd: subPath,
+            stdio: "inherit",
+            shell: true,
+            env: subEnv,
+          });
+          if (res.status !== 0) success = false;
+        }
+      } catch (_) {}
+    }
+  }
+
+  if (!executedAny) {
+    log("No ESLint configuration or lint script found. Skipped.", "warn");
+    return true;
+  }
+
+  if (success) {
+    log("ESLint checks passed successfully.", "success");
+  } else {
+    log("ESLint check failed with linting errors.", "error");
+  }
+  return success;
 }
 
-// TASK 1: Unit Tests
+// TASK 3: Unit Tests
 async function taskUnitTests() {
   log("Running Unit Test Suite...", "header");
 
@@ -1047,6 +1172,11 @@ Active Tasks: ${[
 
   if (runLint) {
     results.lint = await taskLint();
+    if (!results.lint) {
+      log("ESLint static analysis failed. Halting execution.", "error");
+      printSummary(results);
+      process.exit(1);
+    }
   }
 
   if (runUnit) {
