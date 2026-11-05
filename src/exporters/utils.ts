@@ -236,8 +236,7 @@ export interface NormalizedMetallic {
 export function normalizeMetallic(theme: Theme): NormalizedMetallic {
   const metallic = theme.effects?.metallic;
   const variant = metallic?.variant ?? MetallicVariant.SILVER;
-  const defaultGradient =
-    getMetallicGradient(variant as MetallicVariant) ??
+  const defaultGradient = getMetallicGradient(variant as MetallicVariant) ??
     getMetallicGradient(MetallicVariant.SILVER) ?? {
       base: "#C0C0C0",
       highlight: "#FFFFFF",

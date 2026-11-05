@@ -145,7 +145,11 @@ export function CatalogSyncPanel() {
                 aria-pressed={selectedItem?.id === item.id}
                 onClick={() => setSelectedItem(item)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
+                  if (
+                    e.key === "Enter" ||
+                    e.key === " " ||
+                    e.key === "Spacebar"
+                  ) {
                     e.preventDefault();
                     setSelectedItem(item);
                   }

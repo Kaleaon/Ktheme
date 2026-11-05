@@ -55,7 +55,7 @@ export function PresetsPanel() {
         const focusableSelector =
           'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
         const focusables = Array.from(
-          dialogRef.current.querySelectorAll<HTMLElement>(focusableSelector)
+          dialogRef.current.querySelectorAll<HTMLElement>(focusableSelector),
         ).filter((el) => !el.hasAttribute("disabled"));
 
         if (focusables.length === 0) return;

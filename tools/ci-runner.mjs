@@ -39,9 +39,9 @@ function log(msg, type = "info") {
 
 // Parse Command Line Arguments
 const args = process.argv.slice(2);
-let runTypecheck = args.includes("--typecheck");
+let runTypecheck = args.includes("--typecheck") || args.includes("--static");
 let runBuild = args.includes("--build");
-let runLint = args.includes("--lint");
+let runLint = args.includes("--lint") || args.includes("--static");
 let runUnit = args.includes("--unit");
 let runCatalog = args.includes("--catalog");
 let runSchema = args.includes("--schema");
@@ -68,7 +68,8 @@ ${colors.bold}USAGE:${colors.reset}
 ${colors.bold}FLAGS:${colors.reset}
   --typecheck         Run TypeScript compilation and type checking
   --build             Build workspace packages and applications
-  --lint              Run ESLint static analysis
+  --lint              Run ESLint static code linting
+  --static            Run static analysis (lint and typecheck)
   --unit              Run unit test suites
   --catalog           Run theme catalog parity checks
   --schema            Run Ktheme theme schema validation
@@ -79,7 +80,7 @@ ${colors.bold}FLAGS:${colors.reset}
   --port <number>     Specify static server port override
   --help, -h          Show this help message
 
-  ${colors.gray}If no task flags (--typecheck, --build, --unit, --catalog, --palette, --a11y, --visual) are specified,
+  ${colors.gray}If no task flags (--typecheck, --build, --lint, --static, --unit, --catalog, --palette, --a11y, --visual) are specified,
   all applicable validation tasks for the current repository will run.${colors.reset}
 `);
   process.exit(0);
@@ -99,6 +100,7 @@ if (
 ) {
   runTypecheck = true;
   runBuild = true;
+  runLint = true;
   runUnit = true;
   runCatalog = true;
   runSchema = true;
@@ -315,44 +317,115 @@ async function getPlaywrightBrowser() {
   };
 
   if (process.env.CHROMIUM_PATH && fs.existsSync(process.env.CHROMIUM_PATH)) {
-    return await playwright.chromium.launch({ ...launchOpts, executablePath: process.env.CHROMIUM_PATH });
+    return await playwright.chromium.launch({
+      ...launchOpts,
+      executablePath: process.env.CHROMIUM_PATH,
+    });
   }
 
   try {
     return await playwright.chromium.launch(launchOpts);
   } catch (err) {
     const possiblePaths = [
-      '/bin/google-chrome',
-      '/usr/bin/google-chrome',
-      '/usr/bin/chromium-browser',
-      '/usr/bin/chromium'
+      "/bin/google-chrome",
+      "/usr/bin/google-chrome",
+      "/usr/bin/chromium-browser",
+      "/usr/bin/chromium",
     ].filter(Boolean);
 
-    let executablePath = possiblePaths.find(p => fs.existsSync(p));
+    let executablePath = possiblePaths.find((p) => fs.existsSync(p));
     if (executablePath) {
-      return await playwright.chromium.launch({ ...launchOpts, executablePath });
+      return await playwright.chromium.launch({
+        ...launchOpts,
+        executablePath,
+      });
     }
     throw err;
   }
 }
 
-// TASK -2: TypeScript Type Checking
+// Helper to determine environment variables for ESLint per directory config
+function getEslintEnv(dirPath) {
+  const env = { ...process.env };
+  const hasLegacyConfig =
+    fs.existsSync(path.join(dirPath, ".eslintrc.cjs")) ||
+    fs.existsSync(path.join(dirPath, ".eslintrc.json")) ||
+    fs.existsSync(path.join(dirPath, ".eslintrc.js"));
+  const hasFlatConfig =
+    fs.existsSync(path.join(dirPath, "eslint.config.js")) ||
+    fs.existsSync(path.join(dirPath, "eslint.config.mjs"));
+
+  if (hasLegacyConfig && !hasFlatConfig) {
+    env.ESLINT_USE_FLAT_CONFIG = "false";
+  } else {
+    delete env.ESLINT_USE_FLAT_CONFIG;
+  }
+  return env;
+}
+
+// TASK -2: TypeScript Type Checking & Compilation
 async function taskTypecheck() {
   log("Running TypeScript Type Checking...", "header");
 
-  const res = spawnSync("npm", ["run", "typecheck"], {
-    cwd,
-    stdio: "inherit",
-    shell: true,
-  });
-
-  if (res.status === 0) {
-    log("TypeScript type checking passed.", "success");
-    return true;
-  } else {
-    log("TypeScript type checking found compilation errors.", "error");
-    return false;
+  const pkgPath = path.join(cwd, "package.json");
+  if (fs.existsSync(pkgPath)) {
+    try {
+      const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
+      if (pkg.scripts && pkg.scripts.typecheck) {
+        const res = spawnSync("npm", ["run", "typecheck"], {
+          cwd,
+          stdio: "inherit",
+          shell: true,
+        });
+        if (res.status === 0) {
+          log("TypeScript type checking passed.", "success");
+          return true;
+        } else {
+          log("TypeScript type checking found compilation errors.", "error");
+          return false;
+        }
+      }
+    } catch (_) {}
   }
+
+  let success = true;
+  let executedAny = false;
+
+  const tsconfigsToTest = [
+    { name: "Root TypeScript", path: "tsconfig.json" },
+    { name: "React Package TypeScript", path: "packages/react/tsconfig.json" },
+    { name: "Theme Creator TypeScript", path: "theme-creator/tsconfig.json" },
+    { name: "Docs React TypeScript", path: "docs/react/tsconfig.json" },
+  ];
+
+  for (const { name, path: relPath } of tsconfigsToTest) {
+    const fullPath = path.join(cwd, relPath);
+    if (fs.existsSync(fullPath)) {
+      executedAny = true;
+      log(`Compiling ${name} (${relPath})...`, "info");
+      const res = spawnSync("npx", ["tsc", "--noEmit", "-p", fullPath], {
+        cwd,
+        stdio: "inherit",
+        shell: true,
+      });
+      if (res.status !== 0) success = false;
+    }
+  }
+
+  if (!executedAny) {
+    log(
+      "No tsconfig.json found for TypeScript compilation check. Skipped.",
+      "warn",
+    );
+    return true;
+  }
+
+  if (success) {
+    log("TypeScript compilation checks passed successfully.", "success");
+  } else {
+    log("TypeScript compilation check failed with type errors.", "error");
+  }
+  return success;
 }
 
 // TASK -1: Workspace Package & Application Build
@@ -374,26 +447,84 @@ async function taskBuild() {
   }
 }
 
-// TASK 0: ESLint Static Analysis
+// TASK 0: ESLint Static Code Analysis
 async function taskLint() {
-  log("Running ESLint Static Analysis...", "header");
+  log("Running ESLint Static Code Analysis...", "header");
 
-  const res = spawnSync("npm", ["run", "lint"], {
-    cwd,
-    stdio: "inherit",
-    shell: true,
-  });
+  let success = true;
+  let executedAny = false;
 
-  if (res.status === 0) {
-    log("ESLint static analysis passed.", "success");
-    return true;
-  } else {
-    log("ESLint static analysis found violations.", "error");
-    return false;
+  // 1. Root directory check
+  const hasRootEslint =
+    fs.existsSync(path.join(cwd, ".eslintrc.cjs")) ||
+    fs.existsSync(path.join(cwd, ".eslintrc.json")) ||
+    fs.existsSync(path.join(cwd, ".eslintrc.js")) ||
+    fs.existsSync(path.join(cwd, "eslint.config.js")) ||
+    fs.existsSync(path.join(cwd, "eslint.config.mjs"));
+
+  if (hasRootEslint) {
+    executedAny = true;
+    log("Executing Root ESLint Check...", "info");
+
+    const rootEnv = getEslintEnv(cwd);
+    const pkgPath = path.join(cwd, "package.json");
+    let lintCmd = ["exec", "eslint", "src", "packages", "--ext", ".ts,.tsx"];
+    if (fs.existsSync(pkgPath)) {
+      try {
+        const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
+        if (pkg.scripts && pkg.scripts.lint) {
+          lintCmd = ["run", "lint"];
+        }
+      } catch (_) {}
+    }
+
+    const res = spawnSync("npm", lintCmd, {
+      cwd,
+      stdio: "inherit",
+      shell: true,
+      env: rootEnv,
+    });
+    if (res.status !== 0) success = false;
   }
+
+  // 2. Subproject checks (e.g. theme-creator, docs/react)
+  const subdirs = ["theme-creator", "docs/react"];
+  for (const dir of subdirs) {
+    const subPath = path.join(cwd, dir);
+    const subPkg = path.join(subPath, "package.json");
+    if (fs.existsSync(subPkg)) {
+      try {
+        const pkg = JSON.parse(fs.readFileSync(subPkg, "utf-8"));
+        if (pkg.scripts && pkg.scripts.lint) {
+          executedAny = true;
+          log(`Executing ESLint in ${dir}...`, "info");
+          const subEnv = getEslintEnv(subPath);
+          const res = spawnSync("npm", ["run", "lint"], {
+            cwd: subPath,
+            stdio: "inherit",
+            shell: true,
+            env: subEnv,
+          });
+          if (res.status !== 0) success = false;
+        }
+      } catch (_) {}
+    }
+  }
+
+  if (!executedAny) {
+    log("No ESLint configuration or lint script found. Skipped.", "warn");
+    return true;
+  }
+
+  if (success) {
+    log("ESLint checks passed successfully.", "success");
+  } else {
+    log("ESLint check failed with linting errors.", "error");
+  }
+  return success;
 }
 
-// TASK 1: Unit Tests
+// TASK 3: Unit Tests
 async function taskUnitTests() {
   log("Running Unit Test Suite...", "header");
 
@@ -520,7 +651,11 @@ async function taskPaletteCheck() {
 
   function hexToRgb(hex) {
     hex = hex.replace(/^#/, "");
-    if (hex.length === 3) hex = hex.split("").map((c) => c + c).join("");
+    if (hex.length === 3)
+      hex = hex
+        .split("")
+        .map((c) => c + c)
+        .join("");
     if (hex.length === 8) hex = hex.slice(0, 6);
     const num = parseInt(hex, 16);
     return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
@@ -554,7 +689,9 @@ async function taskPaletteCheck() {
   const palettesPath = path.join(cwd, "docs/react/src/theme/palettes.js");
   if (fs.existsSync(palettesPath)) {
     try {
-      let fileContent = fs.readFileSync(palettesPath, "utf8").replace(/export const /g, "const ");
+      let fileContent = fs
+        .readFileSync(palettesPath, "utf8")
+        .replace(/export const /g, "const ");
       const { Script, createContext } = await import("node:vm");
       const script = new Script(fileContent + "; PALETTES;");
       const ctx = createContext({});
@@ -572,7 +709,14 @@ async function taskPaletteCheck() {
             const ratio = getContrastRatio(tVal, bgVal);
             if (ratio !== null && ratio < 4.5) {
               totalErrors++;
-              log(`Palette "${key}" (${p.name}): secondary text token "${tName}" (${tVal}) vs surface (${bgVal}) contrast is ${ratio.toFixed(2)}:1 (required >= 4.5:1)`, "error");
+              log(
+                `Palette "${key}" (${
+                  p.name
+                }): secondary text token "${tName}" (${tVal}) vs surface (${bgVal}) contrast is ${ratio.toFixed(
+                  2,
+                )}:1 (required >= 4.5:1)`,
+                "error",
+              );
             }
           }
         }
@@ -583,7 +727,14 @@ async function taskPaletteCheck() {
             const ratio = getContrastRatio(c.outv, bgVal);
             if (ratio !== null && ratio < 3.0) {
               totalErrors++;
-              log(`Palette "${key}" (${p.name}): outline token "outv" (${c.outv}) vs surface (${bgVal}) contrast is ${ratio.toFixed(2)}:1 (required >= 3.0:1)`, "error");
+              log(
+                `Palette "${key}" (${p.name}): outline token "outv" (${
+                  c.outv
+                }) vs surface (${bgVal}) contrast is ${ratio.toFixed(
+                  2,
+                )}:1 (required >= 3.0:1)`,
+                "error",
+              );
             }
           }
         }
@@ -598,41 +749,73 @@ async function taskPaletteCheck() {
   const kthemeJsonDir = path.join(cwd, "themes/examples");
   if (fs.existsSync(kthemeJsonDir)) {
     try {
-      const files = fs.readdirSync(kthemeJsonDir).filter((f) => f.endsWith(".json"));
+      const files = fs
+        .readdirSync(kthemeJsonDir)
+        .filter((f) => f.endsWith(".json"));
       for (const file of files) {
-        const json = JSON.parse(fs.readFileSync(path.join(kthemeJsonDir, file), "utf8"));
+        const json = JSON.parse(
+          fs.readFileSync(path.join(kthemeJsonDir, file), "utf8"),
+        );
         const c = json.colorScheme;
         if (!c) continue;
 
-        const bgSurfaces = [c.background, c.surface, c.surfaceVariant].filter(Boolean);
+        const bgSurfaces = [c.background, c.surface, c.surfaceVariant].filter(
+          Boolean,
+        );
         if (c.onSurfaceVariant) {
           for (const bg of bgSurfaces) {
             totalAudited++;
             const r = getContrastRatio(c.onSurfaceVariant, bg);
             if (r !== null && r < 4.5) {
               totalErrors++;
-              log(`Theme preset "${file}": token "onSurfaceVariant" (${c.onSurfaceVariant}) vs surface (${bg}) contrast is ${r.toFixed(2)}:1 (required >= 4.5:1)`, "error");
+              log(
+                `Theme preset "${file}": token "onSurfaceVariant" (${
+                  c.onSurfaceVariant
+                }) vs surface (${bg}) contrast is ${r.toFixed(
+                  2,
+                )}:1 (required >= 4.5:1)`,
+                "error",
+              );
             }
           }
         }
 
         if (c.onSecondaryContainer && c.secondaryContainer) {
           totalAudited++;
-          const r = getContrastRatio(c.onSecondaryContainer, c.secondaryContainer);
+          const r = getContrastRatio(
+            c.onSecondaryContainer,
+            c.secondaryContainer,
+          );
           if (r !== null && r < 4.5) {
             totalErrors++;
-            log(`Theme preset "${file}": token "onSecondaryContainer" (${c.onSecondaryContainer}) vs secondaryContainer (${c.secondaryContainer}) contrast is ${r.toFixed(2)}:1 (required >= 4.5:1)`, "error");
+            log(
+              `Theme preset "${file}": token "onSecondaryContainer" (${
+                c.onSecondaryContainer
+              }) vs secondaryContainer (${
+                c.secondaryContainer
+              }) contrast is ${r.toFixed(2)}:1 (required >= 4.5:1)`,
+              "error",
+            );
           }
         }
 
-        const outlineSurfaces = [...bgSurfaces, c.secondaryContainer].filter(Boolean);
+        const outlineSurfaces = [...bgSurfaces, c.secondaryContainer].filter(
+          Boolean,
+        );
         if (c.outline) {
           for (const bg of outlineSurfaces) {
             totalAudited++;
             const r = getContrastRatio(c.outline, bg);
             if (r !== null && r < 3.0) {
               totalErrors++;
-              log(`Theme preset "${file}": token "outline" (${c.outline}) vs surface/container (${bg}) contrast is ${r.toFixed(2)}:1 (required >= 3.0:1)`, "error");
+              log(
+                `Theme preset "${file}": token "outline" (${
+                  c.outline
+                }) vs surface/container (${bg}) contrast is ${r.toFixed(
+                  2,
+                )}:1 (required >= 3.0:1)`,
+                "error",
+              );
             }
           }
         }
@@ -649,7 +832,10 @@ async function taskPaletteCheck() {
     log("WCAG 2.2 AA static palette contrast verification passed!", "success");
     return true;
   } else {
-    log(`Static palette verification failed with ${totalErrors} contrast violation(s).`, "error");
+    log(
+      `Static palette verification failed with ${totalErrors} contrast violation(s).`,
+      "error",
+    );
     return false;
   }
 }
@@ -660,7 +846,10 @@ async function taskA11yAudit() {
 
   const contrastScriptTs = path.join(cwd, "scripts/verify-preset-contrast.ts");
   if (fs.existsSync(contrastScriptTs)) {
-    log("Auditing Raw Theme Preset Tokens for WCAG AA Contrast Compliance...", "info");
+    log(
+      "Auditing Raw Theme Preset Tokens for WCAG AA Contrast Compliance...",
+      "info",
+    );
     const contrastRes = spawnSync("npx", ["ts-node", contrastScriptTs], {
       cwd,
       stdio: "inherit",
@@ -700,7 +889,9 @@ async function taskA11yAudit() {
   try {
     browser = await getPlaywrightBrowser();
     const page = await browser.newPage();
-    await page.goto(targetUrl, { waitUntil: "domcontentloaded", timeout: 15000 }).catch(() => {});
+    await page
+      .goto(targetUrl, { waitUntil: "domcontentloaded", timeout: 15000 })
+      .catch(() => {});
     await page.waitForSelector("#root > *", { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(500);
 
@@ -931,7 +1122,9 @@ async function taskVisualSuite() {
       const page = await browser.newPage({
         viewport: { width: vp.width, height: vp.height },
       });
-      await page.goto(targetUrl, { waitUntil: "domcontentloaded", timeout: 15000 }).catch(() => {});
+      await page
+        .goto(targetUrl, { waitUntil: "domcontentloaded", timeout: 15000 })
+        .catch(() => {});
       await page
         .waitForSelector("#root > *", { timeout: 20000 })
         .catch(() => {});
@@ -1073,7 +1266,10 @@ Active Tasks: ${[
   if (runBuild) {
     results.build = await taskBuild();
     if (!results.build) {
-      log("Workspace package/application build failed. Halting execution.", "error");
+      log(
+        "Workspace package/application build failed. Halting execution.",
+        "error",
+      );
       printSummary(results);
       process.exit(1);
     }
@@ -1081,6 +1277,11 @@ Active Tasks: ${[
 
   if (runLint) {
     results.lint = await taskLint();
+    if (!results.lint) {
+      log("ESLint static analysis failed. Halting execution.", "error");
+      printSummary(results);
+      process.exit(1);
+    }
   }
 
   if (runUnit) {

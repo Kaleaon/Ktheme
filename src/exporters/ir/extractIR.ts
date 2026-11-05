@@ -7,7 +7,8 @@ import {
   normalizeLayout,
   normalizeTypography,
 } from "../utils";
-import { NormalizedThemeTokens } from "./tokenIR";
+import { DTCGMotionTokenGroup, NormalizedThemeTokens } from "./tokenIR";
+import { MotionASTTransformer } from "../../core/MotionASTTransformer";
 
 /**
  * Extracts and normalizes tokens from a Theme object into a canonical NormalizedThemeTokens IR tree.
@@ -17,6 +18,19 @@ import { NormalizedThemeTokens } from "./tokenIR";
  * @returns A fully normalized NormalizedThemeTokens IR structure
  */
 export function extractThemeTokens(theme: Theme): NormalizedThemeTokens {
+  const effects = theme.effects;
+  const customMotion = (theme as unknown as { motion?: DTCGMotionTokenGroup })
+    .motion;
+  const motion: DTCGMotionTokenGroup =
+    customMotion ??
+    MotionASTTransformer.createMotionTokenGroup({
+      duration: effects?.animations?.duration ?? 300,
+      easing: effects?.animations?.easing ?? "ease-in-out",
+      reducedMotionPolicy:
+        effects?.animations?.reducedMotionPolicy ?? "disable",
+      description: `${theme.metadata?.name ?? "Theme"} DTCG motion token group`,
+    });
+
   return {
     metadata: {
       id: theme.metadata?.id ?? "theme",
@@ -32,6 +46,7 @@ export function extractThemeTokens(theme: Theme): NormalizedThemeTokens {
     typography: normalizeTypography(theme),
     effects: normalizeEffects(theme),
     adaptation: normalizeAdaptation(theme),
+    motion,
     layoutStandard: resolveLayoutStandard(theme),
   };
 }

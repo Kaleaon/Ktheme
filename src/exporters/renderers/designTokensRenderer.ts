@@ -4,6 +4,7 @@ import { TokenRenderer } from "./TokenRenderer";
 interface DesignTokenValue {
   $type: string;
   $value: unknown;
+  $description?: string;
 }
 
 export interface DesignTokensJsonExport {
@@ -25,6 +26,16 @@ export interface DesignTokensJsonExport {
     typography: Record<string, unknown>;
     effect: Record<string, unknown>;
     adaptation: Record<string, unknown>;
+    motion: {
+      duration: DesignTokenValue;
+      easing: DesignTokenValue;
+      reducedMotion?: {
+        duration: DesignTokenValue;
+        easing?: DesignTokenValue;
+        [key: string]: unknown;
+      };
+      [key: string]: unknown;
+    };
   };
 }
 
@@ -110,6 +121,40 @@ export class DesignTokensRenderer
                 ),
               }
             : {}),
+        },
+        motion: {
+          duration: {
+            $type: "duration",
+            $value: tokens.motion?.duration?.$value ?? "300ms",
+            $description:
+              tokens.motion?.duration?.$description ??
+              "Default animation duration",
+          },
+          easing: {
+            $type: "cubicBezier",
+            $value: tokens.motion?.easing?.$value ?? [0.25, 0.1, 0.25, 1.0],
+            $description:
+              tokens.motion?.easing?.$description ??
+              "Default animation easing curve",
+          },
+          reducedMotion: {
+            duration: {
+              $type: "duration",
+              $value: tokens.motion?.reducedMotion?.duration?.$value ?? "0ms",
+              $description:
+                tokens.motion?.reducedMotion?.duration?.$description ??
+                "Reduced motion animation duration",
+            },
+            easing: {
+              $type: "cubicBezier",
+              $value: tokens.motion?.reducedMotion?.easing?.$value ?? [
+                0.0, 0.0, 1.0, 1.0,
+              ],
+              $description:
+                tokens.motion?.reducedMotion?.easing?.$description ??
+                "Reduced motion animation easing curve",
+            },
+          },
         },
       },
     };

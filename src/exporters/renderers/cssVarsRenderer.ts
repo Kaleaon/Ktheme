@@ -1,6 +1,7 @@
 import { NormalizedThemeTokens } from "../ir/tokenIR";
 import { TokenRenderer } from "./TokenRenderer";
 import { WebExporterOptions } from "../web/types";
+import { MotionASTTransformer } from "../../core/MotionASTTransformer";
 
 export interface CssVarsExport {
   vars: Record<string, string>;
@@ -201,6 +202,16 @@ export class CssVarsRenderer implements TokenRenderer<CssVarsExport> {
           tokens.effects.shadows.color,
         );
       }
+
+      if (tokens.motion) {
+        const motionCss = MotionASTTransformer.toCss(tokens.motion);
+        vars["--ktheme-motion-duration"] = motionCss.duration;
+        vars["--ktheme-motion-easing"] = motionCss.easing;
+        vars["--ktheme-motion-duration-reduced"] = motionCss.durationReduced;
+        vars["--ktheme-motion-easing-reduced"] = motionCss.easingReduced;
+        vars["--ktheme-animation-duration"] = motionCss.duration;
+        vars["--ktheme-animation-easing"] = motionCss.easing;
+      }
     }
 
     if (resolvedOptions.includeCorners) {
@@ -228,9 +239,12 @@ export class CssVarsRenderer implements TokenRenderer<CssVarsExport> {
       vars["--ktheme-layout-corner-artwork"] = `${layoutStd.corners.artwork}px`;
 
       vars["--ktheme-layout-typography-body"] = layoutStd.typography.body;
-      vars["--ktheme-layout-typography-minimum-metadata"] = `${layoutStd.typography.minimumMetadata}px`;
-      vars["--ktheme-layout-typography-content-case"] = layoutStd.typography.contentCase;
-      vars["--ktheme-layout-typography-navigation-case"] = layoutStd.typography.navigationCase;
+      vars["--ktheme-layout-typography-minimum-metadata"] =
+        `${layoutStd.typography.minimumMetadata}px`;
+      vars["--ktheme-layout-typography-content-case"] =
+        layoutStd.typography.contentCase;
+      vars["--ktheme-layout-typography-navigation-case"] =
+        layoutStd.typography.navigationCase;
 
       vars["--ktheme-layout-surfaces"] = layoutStd.surfaces;
       vars["--ktheme-layout-actions"] = layoutStd.actions;
