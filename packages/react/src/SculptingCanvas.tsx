@@ -17,7 +17,7 @@ export interface WasmEngineLike {
     originZ: number,
     dirX: number,
     dirY: number,
-    dirZ: number
+    dirZ: number,
   ) => Record<string, unknown> | null;
   apply_brush_stroke?: (
     centerX: number,
@@ -29,7 +29,7 @@ export interface WasmEngineLike {
     falloff: string,
     dirX: number,
     dirY: number,
-    dirZ: number
+    dirZ: number,
   ) => Float32Array;
   get_normals?: () => Float32Array;
 }
@@ -87,19 +87,20 @@ export const SculptingCanvas: React.FC<SculptingCanvasProps> = ({
 
   // Hit test & cursor state
   const [cursorHit, setCursorHit] = useState<RaycastHit | null>(null);
-  const [cursorScreenPos, setCursorScreenPos] = useState<{ x: number; y: number } | null>(null);
+  const [cursorScreenPos, setCursorScreenPos] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
 
   // Internal mesh positions state
   const meshPositionsRef = useRef<Float32Array>(
     meshData
       ? Float32Array.from(meshData.positions)
-      : new Float32Array([
-          -1, -1, 0, 1, -1, 0, 0, 1, 0,
-        ])
+      : new Float32Array([-1, -1, 0, 1, -1, 0, 0, 1, 0]),
   );
   const meshIndicesRef = useRef<Uint32Array>(
-    meshData ? Uint32Array.from(meshData.indices) : new Uint32Array([0, 1, 2])
+    meshData ? Uint32Array.from(meshData.indices) : new Uint32Array([0, 1, 2]),
   );
 
   useEffect(() => {
@@ -111,7 +112,12 @@ export const SculptingCanvas: React.FC<SculptingCanvasProps> = ({
 
   // Project screen coordinates to 3D camera ray
   const screenToRay = useCallback(
-    (canvasX: number, canvasY: number, canvasWidth: number, canvasHeight: number) => {
+    (
+      canvasX: number,
+      canvasY: number,
+      canvasWidth: number,
+      canvasHeight: number,
+    ) => {
       const ndcX = (2 * canvasX) / canvasWidth - 1;
       const ndcY = 1 - (2 * canvasY) / canvasHeight;
 
@@ -127,15 +133,22 @@ export const SculptingCanvas: React.FC<SculptingCanvasProps> = ({
       const len = Math.hypot(dirX, dirY, dirZ);
       return {
         origin: camPos,
-        direction: [dirX / len, dirY / len, dirZ / len] as [number, number, number],
+        direction: [dirX / len, dirY / len, dirZ / len] as [
+          number,
+          number,
+          number,
+        ],
       };
     },
-    [camera]
+    [camera],
   );
 
   // Perform raycast against WASM engine or fallback JS raycast
   const doRaycast = useCallback(
-    (rayOrigin: [number, number, number], rayDir: [number, number, number]): RaycastHit => {
+    (
+      rayOrigin: [number, number, number],
+      rayDir: [number, number, number],
+    ): RaycastHit => {
       if (engine && typeof engine.raycast_mesh === "function") {
         const res = engine.raycast_mesh(
           rayOrigin[0],
@@ -143,7 +156,7 @@ export const SculptingCanvas: React.FC<SculptingCanvasProps> = ({
           rayOrigin[2],
           rayDir[0],
           rayDir[1],
-          rayDir[2]
+          rayDir[2],
         );
         if (res && typeof res === "object") {
           return {
@@ -181,10 +194,15 @@ export const SculptingCanvas: React.FC<SculptingCanvasProps> = ({
         ];
         const nLen = Math.hypot(norm[0], norm[1], norm[2]);
         if (nLen < 1e-6) continue;
-        const nNorm = [norm[0] / nLen, norm[1] / nLen, norm[2] / nLen] as [number, number, number];
+        const nNorm = [norm[0] / nLen, norm[1] / nLen, norm[2] / nLen] as [
+          number,
+          number,
+          number,
+        ];
 
         // Ray-plane intersection
-        const denom = rayDir[0] * nNorm[0] + rayDir[1] * nNorm[1] + rayDir[2] * nNorm[2];
+        const denom =
+          rayDir[0] * nNorm[0] + rayDir[1] * nNorm[1] + rayDir[2] * nNorm[2];
         if (Math.abs(denom) < 1e-6) continue;
 
         const t =
@@ -210,14 +228,25 @@ export const SculptingCanvas: React.FC<SculptingCanvasProps> = ({
         }
       }
 
-      return closestHit || { hit: false, point: [0, 0, 0], normal: [0, 0, 1], face_index: 0, distance: 0 };
+      return (
+        closestHit || {
+          hit: false,
+          point: [0, 0, 0],
+          normal: [0, 0, 1],
+          face_index: 0,
+          distance: 0,
+        }
+      );
     },
-    [engine]
+    [engine],
   );
 
   // Perform brush stroke deformation
   const dispatchBrushStroke = useCallback(
-    (hitPoint: [number, number, number], hitNormal: [number, number, number]) => {
+    (
+      hitPoint: [number, number, number],
+      hitNormal: [number, number, number],
+    ) => {
       let updatedPositions: Float32Array;
       let updatedNormals: Float32Array | undefined;
 
@@ -232,7 +261,7 @@ export const SculptingCanvas: React.FC<SculptingCanvasProps> = ({
           falloff,
           hitNormal[0],
           hitNormal[1],
-          hitNormal[2]
+          hitNormal[2],
         );
         if (typeof engine.get_normals === "function") {
           updatedNormals = engine.get_normals();
@@ -264,8 +293,10 @@ export const SculptingCanvas: React.FC<SculptingCanvasProps> = ({
 
             if (mode === "smooth") {
               positions[i] += (hitPoint[0] - positions[i]) * factor * 0.5;
-              positions[i + 1] += (hitPoint[1] - positions[i + 1]) * factor * 0.5;
-              positions[i + 2] += (hitPoint[2] - positions[i + 2]) * factor * 0.5;
+              positions[i + 1] +=
+                (hitPoint[1] - positions[i + 1]) * factor * 0.5;
+              positions[i + 2] +=
+                (hitPoint[2] - positions[i + 2]) * factor * 0.5;
             } else {
               positions[i] += hitNormal[0] * factor * dir;
               positions[i + 1] += hitNormal[1] * factor * dir;
@@ -281,7 +312,7 @@ export const SculptingCanvas: React.FC<SculptingCanvasProps> = ({
         onMeshChange(updatedPositions, updatedNormals);
       }
     },
-    [engine, radius, strength, mode, falloff, onMeshChange]
+    [engine, radius, strength, mode, falloff, onMeshChange],
   );
 
   // Render 3D Canvas
@@ -359,8 +390,15 @@ export const SculptingCanvas: React.FC<SculptingCanvasProps> = ({
 
       ctx.save();
       ctx.beginPath();
-      ctx.arc(cursorScreenPos.x, cursorScreenPos.y, Math.max(8, ringRadiusPx), 0, Math.PI * 2);
-      ctx.strokeStyle = mode === "push" ? "#22c55e" : mode === "pull" ? "#ef4444" : "#3b82f6";
+      ctx.arc(
+        cursorScreenPos.x,
+        cursorScreenPos.y,
+        Math.max(8, ringRadiusPx),
+        0,
+        Math.PI * 2,
+      );
+      ctx.strokeStyle =
+        mode === "push" ? "#22c55e" : mode === "pull" ? "#ef4444" : "#3b82f6";
       ctx.lineWidth = 2.5;
       ctx.setLineDash([4, 4]);
       ctx.stroke();
@@ -538,7 +576,8 @@ export const SculptingCanvas: React.FC<SculptingCanvasProps> = ({
                   padding: "4px 10px",
                   borderRadius: 4,
                   border: "none",
-                  background: falloff === f ? "#0284c7" : "rgba(255,255,255,0.08)",
+                  background:
+                    falloff === f ? "#0284c7" : "rgba(255,255,255,0.08)",
                   color: "#ffffff",
                   fontSize: 12,
                   fontWeight: 500,
@@ -554,8 +593,16 @@ export const SculptingCanvas: React.FC<SculptingCanvasProps> = ({
           </div>
 
           {/* Radius Slider */}
-          <div style={{ display: "flex", alignItems: "center", gap: 8, flex: 1 }}>
-            <span style={{ fontWeight: 600, color: "#94a3b8", whiteSpace: "nowrap" }}>
+          <div
+            style={{ display: "flex", alignItems: "center", gap: 8, flex: 1 }}
+          >
+            <span
+              style={{
+                fontWeight: 600,
+                color: "#94a3b8",
+                whiteSpace: "nowrap",
+              }}
+            >
               Radius: {radius.toFixed(2)}
             </span>
             <input
@@ -571,8 +618,16 @@ export const SculptingCanvas: React.FC<SculptingCanvasProps> = ({
           </div>
 
           {/* Strength Slider */}
-          <div style={{ display: "flex", alignItems: "center", gap: 8, flex: 1 }}>
-            <span style={{ fontWeight: 600, color: "#94a3b8", whiteSpace: "nowrap" }}>
+          <div
+            style={{ display: "flex", alignItems: "center", gap: 8, flex: 1 }}
+          >
+            <span
+              style={{
+                fontWeight: 600,
+                color: "#94a3b8",
+                whiteSpace: "nowrap",
+              }}
+            >
               Strength: {strength.toFixed(2)}
             </span>
             <input

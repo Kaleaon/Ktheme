@@ -7,18 +7,20 @@
  * @returns A deep copy of the theme with isolated references
  */
 export function cloneTheme<T>(obj: T): T {
-  const globalWithSC = globalThis as unknown as { structuredClone?: (val: unknown) => unknown };
-  if (typeof globalWithSC.structuredClone === 'function') {
+  const globalWithSC = globalThis as unknown as {
+    structuredClone?: (val: unknown) => unknown;
+  };
+  if (typeof globalWithSC.structuredClone === "function") {
     return globalWithSC.structuredClone(obj) as T;
   }
-  if (typeof structuredClone === 'function') {
+  if (typeof structuredClone === "function") {
     return structuredClone(obj);
   }
   return fallbackClone(obj);
 }
 
 function fallbackClone<T>(val: T): T {
-  if (val === null || typeof val !== 'object') {
+  if (val === null || typeof val !== "object") {
     return val;
   }
   if (Array.isArray(val)) {

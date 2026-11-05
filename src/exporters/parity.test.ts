@@ -805,19 +805,27 @@ describe("exporter parity & IR pipeline", () => {
       expect(tailwind.theme.extend.borderRadius?.small).toBe("6px");
     });
 
-    it('selectively excludes domains using options in toCssVars', () => {
+    it("selectively excludes domains using options in toCssVars", () => {
       const noEffects = toCssVars(richFixtureTheme, { includeEffects: false });
-      expect(noEffects.vars['--ktheme-primary']).toBe('#111111');
-      expect(noEffects.vars['--ktheme-effects-metallic-variant']).toBeUndefined();
-      expect(noEffects.vars['--ktheme-typography-font-family']).toBeDefined();
+      expect(noEffects.vars["--ktheme-primary"]).toBe("#111111");
+      expect(
+        noEffects.vars["--ktheme-effects-metallic-variant"],
+      ).toBeUndefined();
+      expect(noEffects.vars["--ktheme-typography-font-family"]).toBeDefined();
 
-      const noTypography = toCssVars(richFixtureTheme, { includeTypography: false });
-      expect(noTypography.vars['--ktheme-effects-metallic-variant']).toBeDefined();
-      expect(noTypography.vars['--ktheme-typography-font-family']).toBeUndefined();
+      const noTypography = toCssVars(richFixtureTheme, {
+        includeTypography: false,
+      });
+      expect(
+        noTypography.vars["--ktheme-effects-metallic-variant"],
+      ).toBeDefined();
+      expect(
+        noTypography.vars["--ktheme-typography-font-family"],
+      ).toBeUndefined();
 
       const noCorners = toCssVars(richFixtureTheme, { includeCorners: false });
-      expect(noCorners.vars['--ktheme-effects-metallic-variant']).toBeDefined();
-      expect(noCorners.vars['--ktheme-typography-font-family']).toBeDefined();
+      expect(noCorners.vars["--ktheme-effects-metallic-variant"]).toBeDefined();
+      expect(noCorners.vars["--ktheme-typography-font-family"]).toBeDefined();
 
       const minimal = toCssVars(fixtureTheme, {
         includeEffects: false,
@@ -839,21 +847,27 @@ describe("exporter parity & IR pipeline", () => {
       ]);
     });
 
-    it('selectively excludes domains using options in toTailwindConfig', () => {
-      const noEffects = toTailwindConfig(richFixtureTheme, { includeEffects: false });
-      expect(noEffects.theme.extend.colors['metallic-base']).toBeUndefined();
+    it("selectively excludes domains using options in toTailwindConfig", () => {
+      const noEffects = toTailwindConfig(richFixtureTheme, {
+        includeEffects: false,
+      });
+      expect(noEffects.theme.extend.colors["metallic-base"]).toBeUndefined();
       expect(noEffects.theme.extend.boxShadow).toBeUndefined();
       expect(noEffects.theme.extend.fontFamily).toBeDefined();
       expect(noEffects.theme.extend.borderRadius).toBeDefined();
 
-      const noTypography = toTailwindConfig(richFixtureTheme, { includeTypography: false });
-      expect(noTypography.theme.extend.colors['metallic-base']).toBeDefined();
+      const noTypography = toTailwindConfig(richFixtureTheme, {
+        includeTypography: false,
+      });
+      expect(noTypography.theme.extend.colors["metallic-base"]).toBeDefined();
       expect(noTypography.theme.extend.fontFamily).toBeUndefined();
       expect(noTypography.theme.extend.fontSize).toBeUndefined();
       expect(noTypography.theme.extend.borderRadius).toBeDefined();
 
-      const noCorners = toTailwindConfig(richFixtureTheme, { includeCorners: false });
-      expect(noCorners.theme.extend.colors['metallic-base']).toBeDefined();
+      const noCorners = toTailwindConfig(richFixtureTheme, {
+        includeCorners: false,
+      });
+      expect(noCorners.theme.extend.colors["metallic-base"]).toBeDefined();
       expect(noCorners.theme.extend.fontFamily).toBeDefined();
       expect(noCorners.theme.extend.borderRadius).toBeUndefined();
     });
@@ -1041,10 +1055,18 @@ describe("exporter parity & IR pipeline", () => {
       expect(exportJson.theme.motion.duration.$type).toBe("duration");
       expect(exportJson.theme.motion.duration.$value).toBe("350ms");
       expect(exportJson.theme.motion.easing.$type).toBe("cubicBezier");
-      expect(exportJson.theme.motion.easing.$value).toEqual([0.25, 0.1, 0.25, 1.0]);
-      expect(exportJson.theme.motion.reducedMotion?.duration.$type).toBe("duration");
-      expect(exportJson.theme.motion.reducedMotion?.duration.$value).toBe("0ms");
-      expect(exportJson.theme.motion.reducedMotion?.easing?.$type).toBe("cubicBezier");
+      expect(exportJson.theme.motion.easing.$value).toEqual([
+        0.25, 0.1, 0.25, 1.0,
+      ]);
+      expect(exportJson.theme.motion.reducedMotion?.duration.$type).toBe(
+        "duration",
+      );
+      expect(exportJson.theme.motion.reducedMotion?.duration.$value).toBe(
+        "0ms",
+      );
+      expect(exportJson.theme.motion.reducedMotion?.easing?.$type).toBe(
+        "cubicBezier",
+      );
     });
 
     it("generates native motion code artifacts across all four platform renderers", () => {
@@ -1145,7 +1167,10 @@ describe("exporter parity & IR pipeline", () => {
 
   describe("@ktheme/tokens build distribution", () => {
     it("generates dist/tokens.css containing --ktheme-font-family and typography scale variables in :root", () => {
-      const tokensCssPath = path.resolve(__dirname, "../../packages/tokens/dist/tokens.css");
+      const tokensCssPath = path.resolve(
+        __dirname,
+        "../../packages/tokens/dist/tokens.css",
+      );
       expect(fs.existsSync(tokensCssPath)).toBe(true);
       const css = fs.readFileSync(tokensCssPath, "utf8");
 
@@ -1161,7 +1186,10 @@ describe("exporter parity & IR pipeline", () => {
     });
 
     it("generates dist/tokens.json containing typography CSS custom property definitions", () => {
-      const tokensJsonPath = path.resolve(__dirname, "../../packages/tokens/dist/tokens.json");
+      const tokensJsonPath = path.resolve(
+        __dirname,
+        "../../packages/tokens/dist/tokens.json",
+      );
       expect(fs.existsSync(tokensJsonPath)).toBe(true);
       const json = JSON.parse(fs.readFileSync(tokensJsonPath, "utf8"));
 

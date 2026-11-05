@@ -155,12 +155,7 @@ export function normalizeTarget(rawTarget: string): string | null {
   if (t === "css" || t === "css-vars") return "css";
   if (t === "tailwind") return "tailwind";
   if (t === "flutter" || t === "dart") return "flutter";
-  if (
-    t === "json" ||
-    t === "tokens" ||
-    t === "design-tokens" ||
-    t === "w3c"
-  )
+  if (t === "json" || t === "tokens" || t === "design-tokens" || t === "w3c")
     return "json";
   if (t === "blender" || t === "python") return "blender";
   return null;

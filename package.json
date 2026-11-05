@@ -16,6 +16,7 @@
     "dev": "tsc --watch",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "lint": "eslint src packages",
+    "lint:pre-commit": "ESLINT_USE_FLAT_CONFIG=true pre-commit run --all-files",
     "creator": "cd theme-creator && npm start",
     "release:bump-preset-updated-at": "node scripts/release/bump-preset-updated-at.mjs",
     "generate:theme-catalog": "node scripts/generate-theme-catalog.mjs",
@@ -23,6 +24,9 @@
     "verify:preset-contrast": "ts-node scripts/verify-preset-contrast.ts",
     "sync-schemas": "npx ts-node scripts/sync-schemas.ts",
     "validate": "node tools/ci-runner.mjs",
+    "validate:lint": "node tools/ci-runner.mjs --lint",
+    "validate:typecheck": "node tools/ci-runner.mjs --typecheck",
+    "validate:static": "node tools/ci-runner.mjs --static",
     "test:a11y": "node tools/ci-runner.mjs --a11y",
     "test:visual": "node tools/ci-runner.mjs --visual"
   },

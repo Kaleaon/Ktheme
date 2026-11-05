@@ -75,11 +75,12 @@ This workflow prevents preset drift between the engine and creator applications.
 Before opening a pull request, run all itemized verification tasks locally:
 
 1. **Lint codebase**: `npm run lint`
-2. **Execute unit test suite**: `npm test`
-3. **Build TypeScript engine**: `npm run build`
-4. **Verify theme catalog parity**: `npm run check:theme-catalog` (if presets were modified, sync with `npm run generate:theme-catalog`)
+2. **Pre-commit checks**: `npm run lint:pre-commit` (or `pre-commit run --all-files`)
+3. **Execute unit test suite**: `npm test`
+4. **Build TypeScript engine**: `npm run build`
+5. **Verify theme catalog parity**: `npm run check:theme-catalog` (if presets were modified, sync with `npm run generate:theme-catalog`)
 
-The automated CI workflow (`.github/workflows/ci.yml`) enforces all 4 tasks on pull requests and pushes to `main`.
+The automated CI workflow (`.github/workflows/ci.yml`) enforces all verification tasks and pre-commit guardrails on pull requests and pushes to `main`.
 
 ## Questions?
 

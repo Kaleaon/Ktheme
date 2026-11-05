@@ -298,16 +298,17 @@ function tokensToCssVars(tokens: KthemeTokens): Record<string, string> {
     tokens.touchTargetMinMobile || "44px";
   vars["--ktheme-touch-target-min-desktop"] =
     tokens.touchTargetMinDesktop || "24px";
-  vars["--ktheme-touch-padding-compact"] =
-    tokens.touchPaddingCompact || "4px";
-  vars["--ktheme-touch-padding-coarse"] =
-    tokens.touchPaddingCoarse || "10px";
+  vars["--ktheme-touch-padding-compact"] = tokens.touchPaddingCompact || "4px";
+  vars["--ktheme-touch-padding-coarse"] = tokens.touchPaddingCoarse || "10px";
 
   // Motion tokens
   vars["--ktheme-motion-duration"] = tokens.motionDuration || "300ms";
-  vars["--ktheme-motion-easing"] = tokens.motionEasing || "cubic-bezier(0.25, 0.1, 0.25, 1.0)";
-  vars["--ktheme-motion-duration-reduced"] = tokens.motionDurationReduced || "0ms";
-  vars["--ktheme-motion-easing-reduced"] = tokens.motionEasingReduced || "cubic-bezier(0.0, 0.0, 1.0, 1.0)";
+  vars["--ktheme-motion-easing"] =
+    tokens.motionEasing || "cubic-bezier(0.25, 0.1, 0.25, 1.0)";
+  vars["--ktheme-motion-duration-reduced"] =
+    tokens.motionDurationReduced || "0ms";
+  vars["--ktheme-motion-easing-reduced"] =
+    tokens.motionEasingReduced || "cubic-bezier(0.0, 0.0, 1.0, 1.0)";
   vars["--ktheme-animation-duration"] = vars["--ktheme-motion-duration"];
   vars["--ktheme-animation-easing"] = vars["--ktheme-motion-easing"];
 

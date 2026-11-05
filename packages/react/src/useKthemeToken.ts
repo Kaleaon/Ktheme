@@ -29,9 +29,7 @@ export function useKthemeToken(
  * e.g. getKthemeCssVar('primary') -> 'var(--ktheme-primary, var(--md-sys-color-primary))'
  */
 export function getKthemeCssVar(tokenName: string, fallback?: string): string {
-  const kebab = tokenName
-    .replace(/([A-Z])/g, "-$1")
-    .toLowerCase();
+  const kebab = tokenName.replace(/([A-Z])/g, "-$1").toLowerCase();
   const kthemeName = `--ktheme-${kebab}`;
   const md3Name = `--md-sys-color-${kebab}`;
   if (fallback) {

@@ -19,13 +19,17 @@ import { MotionASTTransformer } from "../../core/MotionASTTransformer";
  */
 export function extractThemeTokens(theme: Theme): NormalizedThemeTokens {
   const effects = theme.effects;
-  const customMotion = (theme as unknown as { motion?: DTCGMotionTokenGroup }).motion;
-  const motion: DTCGMotionTokenGroup = customMotion ?? MotionASTTransformer.createMotionTokenGroup({
-    duration: effects?.animations?.duration ?? 300,
-    easing: effects?.animations?.easing ?? "ease-in-out",
-    reducedMotionPolicy: effects?.animations?.reducedMotionPolicy ?? "disable",
-    description: `${theme.metadata?.name ?? "Theme"} DTCG motion token group`,
-  });
+  const customMotion = (theme as unknown as { motion?: DTCGMotionTokenGroup })
+    .motion;
+  const motion: DTCGMotionTokenGroup =
+    customMotion ??
+    MotionASTTransformer.createMotionTokenGroup({
+      duration: effects?.animations?.duration ?? 300,
+      easing: effects?.animations?.easing ?? "ease-in-out",
+      reducedMotionPolicy:
+        effects?.animations?.reducedMotionPolicy ?? "disable",
+      description: `${theme.metadata?.name ?? "Theme"} DTCG motion token group`,
+    });
 
   return {
     metadata: {

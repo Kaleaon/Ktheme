@@ -13,7 +13,9 @@ export function usePrefersReducedMotion(): boolean {
   useEffect(() => {
     if (typeof window === "undefined" || !window.matchMedia) return;
 
-    const mediaQueryList = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const mediaQueryList = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
     const listener = (event: MediaQueryListEvent) => {
       setPrefersReducedMotion(event.matches);
     };
@@ -21,14 +23,22 @@ export function usePrefersReducedMotion(): boolean {
     if (mediaQueryList.addEventListener) {
       mediaQueryList.addEventListener("change", listener);
     } else {
-      (mediaQueryList as unknown as { addListener: (cb: (e: MediaQueryListEvent) => void) => void }).addListener(listener);
+      (
+        mediaQueryList as unknown as {
+          addListener: (cb: (e: MediaQueryListEvent) => void) => void;
+        }
+      ).addListener(listener);
     }
 
     return () => {
       if (mediaQueryList.removeEventListener) {
         mediaQueryList.removeEventListener("change", listener);
       } else {
-        (mediaQueryList as unknown as { removeListener: (cb: (e: MediaQueryListEvent) => void) => void }).removeListener(listener);
+        (
+          mediaQueryList as unknown as {
+            removeListener: (cb: (e: MediaQueryListEvent) => void) => void;
+          }
+        ).removeListener(listener);
       }
     };
   }, []);

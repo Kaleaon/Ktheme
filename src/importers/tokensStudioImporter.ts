@@ -5,8 +5,18 @@
  * composite typography & shadow token conversion, and mapping to Ktheme Theme specs.
  */
 
-import { Theme, ColorScheme, Typography, VisualEffects, DesignTokens } from "../core/types";
-import { parseColorToHex, generatePaletteFromSeed, getContrastColor } from "../utils/colors";
+import {
+  Theme,
+  ColorScheme,
+  Typography,
+  VisualEffects,
+  DesignTokens,
+} from "../core/types";
+import {
+  parseColorToHex,
+  generatePaletteFromSeed,
+  getContrastColor,
+} from "../utils/colors";
 
 /**
  * Standard token node structure following W3C DTCG draft & Tokens Studio specs.
@@ -97,21 +107,28 @@ export class TokensStudioImporter {
   /**
    * Parses Tokens Studio or DTCG JSON into resolved tokens with multi-hop alias resolution.
    */
-  public parse(jsonInput: string | Record<string, unknown>): TokensStudioParseResult {
+  public parse(
+    jsonInput: string | Record<string, unknown>,
+  ): TokensStudioParseResult {
     let rawObj: Record<string, unknown>;
     if (typeof jsonInput === "string") {
       try {
         rawObj = JSON.parse(jsonInput);
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : String(err);
-        throw new Error(`Invalid JSON provided to TokensStudioImporter: ${msg}`);
+        throw new Error(
+          `Invalid JSON provided to TokensStudioImporter: ${msg}`,
+        );
       }
     } else {
       rawObj = jsonInput;
     }
 
     const warnings: string[] = [];
-    const rawTokensByPath: Record<string, { value: unknown; type: string; description?: string }> = {};
+    const rawTokensByPath: Record<
+      string,
+      { value: unknown; type: string; description?: string }
+    > = {};
     const availableSets: string[] = [];
 
     // Determine top-level sets or root structure
@@ -122,7 +139,7 @@ export class TokensStudioImporter {
           !key.startsWith("$") &&
           typeof rawObj[key] === "object" &&
           rawObj[key] !== null &&
-          !isTokenNode(rawObj[key])
+          !isTokenNode(rawObj[key]),
       );
 
     if (isMultiSetFormat) {
@@ -133,13 +150,22 @@ export class TokensStudioImporter {
         targetSets = activeSets;
       } else if (Array.isArray(rawObj.$themes) && rawObj.$themes.length > 0) {
         // Look for default active sets from $themes metadata
-        const activeTheme = (rawObj.$themes as Record<string, unknown>[]).find(
-          (t: Record<string, unknown>) => Boolean(t.group || t.selectedTokenSets)
-        ) || (rawObj.$themes as Record<string, unknown>[])[0];
-        if (activeTheme && activeTheme.selectedTokenSets && typeof activeTheme.selectedTokenSets === "object") {
-          const selectedSets = activeTheme.selectedTokenSets as Record<string, unknown>;
+        const activeTheme =
+          (rawObj.$themes as Record<string, unknown>[]).find(
+            (t: Record<string, unknown>) =>
+              Boolean(t.group || t.selectedTokenSets),
+          ) || (rawObj.$themes as Record<string, unknown>[])[0];
+        if (
+          activeTheme &&
+          activeTheme.selectedTokenSets &&
+          typeof activeTheme.selectedTokenSets === "object"
+        ) {
+          const selectedSets = activeTheme.selectedTokenSets as Record<
+            string,
+            unknown
+          >;
           targetSets = Object.keys(selectedSets).filter(
-            (setName) => selectedSets[setName] !== "disabled"
+            (setName) => selectedSets[setName] !== "disabled",
           );
         }
       }
@@ -152,7 +178,14 @@ export class TokensStudioImporter {
       for (const setName of targetSets) {
         if (rawObj[setName] && typeof rawObj[setName] === "object") {
           availableSets.push(setName);
-          this.traverseTokenTree(rawObj[setName], setName, rawTokensByPath, warnings, undefined, setName);
+          this.traverseTokenTree(
+            rawObj[setName],
+            setName,
+            rawTokensByPath,
+            warnings,
+            undefined,
+            setName,
+          );
         }
       }
     } else {
@@ -165,14 +198,28 @@ export class TokensStudioImporter {
     const flatValues: Record<string, unknown> = {};
 
     for (const [path, rawToken] of Object.entries(rawTokensByPath)) {
-      const resolvedValue = this.resolveValue(rawToken.value, rawTokensByPath, new Set([path]), warnings);
+      const resolvedValue = this.resolveValue(
+        rawToken.value,
+        rawTokensByPath,
+        new Set([path]),
+        warnings,
+      );
       let normalizedType = rawToken.type;
 
       // Infer type if unknown
       if (normalizedType === "unknown") {
-        if (typeof resolvedValue === "string" && (resolvedValue.startsWith("#") || resolvedValue.startsWith("rgb") || resolvedValue.startsWith("hsl"))) {
+        if (
+          typeof resolvedValue === "string" &&
+          (resolvedValue.startsWith("#") ||
+            resolvedValue.startsWith("rgb") ||
+            resolvedValue.startsWith("hsl"))
+        ) {
           normalizedType = "color";
-        } else if (typeof resolvedValue === "object" && resolvedValue !== null && ("fontFamily" in resolvedValue || "fontSize" in resolvedValue)) {
+        } else if (
+          typeof resolvedValue === "object" &&
+          resolvedValue !== null &&
+          ("fontFamily" in resolvedValue || "fontSize" in resolvedValue)
+        ) {
           normalizedType = "typography";
         }
       }
@@ -184,10 +231,25 @@ export class TokensStudioImporter {
         if (typeof resolvedValue === "string") {
           finalValue = parseColorToHex(resolvedValue);
         }
-      } else if (normalizedType === "typography" && typeof resolvedValue === "object" && resolvedValue !== null) {
-        finalValue = this.processCompositeTypography(resolvedValue, rawTokensByPath, warnings);
-      } else if ((normalizedType === "boxShadow" || normalizedType === "shadow") && resolvedValue) {
-        finalValue = this.processShadowToken(resolvedValue, rawTokensByPath, warnings);
+      } else if (
+        normalizedType === "typography" &&
+        typeof resolvedValue === "object" &&
+        resolvedValue !== null
+      ) {
+        finalValue = this.processCompositeTypography(
+          resolvedValue,
+          rawTokensByPath,
+          warnings,
+        );
+      } else if (
+        (normalizedType === "boxShadow" || normalizedType === "shadow") &&
+        resolvedValue
+      ) {
+        finalValue = this.processShadowToken(
+          resolvedValue,
+          rawTokensByPath,
+          warnings,
+        );
       }
 
       resolvedTokens[path] = {
@@ -223,17 +285,31 @@ export class TokensStudioImporter {
   /**
    * Converts Tokens Studio / DTCG JSON directly into a Ktheme Theme definition.
    */
-  public convertToKTheme(jsonInput: string | Record<string, unknown>, options: ConvertOptions = {}): Theme {
+  public convertToKTheme(
+    jsonInput: string | Record<string, unknown>,
+    options: ConvertOptions = {},
+  ): Theme {
     const parseResult = this.parse(jsonInput);
     const { flatValues, tokens } = parseResult;
 
-    const themeId = options.themeId || options.themeName?.toLowerCase().replace(/[^a-z0-9]+/g, "-") || "imported-tokens-studio";
+    const themeId =
+      options.themeId ||
+      options.themeName?.toLowerCase().replace(/[^a-z0-9]+/g, "-") ||
+      "imported-tokens-studio";
     const themeName = options.themeName || parseResult.metadata.name;
     const author = options.author || "Tokens Studio Importer";
     const darkMode = options.darkMode ?? false;
 
     // Build MD3 ColorScheme
-    const seedColor = this.findColorToken(flatValues, ["primary", "brand", "primary.500", "brand.500", "colors.primary", "colors.brand.500"]) || "#6750A4";
+    const seedColor =
+      this.findColorToken(flatValues, [
+        "primary",
+        "brand",
+        "primary.500",
+        "brand.500",
+        "colors.primary",
+        "colors.brand.500",
+      ]) || "#6750A4";
     const generatedPalette = generatePaletteFromSeed(seedColor);
 
     const findColor = (keys: string[], defaultColor: string): string => {
@@ -241,28 +317,68 @@ export class TokensStudioImporter {
       return found ? parseColorToHex(found) : defaultColor;
     };
 
-    const primary = findColor(["primary", "colors.primary", "sys.color.primary"], seedColor);
-    const onPrimary = findColor(["onPrimary", "on-primary", "colors.onPrimary", "colors.on-primary"], getContrastColor(primary));
+    const primary = findColor(
+      ["primary", "colors.primary", "sys.color.primary"],
+      seedColor,
+    );
+    const onPrimary = findColor(
+      ["onPrimary", "on-primary", "colors.onPrimary", "colors.on-primary"],
+      getContrastColor(primary),
+    );
     const secondary = findColor(
       ["secondary", "colors.secondary"],
-      generatedPalette.secondary ? parseColorToHex(generatedPalette.secondary) : "#625B71"
+      generatedPalette.secondary
+        ? parseColorToHex(generatedPalette.secondary)
+        : "#625B71",
     );
-    const onSecondary = findColor(["onSecondary", "colors.onSecondary"], getContrastColor(secondary));
-    const background = findColor(["background", "bg", "colors.background", "colors.bg"], darkMode ? "#141218" : "#FEF7FF");
-    const onBackground = findColor(["onBackground", "text", "colors.onBackground", "colors.text"], darkMode ? "#E6E0E9" : "#1D1B20");
-    const surface = findColor(["surface", "colors.surface"], darkMode ? "#141218" : "#FEF7FF");
-    const onSurface = findColor(["onSurface", "colors.onSurface"], darkMode ? "#E6E0E9" : "#1D1B20");
-    const surfaceVariant = findColor(["surfaceVariant", "colors.surfaceVariant"], darkMode ? "#49454F" : "#E7E0EC");
-    const onSurfaceVariant = findColor(["onSurfaceVariant", "colors.onSurfaceVariant"], darkMode ? "#CAC4D0" : "#49454F");
-    const outline = findColor(["outline", "colors.outline"], darkMode ? "#938F99" : "#79747E");
-    const outlineVariant = findColor(["outlineVariant", "colors.outlineVariant"], darkMode ? "#49454F" : "#CAC4D0");
+    const onSecondary = findColor(
+      ["onSecondary", "colors.onSecondary"],
+      getContrastColor(secondary),
+    );
+    const background = findColor(
+      ["background", "bg", "colors.background", "colors.bg"],
+      darkMode ? "#141218" : "#FEF7FF",
+    );
+    const onBackground = findColor(
+      ["onBackground", "text", "colors.onBackground", "colors.text"],
+      darkMode ? "#E6E0E9" : "#1D1B20",
+    );
+    const surface = findColor(
+      ["surface", "colors.surface"],
+      darkMode ? "#141218" : "#FEF7FF",
+    );
+    const onSurface = findColor(
+      ["onSurface", "colors.onSurface"],
+      darkMode ? "#E6E0E9" : "#1D1B20",
+    );
+    const surfaceVariant = findColor(
+      ["surfaceVariant", "colors.surfaceVariant"],
+      darkMode ? "#49454F" : "#E7E0EC",
+    );
+    const onSurfaceVariant = findColor(
+      ["onSurfaceVariant", "colors.onSurfaceVariant"],
+      darkMode ? "#CAC4D0" : "#49454F",
+    );
+    const outline = findColor(
+      ["outline", "colors.outline"],
+      darkMode ? "#938F99" : "#79747E",
+    );
+    const outlineVariant = findColor(
+      ["outlineVariant", "colors.outlineVariant"],
+      darkMode ? "#49454F" : "#CAC4D0",
+    );
     const error = findColor(["error", "colors.error"], "#B3261E");
     const onError = findColor(["onError", "colors.onError"], "#FFFFFF");
     const tertiary = findColor(
       ["tertiary", "colors.tertiary"],
-      generatedPalette.tertiary ? parseColorToHex(generatedPalette.tertiary) : "#7D5260"
+      generatedPalette.tertiary
+        ? parseColorToHex(generatedPalette.tertiary)
+        : "#7D5260",
     );
-    const onTertiary = findColor(["onTertiary", "colors.onTertiary"], getContrastColor(tertiary));
+    const onTertiary = findColor(
+      ["onTertiary", "colors.onTertiary"],
+      getContrastColor(tertiary),
+    );
 
     const colorScheme: ColorScheme = {
       primary,
@@ -272,7 +388,8 @@ export class TokensStudioImporter {
       secondary,
       onSecondary,
       secondaryContainer: generatedPalette.secondaryContainer || secondary,
-      onSecondaryContainer: generatedPalette.onSecondaryContainer || onSecondary,
+      onSecondaryContainer:
+        generatedPalette.onSecondaryContainer || onSecondary,
       tertiary,
       onTertiary,
       tertiaryContainer: generatedPalette.tertiaryContainer || tertiary,
@@ -296,37 +413,102 @@ export class TokensStudioImporter {
     };
 
     // Extract Typography
-    const fontFamily = String(flatValues["fontFamily"] || flatValues["fontFamilies.body"] || flatValues["font"] || "system-ui, sans-serif");
-    const displayFontFamily = String(flatValues["displayFontFamily"] || flatValues["fontFamilies.heading"] || fontFamily);
+    const fontFamily = String(
+      flatValues["fontFamily"] ||
+        flatValues["fontFamilies.body"] ||
+        flatValues["font"] ||
+        "system-ui, sans-serif",
+    );
+    const displayFontFamily = String(
+      flatValues["displayFontFamily"] ||
+        flatValues["fontFamilies.heading"] ||
+        fontFamily,
+    );
 
     const typography: Typography = {
       fontFamily,
       displayFontFamily,
       fontSize: {
-        small: this.parseNumericToken(flatValues, ["fontSize.small", "fontSizes.sm", "fontSize.sm", "small"], 12),
-        medium: this.parseNumericToken(flatValues, ["fontSize.medium", "fontSizes.md", "fontSize.md", "medium"], 16),
-        large: this.parseNumericToken(flatValues, ["fontSize.large", "fontSizes.lg", "fontSize.lg", "large"], 20),
-        xlarge: this.parseNumericToken(flatValues, ["fontSize.xlarge", "fontSizes.xl", "fontSize.xl", "xlarge"], 28),
+        small: this.parseNumericToken(
+          flatValues,
+          ["fontSize.small", "fontSizes.sm", "fontSize.sm", "small"],
+          12,
+        ),
+        medium: this.parseNumericToken(
+          flatValues,
+          ["fontSize.medium", "fontSizes.md", "fontSize.md", "medium"],
+          16,
+        ),
+        large: this.parseNumericToken(
+          flatValues,
+          ["fontSize.large", "fontSizes.lg", "fontSize.lg", "large"],
+          20,
+        ),
+        xlarge: this.parseNumericToken(
+          flatValues,
+          ["fontSize.xlarge", "fontSizes.xl", "fontSize.xl", "xlarge"],
+          28,
+        ),
       },
       fontWeight: {
-        light: this.parseNumericToken(flatValues, ["fontWeight.light", "fontWeights.light"], 300),
-        regular: this.parseNumericToken(flatValues, ["fontWeight.regular", "fontWeights.regular"], 400),
-        medium: this.parseNumericToken(flatValues, ["fontWeight.medium", "fontWeights.medium"], 500),
-        bold: this.parseNumericToken(flatValues, ["fontWeight.bold", "fontWeights.bold"], 700),
+        light: this.parseNumericToken(
+          flatValues,
+          ["fontWeight.light", "fontWeights.light"],
+          300,
+        ),
+        regular: this.parseNumericToken(
+          flatValues,
+          ["fontWeight.regular", "fontWeights.regular"],
+          400,
+        ),
+        medium: this.parseNumericToken(
+          flatValues,
+          ["fontWeight.medium", "fontWeights.medium"],
+          500,
+        ),
+        bold: this.parseNumericToken(
+          flatValues,
+          ["fontWeight.bold", "fontWeights.bold"],
+          700,
+        ),
       },
-      lineHeight: this.parseNumericToken(flatValues, ["lineHeight", "lineHeights.normal"], 1.5),
-      letterSpacing: this.parseNumericToken(flatValues, ["letterSpacing", "letterSpacings.normal"], 0),
+      lineHeight: this.parseNumericToken(
+        flatValues,
+        ["lineHeight", "lineHeights.normal"],
+        1.5,
+      ),
+      letterSpacing: this.parseNumericToken(
+        flatValues,
+        ["letterSpacing", "letterSpacings.normal"],
+        0,
+      ),
     };
 
     // Extract Design Tokens & Visual Effects
-    const cornerSmall = this.parseNumericToken(flatValues, ["borderRadius.sm", "borderRadius.small"], 4);
-    const cornerMedium = this.parseNumericToken(flatValues, ["borderRadius.md", "borderRadius.medium", "borderRadius"], 8);
-    const cornerLarge = this.parseNumericToken(flatValues, ["borderRadius.lg", "borderRadius.large"], 16);
+    const cornerSmall = this.parseNumericToken(
+      flatValues,
+      ["borderRadius.sm", "borderRadius.small"],
+      4,
+    );
+    const cornerMedium = this.parseNumericToken(
+      flatValues,
+      ["borderRadius.md", "borderRadius.medium", "borderRadius"],
+      8,
+    );
+    const cornerLarge = this.parseNumericToken(
+      flatValues,
+      ["borderRadius.lg", "borderRadius.large"],
+      16,
+    );
 
     const tokensConfig: DesignTokens = {
       density: {
         scale: 1,
-        baseSpacing: this.parseNumericToken(flatValues, ["spacing.md", "spacing.base", "spacing"], 16),
+        baseSpacing: this.parseNumericToken(
+          flatValues,
+          ["spacing.md", "spacing.base", "spacing"],
+          16,
+        ),
       },
       corners: {
         small: cornerSmall,
@@ -373,11 +555,16 @@ export class TokensStudioImporter {
     out: Record<string, { value: unknown; type: string; description?: string }>,
     warnings: string[],
     parentType?: string,
-    rootSetName?: string
+    rootSetName?: string,
   ): void {
     if (!node || typeof node !== "object") return;
 
-    const recordToken = (path: string, val: unknown, type: string, desc?: string) => {
+    const recordToken = (
+      path: string,
+      val: unknown,
+      type: string,
+      desc?: string,
+    ) => {
       const entry = { value: val, type, description: desc };
       out[path] = entry;
       if (rootSetName && path.startsWith(`${rootSetName}.`)) {
@@ -390,8 +577,13 @@ export class TokensStudioImporter {
 
     if (isTokenNode(node)) {
       const val = getTokenRawValue(node as StudioTokenNode);
-      const type = getTokenType(node as StudioTokenNode) !== "unknown" ? getTokenType(node as StudioTokenNode) : parentType || "unknown";
-      const desc = (node as StudioTokenNode).$description || (node as StudioTokenNode).description;
+      const type =
+        getTokenType(node as StudioTokenNode) !== "unknown"
+          ? getTokenType(node as StudioTokenNode)
+          : parentType || "unknown";
+      const desc =
+        (node as StudioTokenNode).$description ||
+        (node as StudioTokenNode).description;
       if (prefix) {
         recordToken(prefix, val, type, desc);
       }
@@ -399,10 +591,19 @@ export class TokensStudioImporter {
     }
 
     const nodeObj = node as Record<string, unknown>;
-    const currentGroupType = (nodeObj.$type as string | undefined) || (nodeObj.type as string | undefined) || parentType;
+    const currentGroupType =
+      (nodeObj.$type as string | undefined) ||
+      (nodeObj.type as string | undefined) ||
+      parentType;
 
     for (const [key, child] of Object.entries(nodeObj)) {
-      if (key.startsWith("$") && key !== "$value" && key !== "$type" && key !== "$description") continue;
+      if (
+        key.startsWith("$") &&
+        key !== "$value" &&
+        key !== "$type" &&
+        key !== "$description"
+      )
+        continue;
       if (key === "type" && typeof child === "string") continue;
 
       const path = prefix ? `${prefix}.${key}` : key;
@@ -411,11 +612,21 @@ export class TokensStudioImporter {
         if (isTokenNode(child)) {
           const childNode = child as StudioTokenNode;
           const val = getTokenRawValue(childNode);
-          const type = getTokenType(childNode) !== "unknown" ? getTokenType(childNode) : currentGroupType || "unknown";
+          const type =
+            getTokenType(childNode) !== "unknown"
+              ? getTokenType(childNode)
+              : currentGroupType || "unknown";
           const desc = childNode.$description || childNode.description;
           recordToken(path, val, type, desc);
         } else {
-          this.traverseTokenTree(child, path, out, warnings, currentGroupType, rootSetName);
+          this.traverseTokenTree(
+            child,
+            path,
+            out,
+            warnings,
+            currentGroupType,
+            rootSetName,
+          );
         }
       }
     }
@@ -423,9 +634,12 @@ export class TokensStudioImporter {
 
   private resolveValue(
     value: unknown,
-    rawTokens: Record<string, { value: unknown; type: string; description?: string }>,
+    rawTokens: Record<
+      string,
+      { value: unknown; type: string; description?: string }
+    >,
     visited: Set<string>,
-    warnings: string[]
+    warnings: string[],
   ): unknown {
     if (typeof value === "string") {
       // Check if value is a pure reference string e.g. "{colors.brand.500}"
@@ -437,19 +651,33 @@ export class TokensStudioImporter {
 
       // Value may contain multiple embedded references e.g. "1px solid {colors.border}"
       return value.replace(/\{([^}]+)\}/g, (match, refPath) => {
-        const deref = this.lookupAndDereference(refPath.trim(), rawTokens, visited, warnings);
-        return typeof deref === "string" || typeof deref === "number" ? String(deref) : match;
+        const deref = this.lookupAndDereference(
+          refPath.trim(),
+          rawTokens,
+          visited,
+          warnings,
+        );
+        return typeof deref === "string" || typeof deref === "number"
+          ? String(deref)
+          : match;
       });
     }
 
     if (Array.isArray(value)) {
-      return value.map((item) => this.resolveValue(item, rawTokens, new Set(visited), warnings));
+      return value.map((item) =>
+        this.resolveValue(item, rawTokens, new Set(visited), warnings),
+      );
     }
 
     if (value && typeof value === "object") {
       const resolvedObj: Record<string, unknown> = {};
       for (const [k, v] of Object.entries(value)) {
-        resolvedObj[k] = this.resolveValue(v, rawTokens, new Set(visited), warnings);
+        resolvedObj[k] = this.resolveValue(
+          v,
+          rawTokens,
+          new Set(visited),
+          warnings,
+        );
       }
       return resolvedObj;
     }
@@ -459,15 +687,20 @@ export class TokensStudioImporter {
 
   private lookupAndDereference(
     refPath: string,
-    rawTokens: Record<string, { value: unknown; type: string; description?: string }>,
+    rawTokens: Record<
+      string,
+      { value: unknown; type: string; description?: string }
+    >,
     visited: Set<string>,
-    warnings: string[]
+    warnings: string[],
   ): unknown {
     // Strip trailing .value or .$value if present in alias reference
     const cleanRef = refPath.replace(/\.(\$)?value$/, "");
 
     if (visited.has(cleanRef)) {
-      const msg = `Circular token alias detected: ${Array.from(visited).join(" -> ")} -> ${cleanRef}`;
+      const msg = `Circular token alias detected: ${Array.from(visited).join(
+        " -> ",
+      )} -> ${cleanRef}`;
       warnings.push(msg);
       return `{${refPath}}`;
     }
@@ -478,7 +711,7 @@ export class TokensStudioImporter {
     if (!matchedToken) {
       // Try finding path suffix across sets (e.g. searching "colors.brand" in "global.colors.brand")
       const matchedKey = Object.keys(rawTokens).find(
-        (k) => k === cleanRef || k.endsWith(`.${cleanRef}`) || k === refPath
+        (k) => k === cleanRef || k.endsWith(`.${cleanRef}`) || k === refPath,
       );
       if (matchedKey) {
         matchedToken = rawTokens[matchedKey];
@@ -492,13 +725,18 @@ export class TokensStudioImporter {
 
     const nextVisited = new Set(visited);
     nextVisited.add(cleanRef);
-    return this.resolveValue(matchedToken.value, rawTokens, nextVisited, warnings);
+    return this.resolveValue(
+      matchedToken.value,
+      rawTokens,
+      nextVisited,
+      warnings,
+    );
   }
 
   private processCompositeTypography(
     val: unknown,
     _rawTokens: Record<string, unknown>,
-    _warnings: string[]
+    _warnings: string[],
   ): unknown {
     if (typeof val !== "object" || val === null) return val;
     const v = val as Record<string, unknown>;
@@ -511,7 +749,11 @@ export class TokensStudioImporter {
     };
   }
 
-  private processShadowToken(val: unknown, _rawTokens: Record<string, unknown>, _warnings: string[]): unknown {
+  private processShadowToken(
+    val: unknown,
+    _rawTokens: Record<string, unknown>,
+    _warnings: string[],
+  ): unknown {
     const shadowObj = Array.isArray(val) ? val[0] : val;
     if (!shadowObj || typeof shadowObj !== "object") return val;
     const s = shadowObj as Record<string, unknown>;
@@ -525,7 +767,10 @@ export class TokensStudioImporter {
     };
   }
 
-  private findColorToken(flatValues: Record<string, unknown>, keys: string[]): string | undefined {
+  private findColorToken(
+    flatValues: Record<string, unknown>,
+    keys: string[],
+  ): string | undefined {
     for (const k of keys) {
       if (k in flatValues && typeof flatValues[k] === "string") {
         return flatValues[k] as string;
@@ -534,29 +779,41 @@ export class TokensStudioImporter {
     const foundEntry = Object.entries(flatValues).find(
       ([path, val]) =>
         typeof val === "string" &&
-        keys.some((k) => path.toLowerCase().endsWith(k.toLowerCase()))
+        keys.some((k) => path.toLowerCase().endsWith(k.toLowerCase())),
     );
     return foundEntry ? String(foundEntry[1]) : undefined;
   }
 
-  private findShadowToken(tokens: Record<string, ResolvedToken>): { color?: string; blur?: number } | undefined {
+  private findShadowToken(
+    tokens: Record<string, ResolvedToken>,
+  ): { color?: string; blur?: number } | undefined {
     const shadowToken = Object.values(tokens).find(
-      (t) => t.type === "boxShadow" || t.type === "shadow" || t.path.includes("shadow")
+      (t) =>
+        t.type === "boxShadow" ||
+        t.type === "shadow" ||
+        t.path.includes("shadow"),
     );
     if (!shadowToken || !shadowToken.value) return undefined;
 
-    const shadowVal = Array.isArray(shadowToken.value) ? shadowToken.value[0] : shadowToken.value;
+    const shadowVal = Array.isArray(shadowToken.value)
+      ? shadowToken.value[0]
+      : shadowToken.value;
     if (typeof shadowVal === "object" && shadowVal !== null) {
       const s = shadowVal as Record<string, unknown>;
       return {
         color: typeof s.color === "string" ? s.color : undefined,
-        blur: typeof s.blur === "number" ? s.blur : parseFloat(String(s.blur)) || 8,
+        blur:
+          typeof s.blur === "number" ? s.blur : parseFloat(String(s.blur)) || 8,
       };
     }
     return undefined;
   }
 
-  private parseNumericToken(flatValues: Record<string, unknown>, keys: string[], defaultValue: number): number {
+  private parseNumericToken(
+    flatValues: Record<string, unknown>,
+    keys: string[],
+    defaultValue: number,
+  ): number {
     for (const key of keys) {
       if (key in flatValues) {
         const val = flatValues[key];
@@ -576,7 +833,7 @@ export class TokensStudioImporter {
  */
 export function parseTokensStudio(
   jsonInput: string | Record<string, unknown>,
-  options?: TokensStudioImporterOptions
+  options?: TokensStudioImporterOptions,
 ): TokensStudioParseResult {
   const importer = new TokensStudioImporter(options);
   return importer.parse(jsonInput);
@@ -587,7 +844,7 @@ export function parseTokensStudio(
  */
 export function tokensStudioToKTheme(
   jsonInput: string | Record<string, unknown>,
-  options?: ConvertOptions
+  options?: ConvertOptions,
 ): Theme {
   const importer = new TokensStudioImporter(options);
   return importer.convertToKTheme(jsonInput, options);

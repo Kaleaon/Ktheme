@@ -14,7 +14,12 @@ interface PostJsonData {
   error?: string;
   errors?: string[];
   attempts?: number;
-  issues?: Array<{ severity: string; message: string; code: string; path?: string }>;
+  issues?: Array<{
+    severity: string;
+    message: string;
+    code: string;
+    path?: string;
+  }>;
   diagnosticLogs?: DiagnosticLogEntry[];
   raw?: string;
 }
@@ -71,7 +76,8 @@ describe("Strict Backend Validation Gate with Re-Prompt Retry", () => {
     },
   };
 
-  const validJsonBlock = "```json\n" + JSON.stringify({ theme: validTheme }) + "\n```";
+  const validJsonBlock =
+    "```json\n" + JSON.stringify({ theme: validTheme }) + "\n```";
 
   const lowContrastTheme = {
     ...validTheme,
@@ -143,7 +149,10 @@ describe("Strict Backend Validation Gate with Re-Prompt Retry", () => {
               const data = rawData ? JSON.parse(rawData) : {};
               resolve({ status: res.statusCode || 500, data });
             } catch {
-              resolve({ status: res.statusCode || 500, data: { raw: rawData } });
+              resolve({
+                status: res.statusCode || 500,
+                data: { raw: rawData },
+              });
             }
           });
         },
@@ -204,7 +213,9 @@ describe("Strict Backend Validation Gate with Re-Prompt Retry", () => {
     expect(messages[1].role).toBe("assistant");
     expect(messages[1].content).toBe(lowContrastJsonBlock);
     expect(messages[2].role).toBe("user");
-    expect(messages[2].content).toContain("Low contrast for colorScheme.primary");
+    expect(messages[2].content).toContain(
+      "Low contrast for colorScheme.primary",
+    );
     expect(messages[2].content).toContain("WCAG AA requires >= 4.5:1");
   });
 
@@ -233,7 +244,9 @@ describe("Strict Backend Validation Gate with Re-Prompt Retry", () => {
 
     // Call 2 correction message should mention primary contrast
     const retry2Messages = mockClaude.mock.calls[2][0].messages;
-    expect(retry2Messages.at(-1).content).toContain("Low contrast for colorScheme.primary");
+    expect(retry2Messages.at(-1).content).toContain(
+      "Low contrast for colorScheme.primary",
+    );
   });
 
   it("strictly enforces maximum retry limit of 2 and returns HTTP 422 with diagnostic logs on persistent failure", async () => {
@@ -249,9 +262,13 @@ describe("Strict Backend Validation Gate with Re-Prompt Retry", () => {
 
     expect(res.status).toBe(422);
     expect(res.data.attempts).toBe(2);
-    expect(res.data.error).toContain("Theme validation failed after 2 retry attempts");
+    expect(res.data.error).toContain(
+      "Theme validation failed after 2 retry attempts",
+    );
     expect(Array.isArray(res.data.errors)).toBe(true);
-    expect(res.data.errors!.some((e: string) => e.includes("Low contrast"))).toBe(true);
+    expect(
+      res.data.errors!.some((e: string) => e.includes("Low contrast")),
+    ).toBe(true);
 
     // Verify structured diagnostic logs
     expect(Array.isArray(res.data.diagnosticLogs)).toBe(true);
@@ -285,7 +302,9 @@ describe("Strict Backend Validation Gate with Re-Prompt Retry", () => {
     // Verify retry prompt construction
     const secondCallArg = mockGemini.mock.calls[1][0];
     expect(secondCallArg.prompt).toContain("Not a JSON block at all");
-    expect(secondCallArg.prompt).toContain("Response does not contain a JSON code block");
+    expect(secondCallArg.prompt).toContain(
+      "Response does not contain a JSON code block",
+    );
     expect(secondCallArg.screenshots).toHaveLength(1);
   });
 

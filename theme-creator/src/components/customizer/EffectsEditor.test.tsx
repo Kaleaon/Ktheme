@@ -20,7 +20,11 @@ describe("EffectsEditor Range Slider ARIA Accessibility Tests", () => {
             metallic: {
               enabled: true,
               variant: "GOLD",
-              gradient: { base: "#ffd700", highlight: "#fff8dc", shadow: "#b8860b" },
+              gradient: {
+                base: "#ffd700",
+                highlight: "#fff8dc",
+                shadow: "#b8860b",
+              },
               intensity: 0.6,
             },
             shadows: {
@@ -42,8 +46,17 @@ describe("EffectsEditor Range Slider ARIA Accessibility Tests", () => {
               stops: [{ color: "#000000", offset: 0.5 }],
             },
             animations: { enabled: true, duration: 300, easing: "ease" },
-            transitions: { enabled: true, duration: 200, properties: ["color"] },
-            overlays: { enabled: true, color: "#ffffff", opacity: 0.2, blendMode: "normal" },
+            transitions: {
+              enabled: true,
+              duration: 200,
+              properties: ["color"],
+            },
+            overlays: {
+              enabled: true,
+              color: "#ffffff",
+              opacity: 0.2,
+              blendMode: "normal",
+            },
             focusRing: { enabled: true, color: "#818cf8", width: 2, offset: 2 },
             noise: { enabled: true, opacity: 0.05, scale: 4 },
           },

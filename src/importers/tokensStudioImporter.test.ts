@@ -28,7 +28,9 @@ describe("TokensStudioImporter", () => {
     };
 
     const result = parseTokensStudio(input);
-    expect(result.warnings.some((w) => w.includes("Circular token alias detected"))).toBe(true);
+    expect(
+      result.warnings.some((w) => w.includes("Circular token alias detected")),
+    ).toBe(true);
   });
 
   it("converts HEX, RGB, RGBA, HSL, and HSLA colors to standard Ktheme HEX strings", () => {
@@ -63,7 +65,9 @@ describe("TokensStudioImporter", () => {
 
     const result = parseTokensStudio(input);
     expect(result.tokens["color.primary"].value).toBe("#0055FF");
-    expect(result.tokens["color.primary"].description).toBe("DTCG primary accent color");
+    expect(result.tokens["color.primary"].description).toBe(
+      "DTCG primary accent color",
+    );
   });
 
   it("parses multi-set Tokens Studio JSON structures", () => {
