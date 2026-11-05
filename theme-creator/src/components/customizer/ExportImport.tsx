@@ -45,7 +45,9 @@ export function ExportImport() {
     setIsExporting(true);
     setErrorMessage("");
     setStatusMessage(
-      `Exporting ${state.currentTheme.metadata?.name || "theme"} via backend service...`,
+      `Exporting ${
+        state.currentTheme.metadata?.name || "theme"
+      } via backend service...`,
     );
 
     const themeId = state.currentTheme.metadata?.id || "ktheme";
@@ -144,7 +146,9 @@ export function ExportImport() {
           if (converted && converted.colorScheme?.primary) {
             dispatch({ type: "SET_THEME", payload: converted as KTheme });
             setStatusMessage(
-              `${converted.metadata.name || "Tokens Studio Theme"} imported successfully.`,
+              `${
+                converted.metadata.name || "Tokens Studio Theme"
+              } imported successfully.`,
             );
             setErrorMessage("");
           } else {

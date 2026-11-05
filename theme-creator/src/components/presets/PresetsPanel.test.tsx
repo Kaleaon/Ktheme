@@ -57,7 +57,7 @@ describe("PresetsPanel Theme Deletion Dialog", () => {
 
     // DELETE_SAVED should not have been dispatched yet
     expect(mockDispatch).not.toHaveBeenCalledWith(
-      expect.objectContaining({ type: "DELETE_SAVED" })
+      expect.objectContaining({ type: "DELETE_SAVED" }),
     );
 
     // Modal dialog should be displayed with dialog role and aria-modal="true"
@@ -69,7 +69,7 @@ describe("PresetsPanel Theme Deletion Dialog", () => {
     const dialogUtils = within(dialog);
     expect(dialogUtils.getByText("Delete Theme")).toBeInTheDocument();
     expect(
-      dialogUtils.getByText(/Are you sure you want to delete/i)
+      dialogUtils.getByText(/Are you sure you want to delete/i),
     ).toBeInTheDocument();
     expect(dialogUtils.getByText("My Custom Theme")).toBeInTheDocument();
   });
@@ -82,7 +82,7 @@ describe("PresetsPanel Theme Deletion Dialog", () => {
     fireEvent.click(
       screen.getByRole("button", {
         name: /Delete saved theme My Custom Theme/i,
-      })
+      }),
     );
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
@@ -94,7 +94,7 @@ describe("PresetsPanel Theme Deletion Dialog", () => {
     // Dialog should be closed
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(mockDispatch).not.toHaveBeenCalledWith(
-      expect.objectContaining({ type: "DELETE_SAVED" })
+      expect.objectContaining({ type: "DELETE_SAVED" }),
     );
   });
 
@@ -105,7 +105,7 @@ describe("PresetsPanel Theme Deletion Dialog", () => {
     fireEvent.click(
       screen.getByRole("button", {
         name: /Delete saved theme My Custom Theme/i,
-      })
+      }),
     );
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
@@ -116,7 +116,7 @@ describe("PresetsPanel Theme Deletion Dialog", () => {
     // Dialog should be closed
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(mockDispatch).not.toHaveBeenCalledWith(
-      expect.objectContaining({ type: "DELETE_SAVED" })
+      expect.objectContaining({ type: "DELETE_SAVED" }),
     );
   });
 
@@ -127,7 +127,7 @@ describe("PresetsPanel Theme Deletion Dialog", () => {
     fireEvent.click(
       screen.getByRole("button", {
         name: /Delete saved theme My Custom Theme/i,
-      })
+      }),
     );
 
     const confirmDeleteBtn = screen.getByRole("button", { name: "Delete" });

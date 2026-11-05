@@ -1,7 +1,16 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { KChip, KNavRail, KToggle, KInput, KDialog, KSlider, KMain, KCard } from "./DCs";
+import {
+  KChip,
+  KNavRail,
+  KToggle,
+  KInput,
+  KDialog,
+  KSlider,
+  KMain,
+  KCard,
+} from "./DCs";
 import { LinkpointUIKit } from "../linkpoint/LinkpointUIKit";
 import { IconicShowcaseGallery } from "./IconicShowcaseGallery";
 

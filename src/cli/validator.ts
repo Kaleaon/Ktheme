@@ -184,11 +184,20 @@ export function validateComponentCatalog(
       }
 
       // Check tokenBindings for invalid design token keys
-      if (item && typeof item === "object" && item.tokenBindings && typeof item.tokenBindings === "object") {
+      if (
+        item &&
+        typeof item === "object" &&
+        item.tokenBindings &&
+        typeof item.tokenBindings === "object"
+      ) {
         const bindings = item.tokenBindings as Record<string, unknown>;
         for (const [bindingKey, tokenValue] of Object.entries(bindings)) {
-          if (typeof tokenValue !== "string" || !VALID_DESIGN_TOKENS.has(tokenValue)) {
-            const compName = (item.name as string) || (item.id as string) || "Component";
+          if (
+            typeof tokenValue !== "string" ||
+            !VALID_DESIGN_TOKENS.has(tokenValue)
+          ) {
+            const compName =
+              (item.name as string) || (item.id as string) || "Component";
             errors.push(
               `${itemPrefix}(${compName}): tokenBinding '${bindingKey}' references invalid design token '${tokenValue}'. Valid tokens include: primary, secondary, surface, background, pri, sec, bg, surf, ink, error, ok, warn...`,
             );
@@ -210,4 +219,3 @@ export function validateComponentCatalog(
     };
   }
 }
-

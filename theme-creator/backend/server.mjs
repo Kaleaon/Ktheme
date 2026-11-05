@@ -244,7 +244,8 @@ function maybeLog(entry) {
     log.output = entry.output;
   }
   if (entry.retries !== undefined) log.retries = entry.retries;
-  if (entry.validationValid !== undefined) log.validationValid = entry.validationValid;
+  if (entry.validationValid !== undefined)
+    log.validationValid = entry.validationValid;
   if (entry.diagnosticLogs) log.diagnosticLogs = entry.diagnosticLogs;
   interactionLogs.push(log);
   if (interactionLogs.length > 500) interactionLogs.shift();
@@ -377,7 +378,9 @@ function validateThemeOutput(rawText) {
   }
 
   const candidateTheme =
-    parsed.theme && typeof parsed.theme === "object" && !Array.isArray(parsed.theme)
+    parsed.theme &&
+    typeof parsed.theme === "object" &&
+    !Array.isArray(parsed.theme)
       ? parsed.theme
       : parsed;
 
@@ -405,7 +408,10 @@ function validateThemeOutput(rawText) {
   }
 
   // 5. Validate client schema expectations (all 28 required colorScheme keys as valid hex)
-  if (!candidateTheme.colorScheme || typeof candidateTheme.colorScheme !== "object") {
+  if (
+    !candidateTheme.colorScheme ||
+    typeof candidateTheme.colorScheme !== "object"
+  ) {
     if (!errors.some((e) => e.includes("Color scheme is required"))) {
       errors.push("Color scheme is required");
       issues.push({
@@ -436,7 +442,10 @@ function validateThemeOutput(rawText) {
   }
 
   // 6. WCAG AA Contrast Validation (minimum 4.5:1 ratio)
-  if (candidateTheme.colorScheme && typeof candidateTheme.colorScheme === "object") {
+  if (
+    candidateTheme.colorScheme &&
+    typeof candidateTheme.colorScheme === "object"
+  ) {
     for (const [base, on] of CONTRAST_PAIRS) {
       const colorBase = candidateTheme.colorScheme[base];
       const colorOn = candidateTheme.colorScheme[on];
@@ -461,7 +470,9 @@ function validateThemeOutput(rawText) {
             });
           }
         } catch (contrastErr) {
-          errors.push(`Contrast check error for ${base}/${on}: ${contrastErr.message}`);
+          errors.push(
+            `Contrast check error for ${base}/${on}: ${contrastErr.message}`,
+          );
         }
       }
     }
@@ -511,7 +522,9 @@ function validateThemeOutput(rawText) {
 }
 
 function formatCorrectionPrompt(errors, issues = []) {
-  const bulletErrors = errors.map((err, idx) => `${idx + 1}. ${err}`).join("\n");
+  const bulletErrors = errors
+    .map((err, idx) => `${idx + 1}. ${err}`)
+    .join("\n");
   return `The theme candidate you generated failed strict backend validation against the Ktheme specification and WCAG AA contrast rules:\n\n${bulletErrors}\n\nPlease regenerate the theme and correct all the errors listed above. Return the entire corrected response containing a single valid JSON object enclosed in a \`\`\`json code block.
 Ensure that:
 1. schemaVersion is 2.
@@ -604,10 +617,12 @@ async function requestHandler(req, res) {
   if (req.method === "OPTIONS") return json(res, 200, { ok: true });
 
   if (req.method === "POST" && req.url.startsWith("/api/export/")) {
-    const clientKey = req.headers["x-client-ip"] || req.socket.remoteAddress || "global";
+    const clientKey =
+      req.headers["x-client-ip"] || req.socket.remoteAddress || "global";
     if (!checkRateLimit(`export:${clientKey}`)) {
       return json(res, 429, {
-        error: "Rate limit exceeded. Please wait before issuing additional export requests.",
+        error:
+          "Rate limit exceeded. Please wait before issuing additional export requests.",
       });
     }
 
@@ -727,7 +742,9 @@ async function requestHandler(req, res) {
       const startTime = Date.now();
       const diagnosticLogs = [];
 
-      let currentMessages = Array.isArray(body.messages) ? [...body.messages] : [];
+      let currentMessages = Array.isArray(body.messages)
+        ? [...body.messages]
+        : [];
       let currentPrompt = typeof body.prompt === "string" ? body.prompt : "";
 
       async function invokeProvider(messagesParam, promptParam) {
@@ -764,7 +781,8 @@ async function requestHandler(req, res) {
               ? body.prompt.slice(0, 120)
               : (body.messages?.at?.(-1)?.content || "").slice(0, 120),
           prompt: body.prompt || JSON.stringify(body.messages || []),
-          promptLength: JSON.stringify(body.messages || body.prompt || "").length,
+          promptLength: JSON.stringify(body.messages || body.prompt || "")
+            .length,
           outputPreview: String(currentOutput).slice(0, 120),
           output: currentOutput,
           retries: 0,
@@ -790,7 +808,10 @@ async function requestHandler(req, res) {
       });
 
       console.warn(
-        `[AI Validation Gate] Session ${sessionToken.slice(0, 8)} attempt 0 failed validation:`,
+        `[AI Validation Gate] Session ${sessionToken.slice(
+          0,
+          8,
+        )} attempt 0 failed validation:`,
         validation.errors,
       );
 
@@ -862,7 +883,8 @@ async function requestHandler(req, res) {
                 ? body.prompt.slice(0, 120)
                 : (body.messages?.at?.(-1)?.content || "").slice(0, 120),
             prompt: body.prompt || JSON.stringify(body.messages || []),
-            promptLength: JSON.stringify(body.messages || body.prompt || "").length,
+            promptLength: JSON.stringify(body.messages || body.prompt || "")
+              .length,
             outputPreview: String(currentOutput).slice(0, 120),
             output: currentOutput,
             retries: retryAttempt,

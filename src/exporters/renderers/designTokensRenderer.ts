@@ -132,8 +132,7 @@ export class DesignTokensRenderer
           },
           easing: {
             $type: "cubicBezier",
-            $value:
-              tokens.motion?.easing?.$value ?? [0.25, 0.1, 0.25, 1.0],
+            $value: tokens.motion?.easing?.$value ?? [0.25, 0.1, 0.25, 1.0],
             $description:
               tokens.motion?.easing?.$description ??
               "Default animation easing curve",
@@ -141,18 +140,16 @@ export class DesignTokensRenderer
           reducedMotion: {
             duration: {
               $type: "duration",
-              $value:
-                tokens.motion?.reducedMotion?.duration?.$value ?? "0ms",
+              $value: tokens.motion?.reducedMotion?.duration?.$value ?? "0ms",
               $description:
                 tokens.motion?.reducedMotion?.duration?.$description ??
                 "Reduced motion animation duration",
             },
             easing: {
               $type: "cubicBezier",
-              $value:
-                tokens.motion?.reducedMotion?.easing?.$value ?? [
-                  0.0, 0.0, 1.0, 1.0,
-                ],
+              $value: tokens.motion?.reducedMotion?.easing?.$value ?? [
+                0.0, 0.0, 1.0, 1.0,
+              ],
               $description:
                 tokens.motion?.reducedMotion?.easing?.$description ??
                 "Reduced motion animation easing curve",

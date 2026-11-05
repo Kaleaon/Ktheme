@@ -184,11 +184,20 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     root.style.setProperty("--ktheme-primary", c.primary);
     root.style.setProperty("--ktheme-on-primary", c.onPrimary);
     root.style.setProperty("--ktheme-primary-container", c.primaryContainer);
-    root.style.setProperty("--ktheme-on-primary-container", c.onPrimaryContainer);
+    root.style.setProperty(
+      "--ktheme-on-primary-container",
+      c.onPrimaryContainer,
+    );
     root.style.setProperty("--ktheme-secondary", c.secondary);
     root.style.setProperty("--ktheme-on-secondary", c.onSecondary);
-    root.style.setProperty("--ktheme-secondary-container", c.secondaryContainer);
-    root.style.setProperty("--ktheme-on-secondary-container", c.onSecondaryContainer);
+    root.style.setProperty(
+      "--ktheme-secondary-container",
+      c.secondaryContainer,
+    );
+    root.style.setProperty(
+      "--ktheme-on-secondary-container",
+      c.onSecondaryContainer,
+    );
     root.style.setProperty("--ktheme-tertiary", c.tertiary);
     root.style.setProperty("--ktheme-on-tertiary", c.onTertiary);
     root.style.setProperty("--ktheme-background", c.background);
@@ -203,12 +212,24 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
     root.style.setProperty("--md-sys-color-primary", c.primary);
     root.style.setProperty("--md-sys-color-on-primary", c.onPrimary);
-    root.style.setProperty("--md-sys-color-primary-container", c.primaryContainer);
-    root.style.setProperty("--md-sys-color-on-primary-container", c.onPrimaryContainer);
+    root.style.setProperty(
+      "--md-sys-color-primary-container",
+      c.primaryContainer,
+    );
+    root.style.setProperty(
+      "--md-sys-color-on-primary-container",
+      c.onPrimaryContainer,
+    );
     root.style.setProperty("--md-sys-color-secondary", c.secondary);
     root.style.setProperty("--md-sys-color-on-secondary", c.onSecondary);
-    root.style.setProperty("--md-sys-color-secondary-container", c.secondaryContainer);
-    root.style.setProperty("--md-sys-color-on-secondary-container", c.onSecondaryContainer);
+    root.style.setProperty(
+      "--md-sys-color-secondary-container",
+      c.secondaryContainer,
+    );
+    root.style.setProperty(
+      "--md-sys-color-on-secondary-container",
+      c.onSecondaryContainer,
+    );
     root.style.setProperty("--md-sys-color-tertiary", c.tertiary);
     root.style.setProperty("--md-sys-color-on-tertiary", c.onTertiary);
     root.style.setProperty("--md-sys-color-background", c.background);
@@ -216,7 +237,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     root.style.setProperty("--md-sys-color-surface", c.surface);
     root.style.setProperty("--md-sys-color-on-surface", c.onSurface);
     root.style.setProperty("--md-sys-color-surface-variant", c.surfaceVariant);
-    root.style.setProperty("--md-sys-color-on-surface-variant", c.onSurfaceVariant);
+    root.style.setProperty(
+      "--md-sys-color-on-surface-variant",
+      c.onSurfaceVariant,
+    );
     root.style.setProperty("--md-sys-color-outline", c.outline);
     root.style.setProperty("--md-sys-color-error", c.error);
     root.style.setProperty("--md-sys-color-on-error", c.onError);
@@ -228,7 +252,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     root.style.setProperty("--c-secondary", c.secondary);
     root.style.setProperty("--c-on-secondary", c.onSecondary);
     root.style.setProperty("--c-secondary-container", c.secondaryContainer);
-    root.style.setProperty("--c-on-secondary-container", c.onSecondaryContainer);
+    root.style.setProperty(
+      "--c-on-secondary-container",
+      c.onSecondaryContainer,
+    );
     root.style.setProperty("--c-tertiary", c.tertiary);
     root.style.setProperty("--c-on-tertiary", c.onTertiary);
     root.style.setProperty("--c-background", c.background);

@@ -128,7 +128,10 @@ describe("@ktheme/react library", () => {
     expect(themeNameInput).toBeInTheDocument();
     expect(themeNameInput).toHaveAttribute("id");
     const themeNameLabel = screen.getByText("THEME NAME");
-    expect(themeNameLabel).toHaveAttribute("for", themeNameInput.getAttribute("id"));
+    expect(themeNameLabel).toHaveAttribute(
+      "for",
+      themeNameInput.getAttribute("id"),
+    );
 
     // Verify color token inputs are linked to their labels
     const primaryInput = screen.getByLabelText("Primary Color");
@@ -136,7 +139,10 @@ describe("@ktheme/react library", () => {
     expect(primaryInput).toHaveAttribute("type", "color");
     expect(primaryInput).toHaveAttribute("id");
     const primaryLabel = screen.getByText("Primary Color");
-    expect(primaryLabel).toHaveAttribute("for", primaryInput.getAttribute("id"));
+    expect(primaryLabel).toHaveAttribute(
+      "for",
+      primaryInput.getAttribute("id"),
+    );
 
     // Verify hidden import file input has aria-label
     const fileInput = screen.getByLabelText("Import theme JSON");

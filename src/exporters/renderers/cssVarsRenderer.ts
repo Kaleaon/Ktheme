@@ -239,9 +239,12 @@ export class CssVarsRenderer implements TokenRenderer<CssVarsExport> {
       vars["--ktheme-layout-corner-artwork"] = `${layoutStd.corners.artwork}px`;
 
       vars["--ktheme-layout-typography-body"] = layoutStd.typography.body;
-      vars["--ktheme-layout-typography-minimum-metadata"] = `${layoutStd.typography.minimumMetadata}px`;
-      vars["--ktheme-layout-typography-content-case"] = layoutStd.typography.contentCase;
-      vars["--ktheme-layout-typography-navigation-case"] = layoutStd.typography.navigationCase;
+      vars["--ktheme-layout-typography-minimum-metadata"] =
+        `${layoutStd.typography.minimumMetadata}px`;
+      vars["--ktheme-layout-typography-content-case"] =
+        layoutStd.typography.contentCase;
+      vars["--ktheme-layout-typography-navigation-case"] =
+        layoutStd.typography.navigationCase;
 
       vars["--ktheme-layout-surfaces"] = layoutStd.surfaces;
       vars["--ktheme-layout-actions"] = layoutStd.actions;

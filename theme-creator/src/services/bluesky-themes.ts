@@ -275,4 +275,3 @@ export async function fetchUserThemes(
 
   return themes;
 }
-
