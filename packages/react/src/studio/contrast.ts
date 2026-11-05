@@ -67,7 +67,8 @@ export function calcLuminance(color: string | null | undefined): number {
     return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
   };
 
-  const val = 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+  const val =
+    0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
   lumCache.set(trimmed, val);
   return val;
 }

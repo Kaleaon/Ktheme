@@ -134,8 +134,18 @@ describe("Exporters Normalization Utilities (src/exporters/utils.ts)", () => {
     it("normalizes typography with default values when undefined", () => {
       const typo = normalizeTypography(minimalTheme);
       expect(typo.fontFamily).toBe("system-ui, -apple-system, sans-serif");
-      expect(typo.fontSize).toEqual({ small: 12, medium: 16, large: 20, xlarge: 28 });
-      expect(typo.fontWeight).toEqual({ light: 300, regular: 400, medium: 500, bold: 700 });
+      expect(typo.fontSize).toEqual({
+        small: 12,
+        medium: 16,
+        large: 20,
+        xlarge: 28,
+      });
+      expect(typo.fontWeight).toEqual({
+        light: 300,
+        regular: 400,
+        medium: 500,
+        bold: 700,
+      });
       expect(typo.lineHeight).toBe(1.5);
       expect(typo.letterSpacing).toBe(0);
     });

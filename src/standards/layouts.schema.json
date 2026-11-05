@@ -1,13 +1,7 @@
 {
   "type": "object",
   "additionalProperties": false,
-  "required": [
-    "version",
-    "units",
-    "scope",
-    "common",
-    "layouts"
-  ],
+  "required": ["version", "units", "scope", "common", "layouts"],
   "properties": {
     "version": {
       "const": 1
@@ -67,11 +61,7 @@
           "minLength": 1
         },
         "themeLayers": {
-          "const": [
-            "layout",
-            "palette",
-            "effect"
-          ]
+          "const": ["layout", "palette", "effect"]
         }
       }
     },
@@ -115,10 +105,7 @@
             "navigation": {
               "type": "object",
               "additionalProperties": false,
-              "required": [
-                "phone",
-                "wide"
-              ],
+              "required": ["phone", "wide"],
               "properties": {
                 "phone": {
                   "type": "string",
@@ -194,17 +181,10 @@
                   "minimum": 0
                 },
                 "contentCase": {
-                  "enum": [
-                    "preserve",
-                    "uppercase"
-                  ]
+                  "enum": ["preserve", "uppercase"]
                 },
                 "navigationCase": {
-                  "enum": [
-                    "preserve",
-                    "uppercase",
-                    "lowercase"
-                  ]
+                  "enum": ["preserve", "uppercase", "lowercase"]
                 },
                 "mediaTracking": {
                   "type": "number",
@@ -233,10 +213,7 @@
               "minLength": 1
             },
             "referenceEffect": {
-              "type": [
-                "string",
-                "null"
-              ]
+              "type": ["string", "null"]
             },
             "acceptance": {
               "type": "array",
@@ -274,10 +251,7 @@
             "navigation": {
               "type": "object",
               "additionalProperties": false,
-              "required": [
-                "phone",
-                "wide"
-              ],
+              "required": ["phone", "wide"],
               "properties": {
                 "phone": {
                   "type": "string",
@@ -353,17 +327,10 @@
                   "minimum": 0
                 },
                 "contentCase": {
-                  "enum": [
-                    "preserve",
-                    "uppercase"
-                  ]
+                  "enum": ["preserve", "uppercase"]
                 },
                 "navigationCase": {
-                  "enum": [
-                    "preserve",
-                    "uppercase",
-                    "lowercase"
-                  ]
+                  "enum": ["preserve", "uppercase", "lowercase"]
                 },
                 "mediaTracking": {
                   "type": "number",
@@ -392,10 +359,7 @@
               "minLength": 1
             },
             "referenceEffect": {
-              "type": [
-                "string",
-                "null"
-              ]
+              "type": ["string", "null"]
             },
             "acceptance": {
               "type": "array",
@@ -434,10 +398,7 @@
             "navigation": {
               "type": "object",
               "additionalProperties": false,
-              "required": [
-                "phone",
-                "wide"
-              ],
+              "required": ["phone", "wide"],
               "properties": {
                 "phone": {
                   "type": "string",
@@ -513,17 +474,10 @@
                   "minimum": 0
                 },
                 "contentCase": {
-                  "enum": [
-                    "preserve",
-                    "uppercase"
-                  ]
+                  "enum": ["preserve", "uppercase"]
                 },
                 "navigationCase": {
-                  "enum": [
-                    "preserve",
-                    "uppercase",
-                    "lowercase"
-                  ]
+                  "enum": ["preserve", "uppercase", "lowercase"]
                 },
                 "mediaTracking": {
                   "type": "number",
@@ -673,10 +627,7 @@
             "navigation": {
               "type": "object",
               "additionalProperties": false,
-              "required": [
-                "phone",
-                "wide"
-              ],
+              "required": ["phone", "wide"],
               "properties": {
                 "phone": {
                   "type": "string",
@@ -752,17 +703,10 @@
                   "minimum": 0
                 },
                 "contentCase": {
-                  "enum": [
-                    "preserve",
-                    "uppercase"
-                  ]
+                  "enum": ["preserve", "uppercase"]
                 },
                 "navigationCase": {
-                  "enum": [
-                    "preserve",
-                    "uppercase",
-                    "lowercase"
-                  ]
+                  "enum": ["preserve", "uppercase", "lowercase"]
                 },
                 "mediaTracking": {
                   "type": "number",
@@ -791,10 +735,7 @@
               "minLength": 1
             },
             "referenceEffect": {
-              "type": [
-                "string",
-                "null"
-              ]
+              "type": ["string", "null"]
             },
             "acceptance": {
               "type": "array",
@@ -836,10 +777,7 @@
             "navigation": {
               "type": "object",
               "additionalProperties": false,
-              "required": [
-                "phone",
-                "wide"
-              ],
+              "required": ["phone", "wide"],
               "properties": {
                 "phone": {
                   "type": "string",
@@ -915,17 +853,10 @@
                   "minimum": 0
                 },
                 "contentCase": {
-                  "enum": [
-                    "preserve",
-                    "uppercase"
-                  ]
+                  "enum": ["preserve", "uppercase"]
                 },
                 "navigationCase": {
-                  "enum": [
-                    "preserve",
-                    "uppercase",
-                    "lowercase"
-                  ]
+                  "enum": ["preserve", "uppercase", "lowercase"]
                 },
                 "mediaTracking": {
                   "type": "number",
@@ -993,10 +924,7 @@
             "navigation": {
               "type": "object",
               "additionalProperties": false,
-              "required": [
-                "phone",
-                "wide"
-              ],
+              "required": ["phone", "wide"],
               "properties": {
                 "phone": {
                   "type": "string",
@@ -1072,17 +1000,10 @@
                   "minimum": 0
                 },
                 "contentCase": {
-                  "enum": [
-                    "preserve",
-                    "uppercase"
-                  ]
+                  "enum": ["preserve", "uppercase"]
                 },
                 "navigationCase": {
-                  "enum": [
-                    "preserve",
-                    "uppercase",
-                    "lowercase"
-                  ]
+                  "enum": ["preserve", "uppercase", "lowercase"]
                 },
                 "mediaTracking": {
                   "type": "number",
@@ -1111,10 +1032,7 @@
               "minLength": 1
             },
             "referenceEffect": {
-              "type": [
-                "string",
-                "null"
-              ]
+              "type": ["string", "null"]
             },
             "acceptance": {
               "type": "array",
@@ -1152,10 +1070,7 @@
             "navigation": {
               "type": "object",
               "additionalProperties": false,
-              "required": [
-                "phone",
-                "wide"
-              ],
+              "required": ["phone", "wide"],
               "properties": {
                 "phone": {
                   "type": "string",
@@ -1231,17 +1146,10 @@
                   "minimum": 0
                 },
                 "contentCase": {
-                  "enum": [
-                    "preserve",
-                    "uppercase"
-                  ]
+                  "enum": ["preserve", "uppercase"]
                 },
                 "navigationCase": {
-                  "enum": [
-                    "preserve",
-                    "uppercase",
-                    "lowercase"
-                  ]
+                  "enum": ["preserve", "uppercase", "lowercase"]
                 },
                 "mediaTracking": {
                   "type": "number",
@@ -1270,10 +1178,7 @@
               "minLength": 1
             },
             "referenceEffect": {
-              "type": [
-                "string",
-                "null"
-              ]
+              "type": ["string", "null"]
             },
             "acceptance": {
               "type": "array",

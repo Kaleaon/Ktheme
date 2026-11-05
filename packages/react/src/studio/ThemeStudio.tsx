@@ -145,7 +145,12 @@ export function ThemeStudio({
     useKtheme();
   const [open, setOpen] = useState(true);
   const [activeTab, setActiveTab] = useState<StudioTab>("customizer");
-  const STUDIO_TABS: StudioTab[] = ["customizer", "presets", "metallic", "preview"];
+  const STUDIO_TABS: StudioTab[] = [
+    "customizer",
+    "presets",
+    "metallic",
+    "preview",
+  ];
   const { getTablistProps, getTabProps, getPanelProps } = useTablist({
     tabs: STUDIO_TABS,
     activeTab,
@@ -532,7 +537,9 @@ export function ThemeStudio({
                           {val.toUpperCase()}
                         </code>
                         <span
-                          className={`ktheme-wcag-badge ${pass ? "pass" : "fail"}`}
+                          className={`ktheme-wcag-badge ${
+                            pass ? "pass" : "fail"
+                          }`}
                           data-testid={`contrast-badge-${key}`}
                           style={{
                             display: "inline-flex",
@@ -553,7 +560,11 @@ export function ThemeStudio({
                             }`,
                             whiteSpace: "nowrap",
                           }}
-                          title={`Contrast ratio vs ${counterpart.label}: ${ratio.toFixed(1)}:1 (${pass ? "AA PASS" : "AA FAIL"})`}
+                          title={`Contrast ratio vs ${
+                            counterpart.label
+                          }: ${ratio.toFixed(1)}:1 (${
+                            pass ? "AA PASS" : "AA FAIL"
+                          })`}
                         >
                           {badgeText}
                         </span>
@@ -846,14 +857,14 @@ export function ThemeStudio({
                 color: "#CF6679",
               }}
             >
-              {auditThemeTokens(tokens as Record<string, string>).violations.map(
-                (v) => (
-                  <li key={v.id}>
-                    <strong>{v.label}</strong>: {v.ratio.toFixed(1)}:1 (Requires{" "}
-                    {v.threshold.toFixed(1)}:1)
-                  </li>
-                ),
-              )}
+              {auditThemeTokens(
+                tokens as Record<string, string>,
+              ).violations.map((v) => (
+                <li key={v.id}>
+                  <strong>{v.label}</strong>: {v.ratio.toFixed(1)}:1 (Requires{" "}
+                  {v.threshold.toFixed(1)}:1)
+                </li>
+              ))}
             </ul>
             <div
               style={{

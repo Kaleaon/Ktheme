@@ -166,7 +166,45 @@ export class AndroidComposeRenderer
     const kotlinMotion = motionAST ? `\n\n${motionAST.kotlinSnippet}` : "";
 
     const layoutStd = tokens.layoutStandard;
-    const kotlinLayout = `data class KthemeLayout(\n    val id: String = "${layoutStd?.id ?? 'compose'}",\n    val name: String = "${layoutStd?.name ?? 'Compose'}",\n    val navPhone: String = "${layoutStd?.navigation?.phone ?? 'bar'}",\n    val navWide: String = "${layoutStd?.navigation?.wide ?? 'rail'}",\n    val adaptiveWidthDp: Int = 720,\n    val cornerLargeDp: Int = ${layoutStd?.corners?.large ?? 18},\n    val cornerPanelDp: Int = ${layoutStd?.corners?.panel ?? 14},\n    val cornerTileDp: Int = ${layoutStd?.corners?.tile ?? 12},\n    val cornerCoverDp: Int = ${layoutStd?.corners?.cover ?? 6},\n    val cornerControlDp: Int = ${layoutStd?.corners?.control ?? 999},\n    val cornerIconDp: Int = ${layoutStd?.corners?.icon ?? 10},\n    val cornerArtworkDp: Int = ${layoutStd?.corners?.artwork ?? 20},\n    val typographyBody: String = "${layoutStd?.typography?.body ?? 'Roboto'}",\n    val minimumMetadataSp: Int = ${layoutStd?.typography?.minimumMetadata ?? 10},\n    val contentCase: String = "${layoutStd?.typography?.contentCase ?? 'preserve'}",\n    val navigationCase: String = "${layoutStd?.typography?.navigationCase ?? 'preserve'}",\n    val surfaces: String = "${layoutStd?.surfaces ?? 'compose'}",\n    val actions: String = "${layoutStd?.actions ?? 'theme-effect'}",\n    val player: String = "${layoutStd?.player ?? 'docked'}",\n    val shadow: String = "${layoutStd?.shadow ?? 'theme-effect'}"\n)\n\nval LocalKthemeLayout = staticCompositionLocalOf { KthemeLayout() }`;
+    const kotlinLayout = `data class KthemeLayout(\n    val id: String = "${
+      layoutStd?.id ?? "compose"
+    }",\n    val name: String = "${
+      layoutStd?.name ?? "Compose"
+    }",\n    val navPhone: String = "${
+      layoutStd?.navigation?.phone ?? "bar"
+    }",\n    val navWide: String = "${
+      layoutStd?.navigation?.wide ?? "rail"
+    }",\n    val adaptiveWidthDp: Int = 720,\n    val cornerLargeDp: Int = ${
+      layoutStd?.corners?.large ?? 18
+    },\n    val cornerPanelDp: Int = ${
+      layoutStd?.corners?.panel ?? 14
+    },\n    val cornerTileDp: Int = ${
+      layoutStd?.corners?.tile ?? 12
+    },\n    val cornerCoverDp: Int = ${
+      layoutStd?.corners?.cover ?? 6
+    },\n    val cornerControlDp: Int = ${
+      layoutStd?.corners?.control ?? 999
+    },\n    val cornerIconDp: Int = ${
+      layoutStd?.corners?.icon ?? 10
+    },\n    val cornerArtworkDp: Int = ${
+      layoutStd?.corners?.artwork ?? 20
+    },\n    val typographyBody: String = "${
+      layoutStd?.typography?.body ?? "Roboto"
+    }",\n    val minimumMetadataSp: Int = ${
+      layoutStd?.typography?.minimumMetadata ?? 10
+    },\n    val contentCase: String = "${
+      layoutStd?.typography?.contentCase ?? "preserve"
+    }",\n    val navigationCase: String = "${
+      layoutStd?.typography?.navigationCase ?? "preserve"
+    }",\n    val surfaces: String = "${
+      layoutStd?.surfaces ?? "compose"
+    }",\n    val actions: String = "${
+      layoutStd?.actions ?? "theme-effect"
+    }",\n    val player: String = "${
+      layoutStd?.player ?? "docked"
+    }",\n    val shadow: String = "${
+      layoutStd?.shadow ?? "theme-effect"
+    }"\n)\n\nval LocalKthemeLayout = staticCompositionLocalOf { KthemeLayout() }`;
 
     return {
       colorScheme,

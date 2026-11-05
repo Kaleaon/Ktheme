@@ -1,5 +1,5 @@
-import { Color, IconAdaptation, IconToken, Theme, VectorPath } from './types';
-import { toHexColor } from '../exporters/utils';
+import { Color, IconAdaptation, IconToken, Theme, VectorPath } from "./types";
+import { toHexColor } from "../exporters/utils";
 
 export interface VectorIRPath {
   d: string;
@@ -23,7 +23,8 @@ export interface VectorIRNode {
 
 // Top-level regular expression constants
 const SCRIPT_REGEX = /<script[\s\S]*?>[\s\S]*?<\/script>/gi;
-const FOREIGN_OBJECT_REGEX = /<foreignObject[\s\S]*?>[\s\S]*?<\/foreignObject>/gi;
+const FOREIGN_OBJECT_REGEX =
+  /<foreignObject[\s\S]*?>[\s\S]*?<\/foreignObject>/gi;
 const IMAGE_REGEX = /<image[\s\S]*?>/gi;
 const ON_EVENT_QUOTED_REGEX = /\s+on[a-z]+\s*=\s*(['"]).*?\1/gi;
 const ON_EVENT_UNQUOTED_REGEX = /\s+on[a-z]+\s*=\s*[^\s>]+/gi;
@@ -33,8 +34,10 @@ const PATH_REGEX = /<path[^>]*\sd\s*=\s*(['"])(.*?)\1[^>]*\/?>/gi;
 const FILL_ATTR_REGEX = /fill\s*=\s*(['"])(.*?)\1/i;
 const STROKE_ATTR_REGEX = /stroke\s*=\s*(['"])(.*?)\1/i;
 const STROKE_WIDTH_ATTR_REGEX = /stroke-width\s*=\s*(['"])(.*?)\1/i;
-const RECT_REGEX = /<rect[^>]*\sx\s*=\s*(['"])(.*?)\1[^>]*\sy\s*=\s*(['"])(.*?)\3[^>]*\swidth\s*=\s*(['"])(.*?)\5[^>]*\sheight\s*=\s*(['"])(.*?)\7[^>]*\/?>/gi;
-const CIRCLE_REGEX = /<circle[^>]*\scx\s*=\s*(['"])(.*?)\1[^>]*\scy\s*=\s*(['"])(.*?)\3[^>]*\sr\s*=\s*(['"])(.*?)\5[^>]*\/?>/gi;
+const RECT_REGEX =
+  /<rect[^>]*\sx\s*=\s*(['"])(.*?)\1[^>]*\sy\s*=\s*(['"])(.*?)\3[^>]*\swidth\s*=\s*(['"])(.*?)\5[^>]*\sheight\s*=\s*(['"])(.*?)\7[^>]*\/?>/gi;
+const CIRCLE_REGEX =
+  /<circle[^>]*\scx\s*=\s*(['"])(.*?)\1[^>]*\scy\s*=\s*(['"])(.*?)\3[^>]*\sr\s*=\s*(['"])(.*?)\5[^>]*\/?>/gi;
 
 const THEME_PREFIX_REGEX = /^theme\.colorScheme\./;
 
@@ -106,9 +109,13 @@ export class VectorTransformer {
       rawPaths = VectorTransformer.parseSvgPaths(token.svg);
     }
 
-    const irPaths: VectorIRPath[] = rawPaths.map(p => {
-      let fill = p.fill ? VectorTransformer.resolveColor(p.fill, token.colorBindings, theme) : undefined;
-      const stroke = p.stroke ? VectorTransformer.resolveColor(p.stroke, token.colorBindings, theme) : undefined;
+    const irPaths: VectorIRPath[] = rawPaths.map((p) => {
+      let fill = p.fill
+        ? VectorTransformer.resolveColor(p.fill, token.colorBindings, theme)
+        : undefined;
+      const stroke = p.stroke
+        ? VectorTransformer.resolveColor(p.stroke, token.colorBindings, theme)
+        : undefined;
 
       // Default fill to primary or onSurface if neither fill nor stroke is set
       if (!fill && !stroke) {
@@ -154,7 +161,7 @@ export class VectorTransformer {
       // Move key to end to mark as most recently used
       svgPathCache.delete(svgString);
       svgPathCache.set(svgString, cached);
-      return cached.map(p => ({ ...p }));
+      return cached.map((p) => ({ ...p }));
     }
 
     const cleanSvg = VectorTransformer.sanitizeSvg(svgString);
@@ -217,7 +224,7 @@ export class VectorTransformer {
     }
     svgPathCache.set(svgString, paths);
 
-    return paths.map(p => ({ ...p }));
+    return paths.map((p) => ({ ...p }));
   }
 
   /**
@@ -250,12 +257,17 @@ export class VectorTransformer {
       if (cs[resolvedRole] !== undefined) {
         return toHexColor(cs[resolvedRole] as Parameters<typeof toHexColor>[0]);
       }
-      const rawColorScheme = theme.colorScheme as unknown as Record<string, unknown>;
+      const rawColorScheme = theme.colorScheme as unknown as Record<
+        string,
+        unknown
+      >;
       const semanticRoles = rawColorScheme.semanticRoles as unknown as
         | Record<string, unknown>
         | undefined;
       if (semanticRoles && semanticRoles[resolvedRole] !== undefined) {
-        return toHexColor(semanticRoles[resolvedRole] as Parameters<typeof toHexColor>[0]);
+        return toHexColor(
+          semanticRoles[resolvedRole] as Parameters<typeof toHexColor>[0],
+        );
       }
     }
 
