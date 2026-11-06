@@ -10,7 +10,7 @@ jobs:
   publish-maven-and-npm:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
       id-token: write
       attestations: write
@@ -81,3 +81,17 @@ jobs:
             libs/*/build/libs/*.jar
             libs/*/build/libs/*.aar
             dist/checksums/*.txt
+
+      - name: Upload Checksum Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: checksums
+          path: |
+            dist/checksums/SHA256SUMS.txt
+            **/*.sha256
+
+      - name: Publish Checksums to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/checksums/SHA256SUMS.txt
