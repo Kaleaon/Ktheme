@@ -3,12 +3,12 @@ repos:
     rev: v4.6.0
     hooks:
       - id: trailing-whitespace
-        exclude: ^packages/tokens/dist/
+        exclude: ^(packages/tokens/dist/|dist/|node_modules/|build/|\.gradle/|gradle/)
       - id: end-of-file-fixer
-        exclude: ^packages/tokens/dist/
+        exclude: ^(packages/tokens/dist/|dist/|node_modules/|build/|\.gradle/|gradle/)
       - id: check-yaml
       - id: check-json
-        exclude: (tsconfig.*\.json$|^packages/tokens/dist/)
+        exclude: (tsconfig.*\.json$|^(packages/tokens/dist/|dist/|node_modules/|build/|\.gradle/|gradle/))
       - id: check-added-large-files
 
   - repo: https://github.com/psf/black
