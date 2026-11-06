@@ -230,7 +230,7 @@ describe("preset themes coverage", () => {
 
   it("asserts all raw preset themes pass ThemeEngine validation with zero errors", () => {
     const engine = new ThemeEngine();
-    for (const [key, theme] of Object.entries(PresetThemes)) {
+    for (const [, theme] of Object.entries(PresetThemes)) {
       const result = engine.validateTheme(theme);
       expect(result.valid).toBe(true);
       expect(result.errors).toEqual([]);

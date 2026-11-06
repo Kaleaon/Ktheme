@@ -173,7 +173,7 @@ export const RoyalBronzeTheme: Theme = {
     surfaceVariant: "#3D1F5C",
     onSurfaceVariant: "#D0B3E6",
 
-    outline: "#745683",
+    outline: "#9B8AB8",
     outlineVariant: "#4D2F5C",
 
     scrim: "#000000",
@@ -241,7 +241,7 @@ export const MidnightAmberTheme: Theme = {
     surfaceVariant: "#253447",
     onSurfaceVariant: "#B8C5D6",
 
-    outline: "#5B6672",
+    outline: "#7F8E9D",
     outlineVariant: "#3D4854",
 
     scrim: "#000000",
@@ -365,7 +365,7 @@ export const RoyalSilverTheme: Theme = {
     surfaceVariant: "#3D2F5C",
     onSurfaceVariant: "#C8BFE6",
 
-    outline: "#6E6087",
+    outline: "#9B8AB8",
     outlineVariant: "#4D3F66",
 
     scrim: "#000000",
