@@ -1,5 +1,9 @@
 /* Ktheme Centralized Tokens CSS */
 :root {
+  --ktheme-touch-target-min-mobile: 44px;
+  --ktheme-touch-target-min-desktop: 24px;
+  --ktheme-touch-padding-compact: 4px;
+  --ktheme-touch-padding-coarse: 10px;
   /* Standard Elevation Tokens */
   --ktheme-elevation-0: none;
   --ktheme-elevation-1: 0 1px 3px 1px rgba(0, 0, 0, 0.15),

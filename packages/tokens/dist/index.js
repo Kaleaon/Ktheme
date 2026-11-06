@@ -1462,6 +1462,12 @@ export const THEME_DESKTOP_CONFIGS = {
     }
   }
 };
+export const SPATIAL_TOKENS = {
+  "touchTargetMinMobile": "44px",
+  "touchTargetMinDesktop": "24px",
+  "touchPaddingCompact": "4px",
+  "touchPaddingCoarse": "10px"
+};
 export const ELEVATION_TOKENS = {
   "elevation-0": "none",
   "elevation-1": "0 1px 3px 1px rgba(0, 0, 0, 0.15), 0 1px 2px 0 rgba(0, 0, 0, 0.30)",

@@ -26,6 +26,13 @@ if (!fs.existsSync(jsonDistDir)) fs.mkdirSync(jsonDistDir, { recursive: true });
 const mkPal = (name, c, note, light) => ({ name, note, light: !!light, c });
 
 // 1. PALETTES definition
+const SPATIAL_TOKENS = {
+  touchTargetMinMobile: "44px",
+  touchTargetMinDesktop: "24px",
+  touchPaddingCompact: "4px",
+  touchPaddingCoarse: "10px",
+};
+
 const PALETTES = {
   ink: mkPal(
     "Ink Terminal",
@@ -1485,6 +1492,7 @@ export const THEME_DESKTOP_CONFIGS = ${JSON.stringify(
   null,
   2,
 )};
+export const SPATIAL_TOKENS = ${JSON.stringify(SPATIAL_TOKENS, null, 2)};
 export const ELEVATION_TOKENS = ${JSON.stringify(ELEVATION_TOKENS, null, 2)};
 export const ELEVATION = ELEVATION_TOKENS;
 export const Z_INDEX_TOKENS = ${JSON.stringify(Z_INDEX_TOKENS, null, 2)};
@@ -1547,6 +1555,7 @@ const LEGACY_PALETTES = ${JSON.stringify(LEGACY_PALETTES, null, 2)};
 const FAMILIES = ${JSON.stringify(FAMILIES, null, 2)};
 const PK = ${JSON.stringify(PK, null, 2)};
 const THEME_DESKTOP_CONFIGS = ${JSON.stringify(THEME_DESKTOP_CONFIGS, null, 2)};
+const SPATIAL_TOKENS = ${JSON.stringify(SPATIAL_TOKENS, null, 2)};
 const ELEVATION_TOKENS = ${JSON.stringify(ELEVATION_TOKENS, null, 2)};
 const ELEVATION = ELEVATION_TOKENS;
 const Z_INDEX_TOKENS = ${JSON.stringify(Z_INDEX_TOKENS, null, 2)};
@@ -1606,6 +1615,7 @@ module.exports = {
   FAMILIES,
   PK,
   THEME_DESKTOP_CONFIGS,
+  SPATIAL_TOKENS,
   ELEVATION_TOKENS,
   ELEVATION,
   Z_INDEX_TOKENS,
@@ -1650,11 +1660,19 @@ export interface PaletteEntry {
   c: PaletteColorRoles;
 }
 
+export interface SpatialTokens {
+  touchTargetMinMobile: string;
+  touchTargetMinDesktop: string;
+  touchPaddingCompact: string;
+  touchPaddingCoarse: string;
+}
+
 export declare const PALETTES: Record<string, PaletteEntry>;
 export declare const LEGACY_PALETTES: Record<string, any>;
 export declare const FAMILIES: Array<{ name: string; keys: string[] }>;
 export declare const PK: Record<string, [string, string, number?]>;
 export declare const THEME_DESKTOP_CONFIGS: Record<string, any>;
+export declare const SPATIAL_TOKENS: SpatialTokens;
 export declare const ELEVATION_TOKENS: Record<string, string>;
 export declare const ELEVATION: Record<string, string>;
 export declare const Z_INDEX_TOKENS: Record<string, number>;
@@ -1668,6 +1686,7 @@ fs.writeFileSync(path.join(distDir, "index.d.ts"), dtsContent, "utf8");
 const tokensJsonObject = {
   palettes: PALETTES,
   desktopConfigs: THEME_DESKTOP_CONFIGS,
+  spatial: SPATIAL_TOKENS,
   elevation: ELEVATION_TOKENS,
   zIndex: Z_INDEX_TOKENS,
   themes: {},
@@ -1710,6 +1729,10 @@ fs.writeFileSync(
 
 // Generate CSS custom properties in dist/tokens.css
 let cssContent = `/* Ktheme Centralized Tokens CSS */\n:root {\n`;
+cssContent += `  --ktheme-touch-target-min-mobile: ${SPATIAL_TOKENS.touchTargetMinMobile};\n`;
+cssContent += `  --ktheme-touch-target-min-desktop: ${SPATIAL_TOKENS.touchTargetMinDesktop};\n`;
+cssContent += `  --ktheme-touch-padding-compact: ${SPATIAL_TOKENS.touchPaddingCompact};\n`;
+cssContent += `  --ktheme-touch-padding-coarse: ${SPATIAL_TOKENS.touchPaddingCoarse};\n`;
 cssContent += `  /* Standard Elevation Tokens */\n`;
 for (const [key, val] of Object.entries(ELEVATION_TOKENS)) {
   cssContent += `  --ktheme-${key}: ${val};\n`;
