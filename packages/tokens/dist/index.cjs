@@ -1462,6 +1462,12 @@ const THEME_DESKTOP_CONFIGS = {
     }
   }
 };
+const SPATIAL_TOKENS = {
+  touchTargetMinMobile: "44px",
+  touchTargetMinDesktop: "24px",
+  touchPaddingCompact: "4px",
+  touchPaddingCoarse: "10px",
+};
 const ELEVATION_TOKENS = {
   "elevation-0": "none",
   "elevation-1": "0 1px 3px 1px rgba(0, 0, 0, 0.15), 0 1px 2px 0 rgba(0, 0, 0, 0.30)",
@@ -1553,6 +1559,7 @@ module.exports = {
   FAMILIES,
   PK,
   THEME_DESKTOP_CONFIGS,
+  SPATIAL_TOKENS,
   ELEVATION_TOKENS,
   ELEVATION,
   Z_INDEX_TOKENS,

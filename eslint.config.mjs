@@ -1,7 +1,38 @@
-import js from "@eslint/js";
-import tsParser from "@typescript-eslint/parser";
-import tsPlugin from "@typescript-eslint/eslint-plugin";
-import globals from "globals";
+import { createRequire } from "node:module";
+import path from "node:path";
+
+function resolvePackage(id) {
+  const localRequire = createRequire(import.meta.url);
+  try {
+    return localRequire(id);
+  } catch {}
+
+  const candidateDirs = [
+    path.resolve(path.dirname(process.execPath), "../lib/node_modules"),
+    path.resolve(path.dirname(process.execPath), "node_modules"),
+    process.argv[1] ? path.resolve(path.dirname(process.argv[1]), "..") : null,
+    process.argv[1]
+      ? path.resolve(path.dirname(process.argv[1]), "../..")
+      : null,
+    ...(process.env.NODE_PATH
+      ? process.env.NODE_PATH.split(path.delimiter)
+      : []),
+  ].filter(Boolean);
+
+  for (const dir of candidateDirs) {
+    try {
+      const customRequire = createRequire(path.join(dir, "package.json"));
+      return customRequire(id);
+    } catch {}
+  }
+
+  return localRequire(id);
+}
+
+const js = resolvePackage("@eslint/js");
+const tsParser = resolvePackage("@typescript-eslint/parser");
+const tsPlugin = resolvePackage("@typescript-eslint/eslint-plugin");
+const globals = resolvePackage("globals");
 
 export default [
   {

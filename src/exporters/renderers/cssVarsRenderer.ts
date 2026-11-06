@@ -258,6 +258,11 @@ export class CssVarsRenderer implements TokenRenderer<CssVarsExport> {
       resolvedOptions.includeCorners === false;
 
     if (!isMinimal) {
+      vars["--ktheme-touch-target-min-mobile"] = "44px";
+      vars["--ktheme-touch-target-min-desktop"] = "24px";
+      vars["--ktheme-touch-padding-compact"] = "4px";
+      vars["--ktheme-touch-padding-coarse"] = "10px";
+
       vars["--ktheme-adaptation-layout-density"] = String(
         tokens.layout.density,
       );

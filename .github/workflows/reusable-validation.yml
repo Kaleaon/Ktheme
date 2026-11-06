@@ -51,6 +51,12 @@ jobs:
             cd theme-creator && (npm ci || npm install) && cd ..
           fi
 
+      - name: Build schema CLI
+        run: npm run build:schema-cli || true
+
+      - name: Validate theme schemas
+        run: node bin/ktheme-schema.mjs sync --check
+
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
 

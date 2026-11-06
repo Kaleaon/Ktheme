@@ -85,8 +85,88 @@
     "tokens": {
       "type": "object",
       "properties": {
+        "density": {
+          "type": "object",
+          "properties": {
+            "scale": { "type": "number" },
+            "baseSpacing": { "type": "number" }
+          },
+          "additionalProperties": true
+        },
+        "corners": {
+          "type": "object",
+          "properties": {
+            "small": { "type": "number" },
+            "medium": { "type": "number" },
+            "large": { "type": "number" },
+            "xlarge": { "type": "number" }
+          },
+          "additionalProperties": true
+        },
+        "spatial": {
+          "type": "object",
+          "description": "Spatial interaction tokens for target bounds and interaction padding",
+          "properties": {
+            "minTargetHeight": { "type": ["string", "number"] },
+            "minTargetWidth": { "type": ["string", "number"] },
+            "touchTargetMinMobile": { "type": ["string", "number"] },
+            "touchTargetMinDesktop": { "type": ["string", "number"] },
+            "touchPaddingCompact": { "type": ["string", "number"] },
+            "touchPaddingCoarse": { "type": ["string", "number"] },
+            "targetBounds": {
+              "type": "object",
+              "properties": {
+                "minMobile": { "type": ["string", "number"] },
+                "minDesktop": { "type": ["string", "number"] },
+                "height": { "type": ["string", "number"] },
+                "width": { "type": ["string", "number"] }
+              },
+              "additionalProperties": true
+            },
+            "padding": {
+              "type": "object",
+              "properties": {
+                "compact": { "type": ["string", "number"] },
+                "coarse": { "type": ["string", "number"] }
+              },
+              "additionalProperties": true
+            }
+          },
+          "additionalProperties": true
+        },
         "elevation": { "$ref": "#/properties/elevation" },
         "zIndex": { "$ref": "#/properties/zIndex" }
+      },
+      "additionalProperties": true
+    },
+    "spatial": {
+      "type": "object",
+      "description": "Spatial interaction tokens for target bounds and interaction padding",
+      "properties": {
+        "minTargetHeight": { "type": ["string", "number"] },
+        "minTargetWidth": { "type": ["string", "number"] },
+        "touchTargetMinMobile": { "type": ["string", "number"] },
+        "touchTargetMinDesktop": { "type": ["string", "number"] },
+        "touchPaddingCompact": { "type": ["string", "number"] },
+        "touchPaddingCoarse": { "type": ["string", "number"] },
+        "targetBounds": {
+          "type": "object",
+          "properties": {
+            "minMobile": { "type": ["string", "number"] },
+            "minDesktop": { "type": ["string", "number"] },
+            "height": { "type": ["string", "number"] },
+            "width": { "type": ["string", "number"] }
+          },
+          "additionalProperties": true
+        },
+        "padding": {
+          "type": "object",
+          "properties": {
+            "compact": { "type": ["string", "number"] },
+            "coarse": { "type": ["string", "number"] }
+          },
+          "additionalProperties": true
+        }
       },
       "additionalProperties": true
     },
