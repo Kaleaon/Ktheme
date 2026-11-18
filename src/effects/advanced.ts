@@ -7,16 +7,6 @@ import { Color } from "../core/types";
 import { toCssColor } from "../utils/colors";
 
 /**
- * Generate CSS for blur effect
- */
-export function generateBlurCSS(radius: number): string {
-  return `
-    backdrop-filter: blur(${radius}px);
-    -webkit-backdrop-filter: blur(${radius}px);
-  `;
-}
-
-/**
  * Generate CSS for smooth transitions
  */
 export function generateTransitionCSS(
@@ -141,61 +131,6 @@ export function generateGlowCSS(color: Color, intensity: number = 1): string {
 }
 
 /**
- * Generate CSS for pulse animation
- */
-export function generatePulseKeyframes(
-  name: string = "pulse",
-  color: Color,
-): string {
-  const cssColor = toCssColor(color);
-  return `
-    @keyframes ${name} {
-      0% { box-shadow: 0 0 0 0 ${cssColor}; }
-      70% { box-shadow: 0 0 0 10px rgba(0,0,0,0); }
-      100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); }
-    }
-  `;
-}
-
-/**
- * Generate CSS for gradient border effect
- */
-export function generateGradientBorderCSS(
-  colors: Color[],
-  angle: number = 45,
-  borderWidth: number = 2,
-): string {
-  const cssColors = colors.map((c) => toCssColor(c)).join(", ");
-  return `
-    border: ${borderWidth}px solid transparent;
-    background: linear-gradient(${angle}deg, ${cssColors}) border-box;
-    -webkit-mask:
-      linear-gradient(#fff 0 0) padding-box,
-      linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-  `;
-}
-
-/**
- * Generate CSS for ripple effect
- */
-export function generateRippleKeyframes(name: string = "ripple"): string {
-  return `
-    @keyframes ${name} {
-      0% {
-        transform: scale(0);
-        opacity: 1;
-      }
-      100% {
-        transform: scale(4);
-        opacity: 0;
-      }
-    }
-  `;
-}
-
-/**
  * Generate CSS for tinted surface overlays
  */
 export function generateOverlayCSS(
@@ -244,18 +179,3 @@ export function generateNoiseTextureCSS(
     background-size: ${scale}px ${scale}px;
   `;
 }
-
-/**
- * Advanced effect presets
- */
-export const AdvancedEffectPresets = {
-  smoothTransition: generateTransitionCSS(300, ["all"], "ease-in-out"),
-  fadeIn: generateFadeInKeyframes() + generateAnimationCSS("fadeIn", 300),
-  slideIn: generateSlideInKeyframes() + generateAnimationCSS("slideIn", 400),
-  glassmorphism: (bg: Color) => generateGlassmorphismCSS(bg, 10, 0.8),
-  elevation: (level: number) => generateElevationCSS(level),
-  glow: (color: Color) => generateGlowCSS(color, 1),
-  overlay: (color: Color) => generateOverlayCSS(color, 0.08, "soft-light"),
-  focusRing: (color: Color) => generateFocusRingCSS(color, 2, 2),
-  noiseTexture: generateNoiseTextureCSS(0.05, 120),
-};
