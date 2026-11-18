@@ -68,10 +68,10 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
 
       - name: Run Root Kotlin Unit Tests
-        run: ./gradlew test
+        run: xvfb-run -a ./gradlew test
 
       - name: Run Kotlin Plugin Unit Tests
-        run: ../gradlew test
+        run: xvfb-run -a ../gradlew test
         working-directory: kotlin-plugin
 
       - name: Build & Test Linkpoint Android App
