@@ -96,9 +96,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/Library/Caches/org.swift.swiftpm
-          key: ${{ runner.os }}-spm-${{ hashFiles('libs/ktheme-swift/Package.swift') }}-${{ github.sha }}
+          key: ${{ runner.os }}-spm-${{ hashFiles('libs/ktheme-swift/Package.swift') }}
           restore-keys: |
-            ${{ runner.os }}-spm-${{ hashFiles('libs/ktheme-swift/Package.swift') }}-
             ${{ runner.os }}-spm-
 
       - name: Run Swift Package Tests

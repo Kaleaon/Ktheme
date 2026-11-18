@@ -69,6 +69,14 @@ jobs:
       - name: Validate theme schemas
         run: node bin/ktheme-schema.mjs sync --check
 
+      - name: Cache Playwright Browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
 

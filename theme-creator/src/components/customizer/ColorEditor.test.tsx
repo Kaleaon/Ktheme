@@ -64,4 +64,21 @@ describe("ColorEditor", () => {
     expect(alertEl?.getAttribute("role")).toBe("alert");
     expect(alertEl).toHaveClass("warn");
   });
+
+  it("handles invalid hex inputs gracefully without throwing", () => {
+    (useTheme as jest.Mock).mockReturnValue({
+      state: {
+        currentTheme: {
+          colorScheme: {
+            primary: "not-a-valid-hex",
+            onPrimary: "#FFFFFF",
+          },
+        },
+      },
+      dispatch: jest.fn(),
+    });
+
+    expect(() => render(<ColorEditor />)).not.toThrow();
+    expect(screen.getAllByText("1.0:1 Fail")[0]).toBeInTheDocument();
+  });
 });
