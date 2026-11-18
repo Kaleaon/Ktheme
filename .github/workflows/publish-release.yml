@@ -6,8 +6,104 @@ on:
       - "v*"
   workflow_dispatch:
 
+permissions: read-all
+
 jobs:
-  publish-maven-and-npm:
+  build:
+    name: Build Release Artifacts
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install Node Dependencies
+        run: |
+          npm ci
+          if [ -d "theme-creator" ]; then
+            cd theme-creator && npm ci && cd ..
+          fi
+
+      - name: Run Node Tests and Build
+        run: |
+          npm test
+          npm run build
+
+      - name: Pack npm Packages
+        run: |
+          npm pack
+          npm pack ./packages/schema-cli
+
+      - name: Build Maven Packages
+        run: |
+          ./gradlew assemble publishToMavenLocal --build-cache
+          for aar in libs/*/build/outputs/aar/*-release.aar; do
+            if [ -f "$aar" ]; then
+              module_dir="${aar%/build/outputs/aar/*}"
+              mkdir -p "${module_dir}/build/libs"
+              cp "$aar" "${module_dir}/build/libs/"
+            fi
+          done
+
+      - name: Compute Cryptographic SHA-256 Checksums
+        run: |
+          mkdir -p dist/checksums
+          : > dist/checksums/SHA256SUMS.txt
+          find . ~/.m2/repository -maxdepth 10 \
+            \( -name "*.tgz" -o -name "*.jar" -o -name "*.aar" -o -name "*.pom" \) \
+            -not -path "./node_modules/*" \
+            -not -path "./theme-creator/node_modules/*" \
+            -not -path "./gradle/*" \
+            -not -path "*/intermediates/*" \
+            -not -path "*/outputs/aar/*" \
+            -type f | sort | while read -r artifact; do
+            if [ -f "$artifact" ]; then
+              sha256sum "$artifact" > "${artifact}.sha256"
+              filename=$(basename "$artifact")
+              sha256sum "$artifact" | awk -v name="$filename" '{print $1 "  " name}' >> dist/checksums/SHA256SUMS.txt
+            fi
+          done
+          echo "Generated SHA-256 Checksums:"
+          cat dist/checksums/SHA256SUMS.txt
+
+      - name: Stage Release Artifacts
+        run: |
+          mkdir -p release-artifacts
+          for artifact in *.tgz libs/*/build/libs/*.jar libs/*/build/libs/*.aar kotlin-plugin/build/libs/*.jar dist/checksums/*.txt; do
+            if [ -f "$artifact" ]; then
+              cp --parents "$artifact" release-artifacts/
+            fi
+          done
+          echo "Staged release artifacts:"
+          find release-artifacts -type f | sort
+
+      - name: Upload Release Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-artifacts
+          path: release-artifacts/
+          if-no-files-found: error
+
+  publish:
+    name: Publish Packages and Attest Provenance
+    needs: build
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -33,52 +129,32 @@ jobs:
         with:
           node-version: 20
           registry-url: "https://registry.npmjs.org"
-          cache: npm
 
-      - name: Install Node Dependencies
-        run: |
-          npm ci || npm install
-          if [ -d "theme-creator" ]; then
-            cd theme-creator && (npm ci || npm install) && cd ..
-          fi
+      - name: Download Release Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release-artifacts
+          path: .
 
-      - name: Run Node Tests and Build
-        run: |
-          npm test
-          npm run build
-
-      - name: Build & Publish Maven Packages
-        run: ./gradlew publish
+      - name: Publish Maven Packages
+        run: ./gradlew publish --build-cache
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
 
-      - name: Pack and Publish npm Package
+      - name: Publish @ktheme/engine npm Package
         run: |
-          npm publish --access public
+          npm publish ./ktheme-engine-*.tgz --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish @kaleaon/ktheme-schema-cli npm Package
         run: |
-          npm --prefix packages/schema-cli publish --access public
+          npm publish ./kaleaon-ktheme-schema-cli-*.tgz --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Compute Cryptographic SHA-256 Checksums
-        run: |
-          mkdir -p dist/checksums
-          find . ~/.m2/repository -maxdepth 10 \( -name "*.tgz" -o -name "*.jar" -o -name "*.aar" -o -name "*.pom" \) -type f | while read -r artifact; do
-            if [ -f "$artifact" ]; then
-              sha256sum "$artifact" > "${artifact}.sha256"
-              filename=$(basename "$artifact")
-              sha256sum "$artifact" | awk -v name="$filename" '{print $1 "  " name}' >> dist/checksums/SHA256SUMS.txt
-            fi
-          done
-          echo "Generated SHA-256 Checksums:"
-          cat dist/checksums/SHA256SUMS.txt
 
       - name: Attest SLSA Build Provenance
         uses: actions/attest-build-provenance@v2
