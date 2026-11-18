@@ -5,25 +5,21 @@ import { SculptingCanvas } from "../src/SculptingCanvas";
 
 describe("SculptingCanvas", () => {
   const sampleMeshData = {
-    positions: new Float32Array([
-      -1, -1, 0,
-       1, -1, 0,
-       0,  1, 0,
-    ]),
-    normals: new Float32Array([
-      0, 0, 1,
-      0, 0, 1,
-      0, 0, 1,
-    ]),
+    positions: new Float32Array([-1, -1, 0, 1, -1, 0, 0, 1, 0]),
+    normals: new Float32Array([0, 0, 1, 0, 0, 1, 0, 0, 1]),
     indices: new Uint32Array([0, 1, 2]),
   };
 
   it("renders canvas and controls overlay correctly", () => {
     render(<SculptingCanvas meshData={sampleMeshData} />);
 
-    expect(screen.getByTestId("sculpting-canvas-container")).toBeInTheDocument();
+    expect(
+      screen.getByTestId("sculpting-canvas-container"),
+    ).toBeInTheDocument();
     expect(screen.getByTestId("sculpting-canvas")).toBeInTheDocument();
-    expect(screen.getByTestId("sculpting-controls-overlay")).toBeInTheDocument();
+    expect(
+      screen.getByTestId("sculpting-controls-overlay"),
+    ).toBeInTheDocument();
 
     // Mode buttons
     expect(screen.getByTestId("mode-btn-push")).toBeInTheDocument();
@@ -48,9 +44,9 @@ describe("SculptingCanvas", () => {
       distance: 5.0,
     });
 
-    const mockApplyBrush = jest.fn().mockReturnValue(
-      new Float32Array([-1, -1, 0, 1, -1, 0, 0, 1, 0.5])
-    );
+    const mockApplyBrush = jest
+      .fn()
+      .mockReturnValue(new Float32Array([-1, -1, 0, 1, -1, 0, 0, 1, 0.5]));
 
     const mockEngine = {
       raycast_mesh: mockRaycast,
@@ -64,7 +60,7 @@ describe("SculptingCanvas", () => {
         engine={mockEngine}
         meshData={sampleMeshData}
         onMeshChange={handleMeshChange}
-      />
+      />,
     );
 
     const canvas = screen.getByTestId("sculpting-canvas");
@@ -89,7 +85,8 @@ describe("SculptingCanvas", () => {
     expect(mockApplyBrush).toHaveBeenCalled();
     expect(handleMeshChange).toHaveBeenCalled();
 
-    const [, , , radius, strength, mode, falloff] = mockApplyBrush.mock.calls[0];
+    const [, , , radius, strength, mode, falloff] =
+      mockApplyBrush.mock.calls[0];
     expect(radius).toBe(0.2);
     expect(strength).toBe(0.5);
     expect(mode).toBe("push");
@@ -135,12 +132,16 @@ describe("SculptingCanvas", () => {
     });
 
     expect(mockApplyBrush).toHaveBeenCalledWith(
-      0, 0, 0,
+      0,
+      0,
+      0,
       0.45,
-      0.80,
+      0.8,
       "pull",
       "smoothstep",
-      0, 0, 1
+      0,
+      0,
+      1,
     );
   });
 });

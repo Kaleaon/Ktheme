@@ -1,5 +1,9 @@
 /* Ktheme Centralized Tokens CSS */
 :root {
+  --ktheme-touch-target-min-mobile: 44px;
+  --ktheme-touch-target-min-desktop: 24px;
+  --ktheme-touch-padding-compact: 4px;
+  --ktheme-touch-padding-coarse: 10px;
   /* Standard Elevation Tokens */
   --ktheme-elevation-0: none;
   --ktheme-elevation-1: 0 1px 3px 1px rgba(0, 0, 0, 0.15), 0 1px 2px 0 rgba(0, 0, 0, 0.30);
@@ -643,4 +647,15 @@
   --ktheme-solarpunk-sky2: #f7fdf8;
   --ktheme-solarpunk-gnd: #f8fefa;
   --ktheme-solarpunk-gnd2: #F2FBF4;
+  --ktheme-font-family: "JetBrains Mono", "IBM Plex Mono", "SFMono-Regular", monospace;
+  --ktheme-font-size-small: 12px;
+  --ktheme-font-size-medium: 16px;
+  --ktheme-font-size-large: 20px;
+  --ktheme-font-size-xlarge: 28px;
+  --ktheme-font-weight-light: 300;
+  --ktheme-font-weight-regular: 400;
+  --ktheme-font-weight-medium: 500;
+  --ktheme-font-weight-bold: 700;
+  --ktheme-line-height: 1.55;
+  --ktheme-letter-spacing: 0em;
 }

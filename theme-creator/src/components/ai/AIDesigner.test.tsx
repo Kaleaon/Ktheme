@@ -20,11 +20,11 @@ describe("AIDesigner Accessibility Tests", () => {
     });
   });
 
-  it("renders API key input with autoComplete='off'", () => {
+  it("renders API key password input with autoComplete='current-password'", () => {
     render(<AIDesigner />);
-
     const apiKeyInput = screen.getByPlaceholderText("sk-ant-...");
     expect(apiKeyInput).toBeInTheDocument();
-    expect(apiKeyInput).toHaveAttribute("autocomplete", "off");
+    expect(apiKeyInput).toHaveAttribute("type", "password");
+    expect(apiKeyInput).toHaveAttribute("autoComplete", "current-password");
   });
 });

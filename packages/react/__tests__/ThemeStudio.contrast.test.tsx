@@ -3,7 +3,11 @@ import { render, screen, fireEvent, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { KthemeProvider } from "../src/KthemeProvider";
 import { ThemeStudio } from "../src/studio/ThemeStudio";
-import { calcContrastRatio, calcLuminance, auditThemeTokens } from "../src/studio/contrast";
+import {
+  calcContrastRatio,
+  calcLuminance,
+  auditThemeTokens,
+} from "../src/studio/contrast";
 
 describe("ThemeStudio Real-Time WCAG Contrast Auditing", () => {
   it("audits relative luminance and contrast ratio accurately", () => {
@@ -129,7 +133,9 @@ describe("ThemeStudio Real-Time WCAG Contrast Auditing", () => {
       fireEvent.click(dismissBtn);
     });
 
-    expect(screen.queryByTestId("contrast-warning-modal")).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("contrast-warning-modal"),
+    ).not.toBeInTheDocument();
     expect(handleSave).not.toHaveBeenCalled();
 
     // Click Save again and proceed anyway
@@ -142,7 +148,9 @@ describe("ThemeStudio Real-Time WCAG Contrast Auditing", () => {
     });
 
     expect(handleSave).toHaveBeenCalledTimes(1);
-    expect(screen.queryByTestId("contrast-warning-modal")).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("contrast-warning-modal"),
+    ).not.toBeInTheDocument();
   });
 
   it("triggers pre-export warning modal on contrast violations and allows export anyway", () => {
@@ -177,7 +185,9 @@ describe("ThemeStudio Real-Time WCAG Contrast Auditing", () => {
     });
 
     expect(handleExport).toHaveBeenCalledTimes(1);
-    expect(screen.queryByTestId("contrast-warning-modal")).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("contrast-warning-modal"),
+    ).not.toBeInTheDocument();
   });
 
   it("exports and saves directly without warning modal when all contrast ratios pass", () => {
@@ -201,7 +211,9 @@ describe("ThemeStudio Real-Time WCAG Contrast Auditing", () => {
     act(() => {
       fireEvent.click(saveBtn);
     });
-    expect(screen.queryByTestId("contrast-warning-modal")).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("contrast-warning-modal"),
+    ).not.toBeInTheDocument();
     expect(handleSave).toHaveBeenCalledTimes(1);
 
     // Export should proceed directly without modal
@@ -209,7 +221,9 @@ describe("ThemeStudio Real-Time WCAG Contrast Auditing", () => {
     act(() => {
       fireEvent.click(exportBtn);
     });
-    expect(screen.queryByTestId("contrast-warning-modal")).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("contrast-warning-modal"),
+    ).not.toBeInTheDocument();
     expect(handleExport).toHaveBeenCalledTimes(1);
   });
 });

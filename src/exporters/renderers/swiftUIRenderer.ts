@@ -1,11 +1,13 @@
 import { NormalizedThemeTokens } from "../ir/tokenIR";
 import { TokenRenderer } from "./TokenRenderer";
+import { MotionASTTransformer } from "../../core/MotionASTTransformer";
 
 export interface SwiftUIExport {
   colors: Record<string, string>;
   typography: Record<string, unknown>;
   effects: Record<string, unknown>;
   adaptation: Record<string, unknown>;
+  motion?: Record<string, unknown>;
   swift: string;
 }
 
@@ -37,13 +39,19 @@ export class SwiftUIRenderer implements TokenRenderer<SwiftUIExport> {
 
     const swiftAdaptation = `struct KthemeAdaptation {\n    let density = "${tokens.layout.density}"\n    let cornerStyle = "${tokens.layout.cornerStyle}"\n}`;
 
-    const swift = `${swiftPalette}\n\n${swiftTypography}\n\n${swiftAdaptation}`;
+    const motionAST = tokens.motion
+      ? MotionASTTransformer.toSwiftUI(tokens.motion)
+      : undefined;
+    const swiftMotion = motionAST ? `\n\n${motionAST.swiftSnippet}` : "";
+
+    const swift = `${swiftPalette}\n\n${swiftTypography}\n\n${swiftAdaptation}${swiftMotion}`;
 
     return {
       colors,
       typography: tokens.typography as unknown as Record<string, unknown>,
       effects: tokens.effects as unknown as Record<string, unknown>,
       adaptation: tokens.adaptation as unknown as Record<string, unknown>,
+      motion: tokens.motion as unknown as Record<string, unknown>,
       swift,
     };
   }

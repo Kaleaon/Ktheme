@@ -29,7 +29,11 @@ function findFiles(dir: string, extensions: string[]): string[] {
   for (const entry of entries) {
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
-      if (entry.name !== "node_modules" && entry.name !== "__tests__" && !entry.name.startsWith(".")) {
+      if (
+        entry.name !== "node_modules" &&
+        entry.name !== "__tests__" &&
+        !entry.name.startsWith(".")
+      ) {
         results.push(...findFiles(fullPath, extensions));
       }
     } else if (entry.isFile()) {
@@ -61,7 +65,11 @@ export function extractReactComponents(
   const items: ComponentCatalogItem[] = [];
 
   for (const file of files) {
-    if (file.includes(".test.") || file.includes(".spec.") || file.includes("__tests__")) {
+    if (
+      file.includes(".test.") ||
+      file.includes(".spec.") ||
+      file.includes("__tests__")
+    ) {
       continue;
     }
     const content = fs.readFileSync(file, "utf-8");
@@ -121,7 +129,13 @@ export function extractReactComponents(
             const parts = propNameAndType.split(":");
             propName = parts[0].trim();
             const typeStr = parts[1].trim();
-            if (typeStr === "string" || typeStr === "number" || typeStr === "boolean" || typeStr === "object" || typeStr === "function") {
+            if (
+              typeStr === "string" ||
+              typeStr === "number" ||
+              typeStr === "boolean" ||
+              typeStr === "object" ||
+              typeStr === "function"
+            ) {
               propType = typeStr;
             } else if (typeStr.includes("=>") || typeStr.includes("Function")) {
               propType = "function";
@@ -136,15 +150,30 @@ export function extractReactComponents(
           }
 
           if (propType === "any") {
-            if (propName.startsWith("on") || propName.endsWith("Click") || propName.endsWith("Pick")) {
+            if (
+              propName.startsWith("on") ||
+              propName.endsWith("Click") ||
+              propName.endsWith("Pick")
+            ) {
               propType = "function";
-            } else if (propName.startsWith("is") || propName.startsWith("has") || propName === "disabled") {
+            } else if (
+              propName.startsWith("is") ||
+              propName.startsWith("has") ||
+              propName === "disabled"
+            ) {
               propType = "boolean";
-            } else if (defaultValueRaw === "true" || defaultValueRaw === "false") {
+            } else if (
+              defaultValueRaw === "true" ||
+              defaultValueRaw === "false"
+            ) {
               propType = "boolean";
             } else if (defaultValueRaw && !isNaN(Number(defaultValueRaw))) {
               propType = "number";
-            } else if (defaultValueRaw && (defaultValueRaw.startsWith('"') || defaultValueRaw.startsWith("'"))) {
+            } else if (
+              defaultValueRaw &&
+              (defaultValueRaw.startsWith('"') ||
+                defaultValueRaw.startsWith("'"))
+            ) {
               propType = "string";
             } else if (propName === "children") {
               propType = "node";
@@ -156,7 +185,8 @@ export function extractReactComponents(
           props.push({
             name: propName,
             type: propType,
-            defaultValue: defaultValueRaw !== undefined ? defaultValueRaw : null,
+            defaultValue:
+              defaultValueRaw !== undefined ? defaultValueRaw : null,
             required: defaultValueRaw === undefined,
             description: `Property ${propName} of ${compName}`,
           });
@@ -189,7 +219,11 @@ export function extractReactComponents(
         };
 
         for (const [tokKey, roleName] of Object.entries(tokenMap)) {
-          if (content.includes(`V.${tokKey}`) || content.includes(`['${tokKey}']`) || content.includes(`["${tokKey}"]`)) {
+          if (
+            content.includes(`V.${tokKey}`) ||
+            content.includes(`['${tokKey}']`) ||
+            content.includes(`["${tokKey}"]`)
+          ) {
             tokenBindings[roleName] = tokKey === "err" ? "error" : tokKey;
           }
         }
@@ -260,12 +294,19 @@ export function extractCleverferretTemplates(
       }
     }
 
-    const props: ComponentCatalogItem["props"] = Array.from(propSet).map((p) => ({
-      name: p,
-      type: p.endsWith("List") || p === "rail" || p === "families" ? "array" : p.startsWith("is") || p.startsWith("has") ? "boolean" : "string",
-      required: false,
-      description: `Cleverferret template variable ${p}`,
-    }));
+    const props: ComponentCatalogItem["props"] = Array.from(propSet).map(
+      (p) => ({
+        name: p,
+        type:
+          p.endsWith("List") || p === "rail" || p === "families"
+            ? "array"
+            : p.startsWith("is") || p.startsWith("has")
+              ? "boolean"
+              : "string",
+        required: false,
+        description: `Cleverferret template variable ${p}`,
+      }),
+    );
 
     // Extract var(--tokenName) CSS variable bindings
     const tokenBindings: Record<string, string> = {};
@@ -472,4 +513,3 @@ export function extractBlenderPanels(
   }
   return [];
 }
-

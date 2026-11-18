@@ -5,13 +5,7 @@
     "description": "Flat, tile-first Metro-inspired interface theme",
     "author": "Ktheme",
     "version": "1.0.0",
-    "tags": [
-      "modern",
-      "dark",
-      "metro",
-      "windows-phone",
-      "flat"
-    ],
+    "tags": ["modern", "dark", "metro", "windows-phone", "flat"],
     "createdAt": "2026-02-16T11:46:58.141Z",
     "updatedAt": "2026-02-16T11:46:58.141Z"
   },

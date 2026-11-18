@@ -1,6 +1,7 @@
 import { NormalizedThemeTokens } from "../ir/tokenIR";
 import { TokenRenderer } from "./TokenRenderer";
 import { WebExporterOptions } from "../web/types";
+import { MotionASTTransformer } from "../../core/MotionASTTransformer";
 
 export interface TailwindConfigExport {
   darkMode?: "class" | "media";
@@ -11,6 +12,8 @@ export interface TailwindConfigExport {
       backgroundImage?: Record<string, string>;
       backdropBlur?: Record<string, string>;
       animation?: Record<string, string>;
+      transitionDuration?: Record<string, string>;
+      transitionTimingFunction?: Record<string, string>;
       fontFamily?: Record<string, string | string[]>;
       fontSize?: Record<string, string>;
       fontWeight?: Record<string, string>;
@@ -20,6 +23,7 @@ export interface TailwindConfigExport {
       typography?: Record<string, unknown>;
       effects?: Record<string, unknown>;
       adaptation?: Record<string, unknown>;
+      motion?: Record<string, unknown>;
       [key: string]: unknown;
     };
   };
@@ -56,6 +60,7 @@ export class TailwindRenderer implements TokenRenderer<TailwindConfigExport> {
       typography: tokens.typography as unknown as Record<string, unknown>,
       effects: tokens.effects as unknown as Record<string, unknown>,
       adaptation: tokens.adaptation as unknown as Record<string, unknown>,
+      motion: tokens.motion as unknown as Record<string, unknown>,
     };
 
     if (resolvedOptions.includeEffects) {
@@ -83,6 +88,11 @@ export class TailwindRenderer implements TokenRenderer<TailwindConfigExport> {
           tokens.effects.shimmer.enabled ? tokens.effects.shimmer.speed : 0
         }s linear infinite`,
       };
+      if (tokens.motion) {
+        const motionTw = MotionASTTransformer.toTailwind(tokens.motion);
+        extend.transitionDuration = motionTw.transitionDuration;
+        extend.transitionTimingFunction = motionTw.transitionTimingFunction;
+      }
     }
 
     if (resolvedOptions.includeTypography) {

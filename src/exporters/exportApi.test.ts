@@ -78,7 +78,9 @@ describe("Backend Export Service Engine", () => {
       };
       const result = validateThemePayload(invalidPayload);
       expect(result.valid).toBe(false);
-      expect(result.errors).toContain("Missing required field 'metadata.name'.");
+      expect(result.errors).toContain(
+        "Missing required field 'metadata.name'.",
+      );
     });
 
     it("rejects payload missing required colorScheme fields", () => {
@@ -180,7 +182,11 @@ describe("Backend Export Service Engine", () => {
       expect(result.target).toBe("flutter");
       expect(result.singleCode).toContain("final kthemeColorScheme =");
       expect(result.files.map((f: { filename: string }) => f.filename)).toEqual(
-        expect.arrayContaining(["color_scheme.dart", "theme.dart", "README.md"]),
+        expect.arrayContaining([
+          "color_scheme.dart",
+          "theme.dart",
+          "README.md",
+        ]),
       );
     });
 

@@ -91,7 +91,9 @@ export const FormField: React.FC<FormFieldProps> = ({
     if (!React.isValidElement(child)) return child;
     const element = child as React.ReactElement<Record<string, unknown>>;
     const elProps = (element.props || {}) as Record<string, unknown>;
-    const existingDescribedBy = elProps["aria-describedby"] as string | undefined;
+    const existingDescribedBy = elProps["aria-describedby"] as
+      | string
+      | undefined;
     const combinedDescribedBy =
       existingDescribedBy && ariaDescribedBy
         ? `${existingDescribedBy} ${ariaDescribedBy}`

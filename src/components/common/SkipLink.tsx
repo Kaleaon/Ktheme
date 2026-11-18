@@ -79,15 +79,15 @@ export const SkipLink: React.FC<SkipLinkProps> = ({
     clip: "auto",
     overflow: "visible",
     whiteSpace: "normal",
-    backgroundColor: "#0f172a",
-    color: "#ffffff",
+    backgroundColor: "#0f172a", // ktheme-ignore
+    color: "#ffffff", // ktheme-ignore
     fontSize: "14px",
     fontWeight: 600,
     textDecoration: "underline",
     borderRadius: "6px",
-    border: "2px solid #38bdf8",
+    border: "2px solid #38bdf8", // ktheme-ignore
     boxShadow: "0 4px 12px rgba(0, 0, 0, 0.4)",
-    outline: "3px solid #60a5fa",
+    outline: "3px solid #60a5fa", // ktheme-ignore
     outlineOffset: "2px",
     zIndex: 999999,
   };

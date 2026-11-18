@@ -152,10 +152,15 @@ describe("bluesky-themes service", () => {
   describe("extractThemeFromThread", () => {
     it("extracts a valid theme from thread view", async () => {
       const mockAgent = {
-        getPostThread: jest.fn().mockResolvedValue(createMockThreadView(sampleTheme)),
+        getPostThread: jest
+          .fn()
+          .mockResolvedValue(createMockThreadView(sampleTheme)),
       } as unknown as BskyAgent;
 
-      const theme = await extractThemeFromThread(mockAgent, "at://did:plc:123/app.bsky.feed.post/456");
+      const theme = await extractThemeFromThread(
+        mockAgent,
+        "at://did:plc:123/app.bsky.feed.post/456",
+      );
       expect(theme).not.toBeNull();
       expect(theme?.metadata.id).toBe("test-theme-1");
       expect(theme?.colorScheme.primary).toBe("#123456");
@@ -188,7 +193,10 @@ describe("bluesky-themes service", () => {
         }),
       } as unknown as BskyAgent;
 
-      const theme = await extractThemeFromThread(mockAgent, "at://did:plc:123/app.bsky.feed.post/456");
+      const theme = await extractThemeFromThread(
+        mockAgent,
+        "at://did:plc:123/app.bsky.feed.post/456",
+      );
       expect(theme).not.toBeNull();
       expect(theme?.metadata.id).toBe("test-theme-1");
     });
@@ -233,7 +241,9 @@ describe("bluesky-themes service", () => {
   describe("fetchSharedThemes", () => {
     it("throws if agent session is not active", async () => {
       const mockAgent = { session: null } as unknown as BskyAgent;
-      await expect(fetchSharedThemes(mockAgent)).rejects.toThrow("Not logged in");
+      await expect(fetchSharedThemes(mockAgent)).rejects.toThrow(
+        "Not logged in",
+      );
     });
 
     it("processes 25 search posts in parallel batches of 5 to 8 without sequential waterfall", async () => {
@@ -256,22 +266,27 @@ describe("bluesky-themes service", () => {
             },
           },
         },
-        getPostThread: jest.fn().mockImplementation(async ({ uri }: { uri: string }) => {
-          activeCalls++;
-          if (activeCalls > maxActiveCalls) maxActiveCalls = activeCalls;
-          await new Promise((res) => setTimeout(res, 5));
-          activeCalls--;
+        getPostThread: jest
+          .fn()
+          .mockImplementation(async ({ uri }: { uri: string }) => {
+            activeCalls++;
+            if (activeCalls > maxActiveCalls) maxActiveCalls = activeCalls;
+            await new Promise((res) => setTimeout(res, 5));
+            activeCalls--;
 
-          const id = uri.split("/").pop();
-          const theme: KTheme = {
-            ...sampleTheme,
-            metadata: { ...sampleTheme.metadata, id: `theme-${id}` },
-          };
-          return createMockThreadView(theme);
-        }),
+            const id = uri.split("/").pop();
+            const theme: KTheme = {
+              ...sampleTheme,
+              metadata: { ...sampleTheme.metadata, id: `theme-${id}` },
+            };
+            return createMockThreadView(theme);
+          }),
       } as unknown as BskyAgent;
 
-      const themes = await fetchSharedThemes(mockAgent, DEFAULT_THREAD_CONCURRENCY);
+      const themes = await fetchSharedThemes(
+        mockAgent,
+        DEFAULT_THREAD_CONCURRENCY,
+      );
 
       expect(mockAgent.app.bsky.feed.searchPosts).toHaveBeenCalledWith({
         q: "#KthemeData",
@@ -301,20 +316,25 @@ describe("bluesky-themes service", () => {
             },
           },
         },
-        getPostThread: jest.fn().mockImplementation(async ({ uri }: { uri: string }) => {
-          if (uri === "at://post-fail-2") {
-            throw new Error("Network timeout on thread");
-          }
-          return createMockThreadView({
-            ...sampleTheme,
-            metadata: { ...sampleTheme.metadata, id: uri },
-          });
-        }),
+        getPostThread: jest
+          .fn()
+          .mockImplementation(async ({ uri }: { uri: string }) => {
+            if (uri === "at://post-fail-2") {
+              throw new Error("Network timeout on thread");
+            }
+            return createMockThreadView({
+              ...sampleTheme,
+              metadata: { ...sampleTheme.metadata, id: uri },
+            });
+          }),
       } as unknown as BskyAgent;
 
       const themes = await fetchSharedThemes(mockAgent);
       expect(themes).toHaveLength(2);
-      expect(themes.map((t) => t.metadata.id)).toEqual(["at://post-ok-1", "at://post-ok-3"]);
+      expect(themes.map((t) => t.metadata.id)).toEqual([
+        "at://post-ok-1",
+        "at://post-ok-3",
+      ]);
     });
 
     it("filters out posts that lack the theme tag", async () => {
@@ -323,7 +343,9 @@ describe("bluesky-themes service", () => {
         { uri: "at://post-2", record: { text: "Random post without tag" } },
       ];
 
-      const mockGetPostThread = jest.fn().mockResolvedValue(createMockThreadView(sampleTheme));
+      const mockGetPostThread = jest
+        .fn()
+        .mockResolvedValue(createMockThreadView(sampleTheme));
       const mockAgent = {
         session: { did: "did:plc:user" },
         app: {
@@ -366,18 +388,20 @@ describe("bluesky-themes service", () => {
         getAuthorFeed: jest.fn().mockResolvedValue({
           data: { feed: feedItems },
         }),
-        getPostThread: jest.fn().mockImplementation(async ({ uri }: { uri: string }) => {
-          activeCalls++;
-          if (activeCalls > maxActiveCalls) maxActiveCalls = activeCalls;
-          await new Promise((res) => setTimeout(res, 5));
-          activeCalls--;
+        getPostThread: jest
+          .fn()
+          .mockImplementation(async ({ uri }: { uri: string }) => {
+            activeCalls++;
+            if (activeCalls > maxActiveCalls) maxActiveCalls = activeCalls;
+            await new Promise((res) => setTimeout(res, 5));
+            activeCalls--;
 
-          const id = uri.split("/").pop();
-          return createMockThreadView({
-            ...sampleTheme,
-            metadata: { ...sampleTheme.metadata, id: `user-theme-${id}` },
-          });
-        }),
+            const id = uri.split("/").pop();
+            return createMockThreadView({
+              ...sampleTheme,
+              metadata: { ...sampleTheme.metadata, id: `user-theme-${id}` },
+            });
+          }),
       } as unknown as BskyAgent;
 
       const themes = await fetchUserThemes(mockAgent, 6);
@@ -412,12 +436,14 @@ describe("bluesky-themes service", () => {
         getAuthorFeed: jest.fn().mockResolvedValue({
           data: { feed: feedItems },
         }),
-        getPostThread: jest.fn().mockImplementation(async ({ uri }: { uri: string }) => {
-          if (uri === "at://user-fail-2") {
-            throw new Error("Rate limit exceeded on item");
-          }
-          return createMockThreadView(sampleTheme);
-        }),
+        getPostThread: jest
+          .fn()
+          .mockImplementation(async ({ uri }: { uri: string }) => {
+            if (uri === "at://user-fail-2") {
+              throw new Error("Rate limit exceeded on item");
+            }
+            return createMockThreadView(sampleTheme);
+          }),
       } as unknown as BskyAgent;
 
       const themes = await fetchUserThemes(mockAgent);

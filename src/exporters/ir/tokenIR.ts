@@ -135,6 +135,9 @@ export interface NormalizedEffectsTokens {
     enabled: boolean;
     radius: number;
   };
+  /**
+   * @deprecated Deprecated in favor of the new DTCG motion AST structure (NormalizedThemeTokens.motion).
+   */
   animations: {
     enabled: boolean;
     duration: number;
@@ -146,6 +149,62 @@ export interface NormalizedEffectsTokens {
     width: number;
     offset: number;
   };
+}
+
+/**
+ * Generic W3C Design Tokens Community Group (DTCG) token representation.
+ */
+export interface DTCGToken<T = unknown> {
+  $value: T;
+  $type: string;
+  $description?: string;
+  $extensions?: Record<string, unknown>;
+}
+
+/**
+ * W3C DTCG duration token ($type: "duration").
+ * Value must be a duration string with unit "ms" or "s" (e.g. "300ms", "0.3s").
+ */
+export interface DTCGDurationToken {
+  $type: "duration";
+  $value: string;
+  $description?: string;
+}
+
+/**
+ * Cubic bezier coordinates [x1, y1, x2, y2].
+ */
+export type DTCGCubicBezierCoordinates = [number, number, number, number];
+
+/**
+ * W3C DTCG cubicBezier token ($type: "cubicBezier").
+ * Value must be an array of 4 numbers [x1, y1, x2, y2].
+ */
+export interface DTCGCubicBezierToken {
+  $type: "cubicBezier";
+  $value: DTCGCubicBezierCoordinates;
+  $description?: string;
+}
+
+/**
+ * W3C DTCG motion token group representing motion duration, easing curves,
+ * and reduced-motion variations.
+ */
+export interface DTCGMotionTokenGroup {
+  $type?: string;
+  $value?: unknown;
+  $description?: string;
+  duration?: DTCGDurationToken;
+  easing?: DTCGCubicBezierToken;
+  reducedMotion?: {
+    $type?: string;
+    $value?: unknown;
+    $description?: string;
+    duration: DTCGDurationToken;
+    easing?: DTCGCubicBezierToken;
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
 }
 
 /**
@@ -181,5 +240,6 @@ export interface NormalizedThemeTokens {
   typography: NormalizedTypographyTokens;
   effects: NormalizedEffectsTokens;
   adaptation: NormalizedAdaptationTokens;
+  motion: DTCGMotionTokenGroup;
   layoutStandard: LayoutStandard;
 }

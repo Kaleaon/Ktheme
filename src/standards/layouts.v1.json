@@ -11,11 +11,7 @@
     "contentCase": "preserve",
     "motion": "respect-system",
     "status": "icon-and-text",
-    "themeLayers": [
-      "layout",
-      "palette",
-      "effect"
-    ]
+    "themeLayers": ["layout", "palette", "effect"]
   },
   "layouts": {
     "compose": {
@@ -142,10 +138,7 @@
         "readouts": "unboxed-in-field",
         "feedback": "docked",
         "variants": "LCARS-inspired when palette or effect differs from the reference",
-        "deviations": [
-          "content pictograms",
-          "platform status bar"
-        ]
+        "deviations": ["content pictograms", "platform status bar"]
       }
     },
     "tiles": {

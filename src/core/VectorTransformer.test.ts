@@ -166,24 +166,34 @@ describe("VectorTransformer", () => {
 
     // Fill cache to capacity (500 entries)
     for (let i = 0; i < 500; i++) {
-      VectorTransformer.parseSvgPaths(`<svg viewBox="0 0 24 24"><path d="M${i} 0h1v1H${i}z" /></svg>`);
+      VectorTransformer.parseSvgPaths(
+        `<svg viewBox="0 0 24 24"><path d="M${i} 0h1v1H${i}z" /></svg>`,
+      );
     }
     expect(sanitizeSpy).toHaveBeenCalledTimes(500);
 
     // Re-access item 0 so item 1 becomes the LRU item
-    VectorTransformer.parseSvgPaths(`<svg viewBox="0 0 24 24"><path d="M0 0h1v1H0z" /></svg>`);
+    VectorTransformer.parseSvgPaths(
+      `<svg viewBox="0 0 24 24"><path d="M0 0h1v1H0z" /></svg>`,
+    );
     expect(sanitizeSpy).toHaveBeenCalledTimes(500); // hit
 
     // Insert 501st entry (forces eviction of LRU entry, item 1)
-    VectorTransformer.parseSvgPaths(`<svg viewBox="0 0 24 24"><path d="M999 0h1v1H999z" /></svg>`);
+    VectorTransformer.parseSvgPaths(
+      `<svg viewBox="0 0 24 24"><path d="M999 0h1v1H999z" /></svg>`,
+    );
     expect(sanitizeSpy).toHaveBeenCalledTimes(501);
 
     // Item 0 should still be cached (hit)
-    VectorTransformer.parseSvgPaths(`<svg viewBox="0 0 24 24"><path d="M0 0h1v1H0z" /></svg>`);
+    VectorTransformer.parseSvgPaths(
+      `<svg viewBox="0 0 24 24"><path d="M0 0h1v1H0z" /></svg>`,
+    );
     expect(sanitizeSpy).toHaveBeenCalledTimes(501);
 
     // Item 1 was evicted, so accessing it should trigger a re-parse (miss)
-    VectorTransformer.parseSvgPaths(`<svg viewBox="0 0 24 24"><path d="M1 0h1v1H1z" /></svg>`);
+    VectorTransformer.parseSvgPaths(
+      `<svg viewBox="0 0 24 24"><path d="M1 0h1v1H1z" /></svg>`,
+    );
     expect(sanitizeSpy).toHaveBeenCalledTimes(502);
 
     sanitizeSpy.mockRestore();

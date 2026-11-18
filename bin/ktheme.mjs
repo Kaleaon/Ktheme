@@ -12,6 +12,7 @@ import {
 } from "../dist/cli/extract.js";
 import { pushComponents } from "../dist/cli/push.js";
 import { pullTokens } from "../dist/cli/pull.js";
+import { importTokensCommand } from "../dist/cli/importTokens.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -37,6 +38,7 @@ Usage:
   ktheme extract --framework <react|cleverferret|compose|blender> --src <path> [--out <dir>]
   ktheme push [--input <catalog.json|dir>] [--endpoint <url>]
   ktheme pull [--endpoint <url>] [--theme-id <id>] [--out-kotlin <path>]
+  ktheme import --source <tokens-studio.json> [--out <dir>] [--format <compose|swift|css|json|all>]
 `);
     process.exit(0);
   }
@@ -99,10 +101,11 @@ Usage:
       const items = extractReactComponents(src);
       const outFile = path.join(outDir, "react-components-catalog.json");
       fs.writeFileSync(outFile, JSON.stringify(items, null, 2), "utf-8");
-      console.log(
-        `✓ Extracted ${items.length} React components to ${outFile}`,
-      );
-    } else if (framework === "cleverferret" || framework === "cleverferret-html") {
+      console.log(`✓ Extracted ${items.length} React components to ${outFile}`);
+    } else if (
+      framework === "cleverferret" ||
+      framework === "cleverferret-html"
+    ) {
       const items = extractCleverferretTemplates(src);
       const outFile = path.join(outDir, "cleverferret-templates-catalog.json");
       fs.writeFileSync(outFile, JSON.stringify(items, null, 2), "utf-8");
@@ -152,6 +155,41 @@ Usage:
     const result = await pullTokens({ endpoint, themeId, outKotlin, outCss });
     console.log(`✓ ${result.message}`);
     process.exit(0);
+  }
+
+  if (command === "import") {
+    const source = getArgValue("--source") || getArgValue("-s");
+    const out = getArgValue("--out") || getArgValue("-o");
+    const format = getArgValue("--format") || getArgValue("-f");
+    const themeName = getArgValue("--name");
+    const themeId = getArgValue("--theme-id");
+
+    if (!source) {
+      console.error(
+        "Error: --source <tokens-studio.json> path is required for import.",
+      );
+      process.exit(1);
+    }
+
+    try {
+      const result = importTokensCommand({
+        source,
+        out,
+        format,
+        themeName,
+        themeId,
+      });
+      console.log(`✓ ${result.message}`);
+      for (const file of result.generatedFiles) {
+        console.log(`  - ${file}`);
+      }
+      process.exit(0);
+    } catch (err) {
+      console.error(
+        `✗ Import failed: ${err instanceof Error ? err.message : String(err)}`,
+      );
+      process.exit(1);
+    }
   }
 
   console.error(`Unknown command: ${command}`);

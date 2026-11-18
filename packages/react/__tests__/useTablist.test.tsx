@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import "@testing-library/jest-dom";
 import { render, screen, fireEvent, act } from "@testing-library/react";
-import { useTablist, UseTablistOptions, KthemeProvider, ThemeStudio } from "../src";
+import {
+  useTablist,
+  UseTablistOptions,
+  KthemeProvider,
+  ThemeStudio,
+} from "../src";
 
 function TestTablistComponent(props: Partial<UseTablistOptions>) {
   const tabs = props.tabs || [
@@ -11,11 +16,13 @@ function TestTablistComponent(props: Partial<UseTablistOptions>) {
     { id: "tab4", label: "Tab Four" },
   ];
 
-  const { activeTab, getTablistProps, getTabProps, getPanelProps } = useTablist({
-    tabs,
-    labelPrefix: "test-tab",
-    ...props,
-  });
+  const { activeTab, getTablistProps, getTabProps, getPanelProps } = useTablist(
+    {
+      tabs,
+      labelPrefix: "test-tab",
+      ...props,
+    },
+  );
 
   return (
     <div>
@@ -30,9 +37,7 @@ function TestTablistComponent(props: Partial<UseTablistOptions>) {
           );
         })}
       </div>
-      <div {...getPanelProps()}>
-        Active panel content for {activeTab}
-      </div>
+      <div {...getPanelProps()}>Active panel content for {activeTab}</div>
     </div>
   );
 }
@@ -56,9 +61,7 @@ function ControlledTestComponent() {
           </button>
         ))}
       </div>
-      <div {...getPanelProps(activeTab)}>
-        Controlled Panel {activeTab}
-      </div>
+      <div {...getPanelProps(activeTab)}>Controlled Panel {activeTab}</div>
     </div>
   );
 }
@@ -108,7 +111,9 @@ describe("useTablist custom hook", () => {
     expect(tab1).toHaveAttribute("aria-selected", "false");
     expect(tab1).toHaveAttribute("tabindex", "-1");
 
-    expect(screen.getByRole("tabpanel")).toHaveTextContent("Active panel content for tab2");
+    expect(screen.getByRole("tabpanel")).toHaveTextContent(
+      "Active panel content for tab2",
+    );
   });
 
   it("does not select a disabled tab on click", () => {
@@ -122,7 +127,10 @@ describe("useTablist custom hook", () => {
     });
 
     expect(tab3).toHaveAttribute("aria-selected", "false");
-    expect(screen.getByRole("tab", { name: "Tab One" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: "Tab One" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
   });
 
   it("handles keyboard navigation ArrowRight and ArrowLeft", () => {
@@ -219,14 +227,16 @@ describe("useTablist custom hook", () => {
     });
 
     expect(tab1).toHaveAttribute("aria-selected", "true");
-    expect(screen.getByRole("tabpanel")).toHaveTextContent("Controlled Panel tab1");
+    expect(screen.getByRole("tabpanel")).toHaveTextContent(
+      "Controlled Panel tab1",
+    );
   });
 
   it("ThemeStudio component integrates useTablist and passes accessibility ARIA checks", () => {
     render(
       <KthemeProvider themeId="navy-gold">
         <ThemeStudio embedded />
-      </KthemeProvider>
+      </KthemeProvider>,
     );
 
     const tablist = screen.getByRole("tablist");
@@ -238,14 +248,23 @@ describe("useTablist custom hook", () => {
     expect(customizerTab).toHaveAttribute("aria-selected", "true");
     expect(customizerTab).toHaveAttribute("tabindex", "0");
     expect(customizerTab).toHaveAttribute("id", "studio-tab-tab-customizer");
-    expect(customizerTab).toHaveAttribute("aria-controls", "studio-tab-panel-customizer");
+    expect(customizerTab).toHaveAttribute(
+      "aria-controls",
+      "studio-tab-panel-customizer",
+    );
 
     expect(presetsTab).toHaveAttribute("aria-selected", "false");
     expect(presetsTab).toHaveAttribute("tabindex", "-1");
 
     const customizerPanel = screen.getByRole("tabpanel");
-    expect(customizerPanel).toHaveAttribute("id", "studio-tab-panel-customizer");
-    expect(customizerPanel).toHaveAttribute("aria-labelledby", "studio-tab-tab-customizer");
+    expect(customizerPanel).toHaveAttribute(
+      "id",
+      "studio-tab-panel-customizer",
+    );
+    expect(customizerPanel).toHaveAttribute(
+      "aria-labelledby",
+      "studio-tab-tab-customizer",
+    );
 
     // Keyboard navigation in ThemeStudio
     act(() => {

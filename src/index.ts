@@ -14,6 +14,17 @@ export {
   VectorIRNode,
   VectorIRPath,
 } from "./core/VectorTransformer";
+export {
+  MotionASTTransformer,
+  motionASTTransformer,
+} from "./core/MotionASTTransformer";
+export type {
+  CssMotionAST,
+  TailwindMotionAST,
+  ComposeMotionAST,
+  SwiftUIMotionAST,
+  MotionPlatformAST,
+} from "./core/MotionASTTransformer";
 export * from "./core/types";
 export * from "./standards/layouts";
 
@@ -42,9 +53,9 @@ export * from "./redesign/autoRedesign";
 export * from "./components";
 export * from "./linkpoint";
 
-// Media design tokens exports
-export * from "./media/quickAccess";
+// Exporters, importers & CLI exports
 export * from "./exporters";
+export * from "./importers";
 export * as cli from "./cli";
 
 // Re-export for convenience

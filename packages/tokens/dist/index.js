@@ -1462,6 +1462,12 @@ export const THEME_DESKTOP_CONFIGS = {
     }
   }
 };
+export const SPATIAL_TOKENS = {
+  "touchTargetMinMobile": "44px",
+  "touchTargetMinDesktop": "24px",
+  "touchPaddingCompact": "4px",
+  "touchPaddingCoarse": "10px"
+};
 export const ELEVATION_TOKENS = {
   "elevation-0": "none",
   "elevation-1": "0 1px 3px 1px rgba(0, 0, 0, 0.15), 0 1px 2px 0 rgba(0, 0, 0, 0.30)",
@@ -1486,6 +1492,19 @@ export const Z_INDEX_TOKENS = {
   "tooltip": 700
 };
 export const Z_INDEX = Z_INDEX_TOKENS;
+export const TYPOGRAPHY = {
+  "--ktheme-font-family": "\"JetBrains Mono\", \"IBM Plex Mono\", \"SFMono-Regular\", monospace",
+  "--ktheme-font-size-small": "12px",
+  "--ktheme-font-size-medium": "16px",
+  "--ktheme-font-size-large": "20px",
+  "--ktheme-font-size-xlarge": "28px",
+  "--ktheme-font-weight-light": "300",
+  "--ktheme-font-weight-regular": "400",
+  "--ktheme-font-weight-medium": "500",
+  "--ktheme-font-weight-bold": "700",
+  "--ktheme-line-height": "1.55",
+  "--ktheme-letter-spacing": "0em"
+};
 
 export function buildDefaultDesktopConfig(data) {
   const dark = data.darkMode !== false;

@@ -3,6 +3,10 @@ export type { KthemeProviderProps } from "./KthemeProvider";
 
 export { useKtheme } from "./useKtheme";
 export { useKthemeToken, getKthemeCssVar } from "./useKthemeToken";
+export { usePrefersReducedMotion } from "./usePrefersReducedMotion";
+export { useMotionTokens } from "./useMotionTokens";
+export type { MotionTokenValues } from "./useMotionTokens";
+
 export { useTablist } from "./hooks/useTablist";
 export type {
   TabItem,
@@ -38,3 +42,9 @@ export type {
   MeshData,
   WasmEngineLike,
 } from "./SculptingCanvas";
+
+export {
+  importTokensStudioJson,
+  parseTokensStudio,
+  tokensStudioToKTheme,
+} from "./importTokensStudio";

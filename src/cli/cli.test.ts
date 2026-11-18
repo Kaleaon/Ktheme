@@ -198,4 +198,3 @@ fun BoneControl(
     expect(generatedContent).toContain("DarkColors");
   });
 });
-

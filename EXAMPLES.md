@@ -119,22 +119,11 @@ const mixed = mix("#D4AF37", "#0A1630", 0.5);
 ### Metallic Effects
 
 ```javascript
-import {
-  MetallicVariant,
-  getMetallicGradient,
-  generateMetallicGradientCSS,
-  generateShimmerCSS,
-} from "@ktheme/engine";
+import { MetallicVariant, getMetallicGradient } from "@ktheme/engine";
 
 // Get metallic gradient
 const goldGradient = getMetallicGradient(MetallicVariant.GOLD);
-
-// Generate CSS
-const gradientCSS = generateMetallicGradientCSS(goldGradient, 135);
-// Returns CSS linear-gradient string
-
-const shimmerCSS = generateShimmerCSS(goldGradient, 3);
-// Returns CSS with shimmer animation
+// Returns: { base: '#D4AF37', highlight: '#FFD700', shadow: '#856D34', shimmer: '#FFF8DC' }
 ```
 
 ### Import/Export Themes

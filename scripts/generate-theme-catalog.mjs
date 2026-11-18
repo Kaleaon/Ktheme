@@ -120,7 +120,7 @@ function buildGeneratedMarkdown(registry) {
 
   return {
     summary,
-    list: `${listHeader}\n\n${list}`,
+    list: `\n${listHeader}\n\n${list}`,
   };
 }
 

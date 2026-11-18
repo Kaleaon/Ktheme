@@ -44,15 +44,17 @@ export interface PanelProps extends React.HTMLAttributes<HTMLElement> {
 export interface UseTablistReturn<T extends string = string> {
   activeTab: T;
   setActiveTab: (tabId: T) => void;
-  getTablistProps: <P extends React.HTMLAttributes<HTMLElement>>(userProps?: P) => P & TablistProps;
+  getTablistProps: <P extends React.HTMLAttributes<HTMLElement>>(
+    userProps?: P,
+  ) => P & TablistProps;
   getTabProps: <P extends React.ButtonHTMLAttributes<HTMLElement>>(
     tabId: T,
     index?: number,
-    userProps?: P
+    userProps?: P,
   ) => P & TabProps;
   getPanelProps: <P extends React.HTMLAttributes<HTMLElement>>(
     tabId?: T,
-    userProps?: P
+    userProps?: P,
   ) => P & PanelProps;
 }
 
@@ -88,7 +90,9 @@ export function useTablist<T extends string = string>({
   const [internalActiveTab, setInternalActiveTab] = useState<T>(initialTab);
 
   const isControlled = controlledActiveTab !== undefined;
-  const currentActiveTab = isControlled ? controlledActiveTab : internalActiveTab;
+  const currentActiveTab = isControlled
+    ? controlledActiveTab
+    : internalActiveTab;
 
   const tabRefs = useRef<Map<T, HTMLElement | null>>(new Map());
 
@@ -102,7 +106,7 @@ export function useTablist<T extends string = string>({
       }
       onTabChange?.(tabId);
     },
-    [isControlled, normalizedTabs, onTabChange]
+    [isControlled, normalizedTabs, onTabChange],
   );
 
   const focusTab = useCallback((tabId: T) => {
@@ -114,12 +118,12 @@ export function useTablist<T extends string = string>({
 
   const getTabId = useCallback(
     (tabId: T) => `${prefix}-tab-${tabId}`,
-    [prefix]
+    [prefix],
   );
 
   const getPanelId = useCallback(
     (tabId: T) => `${prefix}-panel-${tabId}`,
-    [prefix]
+    [prefix],
   );
 
   const handleKeyDown = useCallback(
@@ -139,7 +143,8 @@ export function useTablist<T extends string = string>({
           break;
         case "ArrowLeft":
         case "ArrowUp":
-          nextIndex = (currentIndex - 1 + enabledTabs.length) % enabledTabs.length;
+          nextIndex =
+            (currentIndex - 1 + enabledTabs.length) % enabledTabs.length;
           break;
         case "Home":
           nextIndex = 0;
@@ -158,32 +163,38 @@ export function useTablist<T extends string = string>({
         focusTab(targetTab.id);
       }
     },
-    [normalizedTabs, handleSelectTab, focusTab]
+    [normalizedTabs, handleSelectTab, focusTab],
   );
 
   const getTablistProps = useCallback(
-    <P extends React.HTMLAttributes<HTMLElement>>(userProps?: P): P & TablistProps => {
+    <P extends React.HTMLAttributes<HTMLElement>>(
+      userProps?: P,
+    ): P & TablistProps => {
       return {
         ...userProps,
         role: "tablist",
         "aria-orientation": orientation,
       } as P & TablistProps;
     },
-    [orientation]
+    [orientation],
   );
 
   const getTabProps = useCallback(
     <P extends React.ButtonHTMLAttributes<HTMLElement>>(
       tabId: T,
       _index?: number,
-      userProps?: P
+      userProps?: P,
     ): P & TabProps => {
       const isSelected = currentActiveTab === tabId;
       const tabObj = normalizedTabs.find((t) => t.id === tabId);
       const isDisabled = tabObj?.disabled ?? false;
 
       const onClick = (e: React.MouseEvent<HTMLElement>) => {
-        if (userProps && "onClick" in userProps && typeof userProps.onClick === "function") {
+        if (
+          userProps &&
+          "onClick" in userProps &&
+          typeof userProps.onClick === "function"
+        ) {
           (userProps.onClick as (e: React.MouseEvent<HTMLElement>) => void)(e);
         }
         if (!e.defaultPrevented && !isDisabled) {
@@ -192,8 +203,14 @@ export function useTablist<T extends string = string>({
       };
 
       const onKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
-        if (userProps && "onKeyDown" in userProps && typeof userProps.onKeyDown === "function") {
-          (userProps.onKeyDown as (e: React.KeyboardEvent<HTMLElement>) => void)(e);
+        if (
+          userProps &&
+          "onKeyDown" in userProps &&
+          typeof userProps.onKeyDown === "function"
+        ) {
+          (
+            userProps.onKeyDown as (e: React.KeyboardEvent<HTMLElement>) => void
+          )(e);
         }
         if (!e.defaultPrevented) {
           handleKeyDown(e, tabId);
@@ -206,11 +223,19 @@ export function useTablist<T extends string = string>({
         } else {
           tabRefs.current.delete(tabId);
         }
-        const userRef = userProps && "ref" in userProps ? (userProps as { ref?: unknown }).ref : undefined;
+        const userRef =
+          userProps && "ref" in userProps
+            ? (userProps as { ref?: unknown }).ref
+            : undefined;
         if (typeof userRef === "function") {
           userRef(node);
-        } else if (userRef && typeof userRef === "object" && "current" in userRef) {
-          (userRef as React.MutableRefObject<HTMLElement | null>).current = node;
+        } else if (
+          userRef &&
+          typeof userRef === "object" &&
+          "current" in userRef
+        ) {
+          (userRef as React.MutableRefObject<HTMLElement | null>).current =
+            node;
         }
       };
 
@@ -227,13 +252,20 @@ export function useTablist<T extends string = string>({
         ref,
       } as P & TabProps;
     },
-    [currentActiveTab, normalizedTabs, getTabId, getPanelId, handleSelectTab, handleKeyDown]
+    [
+      currentActiveTab,
+      normalizedTabs,
+      getTabId,
+      getPanelId,
+      handleSelectTab,
+      handleKeyDown,
+    ],
   );
 
   const getPanelProps = useCallback(
     <P extends React.HTMLAttributes<HTMLElement>>(
       tabId?: T,
-      userProps?: P
+      userProps?: P,
     ): P & PanelProps => {
       const targetId = tabId ?? currentActiveTab;
       const isSelected = currentActiveTab === targetId;
@@ -247,7 +279,7 @@ export function useTablist<T extends string = string>({
         hidden: !isSelected,
       } as P & PanelProps;
     },
-    [currentActiveTab, getPanelId, getTabId]
+    [currentActiveTab, getPanelId, getTabId],
   );
 
   return {

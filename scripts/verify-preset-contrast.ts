@@ -10,19 +10,51 @@ interface ContrastCheck {
 }
 
 const checks: ContrastCheck[] = [
-  { name: "primary / onPrimary (text)", fg: "primary", bg: "onPrimary", min: 4.5 },
-  { name: "onBackground / background (text)", fg: "onBackground", bg: "background", min: 4.5 },
-  { name: "onSurface / surface (text)", fg: "onSurface", bg: "surface", min: 4.5 },
-  { name: "outline / background (component)", fg: "outline", bg: "background", min: 3.0 },
-  { name: "secondary / background (component)", fg: "secondary", bg: "background", min: 3.0 },
-  { name: "primary / background (component)", fg: "primary", bg: "background", min: 3.0 },
+  {
+    name: "primary / onPrimary (text)",
+    fg: "primary",
+    bg: "onPrimary",
+    min: 4.5,
+  },
+  {
+    name: "onBackground / background (text)",
+    fg: "onBackground",
+    bg: "background",
+    min: 4.5,
+  },
+  {
+    name: "onSurface / surface (text)",
+    fg: "onSurface",
+    bg: "surface",
+    min: 4.5,
+  },
+  {
+    name: "outline / background (component)",
+    fg: "outline",
+    bg: "background",
+    min: 3.0,
+  },
+  {
+    name: "secondary / background (component)",
+    fg: "secondary",
+    bg: "background",
+    min: 3.0,
+  },
+  {
+    name: "primary / background (component)",
+    fg: "primary",
+    bg: "background",
+    min: 3.0,
+  },
 ];
 
 function main() {
   let totalChecks = 0;
   let failures = 0;
 
-  console.log("Auditing all raw preset themes for WCAG AA contrast compliance...");
+  console.log(
+    "Auditing all raw preset themes for WCAG AA contrast compliance...",
+  );
 
   for (const [key, theme] of Object.entries(PresetThemes)) {
     const cs = theme.colorScheme;
@@ -34,9 +66,9 @@ function main() {
         const ratio = contrastRatio(fgVal, bgVal);
         if (ratio < check.min) {
           console.error(
-            `  FAIL: ${key} (${theme.metadata.id}) -> ${check.name}: ${ratio.toFixed(
-              2,
-            )}:1 < ${check.min}:1 (${fgVal} vs ${bgVal})`,
+            `  FAIL: ${key} (${theme.metadata.id}) -> ${
+              check.name
+            }: ${ratio.toFixed(2)}:1 < ${check.min}:1 (${fgVal} vs ${bgVal})`,
           );
           failures++;
         }
@@ -45,10 +77,14 @@ function main() {
   }
 
   if (failures === 0) {
-    console.log(`PASS: All ${totalChecks} raw preset theme contrast checks passed!`);
+    console.log(
+      `PASS: All ${totalChecks} raw preset theme contrast checks passed!`,
+    );
     process.exit(0);
   } else {
-    console.error(`FAIL: ${failures} out of ${totalChecks} contrast checks failed.`);
+    console.error(
+      `FAIL: ${failures} out of ${totalChecks} contrast checks failed.`,
+    );
     process.exit(1);
   }
 }
