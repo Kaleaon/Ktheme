@@ -55,14 +55,16 @@ jobs:
 
       - name: Pack and Publish npm Package
         run: |
-          npm publish --access public
+          npm pack
+          npm publish *.tgz --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish @kaleaon/ktheme-schema-cli npm Package
         run: |
-          npm --prefix packages/schema-cli publish --access public
+          npm pack ./packages/schema-cli
+          npm publish kaleaon-ktheme-schema-cli-*.tgz --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
