@@ -42,13 +42,25 @@ jobs:
       - name: Install dependencies
         run: |
           if [ -f "package.json" ]; then
-            npm ci || npm install
+            if [ -f "package-lock.json" ] || [ -f "npm-shrinkwrap.json" ]; then
+              npm ci
+            else
+              npm install
+            fi
           fi
-          if [ -d "docs/react" ]; then
-            (cd docs/react && (npm ci || npm install))
+          if [ -f "docs/react/package.json" ]; then
+            if [ -f "docs/react/package-lock.json" ] || [ -f "docs/react/npm-shrinkwrap.json" ]; then
+              (cd docs/react && npm ci)
+            else
+              (cd docs/react && npm install)
+            fi
           fi
-          if [ -d "theme-creator" ]; then
-            cd theme-creator && (npm ci || npm install) && cd ..
+          if [ -f "theme-creator/package.json" ]; then
+            if [ -f "theme-creator/package-lock.json" ] || [ -f "theme-creator/npm-shrinkwrap.json" ]; then
+              (cd theme-creator && npm ci)
+            else
+              (cd theme-creator && npm install)
+            fi
           fi
 
       - name: Build schema CLI
