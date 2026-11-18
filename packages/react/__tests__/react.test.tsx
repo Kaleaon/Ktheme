@@ -5,9 +5,11 @@ import {
   KthemeProvider,
   useKtheme,
   useKthemeToken,
+  getKthemeCssVar,
   batchSetCssVariables,
   flushCssVariables,
   ThemeStudio,
+  importTokensStudioJson,
 } from "../src";
 
 function TestConsumer() {
@@ -72,6 +74,19 @@ describe("@ktheme/react library", () => {
     expect(el.style.getPropertyValue("--md-sys-color-surface")).toBe("#00FF00");
   });
 
+  it("importTokensStudioJson converts Tokens Studio JSON into runtime tokens", () => {
+    const json = {
+      colors: {
+        primary: { value: "#6750A4", type: "color" },
+        background: { value: "#1C1B1F", type: "color" },
+      },
+    };
+
+    const tokens = importTokensStudioJson(json);
+    expect(tokens.primary).toBe("#6750A4");
+    expect(tokens.background).toBe("#1C1B1F");
+  });
+
   it("ThemeStudio component renders and allows tab switching", () => {
     render(
       <KthemeProvider themeId="navy-gold">
@@ -87,5 +102,51 @@ describe("@ktheme/react library", () => {
     });
 
     expect(screen.getByText("NAVY GOLD")).toBeInTheDocument();
+  });
+
+  it("getKthemeCssVar outputs fallback expressions inspecting both --ktheme-* and --md-sys-color-*", () => {
+    expect(getKthemeCssVar("primary")).toBe(
+      "var(--ktheme-primary, var(--md-sys-color-primary))",
+    );
+    expect(getKthemeCssVar("onPrimary")).toBe(
+      "var(--ktheme-on-primary, var(--md-sys-color-on-primary))",
+    );
+    expect(getKthemeCssVar("primary", "#123456")).toBe(
+      "var(--ktheme-primary, var(--md-sys-color-primary, #123456))",
+    );
+  });
+
+  it("ThemeStudio form controls are accessible with explicit labels and aria-label", () => {
+    render(
+      <KthemeProvider themeId="navy-gold">
+        <ThemeStudio embedded />
+      </KthemeProvider>,
+    );
+
+    // Verify Theme Name input is linked to its label
+    const themeNameInput = screen.getByLabelText("THEME NAME");
+    expect(themeNameInput).toBeInTheDocument();
+    expect(themeNameInput).toHaveAttribute("id");
+    const themeNameLabel = screen.getByText("THEME NAME");
+    expect(themeNameLabel).toHaveAttribute(
+      "for",
+      themeNameInput.getAttribute("id"),
+    );
+
+    // Verify color token inputs are linked to their labels
+    const primaryInput = screen.getByLabelText("Primary Color");
+    expect(primaryInput).toBeInTheDocument();
+    expect(primaryInput).toHaveAttribute("type", "color");
+    expect(primaryInput).toHaveAttribute("id");
+    const primaryLabel = screen.getByText("Primary Color");
+    expect(primaryLabel).toHaveAttribute(
+      "for",
+      primaryInput.getAttribute("id"),
+    );
+
+    // Verify hidden import file input has aria-label
+    const fileInput = screen.getByLabelText("Import theme JSON");
+    expect(fileInput).toBeInTheDocument();
+    expect(fileInput).toHaveAttribute("type", "file");
   });
 });

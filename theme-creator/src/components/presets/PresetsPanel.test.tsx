@@ -57,7 +57,7 @@ describe("PresetsPanel Theme Deletion Dialog", () => {
 
     // DELETE_SAVED should not have been dispatched yet
     expect(mockDispatch).not.toHaveBeenCalledWith(
-      expect.objectContaining({ type: "DELETE_SAVED" })
+      expect.objectContaining({ type: "DELETE_SAVED" }),
     );
 
     // Modal dialog should be displayed with dialog role and aria-modal="true"
@@ -69,7 +69,7 @@ describe("PresetsPanel Theme Deletion Dialog", () => {
     const dialogUtils = within(dialog);
     expect(dialogUtils.getByText("Delete Theme")).toBeInTheDocument();
     expect(
-      dialogUtils.getByText(/Are you sure you want to delete/i)
+      dialogUtils.getByText(/Are you sure you want to delete/i),
     ).toBeInTheDocument();
     expect(dialogUtils.getByText("My Custom Theme")).toBeInTheDocument();
   });
@@ -82,7 +82,7 @@ describe("PresetsPanel Theme Deletion Dialog", () => {
     fireEvent.click(
       screen.getByRole("button", {
         name: /Delete saved theme My Custom Theme/i,
-      })
+      }),
     );
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
@@ -94,7 +94,7 @@ describe("PresetsPanel Theme Deletion Dialog", () => {
     // Dialog should be closed
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(mockDispatch).not.toHaveBeenCalledWith(
-      expect.objectContaining({ type: "DELETE_SAVED" })
+      expect.objectContaining({ type: "DELETE_SAVED" }),
     );
   });
 
@@ -105,7 +105,7 @@ describe("PresetsPanel Theme Deletion Dialog", () => {
     fireEvent.click(
       screen.getByRole("button", {
         name: /Delete saved theme My Custom Theme/i,
-      })
+      }),
     );
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
@@ -116,7 +116,7 @@ describe("PresetsPanel Theme Deletion Dialog", () => {
     // Dialog should be closed
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(mockDispatch).not.toHaveBeenCalledWith(
-      expect.objectContaining({ type: "DELETE_SAVED" })
+      expect.objectContaining({ type: "DELETE_SAVED" }),
     );
   });
 
@@ -127,7 +127,7 @@ describe("PresetsPanel Theme Deletion Dialog", () => {
     fireEvent.click(
       screen.getByRole("button", {
         name: /Delete saved theme My Custom Theme/i,
-      })
+      }),
     );
 
     const confirmDeleteBtn = screen.getByRole("button", { name: "Delete" });
@@ -141,5 +141,64 @@ describe("PresetsPanel Theme Deletion Dialog", () => {
 
     // Dialog should be closed
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("auto-focuses Cancel button when dialog opens", () => {
+    render(<PresetsPanel />);
+
+    fireEvent.click(screen.getByRole("tab", { name: /Saved/i }));
+    const deleteCardBtn = screen.getByRole("button", {
+      name: /Delete saved theme My Custom Theme/i,
+    });
+    deleteCardBtn.focus();
+    fireEvent.click(deleteCardBtn);
+
+    const cancelBtn = screen.getByRole("button", { name: "Cancel" });
+    expect(document.activeElement).toBe(cancelBtn);
+  });
+
+  it("traps focus inside dialog when pressing Tab and Shift+Tab", () => {
+    render(<PresetsPanel />);
+
+    fireEvent.click(screen.getByRole("tab", { name: /Saved/i }));
+    const deleteCardBtn = screen.getByRole("button", {
+      name: /Delete saved theme My Custom Theme/i,
+    });
+    fireEvent.click(deleteCardBtn);
+
+    const cancelBtn = screen.getByRole("button", { name: "Cancel" });
+    const confirmDeleteBtn = screen.getByRole("button", { name: "Delete" });
+
+    // Initial focus is Cancel button (first focusable)
+    expect(document.activeElement).toBe(cancelBtn);
+
+    // Press Shift+Tab from Cancel button (first element) -> wraps focus to Delete button (last element)
+    fireEvent.keyDown(window, { key: "Tab", shiftKey: true });
+    expect(document.activeElement).toBe(confirmDeleteBtn);
+
+    // Press Tab from Delete button (last element) -> wraps focus back to Cancel button (first element)
+    fireEvent.keyDown(window, { key: "Tab", shiftKey: false });
+    expect(document.activeElement).toBe(cancelBtn);
+  });
+
+  it("restores focus to triggering element when dialog is dismissed", () => {
+    render(<PresetsPanel />);
+
+    fireEvent.click(screen.getByRole("tab", { name: /Saved/i }));
+    const deleteCardBtn = screen.getByRole("button", {
+      name: /Delete saved theme My Custom Theme/i,
+    });
+    deleteCardBtn.focus();
+    expect(document.activeElement).toBe(deleteCardBtn);
+
+    fireEvent.click(deleteCardBtn);
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+
+    // Dismiss with Cancel button
+    const cancelBtn = screen.getByRole("button", { name: "Cancel" });
+    fireEvent.click(cancelBtn);
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(document.activeElement).toBe(deleteCardBtn);
   });
 });

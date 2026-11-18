@@ -1,5 +1,5 @@
-import { Theme } from "../../core/types";
-import { TypographyVarsExport, WebExporterOptions } from "./types";
+import type { Theme } from "../../core/types";
+import type { TypographyVarsExport, WebExporterOptions } from "./types";
 
 export function exportTypographyVars(
   theme: Theme,

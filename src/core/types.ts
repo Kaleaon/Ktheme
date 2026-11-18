@@ -435,6 +435,28 @@ export interface ThemeAdaptation {
 }
 
 /**
+ * Spatial interaction tokens for target bounds and interaction padding.
+ */
+export interface SpatialTokens {
+  minTargetHeight?: number | string;
+  minTargetWidth?: number | string;
+  touchTargetMinMobile?: number | string;
+  touchTargetMinDesktop?: number | string;
+  touchPaddingCompact?: number | string;
+  touchPaddingCoarse?: number | string;
+  targetBounds?: {
+    minMobile?: number | string;
+    minDesktop?: number | string;
+    height?: number | string;
+    width?: number | string;
+  };
+  padding?: {
+    compact?: number | string;
+    coarse?: number | string;
+  };
+}
+
+/**
  * Design tokens beyond color/effects for shape/density scaling.
  */
 export interface DesignTokens {
@@ -448,6 +470,7 @@ export interface DesignTokens {
     large: number;
     xlarge?: number;
   };
+  spatial?: SpatialTokens;
 }
 
 /**
@@ -580,6 +603,7 @@ export interface Theme {
   effects?: VisualEffects;
   typography?: Typography;
   tokens?: DesignTokens;
+  spatial?: SpatialTokens;
   adaptation?: ThemeAdaptation;
   accessibility?: AccessibilitySettings;
   assets?: AssetCatalog;

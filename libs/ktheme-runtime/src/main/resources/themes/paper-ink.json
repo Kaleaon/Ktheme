@@ -6,11 +6,7 @@
     "description": "Minimalist light theme for comfortable reading",
     "author": "Ktheme",
     "version": "1.0.0",
-    "tags": [
-      "minimalist",
-      "light",
-      "reader"
-    ],
+    "tags": ["minimalist", "light", "reader"],
     "createdAt": "2026-02-15T20:42:39.611Z",
     "updatedAt": "2026-02-15T20:42:39.611Z"
   },

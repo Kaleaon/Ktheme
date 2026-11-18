@@ -1,8 +1,8 @@
 import { useId, type ReactNode } from "react";
-import { useTheme } from "../../state/ThemeContext.tsx";
-import { METALLIC_PRESETS } from "../../utils/theme-defaults.ts";
-import type { MetallicVariant, VisualEffects } from "../../types/theme.ts";
-import { DEFAULT_EFFECTS } from "../../utils/theme-defaults.ts";
+import { useTheme } from "../../state/ThemeContext";
+import { METALLIC_PRESETS } from "../../utils/theme-defaults";
+import type { MetallicVariant, VisualEffects } from "../../types/theme";
+import { DEFAULT_EFFECTS } from "../../utils/theme-defaults";
 
 export function EffectsEditor() {
   const { state, dispatch } = useTheme();
@@ -114,6 +114,11 @@ export function EffectsEditor() {
                 max="1"
                 step="0.05"
                 value={metallic.intensity}
+                aria-valuenow={metallic.intensity}
+                aria-valuemin={0}
+                aria-valuemax={1}
+                aria-valuetext={`${metallic.intensity}`}
+                aria-label="Metallic intensity"
                 onChange={(e) =>
                   updateEffects({
                     metallic: {
@@ -136,6 +141,7 @@ export function EffectsEditor() {
                     <input
                       id={pickerId}
                       type="color"
+                      className="k-target-min-size"
                       value={val}
                       onChange={(e) =>
                         updateEffects({
@@ -186,6 +192,11 @@ export function EffectsEditor() {
                 max="24"
                 step="1"
                 value={shadows.elevation}
+                aria-valuenow={shadows.elevation}
+                aria-valuemin={0}
+                aria-valuemax={24}
+                aria-valuetext={`${shadows.elevation}`}
+                aria-label="Shadow elevation"
                 onChange={(e) =>
                   updateEffects({
                     shadows: {
@@ -205,6 +216,11 @@ export function EffectsEditor() {
                 max="48"
                 step="1"
                 value={shadows.blur}
+                aria-valuenow={shadows.blur}
+                aria-valuemin={0}
+                aria-valuemax={48}
+                aria-valuetext={`${shadows.blur}px`}
+                aria-label="Shadow blur"
                 onChange={(e) =>
                   updateEffects({
                     shadows: { ...shadows, blur: parseInt(e.target.value) },
@@ -242,6 +258,11 @@ export function EffectsEditor() {
                 max="10"
                 step="0.5"
                 value={shimmer.speed}
+                aria-valuenow={shimmer.speed}
+                aria-valuemin={1}
+                aria-valuemax={10}
+                aria-valuetext={`${shimmer.speed}s`}
+                aria-label="Shimmer speed"
                 onChange={(e) =>
                   updateEffects({
                     shimmer: { ...shimmer, speed: parseFloat(e.target.value) },
@@ -260,6 +281,11 @@ export function EffectsEditor() {
                 max="1"
                 step="0.05"
                 value={shimmer.intensity}
+                aria-valuenow={shimmer.intensity}
+                aria-valuemin={0}
+                aria-valuemax={1}
+                aria-valuetext={`${shimmer.intensity}`}
+                aria-label="Shimmer intensity"
                 onChange={(e) =>
                   updateEffects({
                     shimmer: {
@@ -279,6 +305,11 @@ export function EffectsEditor() {
                 max="360"
                 step="5"
                 value={shimmer.angle}
+                aria-valuenow={shimmer.angle}
+                aria-valuemin={0}
+                aria-valuemax={360}
+                aria-valuetext={`${shimmer.angle}deg`}
+                aria-label="Shimmer angle"
                 onChange={(e) =>
                   updateEffects({
                     shimmer: { ...shimmer, angle: parseInt(e.target.value) },
@@ -316,6 +347,7 @@ export function EffectsEditor() {
                 <input
                   id={stopColorId}
                   type="color"
+                  className="k-target-min-size"
                   value={stop.color}
                   onChange={(e) =>
                     updateEffects({
@@ -380,6 +412,7 @@ export function EffectsEditor() {
           <input
             id={overlayColorId}
             type="color"
+            className="k-target-min-size"
             value={overlays.color}
             onChange={(e) =>
               updateEffects({
@@ -463,6 +496,7 @@ export function EffectsEditor() {
           <input
             id={focusRingColorId}
             type="color"
+            className="k-target-min-size"
             value={focusRing.color}
             onChange={(e) =>
               updateEffects({
@@ -608,6 +642,11 @@ function Range({
         max={max}
         step={step}
         value={value}
+        aria-valuenow={value}
+        aria-valuemin={min}
+        aria-valuemax={max}
+        aria-valuetext={`${value}${suffix}`}
+        aria-label={label}
         onChange={(e) => onChange(Number(e.target.value))}
       />
     </label>

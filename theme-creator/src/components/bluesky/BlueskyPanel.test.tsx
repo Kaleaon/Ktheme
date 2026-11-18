@@ -45,6 +45,9 @@ describe("BlueskyPanel Accessibility Tests", () => {
     const passwordInput = screen.getByPlaceholderText("xxxx-xxxx-xxxx-xxxx");
     const loginBtn = screen.getByRole("button", { name: /Log In/i });
 
+    expect(handleInput).toHaveAttribute("autoComplete", "username");
+    expect(passwordInput).toHaveAttribute("autoComplete", "current-password");
+
     fireEvent.change(handleInput, { target: { value: "user.bsky.social" } });
     fireEvent.change(passwordInput, { target: { value: "invalid-pass" } });
     fireEvent.click(loginBtn);
@@ -60,5 +63,25 @@ describe("BlueskyPanel Accessibility Tests", () => {
       expect(passwordInput).toHaveAttribute("aria-invalid", "true");
       expect(passwordInput).toHaveAttribute("aria-describedby", alertEl.id);
     });
+  });
+
+  it("has explicit WCAG-compliant autoComplete attributes on authentication inputs", () => {
+    (useBluesky as jest.Mock).mockReturnValue({
+      agent: null,
+      profile: null,
+      isLoading: false,
+      error: null,
+      login: jest.fn(),
+      logout: jest.fn(),
+      resumeSession: jest.fn(),
+    });
+
+    render(<BlueskyPanel />);
+
+    const handleInput = screen.getByPlaceholderText("user.bsky.social");
+    const passwordInput = screen.getByPlaceholderText("xxxx-xxxx-xxxx-xxxx");
+
+    expect(handleInput).toHaveAttribute("autocomplete", "username");
+    expect(passwordInput).toHaveAttribute("autocomplete", "current-password");
   });
 });

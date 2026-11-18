@@ -2,6 +2,8 @@ export interface WebExporterOptions {
   includeEffects?: boolean;
   includeTypography?: boolean;
   includeCorners?: boolean;
+  includeMotion?: boolean;
+  includeLayout?: boolean;
 }
 
 export type CssVarsOptions = WebExporterOptions;

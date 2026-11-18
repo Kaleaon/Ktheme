@@ -3,7 +3,7 @@
  * Based on CleverFerret's metallic theming system
  */
 
-import { MetallicGradient, MetallicVariant, Color } from "../core/types";
+import { MetallicGradient, MetallicVariant } from "../core/types";
 
 /**
  * Predefined metallic colors
@@ -123,89 +123,4 @@ export function getMetallicGradient(
     default:
       return getMetallicGradient(MetallicVariant.SILVER);
   }
-}
-
-/**
- * Generate CSS for metallic gradient effect
- */
-export function generateMetallicGradientCSS(
-  gradient: MetallicGradient,
-  angle: number = 135,
-): string {
-  return `linear-gradient(${angle}deg,
-    ${gradient.shadow} 0%,
-    ${gradient.base} 25%,
-    ${gradient.highlight} 50%,
-    ${gradient.base} 75%,
-    ${gradient.shadow} 100%)`;
-}
-
-/**
- * Generate CSS for shimmer animation
- */
-export function generateShimmerCSS(
-  gradient: MetallicGradient,
-  speed: number = 2,
-): string {
-  return `
-    @keyframes shimmer {
-      0% { background-position: -200% center; }
-      100% { background-position: 200% center; }
-    }
-
-    background: linear-gradient(
-      90deg,
-      ${gradient.base} 0%,
-      ${gradient.shimmer} 50%,
-      ${gradient.base} 100%
-    );
-    background-size: 200% 100%;
-    animation: shimmer ${speed}s linear infinite;
-  `;
-}
-
-/**
- * Media type colors for consistent UI
- */
-export const MediaTypeColors = {
-  Book: "#4CAF50",
-  Movie: "#2196F3",
-  Music: "#9C27B0",
-  TVShow: "#FF9800",
-  Podcast: "#F44336",
-  Audiobook: "#009688",
-  Comic: "#FFEB3B",
-  Radio: "#00BCD4",
-  Magazine: "#3F51B5",
-  News: "#FFC107",
-  Fanfiction: "#E91E63",
-};
-
-/**
- * Get color for a media type
- */
-export function getMediaTypeColor(mediaType: string): Color {
-  const normalized = mediaType.toLowerCase().replace(/[_-]/g, "");
-
-  const mapping: { [key: string]: string } = {
-    book: MediaTypeColors.Book,
-    ebook: MediaTypeColors.Book,
-    movie: MediaTypeColors.Movie,
-    music: MediaTypeColors.Music,
-    musictrack: MediaTypeColors.Music,
-    album: MediaTypeColors.Music,
-    tvshow: MediaTypeColors.TVShow,
-    tv: MediaTypeColors.TVShow,
-    series: MediaTypeColors.TVShow,
-    podcast: MediaTypeColors.Podcast,
-    audiobook: MediaTypeColors.Audiobook,
-    comic: MediaTypeColors.Comic,
-    manga: MediaTypeColors.Comic,
-    radio: MediaTypeColors.Radio,
-    magazine: MediaTypeColors.Magazine,
-    news: MediaTypeColors.News,
-    fanfiction: MediaTypeColors.Fanfiction,
-  };
-
-  return mapping[normalized] || MediaTypeColors.Book;
 }

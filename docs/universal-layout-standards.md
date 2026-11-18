@@ -11,15 +11,15 @@ and `Compose` to `compose`. Unknown persisted IDs should use the host's safe def
 theme IDs during migration. Existing theme files remain compatible; this additive contract does
 not change the meaning of schemaVersion 2 or require a layout selector in every host.
 
-| ID | Structure and character | Refinement requirements |
-| --- | --- | --- |
-| compose | MD3 panels, phone bar → wide rail | Preserve navigation selection during live resize |
-| terminal | Mono, boxed surfaces, 4-unit corners | Key metadata at least 12 units; no mixed cover/panel radii |
-| sweep | Opposing LCARS frame and segmented rail | Black reference field, unboxed readouts, filled/text controls and docks |
-| tiles | Metro pivot and app bar, square accent tiles | Lowercase navigation, preserved media case, quick actions bounded at 160 |
-| glass | Soft translucent panels and gloss | Audit actual wash/filter/opacity composition and gradient interpolation |
-| rules | Persistent rail, sharp corners, hairline rules | Word-safe responsive media titles, reduced tracking where width is constrained |
-| press | Serif content, quiet rows and rules | Quiet solid actions, restrained weight, no player shadow |
+| ID       | Structure and character                        | Refinement requirements                                                        |
+| -------- | ---------------------------------------------- | ------------------------------------------------------------------------------ |
+| compose  | MD3 panels, phone bar → wide rail              | Preserve navigation selection during live resize                               |
+| terminal | Mono, boxed surfaces, 4-unit corners           | Key metadata at least 12 units; no mixed cover/panel radii                     |
+| sweep    | Opposing LCARS frame and segmented rail        | Black reference field, unboxed readouts, filled/text controls and docks        |
+| tiles    | Metro pivot and app bar, square accent tiles   | Lowercase navigation, preserved media case, quick actions bounded at 160       |
+| glass    | Soft translucent panels and gloss              | Audit actual wash/filter/opacity composition and gradient interpolation        |
+| rules    | Persistent rail, sharp corners, hairline rules | Word-safe responsive media titles, reduced tracking where width is constrained |
+| press    | Serif content, quiet rows and rules            | Quiet solid actions, restrained weight, no player shadow                       |
 
 Numbers use logical units: CSS pixels on web, dp/sp according to token purpose on Android.
 The 720-unit wide breakpoint is a baseline for this family of application layouts; hosts may

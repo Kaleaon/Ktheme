@@ -1,11 +1,212 @@
 package com.ktheme.android
 
 import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight as ComposeFontWeight
+import androidx.compose.ui.unit.sp
 import com.ktheme.models.Theme
 import com.ktheme.utils.ColorUtils
+
+data class KthemeLayout(
+    val id: String = "compose",
+    val name: String = "Compose",
+    val navPhone: String = "bar",
+    val navWide: String = "rail",
+    val adaptiveWidthDp: Int = 720,
+    val cornerLargeDp: Int = 18,
+    val cornerPanelDp: Int = 14,
+    val cornerTileDp: Int = 12,
+    val cornerCoverDp: Int = 6,
+    val cornerControlDp: Int = 999,
+    val cornerIconDp: Int = 10,
+    val cornerArtworkDp: Int = 20,
+    val typographyBody: String = "Roboto",
+    val minimumMetadataSp: Int = 10,
+    val contentCase: String = "preserve",
+    val navigationCase: String = "preserve",
+    val surfaces: String = "compose",
+    val actions: String = "theme-effect",
+    val player: String = "docked",
+    val shadow: String = "theme-effect"
+)
+
+val LocalKthemeLayout = staticCompositionLocalOf { KthemeLayout() }
+
+fun Theme.toKthemeLayout(): KthemeLayout {
+    val layoutId = metadata.id.lowercase()
+    return when {
+        layoutId.contains("sweep") || layoutId.contains("lcars") -> KthemeLayout(
+            id = "sweep",
+            name = "Sweep Console",
+            navPhone = "sweep",
+            navWide = "sweep",
+            cornerLargeDp = 0,
+            cornerPanelDp = 0,
+            cornerTileDp = 0,
+            cornerCoverDp = 0,
+            cornerControlDp = 999,
+            cornerIconDp = 999,
+            cornerArtworkDp = 0,
+            typographyBody = "Antonio + Nunito Sans",
+            contentCase = "uppercase",
+            navigationCase = "uppercase",
+            surfaces = "lcars",
+            actions = "filled-text",
+            player = "docked-text",
+            shadow = "none"
+        )
+        layoutId.contains("terminal") -> KthemeLayout(
+            id = "terminal",
+            name = "Ink Terminal",
+            navPhone = "bar",
+            navWide = "rail",
+            cornerLargeDp = 4,
+            cornerPanelDp = 4,
+            cornerTileDp = 4,
+            cornerCoverDp = 4,
+            cornerControlDp = 4,
+            cornerIconDp = 4,
+            cornerArtworkDp = 4,
+            typographyBody = "JetBrains Mono",
+            minimumMetadataSp = 12,
+            contentCase = "uppercase",
+            navigationCase = "uppercase",
+            surfaces = "box",
+            shadow = "none"
+        )
+        layoutId.contains("tile") || layoutId.contains("metro") -> KthemeLayout(
+            id = "tiles",
+            name = "Metro Tiles",
+            navPhone = "pivot-appbar",
+            navWide = "pivot-appbar",
+            cornerLargeDp = 0,
+            cornerPanelDp = 0,
+            cornerTileDp = 0,
+            cornerCoverDp = 0,
+            cornerControlDp = 0,
+            cornerIconDp = 0,
+            cornerArtworkDp = 0,
+            typographyBody = "Open Sans",
+            navigationCase = "lowercase",
+            surfaces = "flat",
+            actions = "accent-tile"
+        )
+        layoutId.contains("glass") || layoutId.contains("aero") || layoutId.contains("frutiger") -> KthemeLayout(
+            id = "glass",
+            name = "Aero Glass",
+            navPhone = "bar",
+            navWide = "rail",
+            cornerLargeDp = 18,
+            cornerPanelDp = 16,
+            cornerTileDp = 12,
+            cornerCoverDp = 8,
+            cornerControlDp = 12,
+            cornerIconDp = 12,
+            cornerArtworkDp = 22,
+            typographyBody = "Nunito Sans",
+            surfaces = "soft"
+        )
+        layoutId.contains("rule") -> KthemeLayout(
+            id = "rules",
+            name = "Rule & Rail",
+            navPhone = "rail",
+            navWide = "rail",
+            cornerLargeDp = 0,
+            cornerPanelDp = 0,
+            cornerTileDp = 0,
+            cornerCoverDp = 0,
+            cornerControlDp = 0,
+            cornerIconDp = 0,
+            cornerArtworkDp = 0,
+            typographyBody = "Jost",
+            contentCase = "uppercase",
+            navigationCase = "uppercase",
+            surfaces = "rule",
+            shadow = "none"
+        )
+        layoutId.contains("press") || layoutId.contains("paper") -> KthemeLayout(
+            id = "press",
+            name = "Press",
+            navPhone = "bar",
+            navWide = "rail",
+            cornerLargeDp = 6,
+            cornerPanelDp = 3,
+            cornerTileDp = 2,
+            cornerCoverDp = 2,
+            cornerControlDp = 2,
+            cornerIconDp = 2,
+            cornerArtworkDp = 4,
+            typographyBody = "Source Serif 4 + Jost",
+            surfaces = "quiet",
+            actions = "quiet-solid",
+            shadow = "none"
+        )
+        else -> KthemeLayout()
+    }
+}
+
+/**
+ * Convert a Ktheme [Theme] typography specification into Compose Material 3 [Typography].
+ *
+ * If [Theme.typography] is null, falls back gracefully to default Material 3 typography values.
+ */
+fun Theme.toMaterial3Typography(): Typography {
+    val t = typography ?: return Typography()
+    val family = parseFontFamily(t.fontFamily)
+
+    fun createStyle(fontSizeSp: Int, fontWeightInt: Int): TextStyle {
+        val size = fontSizeSp.coerceAtLeast(1)
+        val calculatedLineHeight = if (t.lineHeight > 0f) {
+            (size * t.lineHeight).sp
+        } else {
+            size.sp
+        }
+        return TextStyle(
+            fontFamily = family,
+            fontSize = size.sp,
+            fontWeight = ComposeFontWeight(fontWeightInt),
+            lineHeight = calculatedLineHeight,
+            letterSpacing = t.letterSpacing.sp,
+        )
+    }
+
+    return Typography(
+        displayLarge = createStyle(t.fontSize.xlarge, t.fontWeight.bold),
+        displayMedium = createStyle(t.fontSize.xlarge - 4, t.fontWeight.bold),
+        displaySmall = createStyle(t.fontSize.large, t.fontWeight.medium),
+        headlineLarge = createStyle(t.fontSize.xlarge, t.fontWeight.medium),
+        headlineMedium = createStyle(t.fontSize.large, t.fontWeight.medium),
+        headlineSmall = createStyle(t.fontSize.large - 2, t.fontWeight.medium),
+        titleLarge = createStyle(t.fontSize.large, t.fontWeight.medium),
+        titleMedium = createStyle(t.fontSize.medium, t.fontWeight.medium),
+        titleSmall = createStyle(t.fontSize.small, t.fontWeight.medium),
+        bodyLarge = createStyle(t.fontSize.medium, t.fontWeight.regular),
+        bodyMedium = createStyle(t.fontSize.medium - 2, t.fontWeight.regular),
+        bodySmall = createStyle(t.fontSize.small, t.fontWeight.light),
+        labelLarge = createStyle(t.fontSize.medium, t.fontWeight.medium),
+        labelMedium = createStyle(t.fontSize.small, t.fontWeight.medium),
+        labelSmall = createStyle(t.fontSize.small - 1, t.fontWeight.medium),
+    )
+}
+
+/**
+ * Safely parse font family string to Jetpack Compose [FontFamily] equivalent.
+ */
+fun parseFontFamily(fontFamilyStr: String?): FontFamily {
+    return when (fontFamilyStr?.lowercase()?.trim()) {
+        "sans-serif", "sansserif", "sans" -> FontFamily.SansSerif
+        "serif" -> FontFamily.Serif
+        "monospace", "mono" -> FontFamily.Monospace
+        "cursive" -> FontFamily.Cursive
+        else -> FontFamily.Default
+    }
+}
 
 /**
  * Convert a Ktheme [Theme] to a Material 3 [ColorScheme], using [Theme.darkMode].

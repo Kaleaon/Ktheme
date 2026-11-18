@@ -6,14 +6,7 @@
     "description": "Dark cinematic palette with constrained neon accents for control surfaces",
     "author": "Ktheme",
     "version": "1.0.0",
-    "tags": [
-      "metallic",
-      "dramatic",
-      "dark",
-      "neo-noir",
-      "neon",
-      "cinematic"
-    ],
+    "tags": ["metallic", "dramatic", "dark", "neo-noir", "neon", "cinematic"],
     "createdAt": "2026-02-16T13:00:59.876Z",
     "updatedAt": "2026-02-16T13:00:59.876Z"
   },
@@ -23,8 +16,8 @@
     "onError": "#0A0A0A",
     "errorContainer": "#CC0000",
     "onErrorContainer": "#FFD9D9",
-    "primary": "#A73CFF",
-    "onPrimary": "#140022",
+    "primary": "#AA43FF",
+    "onPrimary": "#090A10",
     "primaryContainer": "#4B1D73",
     "onPrimaryContainer": "#E7CBFF",
     "secondary": "#00D1FF",

@@ -45,8 +45,25 @@ jobs:
             npm ci || npm install
           fi
           if [ -d "docs/react" ]; then
-            cd docs/react && (npm ci || npm install) && cd ../..
+            (cd docs/react && (npm ci || npm install))
           fi
+          if [ -d "theme-creator" ]; then
+            cd theme-creator && (npm ci || npm install) && cd ..
+          fi
+
+      - name: Build schema CLI
+        run: npm run build:schema-cli || true
+
+      - name: Validate theme schemas
+        run: node bin/ktheme-schema.mjs sync --check
+
+      - name: Cache Playwright Browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium

@@ -1,54 +1,68 @@
+import {
+  contrastRatio as coreContrastRatio,
+  hexToRgb as coreHexToRgb,
+  isValidColorString,
+  mix as coreMix,
+  relativeLuminance as coreRelativeLuminance,
+  rgbToHex as coreRgbToHex,
+} from "../../../src/utils/colors";
+
+const FALLBACK_HEX = "#000000";
+
+function clampByte(channel: number): number {
+  if (!Number.isFinite(channel)) {
+    return 0;
+  }
+  return Math.max(0, Math.min(255, Math.round(channel)));
+}
+
+function isSupportedColor(value: unknown): value is string {
+  return typeof value === "string" && isValidColorString(value);
+}
+
 export function hexToRgb(hex: string): { r: number; g: number; b: number } {
-  const clean = hex.replace("#", "");
-  return {
-    r: parseInt(clean.substring(0, 2), 16),
-    g: parseInt(clean.substring(2, 4), 16),
-    b: parseInt(clean.substring(4, 6), 16),
-  };
+  if (typeof hex !== "string") {
+    return { r: 0, g: 0, b: 0 };
+  }
+  try {
+    return coreHexToRgb(hex);
+  } catch {
+    return { r: 0, g: 0, b: 0 };
+  }
 }
 
 export function rgbToHex(r: number, g: number, b: number): string {
-  return (
-    "#" +
-    [r, g, b]
-      .map((c) =>
-        Math.max(0, Math.min(255, Math.round(c)))
-          .toString(16)
-          .padStart(2, "0"),
-      )
-      .join("")
-  );
+  return coreRgbToHex({
+    r: clampByte(r),
+    g: clampByte(g),
+    b: clampByte(b),
+  });
 }
 
-function luminance(hex: string): number {
-  const { r, g, b } = hexToRgb(hex);
-  const [rs, gs, bs] = [r, g, b].map((c) => {
-    const s = c / 255;
-    return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
-  });
-  return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
+export function luminance(hex: string): number {
+  const color = isSupportedColor(hex) ? hex : FALLBACK_HEX;
+  return coreRelativeLuminance(color);
 }
 
 export function contrastRatio(hex1: string, hex2: string): number {
-  const l1 = luminance(hex1);
-  const l2 = luminance(hex2);
-  const lighter = Math.max(l1, l2);
-  const darker = Math.min(l1, l2);
-  return (lighter + 0.05) / (darker + 0.05);
+  if (!isSupportedColor(hex1) || !isSupportedColor(hex2)) {
+    return 1;
+  }
+  return coreContrastRatio(hex1, hex2);
 }
 
 export function adjustBrightness(hex: string, amount: number): string {
   const { r, g, b } = hexToRgb(hex);
-  return rgbToHex(r + amount, g + amount, b + amount);
+  const offset = Number.isFinite(amount) ? amount : 0;
+  return rgbToHex(r + offset, g + offset, b + offset);
 }
 
 export function mixColors(hex1: string, hex2: string, weight: number): string {
-  const c1 = hexToRgb(hex1);
-  const c2 = hexToRgb(hex2);
-  const w = Math.max(0, Math.min(1, weight));
-  return rgbToHex(
-    Math.round(c1.r * (1 - w) + c2.r * w),
-    Math.round(c1.g * (1 - w) + c2.g * w),
-    Math.round(c1.b * (1 - w) + c2.b * w),
-  );
+  const color1 = isSupportedColor(hex1) ? hex1 : FALLBACK_HEX;
+  const color2 = isSupportedColor(hex2) ? hex2 : FALLBACK_HEX;
+  const clampedWeight = Number.isFinite(weight)
+    ? Math.max(0, Math.min(1, weight))
+    : 0.5;
+  const mixed = coreMix(color1, color2, clampedWeight);
+  return rgbToHex(mixed.r, mixed.g, mixed.b);
 }

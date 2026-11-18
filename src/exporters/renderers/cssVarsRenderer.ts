@@ -1,6 +1,7 @@
 import { NormalizedThemeTokens } from "../ir/tokenIR";
 import { TokenRenderer } from "./TokenRenderer";
 import { WebExporterOptions } from "../web/types";
+import { MotionASTTransformer } from "../../core/MotionASTTransformer";
 
 export interface CssVarsExport {
   vars: Record<string, string>;
@@ -15,10 +16,16 @@ export class CssVarsRenderer implements TokenRenderer<CssVarsExport> {
     tokens: NormalizedThemeTokens,
     options?: WebExporterOptions,
   ): CssVarsExport {
+    const defaultIncludeLayout = !(
+      options?.includeEffects === false &&
+      options?.includeTypography === false &&
+      options?.includeCorners === false
+    );
     const resolvedOptions: WebExporterOptions = {
       includeEffects: true,
       includeTypography: true,
       includeCorners: true,
+      includeLayout: defaultIncludeLayout,
       ...options,
     };
 
@@ -195,6 +202,16 @@ export class CssVarsRenderer implements TokenRenderer<CssVarsExport> {
           tokens.effects.shadows.color,
         );
       }
+
+      if (tokens.motion) {
+        const motionCss = MotionASTTransformer.toCss(tokens.motion);
+        vars["--ktheme-motion-duration"] = motionCss.duration;
+        vars["--ktheme-motion-easing"] = motionCss.easing;
+        vars["--ktheme-motion-duration-reduced"] = motionCss.durationReduced;
+        vars["--ktheme-motion-easing-reduced"] = motionCss.easingReduced;
+        vars["--ktheme-animation-duration"] = motionCss.duration;
+        vars["--ktheme-animation-easing"] = motionCss.easing;
+      }
     }
 
     if (resolvedOptions.includeCorners) {
@@ -204,12 +221,48 @@ export class CssVarsRenderer implements TokenRenderer<CssVarsExport> {
       vars["--ktheme-corner-xlarge"] = `${tokens.layout.corners.xlarge}px`;
     }
 
+    // Universal Layout Standards Custom Properties
+    const layoutStd = tokens.layoutStandard;
+    if (layoutStd && resolvedOptions.includeLayout) {
+      vars["--ktheme-layout-id"] = layoutStd.id;
+      vars["--ktheme-layout-name"] = layoutStd.name;
+      vars["--ktheme-layout-adaptive-width"] = "720px";
+      vars["--ktheme-layout-nav-phone"] = layoutStd.navigation.phone;
+      vars["--ktheme-layout-nav-wide"] = layoutStd.navigation.wide;
+
+      vars["--ktheme-layout-corner-large"] = `${layoutStd.corners.large}px`;
+      vars["--ktheme-layout-corner-panel"] = `${layoutStd.corners.panel}px`;
+      vars["--ktheme-layout-corner-tile"] = `${layoutStd.corners.tile}px`;
+      vars["--ktheme-layout-corner-cover"] = `${layoutStd.corners.cover}px`;
+      vars["--ktheme-layout-corner-control"] = `${layoutStd.corners.control}px`;
+      vars["--ktheme-layout-corner-icon"] = `${layoutStd.corners.icon}px`;
+      vars["--ktheme-layout-corner-artwork"] = `${layoutStd.corners.artwork}px`;
+
+      vars["--ktheme-layout-typography-body"] = layoutStd.typography.body;
+      vars["--ktheme-layout-typography-minimum-metadata"] =
+        `${layoutStd.typography.minimumMetadata}px`;
+      vars["--ktheme-layout-typography-content-case"] =
+        layoutStd.typography.contentCase;
+      vars["--ktheme-layout-typography-navigation-case"] =
+        layoutStd.typography.navigationCase;
+
+      vars["--ktheme-layout-surfaces"] = layoutStd.surfaces;
+      vars["--ktheme-layout-actions"] = layoutStd.actions;
+      vars["--ktheme-layout-player"] = layoutStd.player;
+      vars["--ktheme-layout-shadow"] = layoutStd.shadow;
+    }
+
     const isMinimal =
       resolvedOptions.includeTypography === false &&
       resolvedOptions.includeEffects === false &&
       resolvedOptions.includeCorners === false;
 
     if (!isMinimal) {
+      vars["--ktheme-touch-target-min-mobile"] = "44px";
+      vars["--ktheme-touch-target-min-desktop"] = "24px";
+      vars["--ktheme-touch-padding-compact"] = "4px";
+      vars["--ktheme-touch-padding-coarse"] = "10px";
+
       vars["--ktheme-adaptation-layout-density"] = String(
         tokens.layout.density,
       );

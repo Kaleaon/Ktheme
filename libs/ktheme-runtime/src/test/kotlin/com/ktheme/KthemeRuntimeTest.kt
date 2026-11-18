@@ -11,7 +11,7 @@ class KthemeRuntimeTest {
     @Test
     fun testEmbeddedThemesLoaded() {
         val themes = KthemeAPI.getAvailableThemes()
-        assertEquals(32, themes.size, "Expected 32 embedded themes to be loaded in KthemeAPI")
+        assertEquals(34, themes.size, "Expected 34 embedded themes to be loaded in KthemeAPI")
     }
 
     @Test

@@ -1,20 +1,21 @@
 {
+  "schemaVersion": 2,
   "metadata": {
     "id": "paper-ink",
     "name": "Paper & Ink",
     "description": "Minimalist light theme for comfortable reading",
     "author": "Ktheme",
     "version": "1.0.0",
-    "tags": [
-      "minimalist",
-      "light",
-      "reader"
-    ],
+    "tags": ["minimalist", "light", "reader"],
     "createdAt": "2026-02-15T20:42:39.611Z",
     "updatedAt": "2026-02-15T20:42:39.611Z"
   },
   "darkMode": false,
   "colorScheme": {
+    "error": "#BA1A1A",
+    "onError": "#FFFFFF",
+    "errorContainer": "#FFDAD6",
+    "onErrorContainer": "#410002",
     "primary": "#2C2C2C",
     "onPrimary": "#FAF9F6",
     "primaryContainer": "#454545",
@@ -27,10 +28,6 @@
     "onTertiary": "#FAF9F6",
     "tertiaryContainer": "#828282",
     "onTertiaryContainer": "#FAF9F6",
-    "error": "#BA1A1A",
-    "onError": "#FFFFFF",
-    "errorContainer": "#FFDAD6",
-    "onErrorContainer": "#410002",
     "background": "#F0F0EB",
     "onBackground": "#2C2C2C",
     "surface": "#FAF9F6",
@@ -51,5 +48,6 @@
       "blur": 2,
       "color": "#00000011"
     }
-  }
+  },
+  "adaptation": {}
 }

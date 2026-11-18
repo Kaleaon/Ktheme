@@ -42,6 +42,7 @@ export function syncSchemas(customDirs?: string[]): {
 
   const defaultTargets = [
     path.join(repoRoot, "themes"),
+    path.join(repoRoot, "libs/ktheme-core/src/main/resources/themes"),
     path.join(repoRoot, "libs/ktheme-runtime/src/main/resources/themes"),
     path.join(workspaceRoot, "linkpoint-design/docs"),
     path.join(workspaceRoot, "linkpoint-design/ktheme-pr/themes"),

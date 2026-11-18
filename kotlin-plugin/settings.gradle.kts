@@ -18,3 +18,6 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "ktheme-kotlin"
+
+include(":ktheme-core")
+project(":ktheme-core").projectDir = file("../libs/ktheme-core")
